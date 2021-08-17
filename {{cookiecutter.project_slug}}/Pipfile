@@ -1,0 +1,121 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+six = "*"
+botocore = "==1.*"
+dj-database-url = "==0.*"
+Django = "==3.*"
+django-extensions = "==3.1.3"
+django-filter = "==2.*"
+django-nose = "==1.*"
+django-rest-auth = "==0.*"
+{%- if cookiecutter.cloud_provider == 'AWS' %}
+django-storages = "==1.11.1"  # https://github.com/jschneier/django-storages
+boto3 = "==1.*"
+{%- elif cookiecutter.cloud_provider == 'GCP' %}
+django-storages = "==1.11.1"  # https://github.com/jschneier/django-storages
+google-cloud-storage = "*"
+{%- endif %}
+djangorestframework = "==3.*"
+{%- if cookiecutter.async.lower() == 'django channels' %}
+channels = "*"
+daphne = "*"
+{%- endif %}
+{%- if cookiecutter.async.lower() == 'async' %}
+uvicorn = "==0.14.0"
+{%- endif %}
+gunicorn = "==20.1.0"
+psycopg2 = "==2.*"
+python-dotenv = "==0.*"
+pytz = "==2021.1"
+requests = "==2.*"
+{%- if cookiecutter.use_sentry == "y" %}
+sentry-sdk==1.3.0  # https://github.com/getsentry/sentry-python
+{%- endif %}
+{%- if cookiecutter.use_rollbar == "y" %}
+rollbar = "==0.*"
+{%- endif %}
+{%- if cookiecutter.use_whitenoise == 'n' %}
+Collectfast = "==2.2.0"  # https://github.com/antonagestam/collectfast
+{%- endif %}
+{%- if cookiecutter.use_whitenoise == 'y' %}
+whitenoise = ">=5"
+{%- endif %}
+psycopg2-binary = "*"
+django-cors-headers = "*"
+django-model-utils = "*"
+{%- if cookiecutter.use_swagger == 'y' %}
+drf-yasg = "*"
+{%- endif %}
+django-multiselectfield = "*"
+drf-writable-nested = "*"
+{%- if cookiecutter.use_stripe == 'y' %}
+stripe = "==2.58.0"
+{%- endif %}
+python-slugify = "*"
+Pillow = "==8.3.1"
+django-currentuser = "*"
+drf-nested-routers = "*"
+{%- if cookiecutter.use_redis == "y" %}
+django-redis = "*"
+{%- endif %}
+PyPika = "*"
+{%- if cookiecutter.use_celery == "y" %}
+celery = "==4.4.6"  # pyup: < 5.0,!=4.4.7  # https://github.com/celery/celery
+django-celery-beat = "==2.2.0"  # https://github.com/celery/django-celery-beat
+{%- endif %}
+
+# Testing
+# ------------------------------------------------------------------------------
+mypy = "==0.910"  # https://github.com/python/mypy
+django-stubs = "==1.8.0"  # https://github.com/typeddjango/django-stubs
+pytest = "==6.2.4"  # https://github.com/pytest-dev/pytest
+pytest-sugar = "==0.9.4"  # https://github.com/Frozenball/pytest-sugar
+
+{%- if cookiecutter.mail_service == 'Mailgun' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- elif cookiecutter.mail_service == 'Amazon SES' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- elif cookiecutter.mail_service == 'Mailjet' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- elif cookiecutter.mail_service == 'Mandrill' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- elif cookiecutter.mail_service == 'Postmark' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- elif cookiecutter.mail_service == 'Sendgrid' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- elif cookiecutter.mail_service == 'SendinBlue' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- elif cookiecutter.mail_service == 'SparkPost' %}
+django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+{%- endif %}
+
+[requires]
+python_version = "3.9"
+
+[dev-packages]
+# Code quality
+# ------------------------------------------------------------------------------
+flake8 = "==3.9.2"  # https://github.com/PyCQA/flake8
+flake8-isort = "==4.0.0"  # https://github.com/gforcada/flake8-isort
+coverage = "==5.5"  # https://github.com/nedbat/coveragepy
+black = "==21.7b0"  # https://github.com/psf/black
+pylint-django = "==2.4.4"  # https://github.com/PyCQA/pylint-django
+{%- if cookiecutter.use_celery == 'y' %}
+pylint-celery = "==0.3"  # https://github.com/PyCQA/pylint-celery
+{%- endif %}
+pre-commit = "==2.13.0"  # https://github.com/pre-commit/pre-commit
+
+# Django
+# ------------------------------------------------------------------------------
+factory-boy = "==3.2.0"  # https://github.com/FactoryBoy/factory_boy
+django-debug-toolbar = "==3.2.1"  # https://github.com/jazzband/django-debug-toolbar
+django-coverage-plugin = "==2.0.0"  # https://github.com/nedbat/django_coverage_plugin
+pytest-django = "==4.4.0"  # https://github.com/pytest-dev/pytest-django
+Faker = "==2.*"
+
+[pipenv]
+allow_prereleases = true

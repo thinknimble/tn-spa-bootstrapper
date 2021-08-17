@@ -1,0 +1,105 @@
+# Change this to your project's node version
+image: node:12.0.0
+
+clone:
+  depth: full
+
+
+RUN_DJANGO_TESTS_AND_COVERAGE: &RUN_DJANGO_TESTS_AND_COVERAGE
+  name: Tests & Coverage
+  caches:
+    - pip
+  image: python:3.9.5
+  script:
+    - python --version
+    - pip install pipenv
+    - pipenv install --system --deploy --dev --ignore-pipfile
+    - cp .env.example .env
+    - pytest {{ cookiecutter.project_slug }} --cov-config=.coveragerc --cov={{ cookiecutter.project_slug }} --cov-fail-under=70 --cov-report term
+  services:
+    - postgres
+
+RUN_DJANGO_TESTS_AND_COVERAGE_NO_FAIL: &RUN_DJANGO_TESTS_AND_COVERAGE_NO_FAIL
+  name: Tests & Coverage
+  caches:
+    - pip
+  image: python:3.9.5
+  script:
+    - python --version
+    - pip install pipenv
+    - pipenv install --system --deploy --dev --ignore-pipfile
+    - cp .env.example .env
+    - pytest {{ cookiecutter.project_slug }} --continue-on-collection-errors --cov-config=.coveragerc --cov={{ cookiecutter.project_slug }} --cov-report term
+  services:
+    - postgres
+
+# WIP
+# e2eTests: &e2eTests
+#   name: Client tests
+#   caches:
+#     - node
+#     - npm
+#     - cypress
+#   image: cypress/base:10
+#   script:
+#     - cd client
+#     - npm install
+#     - npm run ci
+
+
+AUTO_DEPLOY_TO_HEROKU_TESTING_APP: &AUTO_DEPLOY_TO_HEROKU_TESTING_APP
+  name: Auto Deploy to Heroku Testing Environment
+  deployment: test
+  trigger: automatic
+  script:
+    - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git $BITBUCKET_BRANCH:master -f
+
+MANUAL_DEPLOY_TO_HEROKU_TESTING_APP: &MANUAL_DEPLOY_TO_HEROKU_TESTING_APP
+  name: manual Deploy to Heroku Testing Environment
+  deployment: test
+  trigger: manual
+  script:
+    - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git $BITBUCKET_BRANCH:master -f
+
+MANUAL_DEPLOY_TO_HEROKU_STAGING_APP: &MANUAL_DEPLOY_TO_HEROKU_STAGING_APP
+  name: Deploy to Heroku Staging Environment
+  deployment: staging
+  trigger: manual
+  script:
+    - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git develop:master -f
+
+MANUAL_DEPLOY_TO_HEROKU_PRODUCTION_APP: &MANUAL_DEPLOY_TO_HEROKU_PRODUCTION_APP
+  name: Deploy to Heroku Production!!
+  deployment: production
+  trigger: manual
+  script:
+    - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master:master -f
+
+pipelines:
+  # Insert other test or build pipelines such as end-to-end testing here as appropriate.
+  pull-requests:
+    '**':
+      - step: *RUN_DJANGO_TESTS_AND_COVERAGE
+      - step: *MANUAL_DEPLOY_TO_HEROKU_TESTING_APP
+  branches:
+    testing:
+      - step: *RUN_DJANGO_TESTS_AND_COVERAGE_NO_FAIL
+      - step: *AUTO_DEPLOY_TO_HEROKU_TESTING_APP
+    develop:
+      - step: *RUN_DJANGO_TESTS_AND_COVERAGE
+      - step: *MANUAL_DEPLOY_TO_HEROKU_STAGING_APP
+    master:
+      - step: *RUN_DJANGO_TESTS_AND_COVERAGE
+      - step: *MANUAL_DEPLOY_TO_HEROKU_PRODUCTION_APP
+
+definitions:
+  caches:
+    npm: $HOME/.npm
+    cypress: $HOME/.cache/Cypress
+  services:
+    postgres:
+      image: postgres
+      environment:
+        POSTGRES_DB: {{ cookiecutter.project_slug }}_db
+        POSTGRES_USER: {{ cookiecutter.project_slug }}
+        POSTGRES_PASSWORD: {{ cookiecutter.project_slug }}

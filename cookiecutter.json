@@ -1,0 +1,49 @@
+{
+  "project_name": "My Awesome Project",
+  "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
+  "description": "Behold My Awesome Project!",
+  "author_name": "Moussa Mokhtari",
+  "domain_name": "example.com",
+  "year": "{% now 'utc', '%Y' %}",
+  "email": "{{ cookiecutter.author_name.lower()|replace(' ', '-') }}@example.com",
+  "version": "1.0.0",
+  "_extensions": ["jinja2_time.TimeExtension"],
+  "_copy_without_render": [
+    "clients/vue3/src/views/dashboard",
+    "clients/vue3/src/components",
+    "clients/vue2-ts/src"
+  ],
+  "timezone": "UTC",
+  "cloud_provider": [
+    "AWS",
+    "GCP",
+    "None"
+  ],
+  "mail_service": [
+    "Mailgun",
+    "Amazon SES",
+    "Mailjet",
+    "Mandrill",
+    "Postmark",
+    "Sendgrid",
+    "SendinBlue",
+    "SparkPost",
+    "Custom SMTP"
+  ],
+  "use_heroku": "y",
+  "use_mailhog": "y",
+  "async": ["Async","Django Channels","None"],
+  "use_redis": "y",
+  "use_whitenoise": "y",
+  "use_celery": "y",
+  "use_rollbar": "y",
+  "use_sentry": "n",
+  "use_swagger": "y",
+  "use_stripe": "n",
+  "ci_tool": [
+    "Bitbucket pipelines",
+    "None"
+  ],
+  "client_app": ["Vue3","Vue2-ts","React","None"],
+  "create_db":"y"
+}
