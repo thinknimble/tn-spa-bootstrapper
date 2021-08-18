@@ -5,7 +5,7 @@ import stripe
 from rest_framework import exceptions
 
 
-logger = logging.getLogger("revsetter")
+logger = logging.getLogger("{{ cookiecutter.project_name }}")
 
 class _StripeApi:
     """

@@ -185,7 +185,7 @@ def set_postgres_password(file_path, value=None):
 
 def remove_bitbucket_file():
     file_names = [
-        os.path.join("{{ cookiecutter.project_slug }}", "bitbucket-pipelines.yml"),
+        os.path.join("bitbucket-pipelines.yml"),
     ]
     for file_name in file_names:
         os.remove(file_name)

@@ -36,11 +36,11 @@ SECRET_KEY = _env_get_required("SECRET_KEY")
 DEBUG = _env_get_required("DEBUG") == "True"
 
 if IN_DEV:
-    SERVER_EMAIL = "RevSetter Development <noreply-dev@{{ cookiecutter.project_slug }}.com>"
+    SERVER_EMAIL = "{{ cookiecutter.project_name }} Development <noreply-dev@{{ cookiecutter.project_slug }}.com>"
 elif IN_STAGING:
-    SERVER_EMAIL = "RevSetter Staging <noreply-staging@{{ cookiecutter.project_slug }}.com>"
+    SERVER_EMAIL = "{{ cookiecutter.project_name }} Staging <noreply-staging@{{ cookiecutter.project_slug }}.com>"
 else:
-    SERVER_EMAIL = "RevSetter <noreply@{{ cookiecutter.project_slug }}.com>"
+    SERVER_EMAIL = "{{ cookiecutter.project_name }} <noreply@{{ cookiecutter.project_slug }}.com>"
 
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 

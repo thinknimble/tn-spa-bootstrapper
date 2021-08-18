@@ -14,6 +14,6 @@ def get_portal_url():
     protocol = "http" if settings.IN_DEV else "https"
     domain = settings.CURRENT_DOMAIN
     if domain == "https://{{ cookiecutter.project_slug }}.herokuapp.com":
-        return "https://revsetter-portal.herokuapp.com"
+        return "https://{{ cookiecutter.project_name }}-portal.herokuapp.com"
     else:
         return "{0}://{1}{2}".format(protocol, domain, f":8089")

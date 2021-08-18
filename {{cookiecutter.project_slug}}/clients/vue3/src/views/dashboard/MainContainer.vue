@@ -7,7 +7,7 @@
         <div v-if="!$store.state.ui.isSideBarShrinked" class="h-screen absolute flex lg:flex-shrink-0">
           <div class="flex flex-col w-64 border-r border-gray-200 pt-3 pb-0 bg-gray-100">
             <div class="flex items-center flex-shrink-0">
-              <div @click="$store.dispatch('ui/setUIValue', { name: 'isSideBarShrinked', value: true })" class="text-center w-full text-3xl font-semibold text-blue">RevSetter</div>
+              <div @click="$store.dispatch('ui/setUIValue', { name: 'isSideBarShrinked', value: true })" class="text-center w-full text-3xl font-semibold text-blue">{{ cookiecutter.project_name }}</div>
             </div>
             <!-- Sidebar component, swap this element with another sidebar if you like -->
             <div class="h-0 flex-1 flex flex-col overflow-y-auto">
