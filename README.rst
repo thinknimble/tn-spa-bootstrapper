@@ -65,11 +65,11 @@ and then editing the results to include your name, email, and various configurat
 
 First, get Cookiecutter. Trust me, it's awesome::
 
-    $ pip install "cookiecutter>=1.7.0"
+    $ pip install cookiecutter
 
 Now run it against this repo::
 
-    $ cookiecutter https://bitbucket.org/thinknimble/tn-cookiecutter.git
+    $ cookiecutter git@github.com:thinknimble/tn-cookiecutter.git
 
 You'll be prompted for some values. Provide them, then a Django project will be created for you.
 
