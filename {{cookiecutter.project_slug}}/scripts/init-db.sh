@@ -1,22 +1,17 @@
 #!/bin/bash
 
-# INSTALL {{cookiecutter.project_slug.upper()}} SYSTEM REQUIREMENTS
+# INSTALL {{cookiecutter.project_slug.upper()}} DB
 #
-# REQUIRED SYSTEM: UBUNTU 16.04 LTS
-#
-# This script is a shortcut to install the {{cookiecutter.project_slug}} sytem requirements
-# on Ubuntu 16.04 linux systems. It also sets up the Python virtualenv.
 #
 # Activate the virtual env after installation:
 #
-#    source ~/.bashrc
 #    workon {{cookiecutter.project_slug}}
 #
 # This script is designed to be idempotent--running it multiple times
 # should not be a problem.
 #
 
-# Configuration Variables
+# DB Configuration Variables
 db_user='{{cookiecutter.project_slug}}'
 db_pass='!!!SET POSTGRES_PASSWORD!!!'
 db_name='{{cookiecutter.project_slug}}_db'
