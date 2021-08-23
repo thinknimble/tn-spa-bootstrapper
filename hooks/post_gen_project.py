@@ -271,6 +271,11 @@ def main():
         move_client_to_root('react')
 
 
+    print(INFO + "Installing necessary requirements:" + END)
+    shellscript = subprocess.Popen([os.path.join("..","{{ cookiecutter.project_slug }}","scripts", "install-reqs.sh")], stdin=subprocess.PIPE)
+    shellscript.wait()
+    shellscript.stdin.close()
+    
     print(INFO + "Building docs:" + END)
     shellscript = subprocess.Popen([os.path.join("..","{{ cookiecutter.project_slug }}","scripts", "build-docs.sh")], stdin=subprocess.PIPE)
     shellscript.wait()
