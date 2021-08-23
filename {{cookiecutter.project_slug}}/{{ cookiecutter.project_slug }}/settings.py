@@ -52,9 +52,7 @@ STAFF_EMAIL = os.environ.get("STAFF_EMAIL", "no-reply@thinknimble.com")
 #
 CURRENT_DOMAIN = _env_get_required("CURRENT_DOMAIN")
 CURRENT_PORT = os.environ.get("CURRENT_PORT")
-ALLOWED_HOSTS = [
-    "https://{{ cookiecutter.project_slug }}.herokuapp.com",
-]
+ALLOWED_HOSTS = []
 ALLOWED_HOSTS += _env_get_required("ALLOWED_HOSTS").split(",")
 if CURRENT_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(CURRENT_DOMAIN)
@@ -268,116 +266,118 @@ if IN_DEV:
     EMAIL_PORT = 1025
 {% endif %}
 
+if os.environ.get("USE_ANYMAIL") == "True":
+    {% if cookiecutter.mail_service == 'Mailgun' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-{% if cookiecutter.mail_service == 'Mailgun' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/mailgun/
+    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+    ANYMAIL = {
+        "MAILGUN_API_KEY": _env_get_required("MAILGUN_API_KEY"),
+        "MAILGUN_SENDER_DOMAIN": _env_get_required("MAILGUN_DOMAIN"),
+        "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL","https://api.mailgun.net/v3"),
+    }
+    {% elif cookiecutter.mail_service == 'Amazon SES' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-# https://anymail.readthedocs.io/en/stable/esps/mailgun/
-EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-ANYMAIL = {
-    "MAILGUN_API_KEY": _env_get_required("MAILGUN_API_KEY"),
-    "MAILGUN_SENDER_DOMAIN": _env_get_required("MAILGUN_DOMAIN"),
-    "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL","https://api.mailgun.net/v3"),
-}
-{% elif cookiecutter.mail_service == 'Amazon SES' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
+    EMAIL_BACKEND = "anymail.backends.amazon_ses.EmailBackend"
+    ANYMAIL = {}
+    {% elif cookiecutter.mail_service == 'Mailjet' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-# https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
-EMAIL_BACKEND = "anymail.backends.amazon_ses.EmailBackend"
-ANYMAIL = {}
-{% elif cookiecutter.mail_service == 'Mailjet' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/mailjet/
+    EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
+    ANYMAIL = {
+        "MAILJET_API_KEY": _env_get_required("MAILJET_API_KEY"),
+        "MAILJET_SECRET_KEY": _env_get_required("MAILJET_SECRET_KEY"),
+        "MAILJET_API_URL": _env_get_required("MAILJET_API_URL", default="https://api.mailjet.com/v3"),
+    }
+    {% elif cookiecutter.mail_service == 'Mandrill' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-# https://anymail.readthedocs.io/en/stable/esps/mailjet/
-EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
-ANYMAIL = {
-    "MAILJET_API_KEY": _env_get_required("MAILJET_API_KEY"),
-    "MAILJET_SECRET_KEY": _env_get_required("MAILJET_SECRET_KEY"),
-    "MAILJET_API_URL": _env_get_required("MAILJET_API_URL", default="https://api.mailjet.com/v3"),
-}
-{% elif cookiecutter.mail_service == 'Mandrill' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/mandrill/
+    EMAIL_BACKEND = "anymail.backends.mandrill.EmailBackend"
+    ANYMAIL = {
+        "MANDRILL_API_KEY": _env_get_required("MANDRILL_API_KEY"),
+        "MANDRILL_API_URL": _env_get_required(
+            "MANDRILL_API_URL", default="https://mandrillapp.com/api/1.0"
+        ),
+    }
+    {% elif cookiecutter.mail_service == 'Postmark' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-# https://anymail.readthedocs.io/en/stable/esps/mandrill/
-EMAIL_BACKEND = "anymail.backends.mandrill.EmailBackend"
-ANYMAIL = {
-    "MANDRILL_API_KEY": _env_get_required("MANDRILL_API_KEY"),
-    "MANDRILL_API_URL": _env_get_required(
-        "MANDRILL_API_URL", default="https://mandrillapp.com/api/1.0"
-    ),
-}
-{% elif cookiecutter.mail_service == 'Postmark' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/postmark/
+    EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
+    ANYMAIL = {
+        "POSTMARK_SERVER_TOKEN": _env_get_required("POSTMARK_SERVER_TOKEN"),
+        "POSTMARK_API_URL": _env_get_required("POSTMARK_API_URL", default="https://api.postmarkapp.com/"),
+    }
+    {% elif cookiecutter.mail_service == 'Sendgrid' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-# https://anymail.readthedocs.io/en/stable/esps/postmark/
-EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
-ANYMAIL = {
-    "POSTMARK_SERVER_TOKEN": _env_get_required("POSTMARK_SERVER_TOKEN"),
-    "POSTMARK_API_URL": _env_get_required("POSTMARK_API_URL", default="https://api.postmarkapp.com/"),
-}
-{% elif cookiecutter.mail_service == 'Sendgrid' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/sendgrid/
+    EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
+    ANYMAIL = {
+        "SENDGRID_API_KEY": _env_get_required("SENDGRID_API_KEY"),
+        "SENDGRID_GENERATE_MESSAGE_ID": _env_get_required("SENDGRID_GENERATE_MESSAGE_ID"),
+        "SENDGRID_MERGE_FIELD_FORMAT": _env_get_required("SENDGRID_MERGE_FIELD_FORMAT"),
+        "SENDGRID_API_URL": _env_get_required("SENDGRID_API_URL", default="https://api.sendgrid.com/v3/"),
+    }
+    {% elif cookiecutter.mail_service == 'SendinBlue' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-# https://anymail.readthedocs.io/en/stable/esps/sendgrid/
-EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
-ANYMAIL = {
-    "SENDGRID_API_KEY": _env_get_required("SENDGRID_API_KEY"),
-    "SENDGRID_GENERATE_MESSAGE_ID": _env_get_required("SENDGRID_GENERATE_MESSAGE_ID"),
-    "SENDGRID_MERGE_FIELD_FORMAT": _env_get_required("SENDGRID_MERGE_FIELD_FORMAT"),
-    "SENDGRID_API_URL": _env_get_required("SENDGRID_API_URL", default="https://api.sendgrid.com/v3/"),
-}
-{% elif cookiecutter.mail_service == 'SendinBlue' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/sendinblue/
+    EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
+    ANYMAIL = {
+        "SENDINBLUE_API_KEY": _env_get_required("SENDINBLUE_API_KEY"),
+        "SENDINBLUE_API_URL": _env_get_required(
+            "SENDINBLUE_API_URL", default="https://api.sendinblue.com/v3/"
+        ),
+    }
+    {% elif cookiecutter.mail_service == 'SparkPost' %}
+    # Anymail
+    # ------------------------------------------------------------------------------
+    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+    INSTALLED_APPS += ["anymail"]  # noqa F405
 
-# https://anymail.readthedocs.io/en/stable/esps/sendinblue/
-EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
-ANYMAIL = {
-    "SENDINBLUE_API_KEY": _env_get_required("SENDINBLUE_API_KEY"),
-    "SENDINBLUE_API_URL": _env_get_required(
-        "SENDINBLUE_API_URL", default="https://api.sendinblue.com/v3/"
-    ),
-}
-{% elif cookiecutter.mail_service == 'SparkPost' %}
-# Anymail
-# ------------------------------------------------------------------------------
-# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-INSTALLED_APPS += ["anymail"]  # noqa F405
+    # https://anymail.readthedocs.io/en/stable/esps/sparkpost/
+    EMAIL_BACKEND = "anymail.backends.sparkpost.EmailBackend"
+    ANYMAIL = {
+        "SPARKPOST_API_KEY": _env_get_required("SPARKPOST_API_KEY"),
+        "SPARKPOST_API_URL": _env_get_required(
+            "SPARKPOST_API_URL", default="https://api.sparkpost.com/api/v1"
+        ),
+    }
+    {% elif cookiecutter.mail_service == 'Custom SMTP' %}
 
-# https://anymail.readthedocs.io/en/stable/esps/sparkpost/
-EMAIL_BACKEND = "anymail.backends.sparkpost.EmailBackend"
-ANYMAIL = {
-    "SPARKPOST_API_KEY": _env_get_required("SPARKPOST_API_KEY"),
-    "SPARKPOST_API_URL": _env_get_required(
-        "SPARKPOST_API_URL", default="https://api.sparkpost.com/api/v1"
-    ),
-}
-{% elif cookiecutter.mail_service == 'Custom SMTP' %}
+    {% endif %}
+
 #
-# Email settings
+# SMTP settings
 #
-USE_CUSTOM_SMTP = os.environ.get("USE_CUSTOM_SMTP")
-if USE_CUSTOM_SMTP == "True":
+if os.environ.get("USE_CUSTOM_SMTP") == "True":
     EMAIL_HOST = _env_get_required("SMTP_HOST")
     EMAIL_PORT = os.environ.get("SMTP_PORT", 587)
     EMAIL_HOST_USER = _env_get_required("SMTP_USER")
@@ -386,16 +386,36 @@ if USE_CUSTOM_SMTP == "True":
     EMAIL_USE_TLS = True
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+{% if cookiecutter.use_redis == 'y' %}
+# REDIS
+# ------------------------------------------------------------------------------
+REDIS_URL = _env_get_required('REDIS_URL')
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
 {% endif %}
 
 {% if cookiecutter.use_celery == 'y' %}
+#
 # Celery
 # ------------------------------------------------------------------------------
 if USE_TZ:
     # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-timezone
     CELERY_TIMEZONE = TIME_ZONE
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
-CELERY_BROKER_URL = _env_get_required("CELERY_BROKER_URL")
+if REDIS_URL:
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL',REDIS_URL)
+else:
+    CELERY_BROKER_URL = _env_get_required('CELERY_BROKER_URL')
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-accept_content
@@ -416,20 +436,7 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 {% endif %}
 
 
-{% if cookiecutter.use_redis == 'y' %}
-# REDIS
-# ------------------------------------------------------------------------------
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get('REDIS_URL'),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
 
-{% endif %}
 
 
 # STORAGES
@@ -437,6 +444,7 @@ CACHES = {
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 {% if cookiecutter.cloud_provider != 'None' %}
+#
 # STORAGES
 # ------------------------------------------------------------------------------
 # https://django-storages.readthedocs.io/en/latest/#installation
@@ -469,6 +477,7 @@ GS_BUCKET_NAME = _env_get_required("DJANGO_GCP_STORAGE_BUCKET_NAME")
 GS_DEFAULT_ACL = "publicRead"
 {% endif %}
 
+#
 # STATIC
 # ------------------------
 
@@ -557,6 +566,7 @@ LOGGING = {
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
 {% if cookiecutter.use_rollbar == 'y' %}
+#
 # Rollbar
 # ------------------------------------------------------------------------------
 # Rollbar error logging
@@ -619,10 +629,9 @@ if os.environ.get("USE_SENTRY") == "True":
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:8090",
+    {% if cookiecutter.client_app.lower() != 'none' %}
     "http://localhost:8089",
+    {% endif %}
     "https://{{ cookiecutter.project_slug }}.com",
-    "https://{{ cookiecutter.project_slug }}-portal.herokuapp.com",
-    "https://{{ cookiecutter.project_slug }}-home.herokuapp.com",
+    "https://{{ cookiecutter.project_slug }}.herokuapp.com",
 ]

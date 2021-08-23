@@ -1,4 +1,4 @@
-# tn-cookiecutter documentation build configuration file.
+# {{cookiecutter.project_name}} documentation build configuration file.
 #
 # This file is execfile()d with the current directory set to its containing dir.
 #
@@ -41,8 +41,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "tn-cookiecutter"
-copyright = "2020-{}, Moussa Mokhtari".format(now.year)
+project = "{{cookiecutter.project_name}}"
+copyright = "2020-{}, Thinknimble".format(now.year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -92,7 +92,7 @@ pygments_style = "sphinx"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "default"
+html_theme = "karma_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -165,7 +165,7 @@ html_static_path = ["_static"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "tn-cookiecutter-doc"
+htmlhelp_basename = "{{cookiecutter.project_slug}}-doc"
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -184,9 +184,9 @@ latex_elements = {
 latex_documents = [
     (
         "index",
-        "tn-cookiecutter.tex",
-        "tn-cookiecutter Documentation",
-        "tn-cookiecutter",
+        "{{cookiecutter.project_slug}}.tex",
+        "{{cookiecutter.project_name}} Documentation",
+        "{{cookiecutter.project_name}}",
         "manual",
     )
 ]
@@ -219,9 +219,8 @@ latex_documents = [
 man_pages = [
     (
         "index",
-        "tn-cookiecutter",
-        "tn-cookiecutter documentation",
-        ["Moussa Mokhtari"],
+        "{{cookiecutter.project_name}}",
+        "{{cookiecutter.project_name}} documentation",
         1,
     )
 ]
@@ -238,10 +237,8 @@ man_pages = [
 texinfo_documents = [
     (
         "index",
-        "tn-cookiecutter",
-        "tn-cookiecutter documentation",
-        "Moussa Mokhtari",
-        "tn-cookiecutter",
+        "{{cookiecutter.project_name}}",
+        "{{cookiecutter.project_name}} documentation",
         "A Cookiecutter template for creating production-ready Django projects quickly with the addition of client app (Vue or React).",
         "Miscellaneous",
     )

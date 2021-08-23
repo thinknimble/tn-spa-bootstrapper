@@ -10,11 +10,11 @@ TODO: ? restrict Cookiecutter Django project initialization to Python 3.x enviro
 from __future__ import print_function
 
 import os
+import sys
 import random
 import shutil
 import string
 import subprocess
-
 try:
     # Inspired by
     # https://github.com/django/django/blob/master/django/utils/crypto.py
@@ -24,8 +24,8 @@ except NotImplementedError:
     using_sysrandom = False
 
 
-TERMINATOR = "\x1b[0m"
-WARNING = "\x1b[1;33m [WARNING]: "
+END = "\x1b[0m"
+QUESTION = "\x1b[0;36m [QUESTION]: "
 INFO = "\x1b[1;33m [INFO]: "
 HINT = "\x1b[3;33m"
 SUCCESS = "\x1b[1;32m [SUCCESS]: "
@@ -65,7 +65,7 @@ def print_thankyou():
     a//////////////////////////////////////////////////////////////////////////O
     n///////////////////// Made with love at Thinknimble //////////////////////e
     Q//////////////////////////////////////////////////////////////////////////h
-    b//////////////////////////////////////////////////////////////////////////a"""+TERMINATOR)
+    b//////////////////////////////////////////////////////////////////////////a"""+END)
     
 def remove_vue2ts_files():
     shutil.rmtree(os.path.join("clients","vue2-ts"))
@@ -212,14 +212,17 @@ def remove_channel_files():
         os.remove(file_name)
 
 def set_keys_in_envs():
-    envs_path = os.path.join(".env.example")
-    postgres_init_file = os.path.join("install-ubuntu.sh")
-    set_django_secret_key(envs_path)
+    env_file_path = os.path.join(".env.example")
+    postgres_init_file = os.path.join("scripts/init-db.sh")
+    postgres_docs_init_file = os.path.join("docs/deployment-locally.rst")
+    set_django_secret_key(env_file_path)
 
     secret = generate_random_string(length=50,using_digits=True, using_ascii_letters=True, using_punctuation=True)
-    set_postgres_password(envs_path, value=secret)
+    set_postgres_password(env_file_path, value=secret)
     set_postgres_password(postgres_init_file, value=secret)
-    shutil.copy2(envs_path,os.path.join(".env"))
+    set_postgres_password(postgres_docs_init_file, value=secret)
+    
+    shutil.copy2(env_file_path,os.path.join(".env"))
 
 
 
@@ -250,6 +253,7 @@ def main():
     
     if "{{ cookiecutter.client_app }}".lower() == "none":
         shutil.rmtree("clients")
+        os.remove(os.path.join("package.json"))
 
     elif "{{ cookiecutter.client_app }}".lower() == "vue2-ts":
         remove_vue3_files()
@@ -267,33 +271,55 @@ def main():
         move_client_to_root('react')
 
 
+    print(INFO + "Building docs:" + END)
+    shellscript = subprocess.Popen([os.path.join("..","{{ cookiecutter.project_slug }}","scripts", "build-docs.sh")], stdin=subprocess.PIPE)
+    shellscript.wait()
+    shellscript.stdin.close()
     
-    if "{{ cookiecutter.create_db }}".lower() == "y":
-        print(INFO + "Creating DB and User : " + TERMINATOR)
-        shellscript = subprocess.Popen([os.path.join("..","{{ cookiecutter.project_slug }}", "install-ubuntu.sh"),], stdin=subprocess.PIPE)
-        shellscript.stdin.close()
+    print_thankyou()
+    print("\n"+SUCCESS + "Awesome! Project initialized, press Enter to continue..." + END)
+    input()
+    
+    print("\n"+QUESTION +'Do you wanna create the database?(y/n) [n]'+ END)
+    sys.stdout.flush()
+    init_db = input()
+    if init_db and init_db.lower()=='y':
+        print(INFO + "Initializing Database" + END)
+        shellscript = subprocess.Popen(["/bin/bash", "-i",os.path.join("..","{{ cookiecutter.project_slug }}","scripts", "init-db.sh")], stdin=subprocess.PIPE )
         shellscript.wait()
-        print(SUCCESS + "Awesome! Project initialized, to get started run the following:" + TERMINATOR)
-        print(HINT + "$ cd {{ cookiecutter.project_slug }}" + TERMINATOR)
-        print(HINT + "$ pipenv install && pipenv shell" + TERMINATOR)
-        print(HINT + "$ python manage migrate" + TERMINATOR)
-        if "{{ cookiecutter.client_app }}".lower() != "none":
-            print(HINT + "$ cd client && npm install && npm build" + TERMINATOR)
-            print(HINT + "$ cd .. && ./runserver.sh" + TERMINATOR)
-        else:
-            print(HINT + "$ ./runserver.sh" + TERMINATOR)
-        print_thankyou()
-    else:
-        print(SUCCESS + "Project initialized, keep up the good work!" + TERMINATOR)
-        print(HINT + "$ cd {{ cookiecutter.project_slug }}" + TERMINATOR)
-        print(HINT + "$ ./install-ubuntu.sh to initialized the DB" + TERMINATOR)
-        print(HINT + "$ pipenv install && pipenv shell" + TERMINATOR)
-        if "{{ cookiecutter.client_app }}".lower() != "none":
-            print(HINT + "$ cd client && npm install" + TERMINATOR)
-            print(HINT + "$ cd .. && ./runserver.sh" + TERMINATOR)
-        else:
-            print(HINT + "$ ./runserver.sh" + TERMINATOR)
-        print_thankyou()
+        shellscript.stdin.close()
+        print("\n"+QUESTION +'Do you wanna initialize the app (run migrations and install dependencies)?(y/n) [n]'+END)
+        sys.stdout.flush()
+        init_app = input()
+        if init_app and init_app.lower()=='y':
+            print(INFO + "Opening another terminal to build and running locally:" + END)
+            subprocess.Popen(['gnome-terminal','--tab','-t','{{ cookiecutter.project_name }} initialization','--',os.path.join("..","{{ cookiecutter.project_slug }}","scripts", "init-app.sh")],stdin=subprocess.PIPE)
+            shellscript.wait()
+            shellscript.stdin.close()
     
+    print("\n"+QUESTION +'Do you wanna deploy on Heroku?(y/n) [n]'+END)
+    sys.stdout.flush()
+    depoly_on_heroku = input()
+    if depoly_on_heroku and depoly_on_heroku.lower()=='y':
+        print(INFO + "Deploying on Heroku" + END)
+        subprocess.call([os.path.join("..","{{ cookiecutter.project_slug }}","scripts", "deploy-on-heroku.sh")])
+    
+    if init_db and init_db.lower()=='n':
+        print(SUCCESS + "Project initialized, keep up the good work!" + END)
+        print(HINT + "$ cd {{ cookiecutter.project_slug }}" + END)
+        print(HINT + "$ ./init-db.sh to initialized the DB or create the database with the creds provided in .env file" + END)
+        print(HINT + "$ pipenv install && pipenv shell" + END)
+        print(HINT + "$ python manage.py makemigrations && python manage.py migrate" + END)
+        if "{{ cookiecutter.client_app }}".lower() != "none":
+            print(HINT + "$ npm install --prefix client && npm run build --prefix client" + END)
+            print(HINT + "$ ./runserver.sh" + END)
+        else:
+            print(HINT + "$ ./runserver.sh" + END)
+    
+    print_thankyou()
+    print("\n"+SUCCESS + "You did it champ!, We have something to say though!" + HINT)
+    subprocess.call(["jotquote"])
+    print(END)
+
 if __name__ == "__main__":
     main()

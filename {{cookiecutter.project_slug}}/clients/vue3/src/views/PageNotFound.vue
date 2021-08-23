@@ -12,9 +12,6 @@
             <a href="/" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               Go back home
             </a>
-            <a href="/contact-us" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              Contact support
-            </a>
           </div>
         </div>
       </main>

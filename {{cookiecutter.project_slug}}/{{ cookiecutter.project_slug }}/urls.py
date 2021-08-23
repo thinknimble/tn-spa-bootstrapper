@@ -4,7 +4,6 @@ from django.conf import settings
 
 urlpatterns = [
     path(r"admin/", admin.site.urls),
-    path(r"", include("{{ cookiecutter.project_slug }}.core.favicon_urls")),
     path(r"", include("{{ cookiecutter.project_slug }}.core.urls")),
 ]
 if settings.DEBUG:  # pragma: no cover

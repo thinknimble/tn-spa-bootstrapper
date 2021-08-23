@@ -1,25 +1,20 @@
-.. cookiecutter-django documentation master file.
+.. tn-cookiecutter documentation master file.
 
-Welcome to Thinknimble Cookiecutter documentation!
+Welcome to {{cookiecutter.project_name}} documentation!
 ====================================================================
-
-A Cookiecutter_ template for Django.
-
-.. _cookiecutter: https://github.com/cookiecutter/cookiecutter
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   project-generation-options
-   developing-locally
+   deployment-locally
+   deployment-on-heroku
    settings
+   websocket
    linters
    testing
    document
-   deployment-on-heroku
-   websocket
    troubleshooting
 
 Indices and tables

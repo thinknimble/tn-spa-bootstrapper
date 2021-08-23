@@ -1,7 +1,7 @@
-# portal
+# {{ cookiecutter.project_name }}
 
 Create a file .env from the .env.example and change VUE_APP_BASE_API_URL to your local api server 
-## Project setup
+## {{ cookiecutter.project_name }} setup
 ```
 npm install
 ```

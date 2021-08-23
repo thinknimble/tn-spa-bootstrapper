@@ -47,6 +47,12 @@ if (
 ):
     print("You should select use Redis when using heroku with Django channels")
     sys.exit(1)
+if (
+    "{{ cookiecutter.use_redis }}".lower() == "n"
+    and "{{ cookiecutter.use_celery }}" == "y"
+):
+    print("You should use redis since you are using celery")
+    sys.exit(1)
 
 if (
     "{{ cookiecutter.cloud_provider }}" == "GCP"

@@ -72,7 +72,7 @@ import { ref } from 'vue'
 import { Form } from 'vee-validate'
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationIcon } from '@heroicons/vue/outline'
-import TextInput from '../components/shared/TextInput.vue'
+import TextInput from '@/components/shared/TextInput.vue'
 export default {
   name: 'Login',
 

@@ -68,8 +68,8 @@ import { ref } from 'vue'
 import { Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { InformationCircleIcon } from '@heroicons/vue/outline'
 import { Form } from 'vee-validate'
-import TextInput from '../components/shared/TextInput.vue'
-import AuthService from '../services/auth.service'
+import TextInput from '@/components/shared/TextInput.vue'
+import AuthService from '@/services/auth.service'
 export default {
   name: 'Login',
 

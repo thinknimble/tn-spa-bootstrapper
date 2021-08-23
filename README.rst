@@ -1,17 +1,6 @@
 Thinknimble Cookiecutter (Django | Vue | React)
-===================
+===============================================
 
-.. image:: https://img.shields.io/github/workflow/status/pydanny/cookiecutter-django/CI/master
-    :target: https://github.com/moussa-m/cookiecutter
-    :alt: Build Status
-
-.. image:: https://readthedocs.org/projects/cookiecutter-django/badge/?version=latest
-     :target: https://github.com/moussa-m/cookiecutter/docs
-    :alt: Documentation Status
-
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-    :target: https://github.com/ambv/black
-    :alt: Code style: black
 
 Thinknimble Cookiecutter is a framework for jumpstarting
 production-ready Django projects along side with client side SPA quickly.
@@ -136,6 +125,8 @@ Answer the prompts with your own desired options. For example::
     3 - React
     4 - None
     Choose from 1, 2, 3, 4 [1]: 1
+    create_db [y]: y
+    deploy_to_heroku [y]: y
     [SUCCESS]: Project initialized, keep up the good work!
 
 
@@ -151,5 +142,13 @@ Create a git repo and push it there::
     $ git commit -m "first awesome commit"
     $ git remote add origin https://bitbucket.org/thinknimble/the-rock.git
     $ git push -u origin master
+
+To run it locally::
+
+    $ python manage.py makemigrations
+    $ python manage.py migrate
+    $ npm install --prefix client
+    $ npm run build --prefix client
+    $ ./runserver.sh
 
 Now take a look at your repo. Don't forget to carefully look at the generated README. Awesome, right?

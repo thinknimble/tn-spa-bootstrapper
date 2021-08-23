@@ -7,7 +7,7 @@
   "year": "{% now 'utc', '%Y' %}",
   "email": "{{ cookiecutter.author_name.lower()|replace(' ', '-') }}@example.com",
   "version": "1.0.0",
-  "_extensions": ["jinja2_time.TimeExtension"],
+  "_extensions": ["jinja2_time.TimeExtension","cookiecutter.extensions.RandomStringExtension"],
   "_copy_without_render": [
     "clients/vue3/src/views/dashboard",
     "clients/vue3/src/components",
@@ -44,6 +44,5 @@
     "Bitbucket pipelines",
     "None"
   ],
-  "client_app": ["Vue3","Vue2-ts","React","None"],
-  "create_db":"y"
+  "client_app": ["Vue3","Vue2-ts","None"]
 }

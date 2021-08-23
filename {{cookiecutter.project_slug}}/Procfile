@@ -4,7 +4,8 @@
 {% if cookiecutter.async.lower() == "async" %}
 web: gunicorn {{ cookiecutter.project_slug }}.asgi:application -k uvicorn.workers.UvicornWorker
 {% elif cookiecutter.async.lower() == "django channels" %}
-web: daphne {{ cookiecutter.project_slug }}.asgi:application
+web: daphne {{ cookiecutter.project_slug }}.asgi:application --port $PORT --bind 0.0.0.0 -v2
+worker: python manage.py runworker -v2
 {% else  %}
 web: gunicorn {{ cookiecutter.project_slug }}.wsgi --log-file -
 {% endif %}
@@ -25,6 +26,6 @@ beat: REMAP_SIGTERM=SIGQUIT celery beat --app={{ cookiecutter.project_slug }}.ce
 #   3. Up-to-date build numbers shown in app (ideally auto-generated at build-and-deploy time)
 #
 # Uncomment the line below to enable migrations to automatically run after a Heroku push.
-release: python manage.py migrate --noinput
+release: python manage.py makemigrations --noinput && python manage.py migrate --noinput
 
 

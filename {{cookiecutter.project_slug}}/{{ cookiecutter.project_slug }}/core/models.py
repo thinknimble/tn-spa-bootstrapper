@@ -51,7 +51,7 @@ class User(AbstractUser, AbstractBaseModel):
     avatar = models.URLField(blank=True,null=True)
     is_owner = models.BooleanField(default=False)
     
-    {%- if cookiecutter.client_app != 'None' %}
+    {%- if cookiecutter.client_app.lower() != 'none' %}
     # to save user user interface variables
     ui_options = models.JSONField(default=dict)
     {%- endif %}

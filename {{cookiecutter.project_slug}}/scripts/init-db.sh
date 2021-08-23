@@ -21,24 +21,43 @@ db_user='{{cookiecutter.project_slug}}'
 db_pass='!!!SET POSTGRES_PASSWORD!!!'
 db_name='{{cookiecutter.project_slug}}_db'
 
-# DO NOT EDIT BEYOND THIS POINT
 
-# Install system requirements
-sudo apt-get update
-sudo apt-get install gcc -y
-{% if cookiecutter.use_redis == "y" %}
-sudo apt-get install redis-server -y
-{% endif %}
-# Install PostgreSQL and configure database and user
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux 
+    # Install system requirements
+    sudo apt-get update
+    {% if cookiecutter.use_redis == "y" %}
+    which redis-cli
+    if [ "$?" ]; then
+        echo "Redis is already installed"
+    else
+        sudo apt-get install redis-server -y
+    fi
+    {% endif %}
 
-# Set up apt repository for Ubuntu 16.04
-sudo add-apt-repository 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt-get update
-# End repo set-up for 16.04
+    # Install PostgreSQL
+    which psql
+    if [ "$?" ]; then
+        echo "Postgres is already installed"
+    else
+        sudo apt install postgresql postgresql-contrib -y
+    fi
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX 
+    # WIP 
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    brew update
+    brew install postgresql
+elif [[ "$OSTYPE" == "win32" ]]; then
+    # Windows
+    # WIP
+    echo "WIP"
+else
+    echo "Unknown Operating System!"
+fi
+
 
 # Install Postgres, create database, and grant privs
-sudo apt-get install curl gcc postgresql postgresql-server-dev-10 libpq-dev -y
 sudo -u postgres createdb $db_name
 sudo -u postgres psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
