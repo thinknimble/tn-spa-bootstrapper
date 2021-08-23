@@ -36,7 +36,7 @@ urlpatterns = [
     ),
     path(r"api/password/reset/", rest_auth_views.PasswordResetView.as_view()),
     path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
-    re_path(r"^$", core_views.index, name="index"),
+    path(r"", core_views.index),
 ]
 
 {%- if cookiecutter.use_swagger == 'y' %}

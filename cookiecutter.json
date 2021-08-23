@@ -41,7 +41,7 @@
   "use_swagger": "y",
   "use_stripe": "n",
   "ci_tool": [
-    "Bitbucket pipelines",
+    "Github Actions",
     "None"
   ],
   "client_app": ["Vue3","Vue2-ts","None"]

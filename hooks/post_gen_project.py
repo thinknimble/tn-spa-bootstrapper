@@ -183,9 +183,9 @@ def set_postgres_password(file_path, value=None):
     return postgres_password
 
 
-def remove_bitbucket_file():
+def remove_github_folder():
     file_names = [
-        os.path.join("bitbucket-pipelines.yml"),
+        os.path.join(".github"),
     ]
     for file_name in file_names:
         os.remove(file_name)
@@ -238,7 +238,7 @@ def main():
         remove_heroku_files()
 
     if "{{ cookiecutter.ci_tool }}".lower() == "none":
-        remove_bitbucket_file()
+        remove_github_folder()
     
     if "{{ cookiecutter.async }}".lower() == "none":
         remove_asgi_file()
