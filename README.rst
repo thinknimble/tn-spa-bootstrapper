@@ -63,7 +63,7 @@ Usage
 Let's pretend you want to create a Django project called "therock". Rather than using ``startproject``
 and then editing the results to include your name, email, and various configuration issues that always get forgotten until the worst possible moment, get cookiecutter to do all the work.
 
-First, get Cookiecutter. Trust me, it's awesome::
+First, get Cookiecutter::
 
     $ pip install cookiecutter
 
@@ -125,8 +125,6 @@ Answer the prompts with your own desired options. For example::
     3 - React
     4 - None
     Choose from 1, 2, 3, 4 [1]: 1
-    create_db [y]: y
-    deploy_to_heroku [y]: y
     [SUCCESS]: Project initialized, keep up the good work!
 
 

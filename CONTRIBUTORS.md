@@ -13,7 +13,7 @@ accept and merge pull requests.
   <tr>
     <td>Moussa Mokhtari</td>
     <td>
-      <a href="https://github.com/moussa-m">moussa-m</a>
+      <a href="https://github.com/moussa-tn">moussa-tn</a>
     </td>
   </tr>
 
