@@ -15,12 +15,12 @@ from rest_framework.response import Response
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from {{ cookiecutter.project_slug }}.common.serializers import ErrorResponseSerializer
 from {{ cookiecutter.project_slug }}.core.models import User,Task
 from {{ cookiecutter.project_slug }}.core.serializers import (
     UserSerializer,
     TaskSerializer,
     UserLoginSerializer,
-    ErrorResponseSerializer,
     UserRegistrationSerializer,
 )
 from {{ cookiecutter.project_slug }}.core.permissions import (

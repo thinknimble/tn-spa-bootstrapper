@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory
 from {{ cookiecutter.project_slug }}.core.models import User,Task
 from {{ cookiecutter.project_slug }}.core.global_vars import TASK_STATUS
 
-
+#WIP
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = User

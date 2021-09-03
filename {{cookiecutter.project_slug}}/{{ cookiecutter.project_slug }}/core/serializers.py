@@ -4,7 +4,33 @@ from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from {{ cookiecutter.project_slug }}.core.models import User,Task
+from {{ cookiecutter.project_slug }}.core.models import User, Task
+
+
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        exclude = (
+            "password",
+            "user_permissions",
+            "groups",
+        )
+        extra_kwargs = {
+            "is_removed": {"read_only": True},
+            "invited_by": {"read_only": True},
+            "is_superuser": {"read_only": True},
+            "is_staff": {"read_only": True},
+            "is_active": {"read_only": True},
+            "date_joined": {"read_only": True},
+            "last_login": {"read_only": True},
+            "created_by": {"read_only": True},
+            "is_owner": {"read_only": True},
+            "date_archived": {"read_only": True},
+        }
+
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -28,7 +54,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
         return response_data
 
 
-class UserRegistrationSerializer(WritableNestedModelSerializer):
+class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
@@ -48,4 +74,6 @@ class UserRegistrationSerializer(WritableNestedModelSerializer):
 class TaskSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Task
+
+
 

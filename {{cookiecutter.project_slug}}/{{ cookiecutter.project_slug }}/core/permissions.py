@@ -68,3 +68,19 @@ class UserViewSetPermissions(permissions.BasePermission):
         # other then that not authorized
         return False
 
+
+class TaskViewSetPermissions(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        if bool(request.user and request.user.is_authenticated):
+            return True
+        
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.user == obj.owner or (request.user.is_staff or request.user.is_superuser):
+            return True
+
+        # other then that not authorized
+        return False
+
