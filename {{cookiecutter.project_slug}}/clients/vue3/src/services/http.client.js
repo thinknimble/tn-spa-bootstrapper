@@ -10,11 +10,13 @@ class ApiService {
   static session;
   static init;
   constructor() {
-  
-        console.debug(`API Service for ${process.env.VUE_APP_BASE_API_URL ?process.env.VUE_APP_BASE_API_URL : 'http://localhost:8080'}`);
+        
+        let base_url = process.env.VUE_APP_BASE_API_URL ? process.env.VUE_APP_BASE_API_URL : `${window.location.protocol}//${window.location.hostname}`
+        
+        console.debug(`API Service for ${base_url}`);
 
         ApiService.session = axios.create({
-            baseURL: process.env.VUE_APP_BASE_API_URL ? process.env.VUE_APP_BASE_API_URL : 'http://localhost:8080',
+            baseURL: base_url,
             headers: {
                 'X-CSRFToken': readCookie('csrftoken'),
                 "Content-type": "application/json"

@@ -14,7 +14,6 @@
           <div class="flex">
             <div class="ml-3">
               <h3 class="text-lg font-medium text-green-800">👋🏻 Howdy {{ $store.state.auth.user.first_name }}!</h3>
-       
             </div>
           </div>
         </div>
@@ -49,30 +48,26 @@
         </div>
       </dl>
     </div>
-
   </main>
-
-
 </template>
 
 <script>
-
-import { PlusIcon } from '@heroicons/vue/outline'
-import { ref } from 'vue'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { CursorClickIcon, MailOpenIcon, UsersIcon, InformationCircleIcon, OfficeBuildingIcon,LinkIcon } from '@heroicons/vue/outline'
-import { ChevronRightIcon, DotsVerticalIcon, DuplicateIcon, PencilAltIcon, TrashIcon, UserAddIcon, ArrowSmDownIcon, ArrowSmUpIcon } from '@heroicons/vue/solid'
+import { PlusIcon } from "@heroicons/vue/outline";
+import { ref } from "vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { CursorClickIcon, MailOpenIcon, UsersIcon, InformationCircleIcon, OfficeBuildingIcon, LinkIcon } from "@heroicons/vue/outline";
+import { ChevronRightIcon, DotsVerticalIcon, DuplicateIcon, PencilAltIcon, TrashIcon, UserAddIcon, ArrowSmDownIcon, ArrowSmUpIcon } from "@heroicons/vue/solid";
 
 const stats = [
-  { id: 1, name: 'Total Contacts', stat: '120', icon: UsersIcon, change: '122', changeType: 'increase' },
-  { id: 2, name: 'Total Companies', stat: '60', icon: OfficeBuildingIcon, change: '5.4%', changeType: 'increase' },
-  { id: 3, name: 'Total Users', stat: '10', icon: UsersIcon, change: '3.2%', changeType: 'decrease' }
-]
-
+  { id: 1, name: "Total Contacts", stat: "120", icon: UsersIcon, change: "122", changeType: "increase" },
+  { id: 2, name: "Total Companies", stat: "60", icon: OfficeBuildingIcon, change: "5.4%", changeType: "increase" },
+  { id: 3, name: "Total Users", stat: "10", icon: UsersIcon, change: "3.2%", changeType: "decrease" },
+];
 
 export default {
   components: {
-    Menu,LinkIcon,
+    Menu,
+    LinkIcon,
     InformationCircleIcon,
     OfficeBuildingIcon,
     MenuButton,
@@ -91,32 +86,26 @@ export default {
 
     TrashIcon,
     UserAddIcon,
-    PlusIcon
+    PlusIcon,
   },
   setup() {
-    const sidebarOpen = ref(false)
+    const sidebarOpen = ref(false);
 
     return {
-
-      stats,services,
+      stats,
+      services,
       people,
       teams,
       companies,
       pinnedcompanies,
-      sidebarOpen
-    }
+      sidebarOpen,
+    };
   },
   data() {
-    return {
-    
-    }
+    return {};
   },
 
-  mounted() {
-
-  },
-  methods: {
-
-  }
-}
+  mounted() {},
+  methods: {},
+};
 </script>

@@ -9,7 +9,6 @@ import { ui, initialRemoteUIVariables } from "./ui.module";
 // Change this hash code in case you the data structure changed in server
 // to avoid  issues with logged in users
 const STORAGE_HASH = "hIbZMKFBuo";
-const ls = new SecureLS({ isCompression: false });
 const PRESISTED_PATHS = ["auth", "data", ...Object.keys(initialRemoteUIVariables).map((v) => "ui." + v)];
 
 let presStore = createPersistedState({
@@ -18,6 +17,8 @@ let presStore = createPersistedState({
 });
 
 if (process.env.NODE_ENV == "production") {
+  // extra layer of security | encrypting the store
+  const ls = new SecureLS({ encodingType: 'aes'});
   presStore = createPersistedState({
     key: STORAGE_HASH,
     paths: PRESISTED_PATHS,

@@ -1,4 +1,4 @@
-
+{% raw -%}
 <template>
   <div v-if="$store.state.auth.status.isLoggedIn" class="h-screen flex overflow-hidden bg-white">
     <!-- Static sidebar for desktop -->
@@ -7,7 +7,7 @@
         <div v-if="!$store.state.ui.isSideBarShrinked" class="h-screen absolute flex lg:flex-shrink-0">
           <div class="flex flex-col w-64 border-r border-gray-200 pt-3 pb-0 bg-gray-100">
             <div class="flex items-center flex-shrink-0">
-              <div @click="$store.dispatch('ui/setUIValue', { name: 'isSideBarShrinked', value: true })" class="text-center w-full text-3xl font-semibold text-blue">{{ cookiecutter.project_name }}</div>
+              <div @click="$store.dispatch('ui/setUIValue', { name: 'isSideBarShrinked', value: true })" class="text-center w-full text-3xl font-semibold text-blue">{% endraw -%}{{ cookiecutter.project_name }}{% raw -%}</div>
             </div>
             <!-- Sidebar component, swap this element with another sidebar if you like -->
             <div class="h-0 flex-1 flex flex-col overflow-y-auto">
@@ -145,25 +145,25 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { HomeIcon, ViewListIcon } from '@heroicons/vue/outline'
-import { SearchIcon, SelectorIcon, T } from '@heroicons/vue/solid'
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
+import { ref } from "vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { HomeIcon, ViewListIcon } from "@heroicons/vue/outline";
+import { SearchIcon, SelectorIcon, T } from "@heroicons/vue/solid";
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 const navigation = [
   {
-    name: 'Home',
-    href: '/',
+    name: "Home",
+    href: "/",
     icon: HomeIcon,
-    current: true
+    current: true,
   },
   {
-    name: 'Tasks',
-    href: '/tasks',
+    name: "Tasks",
+    href: "/tasks",
     icon: ViewListIcon,
-    current: false
-  }
-]
+    current: false,
+  },
+];
 
 export default {
   components: {
@@ -175,88 +175,87 @@ export default {
     MenuItem,
     MenuItems,
     SearchIcon,
-    SelectorIcon
+    SelectorIcon,
   },
   setup() {
-    const sidebarOpen = ref(false)
+    const sidebarOpen = ref(false);
 
     return {
       navigation,
-      sidebarOpen
-    }
+      sidebarOpen,
+    };
   },
   data() {
     return {
       windowWidth: window.innerHeight,
-      side_bar_search_text: '',
-      filtered_navigation: []
-    }
+      side_bar_search_text: "",
+      filtered_navigation: [],
+    };
   },
   watch: {
     windowWidth(newWidth, oldWidth) {
-      console.log(oldWidth)
       if (newWidth < 768 != this.$store.state.ui.isSideBarShrinked) {
-        this.$store.dispatch('ui/setUIValue', { name: 'isSideBarShrinked', value: newWidth < 768 })
+        this.$store.dispatch("ui/setUIValue", { name: "isSideBarShrinked", value: newWidth < 768 });
       }
     },
     side_bar_search_text() {
-      this.$store.dispatch('ui/setSideBarSearchText', this.side_bar_search_text)
-      this.searchBarSearchTextChanged()
-    }
+      this.$store.dispatch("ui/setSideBarSearchText", this.side_bar_search_text);
+      this.searchBarSearchTextChanged();
+    },
   },
   created() {
-    this.filtered_navigation = ref(this.navigation)
-    this.side_bar_search_text = this.$store.state.ui.sideBarSearchText
+    this.filtered_navigation = ref(this.navigation);
+    this.side_bar_search_text = this.$store.state.ui.sideBarSearchText;
   },
 
   mounted() {
     this.$nextTick(() => {
-      window.addEventListener('resize', this.onResize)
-    })
+      window.addEventListener("resize", this.onResize);
+    });
   },
 
   beforeUnmount() {
-    window.removeEventListener('resize', this.onResize)
+    window.removeEventListener("resize", this.onResize);
   },
 
   methods: {
     onResize() {
-      this.windowWidth = window.innerWidth
+      this.windowWidth = window.innerWidth;
     },
     searchBarSearchTextChanged() {
-      if (this.$store.state.ui.sideBarSearchText == '') {
-        this.filtered_navigation = this.navigation
+      if (this.$store.state.ui.sideBarSearchText == "") {
+        this.filtered_navigation = this.navigation;
       } else {
-        let new_list = []
+        let new_list = [];
         this.navigation.filter((menu) => {
           // eslint-disable-next-line no-prototype-builtins
-          if (!menu.hasOwnProperty('children')) {
+          if (!menu.hasOwnProperty("children")) {
             if (menu.name.toLowerCase().search(this.$store.state.ui.sideBarSearchText.toLowerCase()) != -1) {
-              new_list.push(menu)
+              new_list.push(menu);
             }
           } else {
-            new_list = new_list.concat(menu.children.filter((submenu) => submenu.name.toLowerCase().search(this.$store.state.ui.sideBarSearchText.toLowerCase()) != -1))
+            new_list = new_list.concat(menu.children.filter((submenu) => submenu.name.toLowerCase().search(this.$store.state.ui.sideBarSearchText.toLowerCase()) != -1));
           }
-        })
-        this.filtered_navigation = new_list.length > 0 ? new_list : this.navigation
+        });
+        this.filtered_navigation = new_list.length > 0 ? new_list : this.navigation;
       }
     },
     handleLogout() {
-      this.$store.dispatch('auth/logout').then(() => {
-        this.$router.push('/login')
-      })
+      this.$store.dispatch("auth/logout").then(() => {
+        this.$router.push("/login");
+      });
     },
     changeLeftSideTab(item) {
       this.navigation = this.navigation.map((i) => {
-        i.current = false
-        return i
-      })
-      item.current = true
-      this.$store.dispatch('ui/setCurrentSelectedTab', item.name)
-      if (item.href != null) this.$router.push(item.href)
-    }
-  }
-}
+        i.current = false;
+        return i;
+      });
+      item.current = true;
+      this.$store.dispatch("ui/setCurrentSelectedTab", item.name);
+      if (item.href != null) this.$router.push(item.href);
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -281,3 +280,4 @@ export default {
   transform: scale(0.9);
 }
 </style>
+{% endraw -%}

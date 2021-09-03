@@ -15,15 +15,17 @@ from rest_framework.response import Response
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from {{ cookiecutter.project_slug }}.core.models import  User
+from {{ cookiecutter.project_slug }}.core.models import User,Task
 from {{ cookiecutter.project_slug }}.core.serializers import (
-    ErrorResponseSerializer,
     UserSerializer,
+    TaskSerializer,
     UserLoginSerializer,
+    ErrorResponseSerializer,
     UserRegistrationSerializer,
 )
 from {{ cookiecutter.project_slug }}.core.permissions import (
     UserViewSetPermissions,
+    TaskViewSetPermissions,
 )
 
 
@@ -49,7 +51,7 @@ class GenericViewSetNoDestroy(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
-    # we performe soft delete for all the models
+    # We perform soft delete for all the models 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         obj.is_removed = True
@@ -232,3 +234,9 @@ class UserViewSet(GenericViewSetNoDestroy):
         return Response({"payment_methods": formatted_data}, status=status.HTTP_200_OK)
 
 {%- endif %}
+
+
+class TaskViewSet(GenericViewSetNoDestroy):
+    queryset = Task.objects.filter(is_removed=False)
+    serializer_class = TaskSerializer
+    permission_classes = (TaskViewSetPermissions,)

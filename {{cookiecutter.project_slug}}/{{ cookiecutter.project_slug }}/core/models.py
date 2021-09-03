@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.cache import cache
+from {{ cookiecutter.project_slug }}.core.global_vars import TASK_STATUS
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 
@@ -74,4 +75,10 @@ class User(AbstractUser, AbstractBaseModel):
 
     class Meta:
         ordering = ["email"]
+
+
+class Task(AbstractBaseModel):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True,null=True)
+    status = models.CharField(max_length=150,choices=TASK_STATUS)
 

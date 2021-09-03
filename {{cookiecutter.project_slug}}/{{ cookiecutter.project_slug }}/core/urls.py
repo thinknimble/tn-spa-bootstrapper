@@ -18,9 +18,10 @@ if settings.DEBUG:
 
 # /users routes and nested routes
 router.register("users", core_views.UserViewSet)
-tasks_router = routers.NestedSimpleRouter(router, r'users', lookup='users')
+# tasks_router = routers.NestedSimpleRouter(router, r'users', lookup='users')
 # Ex:
 # tasks_router.register(r'tasks', core_views.TaskViewSet)
+router.register("tasks", core_views.TaskViewSet)
 
 
 
@@ -36,7 +37,7 @@ urlpatterns = [
     ),
     path(r"api/password/reset/", rest_auth_views.PasswordResetView.as_view()),
     path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
-    path(r"", core_views.index),
+    
 ]
 
 {%- if cookiecutter.use_swagger == 'y' %}
@@ -62,3 +63,5 @@ urlpatterns = urlpatterns + [
 if settings.DEBUG:  # pragma: no cover
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns+=[re_path(r".*", core_views.index),]
