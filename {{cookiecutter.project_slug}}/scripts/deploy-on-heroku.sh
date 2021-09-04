@@ -29,7 +29,4 @@ heroku git:remote --app $APP_NAME
 git add . 
 git commit -m "Initial commit"
 git push heroku master
-# Runing the migrations after the push since sometimes heroku Procfile release won't work!
-heroku run python manage.py makemigrations
-heroku run python manage.py migrate
 heroku open --app $APP_NAME
