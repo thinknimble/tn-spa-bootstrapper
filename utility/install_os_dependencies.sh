@@ -13,19 +13,25 @@ if [ ! -r "$OS_REQUIREMENTS_FILENAME" ]; then
 		You can see one of the files listed below to help search the equivalent package in your system:
 		$(find ./ -name "requirements-*.apt" -printf "  - %f\n")
 	EOF
-    exit 1;
+    exit 1
 fi
 
+function is_mac() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Handle call with wrong command
-function wrong_command()
-{
+function wrong_command() {
     echo "${0##*/} - unknown command: '${1}'" >&2
     usage_message
 }
 
 # Print help / script usage
-function usage_message()
-{
+function usage_message() {
     cat <<-EOF
 		Usage: $WORK_DIR/${0##*/} <command>
 		Available commands are:
@@ -42,22 +48,19 @@ function usage_message()
 }
 
 # Read the requirements.apt file, and remove comments and blank lines
-function list_packages(){
-    grep -v "#" "${OS_REQUIREMENTS_FILENAME}" | grep -v "^$";
+function list_packages() {
+    grep -v "#" "${OS_REQUIREMENTS_FILENAME}" | grep -v "^$"
 }
 
-function install_packages()
-{
-    list_packages | xargs apt-get --no-upgrade install -y;
+function install_packages() {
+    list_packages | xargs apt-get --no-upgrade install -y
 }
 
-function upgrade_packages()
-{
-    list_packages | xargs apt-get install -y;
+function upgrade_packages() {
+    list_packages | xargs apt-get install -y
 }
 
-function install_or_upgrade()
-{
+function install_or_upgrade() {
     P=${1}
     PARAN=${P:-"install"}
 
@@ -74,9 +77,9 @@ function install_or_upgrade()
 
         # Install the basic compilation dependencies and other required libraries of this project
         if [ "$PARAN" == "install" ]; then
-            install_packages;
+            install_packages
         else
-            upgrade_packages;
+            upgrade_packages
         fi
 
         # cleaning downloaded packages from apt-get cache
@@ -88,9 +91,9 @@ function install_or_upgrade()
 
 # Handle command argument
 case "$1" in
-    install) install_or_upgrade;;
-    upgrade) install_or_upgrade "upgrade";;
-    list) list_packages;;
-    help|"") usage_message;;
-    *) wrong_command "$1";;
+install) install_or_upgrade ;;
+upgrade) install_or_upgrade "upgrade" ;;
+list) list_packages ;;
+help | "") usage_message ;;
+*) wrong_command "$1" ;;
 esac
