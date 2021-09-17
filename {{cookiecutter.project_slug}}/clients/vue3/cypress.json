@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:8080/login",
+  "baseUrl": "http://localhost:8080/",
   "env": {
     "invalidEmail": "hhghghh",
     "invalidPassword": "26h",
