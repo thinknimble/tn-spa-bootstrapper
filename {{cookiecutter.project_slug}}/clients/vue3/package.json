@@ -1,13 +1,15 @@
 {
-  "name": "{{ cookiecutter.project_slug }}",
-  "version": "{{ cookiecutter.version }}",
-  "description": "{{ cookiecutter.project_name }} Client Application",
+  "name": "Test",
+  "version": "1.0.0",
+  "description": "QA Client Application",
   "private": true,
-
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "ci": "vue-cli-service test:e2e --headless",
     "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e",
+    "cypress": "cypress open",
     "lint": "vue-cli-service lint",
     "heroku-postbuild": "vue-cli-service build"
   },
@@ -16,8 +18,10 @@
     "@heroicons/vue": "^1.0.1",
     "@tailwindcss/forms": "^0.3.3",
     "@voerro/vue-tagsinput": "^2.7.1",
+    "@vue/cli-plugin-e2e-cypress": "^4.5.13",
     "animate.css": "^4.1.1",
     "axios": "^0.21.1",
+    "cypress": "^8.4.0",
     "es6-promise": "^4.2.8",
     "mitt": "^3.0.0",
     "moment": "^2.29.1",

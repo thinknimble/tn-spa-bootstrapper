@@ -1,0 +1,9 @@
+{
+  "baseUrl": "http://localhost:8080/login",
+  "env": {
+    "invalidEmail": "hhghghh",
+    "invalidPassword": "26h",
+    "loginEmail": "melissa@thinknimble.com",
+    "validPassword": "adminadmin"
+  }
+}

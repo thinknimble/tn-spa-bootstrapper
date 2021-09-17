@@ -2,7 +2,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div className="sm:mx-auto sm:w-full sm:max-w-md">
-      <span @click="$router.push('/')" className="w-full flex justify-center bg-clip-text bg-gradient-to-br from-blue to-teal-800 text-5xl sm:text-md font-bold text-transparent"> {% endraw -%} {{ cookiecutter.project_name }} {% raw -%}</span>
+      <span @click="$router.push('/')" className="w-full flex justify-center bg-clip-text bg-gradient-to-br from-blue to-teal-800 text-5xl sm:text-md font-bold text-transparent"> QA Test </span>
       <h2 class="mt-6 text-center text-3xl font-semibold text-gray-600">Sign in to your account</h2>
     </div>
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
@@ -54,7 +54,7 @@
                       <ExclamationIcon class="h-6 w-6 text-red-600" aria-hidden="true" />
                     </div>
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <DialogTitle as="h3" class="text-lg leading-6 font-medium text-gray-900"> Invalid credentials </DialogTitle>
+                      <DialogTitle as="h3" class="test-invalid-credentials text-lg leading-6 font-medium text-gray-900"> Invalid credentials </DialogTitle>
                       <div class="mt-2">
                         <p class="text-sm text-gray-500">Please make sure you entered valid credentials</p>
                       </div>
@@ -100,6 +100,8 @@ export default {
       email: Yup.string().email().required(),
       password: Yup.string().min(8).required()
     })
+
+    console.log('TESTING', schema)
 
     return {
       schema,
