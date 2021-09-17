@@ -46,6 +46,9 @@ describe('Tests authentication test cases', () => {
 
   })
   context('Submit invalid login credentials', () => {
+    beforeEach(() => {
+      cy.server()
+    })
     it('Enter invalid login credentials', () => {
 
       selector.elementSelector('#email', { identifier: 'have.id', val: 'email' }).type(Cypress.env('loginEmail')).should('not.have.attr', 'aria-invalid', 'email must be a valid email')
@@ -53,7 +56,11 @@ describe('Tests authentication test cases', () => {
       selector.elementSelector('#password', {identifier: 'have.id', val: 'password'}).type(Cypress.env('validPassword')).should('not.have.attr', 'aria-invalid', 'password must be at least 8 characters')
 
       selector.elementSelector('button', {identifier: 'have.attr', val: 'type', action: 'submit'}).click()
-
+      // cy.route('POST', '/api/todos', {
+      //   id: 1,
+      //   email: 'melissa@thinknimble.com',
+      //   token: '27bsdu272'
+      // }) //specify the request type
       selector.elementSelector('.test-invalid-credentials').should('be.visible')
     });
 

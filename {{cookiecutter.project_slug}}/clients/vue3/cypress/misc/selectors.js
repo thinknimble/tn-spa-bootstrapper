@@ -1,8 +1,5 @@
 /// <reference types="cypress"/>
 
-import { should } from "chai"
-
-
 
 export const elementSelector = (tag, specifications) => {
   if (specifications === undefined) {
