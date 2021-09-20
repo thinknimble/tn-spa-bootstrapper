@@ -19,7 +19,6 @@
           <div>
             <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-md font-medium rounded-md text-white bg-blue hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                <!-- Heroicon name: solid/lock-closed -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>

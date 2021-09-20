@@ -7,7 +7,9 @@ class AuthService {
       password: user.password,
     });
   }
-
+  async register(data) {
+    return axios.post("/api/users/",data);
+  }
   async logout() {
     return axios.post("/api/logout/", {});
   }

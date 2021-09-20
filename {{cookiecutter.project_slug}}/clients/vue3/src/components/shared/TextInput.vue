@@ -1,3 +1,4 @@
+{% raw -%}
 <template>
   <div :class="['mb-6', classes]">
     <label v-if="showLabel" class="block text-md font-medium text-gray-700" :for="name">{{ label }}</label>
@@ -81,3 +82,4 @@ export default {
   }
 }
 </script>
+{% endraw -%}

@@ -1,4 +1,4 @@
-from {{ cookiecutter.project_slug }}.core.serializers import ErrorResponseSerializer
+from {{ cookiecutter.project_slug }}.common.serializers import ErrorResponseSerializer
 
 from storages.backends.s3boto3 import S3Boto3Storage
 from rest_framework.views import exception_handler

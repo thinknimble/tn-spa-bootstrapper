@@ -1,3 +1,4 @@
+{% raw -%}
 <template>
   <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none">
     <!-- Page title & actions -->
@@ -52,11 +53,7 @@
 </template>
 
 <script>
-import { PlusIcon } from "@heroicons/vue/outline";
-import { ref } from "vue";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { CursorClickIcon, MailOpenIcon, UsersIcon, InformationCircleIcon, OfficeBuildingIcon, LinkIcon } from "@heroicons/vue/outline";
-import { ChevronRightIcon, DotsVerticalIcon, DuplicateIcon, PencilAltIcon, TrashIcon, UserAddIcon, ArrowSmDownIcon, ArrowSmUpIcon } from "@heroicons/vue/solid";
+import { UsersIcon, OfficeBuildingIcon } from "@heroicons/vue/outline";
 
 const stats = [
   { id: 1, name: "Total Contacts", stat: "120", icon: UsersIcon, change: "122", changeType: "increase" },
@@ -66,46 +63,14 @@ const stats = [
 
 export default {
   components: {
-    Menu,
-    LinkIcon,
-    InformationCircleIcon,
-    OfficeBuildingIcon,
-    MenuButton,
-    MenuItem,
-    MenuItems,
-    ArrowSmDownIcon,
-    ArrowSmUpIcon,
-    CursorClickIcon,
-    MailOpenIcon,
     UsersIcon,
-    ChevronRightIcon,
-    DotsVerticalIcon,
-    DuplicateIcon,
-
-    PencilAltIcon,
-
-    TrashIcon,
-    UserAddIcon,
-    PlusIcon,
+    OfficeBuildingIcon,
   },
   setup() {
-    const sidebarOpen = ref(false);
-
     return {
       stats,
-      services,
-      people,
-      teams,
-      companies,
-      pinnedcompanies,
-      sidebarOpen,
     };
-  },
-  data() {
-    return {};
-  },
-
-  mounted() {},
-  methods: {},
+  }
 };
 </script>
+{% endraw -%}

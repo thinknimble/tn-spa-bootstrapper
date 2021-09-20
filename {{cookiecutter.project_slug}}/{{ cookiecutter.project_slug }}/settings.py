@@ -632,7 +632,7 @@ CORS_ALLOWED_ORIGINS = [
     {% if cookiecutter.client_app.lower() != 'none' %}
     "http://localhost:8089",
     {% endif %}
-    "http://localhost:8080",
+    f"http://{CURRENT_DOMAIN}:{CURRENT_PORT}",
     "https://{{ cookiecutter.project_slug }}.com",
     "https://{{ cookiecutter.project_slug }}.herokuapp.com",
 ]

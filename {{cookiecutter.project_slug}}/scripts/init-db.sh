@@ -13,7 +13,8 @@
 
 # DB Configuration Variables
 db_user='{{cookiecutter.project_slug}}'
-db_pass='F:8<D&Sbl?F[v;t`WE@!6=Bx*|LOQlAmmsHQ~h|QX1X;YwL8YY'
+# this password will be replaced during initialization 
+db_pass='!!!SET POSTGRES_PASSWORD!!!'
 db_name='{{cookiecutter.project_slug}}_db'
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -73,5 +74,5 @@ fi
 echo $sudo_p_user
 
 sudo -u $sudo_p_user createdb $db_name
-psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
-psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
+sudo -u $sudo_p_user psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
+sudo -u $sudo_p_user psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"

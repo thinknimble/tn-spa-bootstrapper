@@ -1,4 +1,4 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
+{% raw -%}
 <template>
   <main class="flex-1 relative overflow-y-auto focus:outline-none">
     <div class="border-b border-gray-200 px-4 py-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8">
@@ -24,7 +24,7 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody v-if="tasks.length>0" class="bg-white divide-y divide-gray-200">
                   <tr v-for="task in tasks" :key="task.id">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium text-gray-900">
@@ -68,3 +68,4 @@ export default {
   },
 }
 </script>
+{% endraw -%}
