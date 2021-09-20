@@ -95,7 +95,7 @@ export default {
   setup() {
     const show_registration_error = ref(false)
     const registration_error = ref("")
-    Yup.addMethod(Yup.string, 'equalTo', (ref, msg) => {
+    Yup.addMethod(Yup.string, 'equalTo', function(ref, msg) {
       return this.test({
         name: 'equalTo',
         exclusive: false,

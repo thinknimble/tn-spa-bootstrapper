@@ -16,6 +16,14 @@ if [ ! -r "$OS_REQUIREMENTS_FILENAME" ]; then
     exit 1
 fi
 
+function is_mac() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Handle call with wrong command
 function wrong_command() {
     echo "${0##*/} - unknown command: '${1}'" >&2

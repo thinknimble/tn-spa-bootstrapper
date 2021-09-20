@@ -88,7 +88,7 @@ export default {
   setup() {
     const expired_link_error = ref(false)
 
-    Yup.addMethod(Yup.string, 'equalTo', (ref, msg) => {
+    Yup.addMethod(Yup.string, 'equalTo', function(ref, msg)  {
       return this.test({
         name: 'equalTo',
         exclusive: false,

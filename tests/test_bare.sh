@@ -22,9 +22,7 @@ cookiecutter ../../ --no-input --overwrite-if-exists use_docker=n $@
 cd my_awesome_project
 
 # Install OS deps
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    sudo utility/install_os_dependencies.sh install
-fi
+sudo utility/install_os_dependencies.sh install
 
 # Install Python deps
 pipenv install
