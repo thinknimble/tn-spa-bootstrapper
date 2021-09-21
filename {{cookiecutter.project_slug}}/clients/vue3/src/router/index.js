@@ -25,7 +25,7 @@ const routes = [
         path: '/tasks',
         name: 'Tasks',
         component: Tasks
-      }, 
+      },
     ]
   },
   {
@@ -70,7 +70,7 @@ router.beforeEach((to, from, next) => {
   }else {
 
       next()
-    
+
 
   }
 })
