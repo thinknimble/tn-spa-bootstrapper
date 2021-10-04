@@ -27,11 +27,20 @@ export default {
     }
   },
   async created() {
+    try{
     const res = await User.api.login({ email: 'admin@admin.com', password: 'testing123' })
     console.log(res.data.token)
-    await this.users.refresh()
+    /**
+     * reactive values (aka items from the Options Api (data,computed, props) are returned in a wrapped proxy object this was always done previously but was unwrapped in vue2)
+     * unwrap is a quick function to return a pure object
+     */
     console.log(unwrap(this.users))
     await this.users.refresh()
+    }catch(e){
+      console.log(e)
+    }
+
+ 
   },
 }
 </script>
