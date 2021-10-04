@@ -3,7 +3,7 @@
 # Deploy {{cookiecutter.project_name}} To heroku
 # NOTE: This script is intended to deploy the app for the first time to heroku
 # if you run it again make and the app is aleady created on heroku make sure to comment lines 6:29 
-SUFF=-{{random_ascii_string(3).lower()}}
+SUFF=-staging ##-{{random_ascii_string(3).lower()}}
 APP_NAME={{cookiecutter.project_slug|replace(' ', '-')|replace('_', '-')|replace('.', '-')|trim()}}$SUFF
 heroku login --interactive
 heroku create $APP_NAME --buildpack heroku/python

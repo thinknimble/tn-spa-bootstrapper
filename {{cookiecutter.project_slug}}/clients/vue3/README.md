@@ -1,7 +1,6 @@
-# {{ cookiecutter.project_name }}
+# vue
 
-Create a file .env from the .env.example and change VUE_APP_BASE_API_URL to your local api server 
-## {{ cookiecutter.project_name }} setup
+## Project setup
 ```
 npm install
 ```
@@ -19,6 +18,11 @@ npm run build
 ### Run your unit tests
 ```
 npm run test:unit
+```
+
+### Run your end-to-end tests
+```
+npm run test:e2e
 ```
 
 ### Lints and fixes files

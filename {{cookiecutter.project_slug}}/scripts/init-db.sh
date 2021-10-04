@@ -70,7 +70,6 @@ sudo_p_user='postgres'
 if [[ "$OSTYPE" == "darwin"* ]]; then
     sudo_p_user=$(whoami)
 fi
-echo $sudo_p_user
 
 sudo -u $sudo_p_user createdb $db_name
 psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
