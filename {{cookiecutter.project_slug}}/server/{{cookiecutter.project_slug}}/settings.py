@@ -230,7 +230,7 @@ REST_FRAMEWORK = {
         "1.0",
     ],
     "DEFAULT_VERSION": "1.0",
-    "EXCEPTION_HANDLER": "{{ cookiecutter.project_slug }}.core.handlers.custom_exception_handler",
+    "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
 }
 if DEBUG:
     # for testing
