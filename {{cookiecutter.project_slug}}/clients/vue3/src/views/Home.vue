@@ -27,6 +27,7 @@ export default {
     }
   },
   async created() {
+    // Test code to be removed after testing
     try{
     const res = await User.api.login({ email: 'admin@admin.com', password: 'testing123' })
     console.log(res.data.token)
