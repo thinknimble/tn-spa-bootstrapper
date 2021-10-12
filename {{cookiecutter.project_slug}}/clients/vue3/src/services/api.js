@@ -34,6 +34,7 @@ export function apiErrorHandler({
     // eslint-disable-next-line no-console
     console.log(`${apiName} Error:`, error)
 
+    let message = '<h2>Error...</h2>'
     // Show error to user
     if (response.status >= 400 && response.status < 500) {
       // Handle 4xx errors (probably bad user input)
