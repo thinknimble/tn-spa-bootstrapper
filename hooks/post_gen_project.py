@@ -184,11 +184,8 @@ def set_postgres_password(file_path, value=None):
 
 
 def remove_github_folder():
-    file_names = [
-        os.path.join(".github"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
+    shutil.rmtree(os.path.join(".github"))
+
 def remove_asgi_file():
     file_names = [
         os.path.join("{{ cookiecutter.project_slug }}", "asgi.py"),
