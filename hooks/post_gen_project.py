@@ -281,6 +281,7 @@ def main():
     shellscript.wait()
     shellscript.stdin.close()
     
+    
     print_thankyou()
     print("\n"+SUCCESS + "Awesome! Project initialized, press Enter to continue..." + END)
     input()
@@ -322,9 +323,15 @@ def main():
             print(HINT + "$ ./runserver.sh" + END)
     
     print_thankyou()
+    print(END)
+    print(INFO + "For more information about {{ cookiecutter.project_slug }} run the following cmd to serve the docs" + END)
+    print(HINT + "$ python3 -m http.server 4000 -d docs/_build/html" + END)
+    print(END)
+    print(END)
     print("\n"+SUCCESS + "You did it champ!, We have something to say though!" + HINT)
     subprocess.call(["jotquote"])
     print(END)
+
 
 if __name__ == "__main__":
     main()
