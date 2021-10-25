@@ -26,6 +26,6 @@ beat: REMAP_SIGTERM=SIGQUIT celery beat --app={{ cookiecutter.project_slug }}.ce
 #   3. Up-to-date build numbers shown in app (ideally auto-generated at build-and-deploy time)
 #
 # Comment the line below to disable migrations automatically after a Heroku push.
-release: python manage.py server/makemigrations --noinput && python server/manage.py migrate --noinput
+release: python server/manage.py makemigrations --noinput && python server/manage.py migrate --noinput
 
 
