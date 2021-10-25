@@ -40,12 +40,12 @@
   "use_rollbar": "y",
   "use_sentry": "n",
   "use_swagger": "y",
-  "use_stripe": "n",
   "ci_tool": [
     "None"
   ],
   "client_app": [
-    "Vue3"
+    "Vue3",
+    "None"
   ],
   "staging_url": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-staging.herokuapp.com"
 }
