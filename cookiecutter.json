@@ -7,11 +7,13 @@
   "year": "{% now 'utc', '%Y' %}",
   "email": "{{ cookiecutter.author_name.lower()|replace(' ', '-') }}@example.com",
   "version": "1.0.0",
-  "_extensions": ["jinja2_time.TimeExtension","cookiecutter.extensions.RandomStringExtension"],
+  "_extensions": [
+    "jinja2_time.TimeExtension",
+    "cookiecutter.extensions.RandomStringExtension"
+  ],
   "_copy_without_render": [
     "clients/vue3/src/views/dashboard",
-    "clients/vue3/src/components",
-    "clients/vue2-ts/src"
+    "clients/vue3/src/components"
   ],
   "timezone": "UTC",
   "cloud_provider": [
@@ -22,17 +24,16 @@
   "mail_service": [
     "Mailgun",
     "Amazon SES",
-    "Mailjet",
-    "Mandrill",
-    "Postmark",
     "Sendgrid",
-    "SendinBlue",
-    "SparkPost",
     "Custom SMTP"
   ],
   "use_heroku": "y",
   "use_mailhog": "y",
-  "async": ["Async","Django Channels","None"],
+  "async": [
+    "Async",
+    "Django Channels",
+    "None"
+  ],
   "use_redis": "y",
   "use_whitenoise": "y",
   "use_celery": "y",
@@ -41,8 +42,10 @@
   "use_swagger": "y",
   "use_stripe": "n",
   "ci_tool": [
-    "Github Actions",
     "None"
   ],
-  "client_app": ["Vue3","Vue2-ts","None"]
+  "client_app": [
+    "Vue3"
+  ],
+  "staging_url": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-staging.herokuapp.com"
 }
