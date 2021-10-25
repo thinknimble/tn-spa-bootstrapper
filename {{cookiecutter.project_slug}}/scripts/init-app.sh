@@ -9,6 +9,6 @@
 npm install --prefix client && npm run build --prefix client
 {%- endif %}
 pipenv install
-pipenv run python manage.py makemigrations && pipenv run python manage.py migrate 
+pipenv run python server/manage.py makemigrations && pipenv run python server/manage.py migrate 
 pipenv shell "server/runserver.sh"
 
