@@ -3,7 +3,7 @@
 # Deploy {{cookiecutter.project_name}} To heroku
 # NOTE: This script is intended to deploy the app for the first time to heroku
 # if you run it again make and the app is aleady created on heroku make sure to comment lines 6:29 
-APP_NAME={{heroku_staging_app_name|trim()}}
+APP_NAME={{ cookiecutter.heroku_staging_app_name }}
 heroku login --interactive
 heroku create $APP_NAME --buildpack heroku/python
 heroku addons:create heroku-postgresql:hobby-dev --app $APP_NAME

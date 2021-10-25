@@ -28,7 +28,6 @@
     "Custom SMTP"
   ],
   "use_heroku": "y",
-  "use_mailhog": "y",
   "async": [
     "Async",
     "Django Channels",
@@ -44,8 +43,8 @@
     "Vue3",
     "None"
   ],
-  "heroku_staging_app_name": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-staging",
-  "heroku_production_app_name": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-production",
+  "heroku_staging_app_name": "{{ cookiecutter.project_slug.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-staging",
+  "heroku_production_app_name": "{{ cookiecutter.project_slug.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-production",
   "staging_url": "{{ cookiecutter.heroku_staging_app_name.lower()|trim() }}.herokuapp.com",
   "production_url": "{{ cookiecutter.heroku_production_app_name.lower()|trim() }}.herokuapp.com"
 }

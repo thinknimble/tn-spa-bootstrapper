@@ -13,7 +13,7 @@
 
 # DB Configuration Variables
 db_user='{{cookiecutter.project_slug}}'
-db_pass='!!!SET POSTGRES_PASSWORD!!!'
+db_pass='!!!POSTGRES_PASSWORD!!!'
 db_name='{{cookiecutter.project_slug}}_db'
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then

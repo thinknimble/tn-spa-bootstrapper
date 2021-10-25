@@ -34,8 +34,8 @@ First things first.
 
 #. Create a new PostgreSQL database using createdb_ or run the file init-db.sh in case you are on ubuntu: ::
 
-    $ createdb {{cookiecutter.project_slug}}_db -U {{cookiecutter.project_slug}} --password !!!SET POSTGRES_PASSWORD!!! 
-    or 
+    $ createdb {{cookiecutter.project_slug}}_db -U {{cookiecutter.project_slug}} --password !!!POSTGRES_PASSWORD!!! 
+    or ::
     $ ./scripts/init-db.sh
     
    .. note::
@@ -48,63 +48,36 @@ First things first.
 
 #. Make and Apply migrations: ::
 
-    $ python manage.py makemigrations && python manage.py migrate
+    $ python server/manage.py makemigrations && python server/manage.py migrate
 
 #. If you're running synchronously, see the application being served through Django development server: ::
 
-    $ python manage.py runserver localhost:8080
+    $ python server/manage.py runserver localhost:8080
+    or use gunicorn::
+    $ gunicorn -b $CURRENT_DOMAIN:$CURRENT_PORT --chdir=server {{ cookiecutter.project_slug }}.wsgi --log-file -
 
 or if you're running asynchronously: ::
 
-    $ uvicorn config.asgi:application --host localhost --reload
+    $ gunicorn --chdir=server {{ cookiecutter.project_slug }}.asgi:application -k uvicorn.workers.UvicornWorker
 
 
-And in the case you're running Django Channels: ::
+or in the case you're running Django Channels: ::
 
-    $ daphne -b localhost -p 8080 {{ cookiecutter.project_slug }}.asgi:application
+    $ daphne -b $CURRENT_DOMAIN -p $CURRENT_PORT server.{{ cookiecutter.project_slug }}.asgi:application
 
+note :: You can run all together via ::
+    $ server/runserver.sh
+ 
+Email Backend
+----------------------------------
 
-Setup Email Backend
-{% if cookiecutter.use_mailhog.lower() == 'y' %}
--------------------
-
-MailHog
-~~~~~~~
-
-.. note:: In order for the project to support MailHog_ it must have been bootstrapped with ``use_mailhog`` set to ``y``.
-
-MailHog is used to receive emails during development, it is written in Go and has no external dependencies.
-
-For instance, one of the packages we depend upon, ``django-allauth`` sends verification emails to new users signing up as well as to the existing ones who have not yet verified themselves.
-
-#. `Download the latest MailHog release`_ for your OS.
-
-#. Rename the build to ``MailHog``.
-
-#. Copy the file to the project root.
-
-#. Make it executable: ::
-
-    $ chmod +x MailHog
-
-#. Spin up another terminal window and start it there: ::
-
-    ./MailHog
-
-#. Check out `<http://127.0.0.1:8025/>`_ to see how it goes.
-
-Now you have your own mail server running locally, ready to receive whatever you send it.
-
-.. _`Download the latest MailHog release`: https://github.com/mailhog/MailHog
-
-{% endif %}
 
 Console
 ~~~~~~~
 
-.. note:: If you have generated your project with ``use_mailhog`` set to ``n`` this will be a default setup.
+.. note:: In development emails are dellivered over console 
 
-Alternatively, deliver emails over console via ``EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'``.
+``EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'``.
 
 In production, we have Mailgun_ configured to have your back!
 
@@ -118,13 +91,13 @@ Celery
 If the project is configured to use Celery as a task scheduler then by default tasks are set to run on the main thread
 when developing locally. If you have the appropriate setup on your local machine then set the following
 
-in ``config/settings/local.py``::
+in ``.env``::
 
     CELERY_TASK_ALWAYS_EAGER = False
     
 To run Celery locally, make sure redis-server is installed (instructions are available at https://redis.io/topics/quickstart ) ,run the server in one terminal with redis-server, and then start celery in another terminal with the following command::
     
-    celery -A config.celery_app worker --loglevel=info
+    celery -A {{cookiecutter.project_slug}}.celery_app worker --loglevel=info --workdir=server
 
 {% endif %}
 
@@ -145,14 +118,13 @@ Client application
 - The client app will now be created you just need to run ``manage.py runserver localhost:8080`` and open the browser
 
 - In case you just need to run the client app in hot-reloading mode::
-{% if cookiecutter.client_app.lower() == 'react' %}
-    $ npm run dev
-{% else %}
+
     $ npm run serve
-{% endif %}
 
 .. note:: If you made any changes to the client app, you have to rebuild it again in order for it to loaded::
+
     $ npm run build
+
 {% endif %}
 
 

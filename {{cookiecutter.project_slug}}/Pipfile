@@ -48,9 +48,6 @@ drf-yasg = "==1.20.0"
 {%- endif %}
 django-multiselectfield = "==0.1.12"
 drf-writable-nested = "==0.6.3"
-{%- if cookiecutter.use_stripe == 'y' %}
-stripe = "==2.58.0"
-{%- endif %}
 python-slugify = "==5.0.2"
 Pillow = "==8.3.1"
 django-currentuser = "==0.5.3"
@@ -75,17 +72,7 @@ pytest-sugar = "==0.9.4"  # https://github.com/Frozenball/pytest-sugar
 django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
 {%- elif cookiecutter.mail_service == 'Amazon SES' %}
 django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
-{%- elif cookiecutter.mail_service == 'Mailjet' %}
-django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
-{%- elif cookiecutter.mail_service == 'Mandrill' %}
-django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
-{%- elif cookiecutter.mail_service == 'Postmark' %}
-django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
 {%- elif cookiecutter.mail_service == 'Sendgrid' %}
-django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
-{%- elif cookiecutter.mail_service == 'SendinBlue' %}
-django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
-{%- elif cookiecutter.mail_service == 'SparkPost' %}
 django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
 {%- endif %}
 

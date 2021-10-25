@@ -39,10 +39,10 @@ def print_thankyou():
     print(
         HINT
         + """
-    e//////////////////////////////////////////////////////////////////////////g
-    r//////////////////////////////////////////////////////////////////////////b
-    y//////////////////////////////////////////////////////////////////////////o
-    l////////////////////////////////////,P,///////////////////////////////////r
+    e/////////////////////////////////////////////////////////////////////////Cg
+    r/////////////////////////////////////////////////////////////////////////nb
+    y/////////////////////////////////////////////////////////////////////////eo
+    l////////////////////////////////////,P,//////////////////////////////////vr
     G///////////////////////////////////,   ,//////////////////////////////////e
     q/////////////////////////////////*      ./////////////////////////////////r
     e////////////////////////////////          ,///////////////////////////////z
@@ -74,19 +74,8 @@ def print_thankyou():
     )
 
 
-""" 
-def remove_vue2ts_files():
-    shutil.rmtree(os.path.join("clients", "vue2-ts"))
-
-"""
-
-
 def remove_vue3_files():
     shutil.rmtree(os.path.join("clients", "vue3"))
-
-
-def remove_react_files():
-    shutil.rmtree(os.path.join("clients", "react"))
 
 
 def move_client_to_root(client):
@@ -161,7 +150,7 @@ def set_flag(file_path, flag, value=None, formatted=None, *args, **kwargs):
 def set_django_secret_key(file_path):
     django_secret_key = set_flag(
         file_path,
-        "!!!SET DJANGO_SECRET_KEY!!!",
+        "!!!DJANGO_SECRET_KEY!!!",
         length=64,
         using_digits=True,
         using_ascii_letters=True,
@@ -192,7 +181,7 @@ def set_postgres_password(file_path, value=None):
 
     postgres_password = set_flag(
         file_path,
-        "!!!SET POSTGRES_PASSWORD!!!",
+        "!!!POSTGRES_PASSWORD!!!",
         value=value,
         length=64,
         using_digits=True,
@@ -261,9 +250,6 @@ def main():
     if "{{ cookiecutter.use_heroku }}".lower() == "n":
         remove_heroku_files()
 
-    if "{{ cookiecutter.ci_tool }}".lower() == "none":
-        remove_github_folder()
-
     if "{{ cookiecutter.async }}".lower() == "none":
         remove_asgi_file()
         remove_async_files()
@@ -280,8 +266,6 @@ def main():
         os.remove(os.path.join("package.json"))
 
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
-
-        # remove_react_files()
         move_client_to_root("vue3")
 
     print(INFO + "Installing necessary requirements:" + END)
@@ -404,9 +388,9 @@ def main():
                         + "$ npm install --prefix client && npm run build --prefix client"
                         + END
                     )
-                    print(HINT + "$ ./runserver.sh" + END)
+                    print(HINT + "$ server/runserver.sh" + END)
                 else:
-                    print(HINT + "$ ./runserver.sh" + END)
+                    print(HINT + "$ server/runserver.sh" + END)
 
             print_thankyou()
             print(

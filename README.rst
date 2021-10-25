@@ -1,4 +1,4 @@
-Thinknimble Cookiecutter (Django | Vue | React)
+Thinknimble Cookiecutter (Django | Vue )
 ===============================================
 
 
@@ -33,7 +33,6 @@ Optional Integrations
 
 * Serve static files from Amazon S3, Google Cloud Storage or Whitenoise_
 * Configuration for Celery_
-* Integration with MailHog_ for local email testing
 * Integration with Sentry_ for error logging
 * Integration with Rollbar_ for error logging
 
@@ -44,7 +43,6 @@ Optional Integrations
 .. _Whitenoise: https://whitenoise.readthedocs.io/
 .. _Celery: http://www.celeryproject.org/
 .. _Anymail: https://github.com/anymail/django-anymail
-.. _MailHog: https://github.com/mailhog/MailHog
 .. _Sentry: https://sentry.io/welcome/
 .. _Rollbar: https://docs.rollbar.com/docs
 .. _pre-commit: https://github.com/pre-commit/pre-commit
@@ -93,16 +91,10 @@ Answer the prompts with your own desired options. For example::
     Select mail_service:
     1 - Mailgun
     2 - Amazon SES
-    3 - Mailjet
-    4 - Mandrill
-    5 - Postmark
-    6 - Sendgrid
-    7 - SendinBlue
-    8 - SparkPost
-    9 - Custom SMTP
+    3 - Sendgrid
+    4 - Custom SMTP
     Choose from 1, 2, 3, 4, 5, 6, 7, 8, 9 [1]: 9
     use_heroku [y]: y
-    use_mailhog [y]: y
     Select async:
     1 - Async
     2 - Django Channels
@@ -114,16 +106,13 @@ Answer the prompts with your own desired options. For example::
     use_rollbar [y]: y
     use_sentry [n]: y
     use_swagger [y]: y
-    use_stripe [n]: n
     Select ci_tool:
     1 - Bitbucket pipelines
     2 - None
     Choose from 1, 2 [1]: 1
     Select client_app:
     1 - Vue3
-    2 - Vue2-ts
-    3 - React
-    4 - None
+    2 - None
     Choose from 1, 2, 3, 4 [1]: 1
     [SUCCESS]: Project initialized, keep up the good work!
 
@@ -143,10 +132,9 @@ Create a git repo and push it there::
 
 To run it locally::
 
-    $ python manage.py makemigrations
-    $ python manage.py migrate
+    $ python server/manage.py makemigrations && python server/manage.py migrate
     $ npm install --prefix client
     $ npm run build --prefix client
-    $ ./runserver.sh
+    $ server/runserver.sh
 
 Now take a look at your repo. Don't forget to carefully look at the generated README. Awesome, right?

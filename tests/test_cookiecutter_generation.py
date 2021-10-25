@@ -22,6 +22,7 @@ def context():
         "domain_name": "example.com",
         "version": "0.1.0",
         "timezone": "UTC",
+        "client+app": "Vue3",
     }
 
 
@@ -32,30 +33,15 @@ SUPPORTED_COMBINATIONS = [
     {"cloud_provider": "GCP", "use_whitenoise": "y"},
     {"cloud_provider": "GCP", "use_whitenoise": "n"},
     {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "Mailgun"},
-    {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "Mailjet"},
-    {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "Mandrill"},
-    {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "Postmark"},
     {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "Sendgrid"},
-    {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "SendinBlue"},
-    {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "SparkPost"},
     {"cloud_provider": "None", "use_whitenoise": "y", "mail_service": "Custom SMTP"},
     # Note: cloud_provider=None AND use_whitenoise=n is not supported
     {"cloud_provider": "AWS", "mail_service": "Mailgun"},
     {"cloud_provider": "AWS", "mail_service": "Amazon SES"},
-    {"cloud_provider": "AWS", "mail_service": "Mailjet"},
-    {"cloud_provider": "AWS", "mail_service": "Mandrill"},
-    {"cloud_provider": "AWS", "mail_service": "Postmark"},
     {"cloud_provider": "AWS", "mail_service": "Sendgrid"},
-    {"cloud_provider": "AWS", "mail_service": "SendinBlue"},
-    {"cloud_provider": "AWS", "mail_service": "SparkPost"},
     {"cloud_provider": "AWS", "mail_service": "Custom SMTP"},
     {"cloud_provider": "GCP", "mail_service": "Mailgun"},
-    {"cloud_provider": "GCP", "mail_service": "Mailjet"},
-    {"cloud_provider": "GCP", "mail_service": "Mandrill"},
-    {"cloud_provider": "GCP", "mail_service": "Postmark"},
     {"cloud_provider": "GCP", "mail_service": "Sendgrid"},
-    {"cloud_provider": "GCP", "mail_service": "SendinBlue"},
-    {"cloud_provider": "GCP", "mail_service": "SparkPost"},
     {"cloud_provider": "GCP", "mail_service": "Custom SMTP"},
     # Note: cloud_providers GCP and None with mail_service Amazon SES is not supported
     {"async": "None"},
@@ -63,12 +49,8 @@ SUPPORTED_COMBINATIONS = [
     {"async": "Django Channels"},
 
     {"client_app": "Vue3"},
-    {"client_app": "Vue2-ts"},
-    {"client_app": "React"},
     {"client_app": "None"},
 
-    {"use_stripe": "y"},
-    {"use_stripe": "n"},
     {"use_swagger": "y"},
     {"use_swagger": "n"},
     {"use_redis": "y"},
@@ -77,8 +59,6 @@ SUPPORTED_COMBINATIONS = [
     {"use_heroku": "n"},
     {"use_celery": "y"},
     {"use_celery": "n"},
-    {"use_mailhog": "y"},
-    {"use_mailhog": "n"},
     {"use_sentry": "y"},
     {"use_sentry": "n"},
     {"use_rollbar": "y"},
@@ -87,9 +67,7 @@ SUPPORTED_COMBINATIONS = [
     {"use_whitenoise": "n"},
     {"use_heroku": "y"},
     {"use_heroku": "n"},
-    {"ci_tool": "None"},
-    {"ci_tool": "Bitbucket pipelines"},
-   
+    {"ci_tool": "None"}
 ]
 
 UNSUPPORTED_COMBINATIONS = [

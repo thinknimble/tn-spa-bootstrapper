@@ -36,7 +36,6 @@ setup(
         "Environment :: Console",
         "Framework :: Django :: 3.0",
         "Client Framework :: Vue",
-        "Client Framework :: React",
         "Intended Audience :: Thinknimble Developers",
         "Natural Language :: English",
         "License :: Proprietary License",
