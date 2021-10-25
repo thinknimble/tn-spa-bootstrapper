@@ -9,6 +9,14 @@ heroku create $APP_NAME --buildpack heroku/python
 heroku addons:create heroku-postgresql:hobby-dev --app $APP_NAME
 {%- if cookiecutter.client_app.lower() != "none" %}
 heroku buildpacks:add --index 1 heroku/nodejs --app $APP_NAME
+if [ -z "${NPM_PRIVATE_TOKEN}" ]; then
+    echo "Please fill in your NPM_PRIVATE_TOKEN"
+    read -p 'NPM_PRIVATE_TOKEN: ' NPM_PRIVATE_TOKEN
+    heroku config:set NPM_PRIVATE_TOKEN=$NPM_PRIVATE_TOKEN --app $APP_NAME
+else
+    NPM_PRIVATE_TOKEN = "${NPM_PRIVATE_TOKEN}"
+    heroku config:set NPM_PRIVATE_TOKEN=$NPM_PRIVATE_TOKEN --app $APP_NAME
+fi
 {%- endif %}
 {%- if cookiecutter.use_redis == "y" %}
 heroku addons:create heroku-redis:hobby-dev --app $APP_NAME
