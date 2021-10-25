@@ -24,10 +24,16 @@ from .permissions import CreateOnlyPermissions
 
 
 def index(request):
-    try:
-        return render(request, "index.html", {})
-    except TemplateDoesNotExist:
-        return render(request, "core/index-placeholder.html", {})
+    {% if cookiecutter.client_app.lower() == 'None' %}
+    {%- if cookiecutter.use_swagger == 'y' %}
+    return redirect(to="/docs/swagger/")
+    {%- else %}
+    from django.http import HttpResponse
+    return HttpResponse("<html><body><h1>Hello,{{ cookiecutter.auther_name }}, this is {{ cookiecutter.project_name }}</h1></body></html>")
+    {% endif -%}
+    {% else %}
+    return render(request,'index.html')   
+    {% endif %}
 
 
 class UserLoginView(generics.GenericAPIView):

@@ -1,26 +1,58 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path, path, include
-from django.views.generic.base import TemplateView
-
-from rest_framework import routers
+from rest_framework import permissions
+{%- if cookiecutter.use_swagger == 'y' %}
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+{%- endif %}
+from rest_framework_nested import routers
 from rest_auth import views as rest_auth_views
 
 from {{ cookiecutter.project_slug }}.core import views as core_views
 
+router = routers.SimpleRouter()
+if settings.DEBUG:
+    router = routers.DefaultRouter()
 
-
-router = routers.DefaultRouter()
 router.register("users", core_views.UserViewSet)
 
 urlpatterns = [
     path("api/", include(router.urls)),
     path("api/login/", core_views.UserLoginView.as_view()),
-    path("api/users/password/reset/confirm/<str:id>/<str:token>/", core_views.reset_password),
-    path("api/users/password/reset/link/<str:email>/", core_views.request_reset_link),
-    re_path(r"^$", core_views.index, name="index"),
-    re_path(r"^.*/$", core_views.index, name="index"),
+    path(r"api/logout/",rest_auth_views.LogoutView.as_view()),
+    path(r"api/password/reset/confirm/",rest_auth_views.PasswordResetConfirmView.as_view(),
+        # This URL must be named, because django.contrib.auth calls it via a reverse-lookup
+        name="password_reset_confirm",
+    ),
+    path(r"api/password/reset/", rest_auth_views.PasswordResetView.as_view()),
+    path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
+    
 ]
 
-if settings.DEBUG:
+{%- if cookiecutter.use_swagger == 'y' %}
+schema_view = get_schema_view(
+   openapi.Info(
+      title="{{ cookiecutter.project_name }} API",
+      default_version='1.0',
+      description="{{ cookiecutter.project_name }} Docs",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="support@{{ cookiecutter.project_slug }}.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=[permissions.AllowAny],
+)
+
+urlpatterns = urlpatterns + [
+   re_path(r'^docs/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+   path(r'docs/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+   path(r'docs/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+]
+{% endif %}
+if settings.DEBUG:  # pragma: no cover
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += [path('api-auth/', include('rest_framework.urls'))]
+
+urlpatterns+=[re_path(r".*", core_views.index),]

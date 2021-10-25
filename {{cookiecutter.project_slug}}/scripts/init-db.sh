@@ -72,5 +72,5 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 sudo -u $sudo_p_user createdb $db_name
-psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
-psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
+sudo -u $sudo_p_user psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
+sudo -u $sudo_p_user psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
