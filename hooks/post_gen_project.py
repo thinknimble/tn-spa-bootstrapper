@@ -85,8 +85,8 @@ def move_client_to_root(client):
 
 def remove_heroku_files():
     file_names = [
-        os.path.join("{{ cookiecutter.project_slug }}", "Procfile"),
-        os.path.join("{{ cookiecutter.project_slug }}", "runtime.txt"),
+        os.path.join("Procfile"),
+        os.path.join("runtime.txt"),
     ]
     for file_name in file_names:
         os.remove(file_name)
