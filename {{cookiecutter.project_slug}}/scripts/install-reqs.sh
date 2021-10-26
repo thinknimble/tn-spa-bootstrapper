@@ -23,13 +23,28 @@ function install_package() {
     fi
 }
 
+function install_gh() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update
+        sudo apt install gh
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        brew install gh
+    elif [[ "$OSTYPE" == "win32" ]]; then
+        echo "WIP"
+    else
+        echo "Unknown Operating System"
+    fi
+}
+
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     install_package gnome-terminal
     install_package python3-sphinx
     pip install karma-sphinx-theme
     pip install jotquote
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    #install_package sphinx-doc
     sudo pip install -U sphinx
     sudo pip install karma-sphinx-theme
     sudo pip install jotquote
@@ -43,4 +58,10 @@ fi
 which heroku
 if ! [ "$?" ]; then
     curl https://cli-assets.heroku.com/install.sh | sh
+fi
+
+# github cli
+which gh
+if ! [ "$?" ]; then
+    install_gh
 fi

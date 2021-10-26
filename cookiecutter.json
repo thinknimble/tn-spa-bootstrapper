@@ -4,6 +4,8 @@
   "description": "Behold My Awesome Project!",
   "author_name": "Moussa Mokhtari",
   "domain_name": "example.com",
+  "github_organization": "thinknimble",
+  "github_repo_name": "{{cookiecutter.project_slug}}",
   "year": "{% now 'utc', '%Y' %}",
   "email": "{{ cookiecutter.author_name.lower()|replace(' ', '-') }}@example.com",
   "version": "1.0.0",

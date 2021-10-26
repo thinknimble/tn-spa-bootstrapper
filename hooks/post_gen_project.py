@@ -166,17 +166,6 @@ def generate_postgres_user(debug=False):
     return DEBUG_VALUE if debug else generate_random_user()
 
 
-def set_postgres_user(file_path, value):
-    postgres_user = set_flag(
-        file_path,
-        "!!!SET POSTGRES_USER!!!",
-        length=32,
-        value=value,
-        using_ascii_letters=True,
-    )
-    return postgres_user
-
-
 def set_postgres_password(file_path, value=None):
 
     postgres_password = set_flag(
@@ -297,11 +286,11 @@ def main():
         "\n"
         + SUCCESS
         + "Awesome! Project initialized, press Enter to continue..."
-        + END
+        + END,end="  "
     )
     input()
 
-    print("\n" + QUESTION + "Do you wanna create the database?(y/n) [n]" + END)
+    print("\n" + QUESTION + "Do you wanna create the database?(y/n) [n]" + END,end="  ")
     sys.stdout.flush()
     init_db = input()
     if init_db and init_db.lower() == "y":
@@ -319,43 +308,116 @@ def main():
         shellscript.wait()
         shellscript.stdin.close()
 
-        if platform.system() != "Darwin":
+    if platform.system() != "Darwin":
+        # Question
+        print("\n"+QUESTION+"Do you wanna initialize the app (run migrations and install dependencies)?(y/n) [n]"+END,end="  ")
+        sys.stdout.flush()
+        init_app = input()
+        if init_app and init_app.lower() == "y":
+            print(
+                INFO
+                + "Opening another terminal to build and running locally:"
+                + END
+            )
+            subprocess.Popen(
+                [
+                    "gnome-terminal",
+                    "--tab",
+                    "-t",
+                    "{{ cookiecutter.project_name }} initialization",
+                    "--",
+                    os.path.join(
+                        "..",
+                        "{{ cookiecutter.project_slug }}",
+                        "scripts",
+                        "init-app.sh",
+                    ),
+                ],
+                stdin=subprocess.PIPE,
+            )
+            shellscript.wait()
+            shellscript.stdin.close()
+        # Question
+        print("\n" + QUESTION + "Do you wanna deploy on Heroku?(y/n) [n]" + END,end="  ")
+        sys.stdout.flush()
+        depoly_on_heroku = input()
+        if depoly_on_heroku and depoly_on_heroku.lower() == "y":
+            print(INFO + "Deploying on Heroku" + END)
+            subprocess.call(
+                [
+                    os.path.join(
+                        "..",
+                        "{{ cookiecutter.project_slug }}",
+                        "scripts",
+                        "deploy-on-heroku.sh",
+                    )
+                ]
+            )
+        # Question
+        print("\n" + QUESTION + "Do you wanna push the project to github?(y/n) [n]" + END,end="  ")
+        sys.stdout.flush()
+        init_git = input()
+        if init_git and init_git.lower() == "y":
+            shellscript = subprocess.Popen(
+                [
+                    "/bin/bash",
+                    "-i",
+                    os.path.join(
+                        "..", "{{ cookiecutter.project_slug }}", "scripts", "init-github.sh"
+                    ),
+                ],
+                stdin=subprocess.PIPE,
+            )
+        shellscript.wait()
+        shellscript.stdin.close()
+    else:
+        init_app = ""
+        while init_app is not None:
             print(
                 "\n"
                 + QUESTION
-                + "Do you wanna initialize the app (run migrations and install dependencies)?(y/n) [n]"
+                + "Please selection and option ? [1,2,3]"
+                + END
+            )
+            print(
+                "\n"
+                + INFO
+                + "1.  Initialize the app locally (run migrations and install dependencies)"
+                + END
+            )
+            print(
+                "\n"
+                + INFO
+                + "2.  Deploy on Heroku"
+                + END
+            )
+            print(
+                "\n"
+                + INFO
+                + "3.  Push the project to github"
+                + END
+            )
+            print(
+                "\n"
+                + INFO
+                + "4.  Finish & Exit [Any Key]"
                 + END
             )
             sys.stdout.flush()
             init_app = input()
-            if init_app and init_app.lower() == "y":
-                print(
-                    INFO
-                    + "Opening another terminal to build and running locally:"
-                    + END
-                )
-                subprocess.Popen(
+            if init_app == "1":
+                print(INFO + "Initialize the app " + END)
+                subprocess.call(
                     [
-                        "gnome-terminal",
-                        "--tab",
-                        "-t",
-                        "{{ cookiecutter.project_name }} initialization",
-                        "--",
                         os.path.join(
                             "..",
                             "{{ cookiecutter.project_slug }}",
                             "scripts",
                             "init-app.sh",
-                        ),
-                    ],
-                    stdin=subprocess.PIPE,
+                        )
+                    ]
                 )
-                shellscript.wait()
-                shellscript.stdin.close()
-            print("\n" + QUESTION + "Do you wanna deploy on Heroku?(y/n) [n]" + END)
-            sys.stdout.flush()
-            depoly_on_heroku = input()
-            if depoly_on_heroku and depoly_on_heroku.lower() == "y":
+            elif init_app == "2":
                 print(INFO + "Deploying on Heroku" + END)
                 subprocess.call(
                     [
@@ -367,40 +429,26 @@ def main():
                         )
                     ]
                 )
-
-            if init_db and init_db.lower() == "n":
-                print(SUCCESS + "Project initialized, keep up the good work!" + END)
-                print(HINT + "$ cd {{ cookiecutter.project_slug }}" + END)
-                print(
-                    HINT
-                    + "$ ./init-db.sh to initialized the DB or create the database with the creds provided in .env file"
-                    + END
+            elif init_app == "3":
+                print(INFO + "Push to Github" + END)
+                subprocess.call(
+                    [
+                        os.path.join(
+                            "..",
+                            "{{ cookiecutter.project_slug }}",
+                            "scripts",
+                            "init-github.sh",
+                        )
+                    ]
                 )
-                print(HINT + "$ pipenv install && pipenv shell" + END)
-                print(
-                    HINT
-                    + "$ python manage.py makemigrations && python manage.py migrate"
-                    + END
-                )
-                if "{{ cookiecutter.client_app }}".lower() != "none":
-                    print(
-                        HINT
-                        + "$ npm install --prefix client && npm run build --prefix client"
-                        + END
-                    )
-                    print(HINT + "$ server/runserver.sh" + END)
-                else:
-                    print(HINT + "$ server/runserver.sh" + END)
+            else:
+                break
 
-            print_thankyou()
-            print(
-                "\n"
-                + SUCCESS
-                + "You did it champ!, We have something to say though!"
-                + HINT
-            )
-            subprocess.call(["jotquote"])
-            print(END)
+    print_thankyou()
+    print("")
+    print(SUCCESS)
+    subprocess.call(["jotquote"])
+    print(END)
 
 
 if __name__ == "__main__":

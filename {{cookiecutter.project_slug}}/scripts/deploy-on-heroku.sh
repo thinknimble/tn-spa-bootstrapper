@@ -33,7 +33,8 @@ heroku ps:scale web=1:free worker=1:free --app $APP_NAME
 {%- endif %}
 git init 
 heroku git:remote --app $APP_NAME
+git branch -M main
 git add . 
-git commit -m "Initial commit"
-git push heroku master
+git commit -m "Initial heroku commit"
+git push heroku main
 heroku open --app $APP_NAME
