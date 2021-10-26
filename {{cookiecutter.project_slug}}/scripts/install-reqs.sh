@@ -41,12 +41,8 @@ function install_gh() {
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     install_package gnome-terminal
-    install_package python3-sphinx
-    pip install karma-sphinx-theme
     pip install jotquote
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    sudo pip install -U sphinx
-    sudo pip install karma-sphinx-theme
     sudo pip install jotquote
 elif [[ "$OSTYPE" == "win32" ]]; then
     echo "WIP"

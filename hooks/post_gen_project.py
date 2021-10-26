@@ -216,7 +216,6 @@ def remove_channel_files():
 def set_keys_in_envs():
     env_file_path = os.path.join(".env.example")
     postgres_init_file = os.path.join("scripts/init-db.sh")
-    postgres_docs_init_file = os.path.join("docs/deployment-locally.rst")
     set_django_secret_key(env_file_path)
 
     secret = generate_random_string(
@@ -224,7 +223,6 @@ def set_keys_in_envs():
     )
     set_postgres_password(env_file_path, value=secret)
     set_postgres_password(postgres_init_file, value=secret)
-    set_postgres_password(postgres_docs_init_file, value=secret)
 
     shutil.copy2(env_file_path, os.path.join(".env"))
 
@@ -262,18 +260,6 @@ def main():
         [
             os.path.join(
                 "..", "{{ cookiecutter.project_slug }}", "scripts", "install-reqs.sh"
-            )
-        ],
-        stdin=subprocess.PIPE,
-    )
-    shellscript.wait()
-    shellscript.stdin.close()
-
-    print(INFO + "Building docs:" + END)
-    shellscript = subprocess.Popen(
-        [
-            os.path.join(
-                "..", "{{ cookiecutter.project_slug }}", "scripts", "build-docs.sh"
             )
         ],
         stdin=subprocess.PIPE,
