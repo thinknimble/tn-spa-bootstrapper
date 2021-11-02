@@ -197,7 +197,7 @@ AUTH_PASSWORD_VALIDATORS = [
 #
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "{{ cookiecutter.timezone }}"
 
 USE_I18N = True
 
