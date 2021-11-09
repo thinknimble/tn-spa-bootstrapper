@@ -7,12 +7,13 @@ import {
   VStack,
   Code,
   Grid,
-  theme,
 } from "@chakra-ui/react"
 import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import { Logo } from "./Logo"
+import Logo from "./components/Logo"
+import theme from "./theme"
+import { Outlet } from "react-router-dom"
 
-export const App = () => (
+const App = () => (
   <ChakraProvider theme={theme}>
     <Box textAlign="center" fontSize="xl">
       <Grid minH="100vh" p={3}>
@@ -34,5 +35,8 @@ export const App = () => (
         </VStack>
       </Grid>
     </Box>
+    <Outlet />
   </ChakraProvider>
 )
+
+export default App

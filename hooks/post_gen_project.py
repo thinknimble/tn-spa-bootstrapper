@@ -281,7 +281,7 @@ def main():
 
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
 
-        # remove_react_files()
+        remove_react_files()
         move_client_to_root("vue3")
     elif "{{ cookiecutter.client_app }}".lower() == "react":
         remove_vue3_files()
