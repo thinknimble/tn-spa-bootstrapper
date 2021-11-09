@@ -74,7 +74,7 @@ def print_thankyou():
     )
 
 
-""" 
+"""
 def remove_vue2ts_files():
     shutil.rmtree(os.path.join("clients", "vue2-ts"))
 
@@ -283,6 +283,9 @@ def main():
 
         # remove_react_files()
         move_client_to_root("vue3")
+    elif "{{ cookiecutter.client_app }}".lower() == "react":
+        remove_vue3_files()
+        move_client_to_root("react")
 
     print(INFO + "Installing necessary requirements:" + END)
     shellscript = subprocess.Popen(
