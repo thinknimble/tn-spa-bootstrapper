@@ -41,11 +41,13 @@
   "use_sentry": "n",
   "use_swagger": "y",
   "use_stripe": "n",
+  "use_graphql": "n",
   "ci_tool": [
     "None"
   ],
   "client_app": [
-    "Vue3"
+    "Vue3",
+    "React"
   ],
   "staging_url": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-staging.herokuapp.com"
 }

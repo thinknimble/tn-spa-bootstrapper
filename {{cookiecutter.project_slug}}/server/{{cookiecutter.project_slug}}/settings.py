@@ -11,6 +11,10 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 {% endif %}
 from sentry_sdk.integrations.redis import RedisIntegration
 {% endif %}
+{% if cookiecutter.use_graphql == 'y' %}
+from datetime import timedelta
+{% endif %}
+
 
 
 def _env_get_required(setting_name):
@@ -73,6 +77,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    {% if cookiecutter.client_app == "React" %}
+    "whitenoise.runserver_nostatic",
+    {% endif %}
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
@@ -87,7 +94,30 @@ INSTALLED_APPS = [
     {% if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
     {% endif %}
+    {% if cookiecutter.use_graphql == 'y' %}
+    "graphene_django",
+    {% endif %}
 ]
+
+{% if cookiecutter.use_graphql == 'y' %}
+GRAPHENE = {
+    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+}
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+{% endif %}
 
 {% if cookiecutter.async.lower() == 'django channels' %}
 {% if cookiecutter.use_redis == 'y' %}
@@ -141,10 +171,17 @@ ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+        {% if cookiecutter.client_app != "React" %}
         "APP_DIRS": True,
         "DIRS": [
             os.path.join(BASE_DIR, "client/dist/"),
         ],
+        {% else %}
+        "DIRS": [
+            os.path.join(BASE_DIR, "..", "client", 'build'),
+        ],
+        "APP_DIRS": True, # this setting must come after "DIRS"!
+        {% endif %}
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -239,8 +276,13 @@ if DEBUG:
 #
 # Static files (CSS, JavaScript, Images)
 #
+{% if cookiecutter.client_app != "React" %}
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
+{% else %}
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "client", "build")
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "client", "build", "static")
+{% %}
 
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
@@ -249,7 +291,7 @@ MEDIA_URL = "/media/"
 {% if cookiecutter.client_app == 'Vue3' %}
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "..client/dist/static"),]
 {% elif cookiecutter.client_app == 'React' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "..client/build/static"),]
+STATICFILES_DIRS = [os.path.join(STATIC_ROOT, "static"),]
 {% endif %}
 {% endif %}
 
@@ -460,7 +502,7 @@ if os.environ.get("USE_AWS_STORAGE","False") == "True":
     AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
     AWS_LOCATION = os.environ.get("AWS_LOCATION", "")
     AWS_S3_REGION_NAME = _env_get_required("AWS_S3_REGION_NAME")
-    
+
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
@@ -470,7 +512,7 @@ if os.environ.get("USE_AWS_STORAGE","False") == "True":
     STATIC_URL = f"https://{aws_s3_domain}/static/"
     MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
-    
+
 
 {% elif cookiecutter.cloud_provider == 'GCP' %}
 GS_BUCKET_NAME = _env_get_required("DJANGO_GCP_STORAGE_BUCKET_NAME")
@@ -636,3 +678,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://{{ cookiecutter.project_slug }}.com",
     "https://{{ cookiecutter.project_slug }}.herokuapp.com",
 ]
+
+{% if cookiecutter.use_graphql == 'y' %}
+CORS_ALLOW_CREDENTIALS = True
+{% endif %}
