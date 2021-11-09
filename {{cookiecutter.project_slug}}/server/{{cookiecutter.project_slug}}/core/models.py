@@ -2,7 +2,8 @@ import uuid  # noqa
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin, BaseUserManager
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
 
@@ -16,43 +17,40 @@ class UserManager(BaseUserManager):
 
     use_in_migrations = True
 
-    def _create_user(self, email, password, **extra_fields):
-        """
-        Create and save a User with the given email and password.
-
-        All emails are lowercased automatically.
-        """
-        email = self.normalize_email(email).lower()
-        user = self.model(email=email, **extra_fields)
+    def create_user(self, email, password, **extra_fields):
+        normalized_email = self.normalize_email(email).lower()
+        user = self.model(email=normalized_email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, password=None, **extra_fields):
-        """Create and save a regular User with the given email and password."""
-        extra_fields.setdefault("is_staff", False)
-        extra_fields.setdefault("is_superuser", False)
-        return self._create_user(email, password, **extra_fields)
-
     def create_superuser(self, email, password, **extra_fields):
-        """Create a superuser with the given email and password."""
         extra_fields["is_staff"] = True
         extra_fields["is_superuser"] = True
         extra_fields["has_reset_password"] = True
-        return self._create_user(email, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)
 
     class Meta:
         ordering = ("id",)
 
 
-class User(AbstractUser, AbstractBaseModel):
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
-    username = None
-    email = models.EmailField(unique=True)
+class User(AbstractBaseUser, PermissionsMixin, AbstractBaseModel):
+    # `password` is inherited from `AbstractBaseUser`
+    # `is_superuser` is inerited from `PermissionsMixin`
+    email = models.EmailField(unique=True, error_messages={"unique": "A user with that email already exists"})
     first_name = models.CharField(blank=True, max_length=255)
     last_name = models.CharField(blank=True, max_length=255)
     has_reset_password = models.BooleanField(default=False)
+    is_staff = models.BooleanField("staff", default=False, help_text="Designates whether the user can log into Django Admin.")
+
+    # use the `email` field as the user's username
+    USERNAME_FIELD = "email"
+
+    # What fields, if any, are prmpted for via `createsuperuser` command
+    # It will always ask for a username (email). 
+    # Note what fields will also be set autmatically from the `create_superuser` UserManager method.
+    REQUIRED_FIELDS = []
+
     objects = UserManager()
 
     @property
