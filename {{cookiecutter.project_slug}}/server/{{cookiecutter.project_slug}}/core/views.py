@@ -21,13 +21,25 @@ from {{ cookiecutter.project_slug }}.utils import sites as site_utils
 from .models import User
 from .serializers import UserSerializer, UserLoginSerializer, UserRegistrationSerializer
 from .permissions import CreateOnlyPermissions
+{% if cookiecutter.use_graphql == 'y' %}
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.template.response import TemplateResponse
+{% endif %}
 
-
+{% if cookiecutter.use_graphql == 'y' %}
+# Serve React frontend
+@ensure_csrf_cookie
+@never_cache
+def index(request):
+    return TemplateResponse(request, "index.html")
+{% else %}
 def index(request):
     try:
         return render(request, "index.html", {})
     except TemplateDoesNotExist:
         return render(request, "core/index-placeholder.html", {})
+{% endif %}
 
 
 class UserLoginView(generics.GenericAPIView):
