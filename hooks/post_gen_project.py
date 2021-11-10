@@ -234,6 +234,13 @@ def remove_channel_files():
     for file_name in file_names:
         os.remove(file_name)
 
+def remove_graphql_files():
+    file_names = [
+        os.path.join("server/{{ cookiecutter.project_slug }}", "schema.py"),
+        os.path.join("server/{{ cookiecutter.project_slug }}", "types.py"),
+        os.path.join("server/{{ cookiecutter.project_slug }}", "mutations.py"),
+    ]
+
 
 def set_keys_in_envs():
     env_file_path = os.path.join(".env.example")
@@ -286,6 +293,9 @@ def main():
     elif "{{ cookiecutter.client_app }}".lower() == "react":
         remove_vue3_files()
         move_client_to_root("react")
+
+    if "{{ cookiecutter.use_graphql }}".lower() == "n":
+        remove_graphql_files()
 
     print(INFO + "Installing necessary requirements:" + END)
     shellscript = subprocess.Popen(

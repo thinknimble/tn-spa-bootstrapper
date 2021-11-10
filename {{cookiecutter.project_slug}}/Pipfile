@@ -63,7 +63,9 @@ celery = "==4.4.6"  # pyup: < 5.0,!=4.4.7  # https://github.com/celery/celery
 django-celery-beat = "==2.2.0"  # https://github.com/celery/django-celery-beat
 {%- endif %}
 graphene_django = "==3.0.0b7"
-
+{%- if cookiecutter.use_graphql == "y" %}
+django-graphql-jwt = "*"
+{%- endif %}
 # Testing
 # ------------------------------------------------------------------------------
 mypy = "==0.910"  # https://github.com/python/mypy
