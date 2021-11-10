@@ -282,7 +282,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
 {% else %}
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "client", "build")
 MEDIA_ROOT = os.path.join(BASE_DIR, "..", "client", "build", "static")
-{% %}
+{% endif %}
 
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
