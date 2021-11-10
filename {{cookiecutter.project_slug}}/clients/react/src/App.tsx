@@ -13,7 +13,7 @@ import Logo from "./components/Logo"
 import theme from "./theme"
 import { Outlet } from "react-router-dom"
 
-const App = () => (
+export const App = () => (
   <ChakraProvider theme={theme}>
     <Box textAlign="center" fontSize="xl">
       <Grid minH="100vh" p={3}>
@@ -38,5 +38,3 @@ const App = () => (
     <Outlet />
   </ChakraProvider>
 )
-
-export default App
