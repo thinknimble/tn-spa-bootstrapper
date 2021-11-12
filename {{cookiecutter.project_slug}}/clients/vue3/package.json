@@ -1,6 +1,6 @@
 {
   "name": "{{ cookiecutter.project_slug }}",
-  "version": "{{ cookiecutter.version }}",
+  "version": "1.0.0",
   "description": "{{ cookiecutter.project_name }} Client Application",
   "private": true,
   "scripts": {

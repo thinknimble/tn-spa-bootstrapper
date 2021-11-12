@@ -20,15 +20,6 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
     # Install system requirements
     sudo apt-get update
-    {% if cookiecutter.use_redis == "y" %}
-    which redis-cli
-    if [ "$?" ]; then
-        echo "Redis is already installed"
-    else
-        sudo apt-get install redis-server -y
-    fi
-    {% endif %}
-
     # Install PostgreSQL
     which psql
     if [ "$?" ]; then
@@ -47,14 +38,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     which psql:
     if ! [ "$?" ]; then
         brew install postgresql
-    fi
-
-    {% if cookiecutter.use_redis == "y" %}
-    which redis-cli
-    if [ "$?" ]; then
-        echo "Redis is already installed"
-    else
-        brew install redis-server
     fi
     {% endif %}
 elif [[ "$OSTYPE" == "win32" ]]; then

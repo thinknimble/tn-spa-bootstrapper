@@ -1,13 +1,6 @@
 {
-  "project_name": "My Awesome Project",
+  "project_name": "My Project",
   "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
-  "description": "Behold My Awesome Project!",
-  "author_name": "Moussa Mokhtari",
-  "domain_name": "thinknimble.com",
-  "github_organization": "thinknimble",
-  "github_repo_name": "{{cookiecutter.project_slug}}",
-  "email": "{{ cookiecutter.author_name.lower()|replace(' ', '-') }}@thinknimble.com",
-  "version": "1.0.0",
   "_extensions": [
     "jinja2_time.TimeExtension",
     "cookiecutter.extensions.RandomStringExtension"
@@ -16,36 +9,13 @@
     "clients/vue3/src/views/dashboard",
     "clients/vue3/src/components"
   ],
-  "timezone": "UTC",
-  "cloud_provider": [
-    "AWS",
-    "GCP",
-    "None"
-  ],
   "mail_service": [
     "Mailgun",
     "Amazon SES",
-    "Sendgrid",
     "Custom SMTP"
   ],
-  "use_heroku": "y",
-  "async": [
-    "Async",
-    "Django Channels",
-    "None"
-  ],
-  "use_redis": "y",
-  "use_whitenoise": "y",
-  "use_celery": "y",
-  "use_rollbar": "y",
-  "use_sentry": "n",
-  "use_swagger": "y",
   "client_app": [
     "Vue3",
     "None"
-  ],
-  "heroku_staging_app_name": "{{ cookiecutter.project_slug.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-staging",
-  "heroku_production_app_name": "{{ cookiecutter.project_slug.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}-production",
-  "staging_url": "{{ cookiecutter.heroku_staging_app_name.lower()|trim() }}.herokuapp.com",
-  "production_url": "{{ cookiecutter.heroku_production_app_name.lower()|trim() }}.herokuapp.com"
+  ]
 }

@@ -2,10 +2,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path, path, include
 from rest_framework import permissions
-{%- if cookiecutter.use_swagger == 'y' %}
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-{%- endif %}
 from rest_framework_nested import routers
 from rest_auth import views as rest_auth_views
 
@@ -30,7 +28,6 @@ urlpatterns = [
     
 ]
 
-{%- if cookiecutter.use_swagger == 'y' %}
 schema_view = get_schema_view(
    openapi.Info(
       title="{{ cookiecutter.project_name }} API",
@@ -49,7 +46,6 @@ urlpatterns = urlpatterns + [
    path(r'docs/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
    path(r'docs/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
-{% endif %}
 if settings.DEBUG:  # pragma: no cover
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

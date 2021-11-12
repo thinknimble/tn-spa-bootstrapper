@@ -83,23 +83,6 @@ def move_client_to_root(client):
     shutil.rmtree(os.path.join("clients"))
 
 
-def remove_heroku_files():
-    file_names = [
-        os.path.join("Procfile"),
-        os.path.join("runtime.txt"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_celery_files():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "celery_app.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
 def generate_random_string(
     length, using_digits=False, using_ascii_letters=False, using_punctuation=False
 ):
@@ -188,31 +171,6 @@ def remove_github_folder():
             os.remove(file_name)
 
 
-def remove_asgi_file():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "asgi.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_async_files():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "websocket.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_channel_files():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "routing.py"),
-        os.path.join("server/{{ cookiecutter.project_slug }}", "consumers.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
 def set_keys_in_envs():
     env_file_path = os.path.join(".env.example")
     postgres_init_file = os.path.join("scripts/init-db.sh")
@@ -230,23 +188,6 @@ def set_keys_in_envs():
 def main():
 
     set_keys_in_envs()
-
-    if "{{ cookiecutter.use_celery }}".lower() == "n":
-        remove_celery_files()
-
-    if "{{ cookiecutter.use_heroku }}".lower() == "n":
-        remove_heroku_files()
-
-    if "{{ cookiecutter.async }}".lower() == "none":
-        remove_asgi_file()
-        remove_async_files()
-        remove_channel_files()
-
-    if "{{ cookiecutter.async }}".lower() == "django channels":
-        remove_async_files()
-
-    if "{{ cookiecutter.async }}".lower() == "async":
-        remove_channel_files()
 
     if "{{ cookiecutter.client_app }}".lower() == "none":
         shutil.rmtree("clients")
@@ -276,161 +217,10 @@ def main():
     )
     input()
 
-    print("\n" + QUESTION + "Do you wanna create the database?(y/n) [n]" + END,end="  ")
-    sys.stdout.flush()
-    init_db = input()
-    if init_db and init_db.lower() == "y":
-        print(INFO + "Initializing Database" + END)
-        shellscript = subprocess.Popen(
-            [
-                "/bin/bash",
-                "-i",
-                os.path.join(
-                    "..", "{{ cookiecutter.project_slug }}", "scripts", "init-db.sh"
-                ),
-            ],
-            stdin=subprocess.PIPE,
-        )
-        shellscript.wait()
-        shellscript.stdin.close()
-
-    if platform.system() != "Darwin":
-        # Question
-        print("\n"+QUESTION+"Do you wanna initialize the app (run migrations and install dependencies)?(y/n) [n]"+END,end="  ")
-        sys.stdout.flush()
-        init_app = input()
-        if init_app and init_app.lower() == "y":
-            print(
-                INFO
-                + "Opening another terminal to build and running locally:"
-                + END
-            )
-            subprocess.Popen(
-                [
-                    "gnome-terminal",
-                    "--tab",
-                    "-t",
-                    "{{ cookiecutter.project_name }} initialization",
-                    "--",
-                    os.path.join(
-                        "..",
-                        "{{ cookiecutter.project_slug }}",
-                        "scripts",
-                        "init-app.sh",
-                    ),
-                ],
-                stdin=subprocess.PIPE,
-            )
-            shellscript.wait()
-            shellscript.stdin.close()
-        # Question
-        print("\n" + QUESTION + "Do you wanna deploy on Heroku?(y/n) [n]" + END,end="  ")
-        sys.stdout.flush()
-        depoly_on_heroku = input()
-        if depoly_on_heroku and depoly_on_heroku.lower() == "y":
-            print(INFO + "Deploying on Heroku" + END)
-            subprocess.call(
-                [
-                    os.path.join(
-                        "..",
-                        "{{ cookiecutter.project_slug }}",
-                        "scripts",
-                        "deploy-on-heroku.sh",
-                    )
-                ]
-            )
-        # Question
-        print("\n" + QUESTION + "Do you wanna push the project to github?(y/n) [n]" + END,end="  ")
-        sys.stdout.flush()
-        init_git = input()
-        if init_git and init_git.lower() == "y":
-            shellscript = subprocess.Popen(
-                [
-                    "/bin/bash",
-                    "-i",
-                    os.path.join(
-                        "..", "{{ cookiecutter.project_slug }}", "scripts", "init-github.sh"
-                    ),
-                ],
-                stdin=subprocess.PIPE,
-            )
-        shellscript.wait()
-        shellscript.stdin.close()
-    else:
-        init_app = ""
-        while init_app is not None:
-            print(
-                "\n"
-                + QUESTION
-                + "Please selection and option ? [1,2,3]"
-                + END
-            )
-            print(
-                "\n"
-                + INFO
-                + "1.  Initialize the app locally (run migrations and install dependencies)"
-                + END
-            )
-            print(
-                "\n"
-                + INFO
-                + "2.  Deploy on Heroku"
-                + END
-            )
-            print(
-                "\n"
-                + INFO
-                + "3.  Push the project to github"
-                + END
-            )
-            print(
-                "\n"
-                + INFO
-                + "4.  Finish & Exit [Any Key]"
-                + END
-            )
-            sys.stdout.flush()
-            init_app = input()
-            if init_app == "1":
-                print(INFO + "Initialize the app " + END)
-                subprocess.call(
-                    [
-                        os.path.join(
-                            "..",
-                            "{{ cookiecutter.project_slug }}",
-                            "scripts",
-                            "init-app.sh",
-                        )
-                    ]
-                )
-            elif init_app == "2":
-                print(INFO + "Deploying on Heroku" + END)
-                subprocess.call(
-                    [
-                        os.path.join(
-                            "..",
-                            "{{ cookiecutter.project_slug }}",
-                            "scripts",
-                            "deploy-on-heroku.sh",
-                        )
-                    ]
-                )
-            elif init_app == "3":
-                print(INFO + "Push to Github" + END)
-                subprocess.call(
-                    [
-                        os.path.join(
-                            "..",
-                            "{{ cookiecutter.project_slug }}",
-                            "scripts",
-                            "init-github.sh",
-                        )
-                    ]
-                )
-            else:
-                break
-
-    print_thankyou()
+    print(f"{INFO}To initialize the database see {cookiecutter.project_slug}/scripts/init-db.sh{END}")
+    print(f"{INFO}To initialize the app see {cookiecutter.project_slug}/scripts/init-app.sh{END}")
+    print(f"{INFO}To deploy on Heroku see {cookiecutter.project_slug}/scripts/deploy-on-heroku.sh{END}")
+    print(f"{INFO}To push the project to github {cookiecutter.project_slug}/scripts/init-github.sh{END}")
     print("")
     print(SUCCESS)
     subprocess.call(["jotquote"])

@@ -14,7 +14,6 @@ Features
 * Secure by default. We believe in SSL.
 * Optimized development and production settings
 * Comes with custom user model ready to go
-* Optional basic ASGI setup for Websockets
 * Optional basic Django channel setup for Websockets
 * Optional client side applications Vue or React 
 * Send emails via Anymail_ (using Mailgun_ by default or Amazon SES if AWS is selected cloud provider, but switchable)
@@ -32,19 +31,13 @@ Optional Integrations
 *These features can be enabled during initial project setup.*
 
 * Serve static files from Amazon S3, Google Cloud Storage or Whitenoise_
-* Configuration for Celery_
-* Integration with Sentry_ for error logging
-* Integration with Rollbar_ for error logging
 
 
 
 .. _Procfile: https://devcenter.heroku.com/articles/procfile
 .. _Mailgun: http://www.mailgun.com/
 .. _Whitenoise: https://whitenoise.readthedocs.io/
-.. _Celery: http://www.celeryproject.org/
 .. _Anymail: https://github.com/anymail/django-anymail
-.. _Sentry: https://sentry.io/welcome/
-.. _Rollbar: https://docs.rollbar.com/docs
 .. _pre-commit: https://github.com/pre-commit/pre-commit
 
 Constraints
@@ -76,39 +69,13 @@ Answer the prompts with your own desired options. For example::
 
     project_name [My Awesome Project]: The Rock
     project_slug [the_rock]: 
-    description [Behold My Awesome Project!]: The rock project
-    author_name [Moussa Mokhtari]: Moussa Mokhtari
-    domain_name [example.com]: the-rock.com       
-    year [2021]: 
-    email [moussa-mokhtari@example.com]: moussa@the-rock.com
-    version [1.0.0]: 
-    timezone [UTC]: 
-    Select cloud_provider:
-    1 - AWS
-    2 - GCP
-    3 - None
     Choose from 1, 2, 3 [1]: 1
     Select mail_service:
     1 - Mailgun
     2 - Amazon SES
-    3 - Sendgrid
     4 - Custom SMTP
     Choose from 1, 2, 3, 4, 5, 6, 7, 8, 9 [1]: 9
-    use_heroku [y]: y
-    Select async:
-    1 - Async
-    2 - Django Channels
-    3 - None
     Choose from 1, 2, 3 [1]: 2
-    use_redis [y]: y
-    use_whitenoise [y]: y
-    use_celery [y]: y
-    use_rollbar [y]: y
-    use_sentry [n]: y
-    use_swagger [y]: y
-    Select ci_tool:
-    1 - Bitbucket pipelines
-    2 - None
     Choose from 1, 2 [1]: 1
     Select client_app:
     1 - Vue3
