@@ -10,12 +10,10 @@ TODO: ? restrict Cookiecutter Django project initialization to Python 3.x enviro
 from __future__ import print_function
 
 import os
-import sys
 import random
 import shutil
 import string
 import subprocess
-import platform
 
 try:
     # Inspired by
@@ -212,19 +210,16 @@ def main():
     print(
         "\n"
         + SUCCESS
-        + "Awesome! Project initialized, press Enter to continue..."
-        + END,end="  "
+        + "Awesome! Project initialized..."
+        + END
+        +"\n"
     )
-    input()
 
-    print(f"{INFO}To initialize the database see {cookiecutter.project_slug}/scripts/init-db.sh{END}")
-    print(f"{INFO}To initialize the app see {cookiecutter.project_slug}/scripts/init-app.sh{END}")
-    print(f"{INFO}To deploy on Heroku see {cookiecutter.project_slug}/scripts/deploy-on-heroku.sh{END}")
-    print(f"{INFO}To push the project to github {cookiecutter.project_slug}/scripts/init-github.sh{END}")
-    print("")
-    print(SUCCESS)
-    subprocess.call(["jotquote"])
-    print(END)
+    project_slug = "{{ cookiecutter.project_slug }}"
+    print(f"{INFO}To initialize the database see {project_slug}/scripts/init-db.sh{END}")
+    print(f"{INFO}To initialize the app see {project_slug}/scripts/init-app.sh{END}")
+    print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    print(f"{INFO}To push the project to github {project_slug}/scripts/init-github.sh{END}")
 
 
 if __name__ == "__main__":

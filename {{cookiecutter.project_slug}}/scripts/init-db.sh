@@ -39,7 +39,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     if ! [ "$?" ]; then
         brew install postgresql
     fi
-    {% endif %}
 elif [[ "$OSTYPE" == "win32" ]]; then
     # Windows
     # WIP
