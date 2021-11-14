@@ -1,4 +1,5 @@
 import os
+
 import dj_database_url
 
 
@@ -180,7 +181,7 @@ REST_FRAMEWORK = {
     "DEFAULT_VERSION": "1.0",
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
 }
-if DEBUG: # for testing
+if DEBUG:  # for testing
     REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].append("rest_framework.authentication.SessionAuthentication")
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"].append("rest_framework.renderers.BrowsableAPIRenderer")
 #
@@ -194,9 +195,9 @@ MEDIA_URL = "/media/"
 
 {%- if cookiecutter.client_app != 'None' %}
 {%- if cookiecutter.client_app == 'Vue3' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/dist/static"),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/dist/static"), ]
 {%- elif cookiecutter.client_app == 'React' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/build/static"),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/build/static"), ]
 {% endif %}
 {% endif %}
 
@@ -217,14 +218,14 @@ if not IN_DEV:
     ANYMAIL = {
         "MAILGUN_API_KEY": _env_get_required("MAILGUN_API_KEY"),
         "MAILGUN_SENDER_DOMAIN": _env_get_required("MAILGUN_DOMAIN"),
-        "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL","https://api.mailgun.net/v3"),
+        "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL", "https://api.mailgun.net/v3"),
     }
     {%- elif cookiecutter.mail_service == 'Amazon SES' %}
     # https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
     EMAIL_BACKEND = "anymail.backends.amazon_ses.EmailBackend"
     ANYMAIL = {}
     {%- elif cookiecutter.mail_service == 'Custom SMTP' %}
-    
+
     #
     # Custom SMTP settings
     #
@@ -245,14 +246,14 @@ else:
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
-if os.environ.get("USE_AWS_STORAGE","False") == "True":
+if os.environ.get("USE_AWS_STORAGE", "False") == "True":
     AWS_ACCESS_KEY_ID = _env_get_required("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = _env_get_required("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = _env_get_required("AWS_SECRET_ACCESS_KEY")
     AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
     AWS_LOCATION = os.environ.get("AWS_LOCATION", "")
     AWS_S3_REGION_NAME = _env_get_required("AWS_S3_REGION_NAME")
-    
+
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
@@ -337,9 +338,9 @@ LOGGING = {
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
 CORS_ALLOWED_ORIGINS = [
-    {%- if cookiecutter.client_app.lower() != 'none' %}
+{%- if cookiecutter.client_app.lower() != 'none' %}
     "http://localhost:8089",
-    {% endif %}
+{% endif %}
     "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
     "https://{{ cookiecutter.project_slug }}.herokuapp.com"
 ]

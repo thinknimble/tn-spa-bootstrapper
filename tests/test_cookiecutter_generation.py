@@ -2,7 +2,9 @@ import os
 import re
 
 import pytest
+import sh
 from binaryornot.check import is_binary
+from cookiecutter.exceptions import FailedHookException
 
 PATTERN = r"{{(\s?cookiecutter)[.](.*?)}}"
 RE_OBJ = re.compile(PATTERN)
@@ -76,13 +78,20 @@ def test_project_generation(cookies, context, context_override):
     check_paths(paths)
 
 
+#
+# TODO: Create a separate branch to clean up flake8 and black linting errors globally and then
+#       re-enable these tests.
+#
 # @pytest.mark.parametrize("context_override", SUPPORTED_COMBINATIONS, ids=_fixture_id)
 # def test_flake8_passes(cookies, context_override):
 #     """Generated project should pass flake8."""
 #     result = cookies.bake(extra_context=context_override)
 
+#     if result.exit_code != 0:
+#         raise result.exception
+
 #     try:
-#         sh.flake8(_cwd=str(result.project))
+#         sh.flake8(_cwd=str(result.project_path))
 #     except sh.ErrorReturnCode as e:
 #         pytest.fail(e.stdout.decode())
 
@@ -98,24 +107,25 @@ def test_project_generation(cookies, context, context_override):
 #         )
 #     except sh.ErrorReturnCode as e:
 #         pytest.fail(e.stdout.decode())
+# END TODO
 
 
-# @pytest.mark.parametrize("slug", ["project slug", "Project_Slug"])
-# def test_invalid_slug(cookies, context, slug):
-#     """Invalid slug should failed pre-generation hook."""
-#     context.update({"project_slug": slug})
+@pytest.mark.parametrize("slug", ["project slug", "Project_Slug"])
+def test_invalid_slug(cookies, context, slug):
+    """Invalid slug should failed pre-generation hook."""
+    context.update({"project_slug": slug})
 
-#     result = cookies.bake(extra_context=context)
+    result = cookies.bake(extra_context=context)
 
-#     assert result.exit_code != 0
-#     assert isinstance(result.exception, FailedHookException)
+    assert result.exit_code != 0
+    assert isinstance(result.exception, FailedHookException)
 
 
-# @pytest.mark.parametrize("invalid_context", UNSUPPORTED_COMBINATIONS)
-# def test_error_if_incompatible(cookies, context, invalid_context):
-#     """It should not generate project an incompatible combination is selected."""
-#     context.update(invalid_context)
-#     result = cookies.bake(extra_context=context)
+@pytest.mark.parametrize("invalid_context", UNSUPPORTED_COMBINATIONS)
+def test_error_if_incompatible(cookies, context, invalid_context):
+    """It should not generate project an incompatible combination is selected."""
+    context.update(invalid_context)
+    result = cookies.bake(extra_context=context)
 
-#     assert result.exit_code != 0
-#     assert isinstance(result.exception, FailedHookException)
+    assert result.exit_code != 0
+    assert isinstance(result.exception, FailedHookException)
