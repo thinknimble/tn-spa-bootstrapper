@@ -39,17 +39,6 @@ function install_gh() {
     fi
 }
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    install_package gnome-terminal
-    pip install jotquote
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    sudo pip install jotquote
-elif [[ "$OSTYPE" == "win32" ]]; then
-    echo "WIP"
-else
-    echo "Unknown Operating System"
-fi
-
 # heroku cli
 which heroku
 if ! [ "$?" ]; then

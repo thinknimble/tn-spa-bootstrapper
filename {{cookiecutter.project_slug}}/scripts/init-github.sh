@@ -2,7 +2,6 @@
 
 #
 # Creating {{cookiecutter.project_slug}} git repo
-# Pushing docs 
 #
 git init
 git add .
