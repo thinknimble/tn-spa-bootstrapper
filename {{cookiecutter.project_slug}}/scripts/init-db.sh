@@ -13,22 +13,13 @@
 
 # DB Configuration Variables
 db_user='{{cookiecutter.project_slug}}'
-db_pass='!!!SET POSTGRES_PASSWORD!!!'
+db_pass='!!!POSTGRES_PASSWORD!!!'
 db_name='{{cookiecutter.project_slug}}_db'
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
     # Install system requirements
     sudo apt-get update
-    {% if cookiecutter.use_redis == "y" %}
-    which redis-cli
-    if [ "$?" ]; then
-        echo "Redis is already installed"
-    else
-        sudo apt-get install redis-server -y
-    fi
-    {% endif %}
-
     # Install PostgreSQL
     which psql
     if [ "$?" ]; then
@@ -48,15 +39,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     if ! [ "$?" ]; then
         brew install postgresql
     fi
-
-    {% if cookiecutter.use_redis == "y" %}
-    which redis-cli
-    if [ "$?" ]; then
-        echo "Redis is already installed"
-    else
-        brew install redis-server
-    fi
-    {% endif %}
 elif [[ "$OSTYPE" == "win32" ]]; then
     # Windows
     # WIP
@@ -72,5 +54,5 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 sudo -u $sudo_p_user createdb $db_name
-psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
-psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
+sudo -u $sudo_p_user psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
+sudo -u $sudo_p_user psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"

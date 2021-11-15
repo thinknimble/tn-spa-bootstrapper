@@ -1,16 +1,6 @@
 import os
-import dj_database_url
 
-{% if cookiecutter.use_sentry == 'y' %}
-import logging
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
-{% if cookiecutter.use_celery == 'y' %}
-from sentry_sdk.integrations.celery import CeleryIntegration
-{% endif %}
-from sentry_sdk.integrations.redis import RedisIntegration
-{% endif %}
+import dj_database_url
 
 
 def _env_get_required(setting_name):
@@ -30,7 +20,6 @@ IN_PROD = ENVIRONMENT == "production"
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = _env_get_required("SECRET_KEY")
-
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = _env_get_required("DEBUG") == "True"
@@ -63,9 +52,6 @@ INSTALLED_APPS = [
     # Local
     "{{ cookiecutter.project_slug }}.common",
     "{{ cookiecutter.project_slug }}.core",
-     {% if cookiecutter.async.lower() == 'django channels' %}
-    "channels",
-    {% endif %}
 
     # Django
     "django.contrib.admin",
@@ -76,50 +62,17 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
-    {% if cookiecutter.use_swagger == 'y' %}
     "drf_yasg",
-    {% endif %}
     "django_nose",
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
-    {% if cookiecutter.use_celery == 'y' %}
-    "django_celery_beat",
-    {% endif %}
 ]
-
-{% if cookiecutter.async.lower() == 'django channels' %}
-{% if cookiecutter.use_redis == 'y' %}
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [os.environ.get('REDIS_URL'),],
-        },
-    },
-}
-{% else %}
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
-{% endif %}
-{% endif %}
-
-{% if cookiecutter.use_whitenoise == 'n' %}
-# Collectfast
-# ------------------------------------------------------------------------------
-# https://github.com/antonagestam/collectfast#installation
-INSTALLED_APPS = ["collectfast"] + INSTALLED_APPS  # noqa F405
-{% endif %}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    {% if cookiecutter.use_whitenoise == 'y' %}
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    {% endif %}
     "django_currentuser.middleware.ThreadLocalUserMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -143,7 +96,7 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "APP_DIRS": True,
         "DIRS": [
-            os.path.join(BASE_DIR, "client/dist/"),
+            os.path.join(BASE_DIR, "../client/dist/"),
         ],
         "OPTIONS": {
             "context_processors": [
@@ -157,8 +110,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
-ASGI_APPLICATION = "{{ cookiecutter.project_slug }}.asgi.application"
-
 
 # Database
 """There are two ways to specifiy the database connection
@@ -181,8 +132,6 @@ else:
             "CONN_MAX_AGE": 600,
         },
     }
-
-
 #
 # User Configuration and Password Validation
 #
@@ -232,8 +181,7 @@ REST_FRAMEWORK = {
     "DEFAULT_VERSION": "1.0",
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
 }
-if DEBUG:
-    # for testing
+if DEBUG:  # for testing
     REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].append("rest_framework.authentication.SessionAuthentication")
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"].append("rest_framework.renderers.BrowsableAPIRenderer")
 #
@@ -245,11 +193,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
-{% if cookiecutter.client_app != 'None' %}
-{% if cookiecutter.client_app == 'Vue3' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "..client/dist/static"),]
-{% elif cookiecutter.client_app == 'React' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "..client/build/static"),]
+{%- if cookiecutter.client_app != 'None' %}
+{%- if cookiecutter.client_app == 'Vue3' %}
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/dist/static"), ]
+{%- elif cookiecutter.client_app == 'React' %}
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/build/static"), ]
 {% endif %}
 {% endif %}
 
@@ -258,126 +206,31 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-{% if cookiecutter.use_mailhog == 'y'%}
-if IN_DEV:
-    # https://docs.djangoproject.com/en/dev/ref/settings/#email-host
-    EMAIL_HOST = "localhost"
-    # https://docs.djangoproject.com/en/dev/ref/settings/#email-port
-    EMAIL_PORT = 1025
-{% endif %}
-
-if os.environ.get("USE_ANYMAIL") == "True":
-    {% if cookiecutter.mail_service == 'Mailgun' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
-
+# Anymail
+# ------------------------------------------------------------------------------
+# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+INSTALLED_APPS += ["anymail"]  # noqa F405
+if not IN_DEV:
+    {%- if cookiecutter.mail_service == 'Mailgun' %}
     # https://anymail.readthedocs.io/en/stable/esps/mailgun/
+
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     ANYMAIL = {
         "MAILGUN_API_KEY": _env_get_required("MAILGUN_API_KEY"),
         "MAILGUN_SENDER_DOMAIN": _env_get_required("MAILGUN_DOMAIN"),
-        "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL","https://api.mailgun.net/v3"),
+        "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL", "https://api.mailgun.net/v3"),
     }
-    {% elif cookiecutter.mail_service == 'Amazon SES' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
-
+    {%- elif cookiecutter.mail_service == 'Amazon SES' %}
     # https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
     EMAIL_BACKEND = "anymail.backends.amazon_ses.EmailBackend"
     ANYMAIL = {}
-    {% elif cookiecutter.mail_service == 'Mailjet' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
+    {%- elif cookiecutter.mail_service == 'Custom SMTP' %}
 
-    # https://anymail.readthedocs.io/en/stable/esps/mailjet/
-    EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
-    ANYMAIL = {
-        "MAILJET_API_KEY": _env_get_required("MAILJET_API_KEY"),
-        "MAILJET_SECRET_KEY": _env_get_required("MAILJET_SECRET_KEY"),
-        "MAILJET_API_URL": _env_get_required("MAILJET_API_URL", default="https://api.mailjet.com/v3"),
-    }
-    {% elif cookiecutter.mail_service == 'Mandrill' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
-
-    # https://anymail.readthedocs.io/en/stable/esps/mandrill/
-    EMAIL_BACKEND = "anymail.backends.mandrill.EmailBackend"
-    ANYMAIL = {
-        "MANDRILL_API_KEY": _env_get_required("MANDRILL_API_KEY"),
-        "MANDRILL_API_URL": _env_get_required(
-            "MANDRILL_API_URL", default="https://mandrillapp.com/api/1.0"
-        ),
-    }
-    {% elif cookiecutter.mail_service == 'Postmark' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
-
-    # https://anymail.readthedocs.io/en/stable/esps/postmark/
-    EMAIL_BACKEND = "anymail.backends.postmark.EmailBackend"
-    ANYMAIL = {
-        "POSTMARK_SERVER_TOKEN": _env_get_required("POSTMARK_SERVER_TOKEN"),
-        "POSTMARK_API_URL": _env_get_required("POSTMARK_API_URL", default="https://api.postmarkapp.com/"),
-    }
-    {% elif cookiecutter.mail_service == 'Sendgrid' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
-
-    # https://anymail.readthedocs.io/en/stable/esps/sendgrid/
-    EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
-    ANYMAIL = {
-        "SENDGRID_API_KEY": _env_get_required("SENDGRID_API_KEY"),
-        "SENDGRID_GENERATE_MESSAGE_ID": _env_get_required("SENDGRID_GENERATE_MESSAGE_ID"),
-        "SENDGRID_MERGE_FIELD_FORMAT": _env_get_required("SENDGRID_MERGE_FIELD_FORMAT"),
-        "SENDGRID_API_URL": _env_get_required("SENDGRID_API_URL", default="https://api.sendgrid.com/v3/"),
-    }
-    {% elif cookiecutter.mail_service == 'SendinBlue' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
-
-    # https://anymail.readthedocs.io/en/stable/esps/sendinblue/
-    EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
-    ANYMAIL = {
-        "SENDINBLUE_API_KEY": _env_get_required("SENDINBLUE_API_KEY"),
-        "SENDINBLUE_API_URL": _env_get_required(
-            "SENDINBLUE_API_URL", default="https://api.sendinblue.com/v3/"
-        ),
-    }
-    {% elif cookiecutter.mail_service == 'SparkPost' %}
-    # Anymail
-    # ------------------------------------------------------------------------------
-    # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
-    INSTALLED_APPS += ["anymail"]  # noqa F405
-
-    # https://anymail.readthedocs.io/en/stable/esps/sparkpost/
-    EMAIL_BACKEND = "anymail.backends.sparkpost.EmailBackend"
-    ANYMAIL = {
-        "SPARKPOST_API_KEY": _env_get_required("SPARKPOST_API_KEY"),
-        "SPARKPOST_API_URL": _env_get_required(
-            "SPARKPOST_API_URL", default="https://api.sparkpost.com/api/v1"
-        ),
-    }
-    {% elif cookiecutter.mail_service == 'Custom SMTP' %}
-
-    {% endif %}
-
-#
-# SMTP settings
-#
-if os.environ.get("USE_CUSTOM_SMTP") == "True":
+    #
+    # Custom SMTP settings
+    #
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    ANYMAIL = {}
     EMAIL_HOST = _env_get_required("SMTP_HOST")
     EMAIL_PORT = os.environ.get("SMTP_PORT", 587)
     EMAIL_HOST_USER = _env_get_required("SMTP_USER")
@@ -385,82 +238,22 @@ if os.environ.get("USE_CUSTOM_SMTP") == "True":
     EMAIL_ALLOWED_DOMAINS = _env_get_required("SMTP_VALID_TESTING_DOMAINS")
     EMAIL_USE_TLS = True
 else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-
-{% if cookiecutter.use_redis == 'y' %}
-# REDIS
-# ------------------------------------------------------------------------------
-REDIS_URL = _env_get_required('REDIS_URL')
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
-
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 {% endif %}
-
-{% if cookiecutter.use_celery == 'y' %}
-#
-# Celery
-# ------------------------------------------------------------------------------
-if USE_TZ:
-    # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-timezone
-    CELERY_TIMEZONE = TIME_ZONE
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
-if REDIS_URL:
-    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL',REDIS_URL)
-else:
-    CELERY_BROKER_URL = _env_get_required('CELERY_BROKER_URL')
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-accept_content
-CELERY_ACCEPT_CONTENT = ["json"]
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-task_serializer
-CELERY_TASK_SERIALIZER = "json"
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_serializer
-CELERY_RESULT_SERIALIZER = "json"
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-time-limit
-# TODO: set to whatever value is adequate in your circumstances
-CELERY_TASK_TIME_LIMIT = 5 * 60
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-soft-time-limit
-# TODO: set to whatever value is adequate in your circumstances
-CELERY_TASK_SOFT_TIME_LIMIT = 60
-# http://docs.celeryproject.org/en/latest/userguide/configuration.html#beat-scheduler
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
-{% endif %}
-
-
-
-
 
 # STORAGES
 # ----------------------------------------------------------------------------
 
 PRIVATE_MEDIAFILES_LOCATION = ""
-{% if cookiecutter.cloud_provider != 'None' %}
-#
-# STORAGES
-# ------------------------------------------------------------------------------
-# https://django-storages.readthedocs.io/en/latest/#installation
-INSTALLED_APPS += ["storages"]  # noqa F405
-{% endif %}
-
-{% if cookiecutter.cloud_provider == 'AWS' %}
 # Django Storages configuration
-if os.environ.get("USE_AWS_STORAGE","False") == "True":
+if os.environ.get("USE_AWS_STORAGE", "False") == "True":
     AWS_ACCESS_KEY_ID = _env_get_required("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = _env_get_required("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = _env_get_required("AWS_SECRET_ACCESS_KEY")
     AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
     AWS_LOCATION = os.environ.get("AWS_LOCATION", "")
     AWS_S3_REGION_NAME = _env_get_required("AWS_S3_REGION_NAME")
-    
+
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
@@ -470,29 +263,10 @@ if os.environ.get("USE_AWS_STORAGE","False") == "True":
     STATIC_URL = f"https://{aws_s3_domain}/static/"
     MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
-    
-
-{% elif cookiecutter.cloud_provider == 'GCP' %}
-GS_BUCKET_NAME = _env_get_required("DJANGO_GCP_STORAGE_BUCKET_NAME")
-GS_DEFAULT_ACL = "publicRead"
-{% endif %}
-
 #
 # STATIC
 # ------------------------
-
-{% if cookiecutter.use_whitenoise == 'y' %}
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-{% elif cookiecutter.cloud_provider == 'GCP' %}
-STATICFILES_STORAGE = "{{cookiecutter.project_slug}}.utils.storages.StaticRootGoogleCloudStorage"
-COLLECTFAST_STRATEGY = "collectfast.strategies.gcloud.GoogleCloudStrategy"
-STATIC_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/static/"
-{% endif %}
-
-{% if cookiecutter.cloud_provider == 'GCP' %}
-DEFAULT_FILE_STORAGE = "{{cookiecutter.project_slug}}.utils.storages.MediaRootGoogleCloudStorage"
-MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"
-{% endif %}
 
 # Maximum size, in bytes, of a request before it will be streamed to the
 # file system instead of into memory.
@@ -502,14 +276,12 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # i.e. 2.5 MB
 # read before a SuspiciousOperation (RequestDataTooBig) is raised.
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # i.e. 100 MB
 
-
-
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""{{cookiecutter.author_name}}""", "{{cookiecutter.email}}")]
+ADMINS = [("ThinkNimble", "support@thinknimble.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 #
@@ -565,74 +337,10 @@ LOGGING = {
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
-{% if cookiecutter.use_rollbar == 'y' %}
-#
-# Rollbar
-# ------------------------------------------------------------------------------
-# Rollbar error logging
-if os.environ.get("USE_ROLLBAR") == "True":
-    MIDDLEWARE += ["rollbar.contrib.django.middleware.RollbarNotifierMiddleware"]
-    ROLLBAR = {
-        "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
-        "environment": ENVIRONMENT,
-        "branch": "master",
-        "root": BASE_DIR,
-    }
-    LOGGING["handlers"].update(
-        {
-            # Rollbar exception logging handler
-            "rollbar": {
-                "level": "WARNING",
-                "filters": ["require_debug_false"],
-                "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
-                "environment": ENVIRONMENT,
-                "class": "rollbar.logger.RollbarHandler",
-            }
-        }
-    )
-    LOGGING["loggers"]["django"]["handlers"].remove("mail_admins")
-    LOGGING["loggers"]["django"]["handlers"].append("rollbar")
-    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].remove("mail_admins")
-    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].append("rollbar")
- {% endif %}
-
-{% if cookiecutter.use_sentry == 'y' %}
-# Sentry
-# ------------------------------------------------------------------------------
-if os.environ.get("USE_SENTRY") == "True":
-    SENTRY_DSN = _env_get_required("SENTRY_DSN")
-    SENTRY_LOG_LEVEL = _env_get_required("DJANGO_SENTRY_LOG_LEVEL", logging.INFO)
-
-    sentry_logging = LoggingIntegration(
-        level=SENTRY_LOG_LEVEL,  # Capture info and above as breadcrumbs
-        event_level=logging.ERROR,  # Send errors as events
-    )
-
-    {% if cookiecutter.use_celery == 'y' %}
-    integrations = [
-        sentry_logging,
-        DjangoIntegration(),
-        CeleryIntegration(),
-        RedisIntegration(),
-    ]
-    {% else %}
-    integrations = [sentry_logging, DjangoIntegration(), RedisIntegration()]
-    {% endif %}
-
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=integrations,
-        environment=_env_get_required("SENTRY_ENVIRONMENT", default="production"),
-        traces_sample_rate=_env_get_required("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
-    )
-{% endif %}
-
-
 CORS_ALLOWED_ORIGINS = [
-    {% if cookiecutter.client_app.lower() != 'none' %}
+{%- if cookiecutter.client_app.lower() != 'none' %}
     "http://localhost:8089",
-    {% endif %}
-    "http://localhost:8080",
-    "https://{{ cookiecutter.project_slug }}.com",
-    "https://{{ cookiecutter.project_slug }}.herokuapp.com",
+{% endif %}
+    "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
+    "https://{{ cookiecutter.project_slug }}.herokuapp.com"
 ]

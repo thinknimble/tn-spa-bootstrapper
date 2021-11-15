@@ -24,10 +24,11 @@ from .permissions import CreateOnlyPermissions
 
 
 def index(request):
-    try:
-        return render(request, "index.html", {})
-    except TemplateDoesNotExist:
-        return render(request, "core/index-placeholder.html", {})
+    {% if cookiecutter.client_app.lower() == 'None' %}
+    return redirect(to="/docs/swagger/")
+    {% else %}
+    return render(request,'index.html')   
+    {% endif %}
 
 
 class UserLoginView(generics.GenericAPIView):
