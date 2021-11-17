@@ -13,7 +13,7 @@ python3 -m pip install cookiecutter
 Now run it against this repo:
 
 ```bash
-cookiecutter git@github.com:thinknimble/tn-cookiecutter.git
+cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git
 ```
 
 ## Features
@@ -56,7 +56,7 @@ pip install cookiecutter
 Now run it against this repo::
 
 ```bash
-cookiecutter git@github.com:thinknimble/tn-cookiecutter.git
+cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git
 ```
 
 You'll be prompted for some values. Provide them, then a Django project will be created for you.
@@ -78,8 +78,8 @@ Answer the prompts with your own desired options. For example:
     Choose from 1, 2 [1]: 1
     Error: "my_project" directory already exists
     william@Williams-MacBook-Pro thinknimble % rm -rf my_project 
-    william@Williams-MacBook-Pro thinknimble % cookiecutter git@github.com:thinknimble/tn-cookiecutter.git --checkout cleanup
-    You've downloaded /Users/william/.cookiecutters/tn-cookiecutter before. Is it okay to delete and re-download it? [yes]: 
+    william@Williams-MacBook-Pro thinknimble % cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git --checkout cleanup
+    You've downloaded /Users/william/.cookiecutters/tn-spa-cookiecutter before. Is it okay to delete and re-download it? [yes]: 
     project_name [My Project]: 
     author_name [ThinkNimble]: 
     email [hello@thinknimble.com]: 
