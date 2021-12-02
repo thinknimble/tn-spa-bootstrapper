@@ -1,4 +1,4 @@
-# Thinknimble Cookiecutter (Django | Vue | React)
+# Thinknimble SPA Bootstrapper (Django | Vue | React)
 
 Thinknimble Cookiecutter is a framework for jumpstarting production-ready Django projects along side with client side SPA quickly.
 
@@ -13,7 +13,7 @@ python3 -m pip install cookiecutter
 Now run it against this repo:
 
 ```bash
-cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git
+cookiecutter git@github.com:thinknimble/tn-spa-bootstrapper.git
 ```
 
 ## Features
