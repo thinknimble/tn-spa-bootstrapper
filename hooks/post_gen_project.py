@@ -194,6 +194,16 @@ def main():
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
         move_client_to_root("vue3")
 
+    elif "{{ cookiecutter.client_app }}".lower().replace(" ", "") == "reactnative":
+        remove_vue3_files()
+        move_client_to_root("reactnative")
+
+    elif "{{ cookiecutter.client_app }}".lower() == "hybrid":
+        move_client_to_root("reactnative")
+        move_client_to_root("vue3")
+
+
+
     print(INFO + "Installing necessary requirements:" + END)
     shellscript = subprocess.Popen(
         [
