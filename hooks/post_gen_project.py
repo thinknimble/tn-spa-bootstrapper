@@ -76,10 +76,10 @@ def remove_vue3_files():
     shutil.rmtree(os.path.join("clients", "vue3"))
 
 
-def move_client_to_root(client):
-    if client == "hybrid client": 
-        shutil.move(os.path.join("clients", "reactnative"), os.path.join("mobile"))
-        shutil.move(os.path.join("clients", "vue3"), os.path.join("webapp"))
+def move_client_to_root(client, webapp, mobile):
+    if client == "hybrid": 
+        shutil.move(os.path.join("clients", mobile), os.path.join("mobile"))
+        shutil.move(os.path.join("clients", webapp), os.path.join("webapp"))
     else:
         shutil.move(os.path.join("clients", client), os.path.join("client"))
 
@@ -204,7 +204,7 @@ def main():
         move_client_to_root("reactnative")
 
     elif "{{ cookiecutter.client_app }}".lower() == "hybrid":
-        move_client_to_root("hybrid client")
+        move_client_to_root("hybrid", "vue3", "reactnative")
 
 
 
