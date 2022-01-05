@@ -8,6 +8,7 @@ class AbstractBaseModel(SafeDeleteModel):
     """
     An abstract model with fields/properties that should belong to all our models.
     """
+    # Safe delete policies https://django-safedelete.readthedocs.io/en/latest/models.html#policies
     _safedelete_policy = SOFT_DELETE
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
