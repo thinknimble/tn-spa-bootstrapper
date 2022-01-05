@@ -76,7 +76,7 @@ def remove_vue3_files():
     shutil.rmtree(os.path.join("clients", "vue3"))
 
 
-def move_client_to_root(client, webapp, mobile):
+def move_client_to_root(client, webapp = "", mobile = ""):
     if client == "hybrid": 
         shutil.move(os.path.join("clients", mobile), os.path.join("mobile"))
         shutil.move(os.path.join("clients", webapp), os.path.join("webapp"))
