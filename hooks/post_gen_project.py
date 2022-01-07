@@ -80,6 +80,8 @@ def move_client_to_root(client, webapp = "", mobile = ""):
     if client == "hybrid": 
         shutil.move(os.path.join("clients", mobile), os.path.join("mobile"))
         shutil.move(os.path.join("clients", webapp), os.path.join("webapp"))
+    elif client == "reactnative":
+        shutil.move(os.path.join("clients", client), os.path.join("mobile"))
     else:
         shutil.move(os.path.join("clients", client), os.path.join("client"))
 
