@@ -76,16 +76,12 @@ def remove_vue3_files():
     shutil.rmtree(os.path.join("clients", "vue3"))
 
 
-def move_client_to_root(client, webapp = "", mobile = ""):
-    if client == "hybrid": 
-        shutil.move(os.path.join("clients", mobile), os.path.join("mobile"))
-        shutil.move(os.path.join("clients", webapp), os.path.join("webapp"))
-    elif client == "reactnative":
-        shutil.move(os.path.join("clients", client), os.path.join("mobile"))
-    else:
-        shutil.move(os.path.join("clients", client), os.path.join("client"))
+def move_client_to_root(client):
+    shutil.move(os.path.join("clients", client), os.path.join("client"))
 
-    shutil.rmtree(os.path.join("clients"))
+
+def move_mobile_app_to_root(mobileApp):
+    shutil.move(os.path.join("clients", mobileApp), os.path.join("mobile"))
 
 
 def generate_random_string(
@@ -195,18 +191,18 @@ def main():
     set_keys_in_envs()
 
     if "{{ cookiecutter.client_app }}".lower() == "none":
-        shutil.rmtree("clients")
         os.remove(os.path.join("package.json"))
 
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
         move_client_to_root("vue3")
 
-    elif "{{ cookiecutter.client_app }}".lower().replace(" ", "") == "reactnative":
-        remove_vue3_files()
-        move_client_to_root("reactnative")
+    if "{{ cookiecutter.mobile_app }}".lower().replace(" ", "") == "reactnative":
+        move_mobile_app_to_root("reactnative")
+        shutil.rmtree(os.path.join("clients"))
 
-    elif "{{ cookiecutter.client_app }}".lower() == "hybrid":
-        move_client_to_root("hybrid", "vue3", "reactnative")
+    elif "{{ cookiecutter.mobile_app }}".lower() == "none":
+        shutil.rmtree(os.path.join("clients"))
+
 
 
 

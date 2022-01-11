@@ -18,8 +18,10 @@
   ],
   "client_app": [
     "Vue3",
+    "None"
+  ],
+  "mobile_app": [
     "React Native",
-    "Hybrid",
     "None"
   ]
 }
