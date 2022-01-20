@@ -13,24 +13,12 @@ import CSRF from '@/services/csrf'
  *
  *   @returns {object} - An instance of the axios API client.
  */
- function getBaseUrl() {
-  if (process.env.VUE_APP_SERVER_BACKEND) {
-    if (/localhost/.test(process.env.VUE_APP_SERVER_BACKEND)) {
-      return `${window.location.protocol}//${window.location.host}`
-    } else {
-      return process.env.VUE_APP_SERVER_BACKEND
-    }
-  } else {
-    return `${window.location.protocol}//${window.location.hostname}`
-  }
-}
-
 
 class ApiService {
   static session
   static init
   constructor() {
-    let base_url = getBaseUrl()
+    let base_url = `${window.location.protocol}//${window.location.hostname}`
 
     console.debug(`API Service for ${base_url}`)
 
