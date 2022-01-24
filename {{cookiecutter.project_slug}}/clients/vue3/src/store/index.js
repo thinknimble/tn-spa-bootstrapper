@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 const STORAGE_HASH = 'Ax4XDbqIDE'
-export const STORAGE_KEY = `flexing-${STORAGE_HASH}`
+export const STORAGE_KEY = `{{ cookiecutter.project_name }}-${STORAGE_HASH}`
 
 const state = {}
 const mutations = {}
