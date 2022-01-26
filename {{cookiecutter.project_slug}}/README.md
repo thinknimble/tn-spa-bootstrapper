@@ -16,8 +16,5 @@ Once db credentials are set:
 1. run `python manage.py runserver` to run the Django API (default - localhost:8000/admin)
 
 
-### Frontend (TODO)
-```bash
-npm install --prefix client
-npm run build --prefix client
-```
+### Frontend
+See the [frontend README](client/README.md)
