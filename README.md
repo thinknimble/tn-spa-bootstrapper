@@ -47,17 +47,7 @@ These features can be enabled after initial project setup:
 
 Let's pretend you want to create a Django project called "therock". Rather than using `startproject` and then editing the results to include your name, email, and various configuration issues that always get forgotten until the worst possible moment, get cookiecutter to do all the work.
 
-First, get Cookiecutter, if you don't already have it:
-
-```bash
-pip install cookiecutter
-```
-
-Now run it against this repo::
-
-```bash
-cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git
-```
+Follow the Quick Start above.
 
 You'll be prompted for some values. Provide them, then a Django project will be created for you.
 
@@ -94,43 +84,14 @@ Answer the prompts with your own desired options. For example:
     2 - None
     Choose from 1, 2 [1]: 
 
-
-Enter the project and take a look around::
-
-```bash
-cd the-rock/
-ls
-```
-
-Before continuing, please note that **Postgresql must be installed and running on your system**. The following steps will fail without it. On Linux you can install postgres with apt-get and on Mac OS, you can use brew.
-
-Next, check out the `scripts` directory, which has some helpful shell scripts for initializing your database, Heroku and git repository. For example, here's how you can initialize your database.
-
-```bash
-cd scripts
-./init-db.sh
-```
-
 Create a git repo and push it there::
 
 ```bash
 git init
 git add .
 git commit -m "first awesome commit"
-git remote add origin https://bitbucket.org/thinknimble/the-rock.git
-git push -u origin master
-```
-
-To run it locally::
-
-```bash
-# Start the backend server
-cd server
-python manage.py migrate
-
-#
-npm install --prefix client
-npm run build --prefix client
+git remote add origin https://github.com/thinknimble/the-rock.git
+git push -u origin main 
 ```
 
 Now take a look at your repo. Don't forget to carefully look at the generated README. Awesome, right?

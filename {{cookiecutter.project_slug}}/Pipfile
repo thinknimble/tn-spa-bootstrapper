@@ -28,7 +28,6 @@ python-slugify = "==5.0.2"
 Pillow = "==8.3.1"
 django-currentuser = "==0.5.3"
 drf-nested-routers = "==0.93.3"
-graphene_django = "==3.0.0b7"
 
 # Testing
 # ------------------------------------------------------------------------------

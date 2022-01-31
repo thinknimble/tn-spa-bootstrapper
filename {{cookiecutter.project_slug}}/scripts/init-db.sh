@@ -53,6 +53,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     sudo_p_user=$(whoami)
 fi
 
+echo "##### postresql is installed"
+echo "##### Creating database: $db_name"
 sudo -u $sudo_p_user createdb $db_name
+echo "##### Creating user: $db_user"
 sudo -u $sudo_p_user psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
+echo "##### Giving user permission to the database"
 sudo -u $sudo_p_user psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
