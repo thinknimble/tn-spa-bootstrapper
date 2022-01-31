@@ -15,8 +15,8 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 
-from {{ cookiecutter.project_slug }}.utils.misc import datetime_appended_filepath, send_html_email
-from {{ cookiecutter.project_slug }}.utils import sites as site_utils
+from utils.misc import datetime_appended_filepath, send_html_email
+from utils import sites as site_utils
 
 from .models import User
 from .serializers import UserSerializer, UserLoginSerializer, UserRegistrationSerializer
@@ -27,7 +27,7 @@ def index(request):
     {% if cookiecutter.client_app.lower() == 'None' %}
     return redirect(to="/docs/swagger/")
     {% else %}
-    return render(request,'index.html')   
+    return render(request, 'core/index-placeholder.html')   
     {% endif %}
 
 

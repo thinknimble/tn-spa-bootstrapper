@@ -7,8 +7,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
 
 
-from {{ cookiecutter.project_slug }}.utils import sites as site_utils
-from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
+from utils import sites as site_utils
+from common.models import AbstractBaseModel
 
 
 class UserManager(BaseUserManager):

@@ -7,7 +7,7 @@ from drf_yasg import openapi
 from rest_framework_nested import routers
 from rest_auth import views as rest_auth_views
 
-from {{ cookiecutter.project_slug }}.core import views as core_views
+from core import views as core_views
 
 router = routers.SimpleRouter()
 if settings.DEBUG:

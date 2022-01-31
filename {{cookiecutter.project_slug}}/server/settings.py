@@ -50,8 +50,8 @@ if CURRENT_DOMAIN not in ALLOWED_HOSTS:
 
 INSTALLED_APPS = [
     # Local
-    "{{ cookiecutter.project_slug }}.common",
-    "{{ cookiecutter.project_slug }}.core",
+    "common",
+    "core",
 
     # Django
     "django.contrib.admin",
@@ -89,7 +89,7 @@ LOGOUT_URL = "rest_framework:logout"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
+ROOT_URLCONF = "urls"
 
 TEMPLATES = [
     {
@@ -109,7 +109,7 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
+WSGI_APPLICATION = "wsgi.application"
 
 # Database
 """There are two ways to specifiy the database connection
@@ -165,7 +165,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
-    "DEFAULT_PAGINATION_CLASS": "{{ cookiecutter.project_slug }}.core.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "core.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ],
@@ -257,8 +257,8 @@ if os.environ.get("USE_AWS_STORAGE", "False") == "True":
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
-    DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    STATICFILES_STORAGE = "{{cookiecutter.project_slug}}.utils.storages.StaticRootS3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "utils.storages.PrivateMediaStorage"
+    STATICFILES_STORAGE = "utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
     STATIC_URL = f"https://{aws_s3_domain}/static/"
     MEDIA_URL = f"https://{aws_s3_domain}/media/"
