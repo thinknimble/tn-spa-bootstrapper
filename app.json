@@ -1,5 +1,6 @@
 {
     "name": "TN SPA Bootstrapper",
+    "stack": "heroku-18",
     "env": {
         "SECRET_KEY": {
             "generator": "secret"
