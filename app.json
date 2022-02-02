@@ -18,12 +18,6 @@
         },
         {
             "url": "https://github.com/weibeld/heroku-buildpack-run.git"
-        },
-        {
-            "url": "heroku/nodejs"
-        },
-        {
-            "url": "heroku/python"
         }
     ]
 }
