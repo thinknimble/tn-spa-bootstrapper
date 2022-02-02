@@ -2,5 +2,5 @@
 echo "Hello World"
 pwd
 ls
-pip install --user cookiecutter
+easy_install --user cookiecutter
 cookiecutter --help
