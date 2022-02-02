@@ -2,6 +2,6 @@
 echo "Hello World"
 pwd
 ls
-apt-get update
+sudo apt-get update
 apt-get install cookiecutter
 cookiecutter --help
