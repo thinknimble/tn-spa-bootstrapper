@@ -3,4 +3,4 @@ python-dev
 build-essential
 python3-pkg-resources
 python3-setuptools
-cookiecutter
+python3-cookiecutter
