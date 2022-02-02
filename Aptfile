@@ -1,3 +1,4 @@
 # install cookiecutter for Heroku Buildpack steps
 python-setuptools
+python3-pkg-resources
 cookiecutter
