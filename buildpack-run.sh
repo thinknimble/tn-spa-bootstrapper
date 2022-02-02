@@ -6,4 +6,4 @@ ls
 # apt-get install cookiecutter
 # pip3 install cookiecutter
 # python -m pip install --user cookiecutter
-cookiecutter --help
+# cookiecutter --help
