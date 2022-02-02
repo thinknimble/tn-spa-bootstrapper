@@ -2,5 +2,5 @@
 echo "Hello World"
 pwd
 ls
-easy_install --user cookiecutter
+apt-get install cookiecutter
 cookiecutter --help
