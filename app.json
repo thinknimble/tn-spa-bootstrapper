@@ -1,0 +1,25 @@
+{
+    "name": "TN SPA Bootstrapper",
+    "env": {
+        "SECRET_KEY": {
+            "generator": "secret"
+        }
+    },
+    "addons": ["heroku-postgresql:standard-0"],
+    "environments": {
+        "review": {
+            "addons": ["heroku-postgresql:hobby-dev"]
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "https://github.com/weibeld/heroku-buildpack-run.git"
+        },
+        {
+            "url": "heroku/nodejs"
+        },
+        {
+            "url": "heroku/python"
+        }
+    ]
+}
