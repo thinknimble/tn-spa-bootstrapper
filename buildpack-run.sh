@@ -2,7 +2,7 @@
 echo "Hello World"
 pwd
 ls
-# sudo apt-get update
+apt-get --fix-missing update
 # apt-get install cookiecutter
-pip3 install cookiecutter
+# pip3 install cookiecutter
 cookiecutter --help
