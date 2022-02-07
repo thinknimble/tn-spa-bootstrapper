@@ -14,7 +14,7 @@
     },
     "buildpacks": [
         {
-            "url": "heroku-community/apt"
+            "url": "heroku/python"
         },
         {
             "url": "https://github.com/weibeld/heroku-buildpack-run.git"

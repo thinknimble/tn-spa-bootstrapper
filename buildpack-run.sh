@@ -7,4 +7,4 @@ ls
 # pip3 install cookiecutter
 # python -m pip install --user cookiecutter
 # cookiecutter --help
-apt list | grep cookie
+# apt list | grep cookie
