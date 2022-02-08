@@ -1,11 +1,26 @@
 {
     "name": "TN SPA Bootstrapper",
     "env": {
-        "SECRET_KEY": {
-            "generator": "secret"
+        "ALLOWED_HOSTS": {
+            "value": ".herokuapp.com"
+        },
+        "DEBUG": {
+            "value": "True"
+        },
+        "ENVIRONMENT": {
+            "value": "staging"
+        },
+        "MAILGUN_DOMAIN": {
+            "value": "thinknimble.com"
+        },
+        "NPM_CONFIG_PRODUCTION": {
+            "value": "false"
         },
         "PROJECT_PATH": {
             "value": "my_project"
+        },
+        "SECRET_KEY": {
+            "generator": "secret"
         }
     },
     "addons": ["heroku-postgresql:standard-0"],
@@ -19,9 +34,6 @@
             "url": "heroku/python"
         },
         {
-            "url": "https://github.com/weibeld/heroku-buildpack-run.git"
-        },
-        {
             "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
         },
         {
@@ -30,5 +42,8 @@
         {
             "url": "heroku/python"
         }
-    ]
+    ],
+    "scripts": {
+        "postdeploy": "./db_setup.sh"
+    }
 }
