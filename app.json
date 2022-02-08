@@ -8,7 +8,7 @@
             "value": "my_project"
         },
         "BUILDPACK_RUN": {
-            "value": "echo \"hello foo\""
+            "value": "echo 'hello foo'"
         }
     },
     "addons": ["heroku-postgresql:standard-0"],
