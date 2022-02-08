@@ -11,13 +11,16 @@ sudo -u $(whoami) psql -c "DROP USER <project_slug>;"
 ```
 
 You can run cookiecutter against the `main` branch on Github:
-`cookiecutter https://github.com/thinknimble/tn-spa-bootstrapper.git`
+```cookiecutter https://github.com/thinknimble/tn-spa-bootstrapper.git```
+
 You can run it against your own branch:
-`cookiecutter https://github.com/thinknimble/tn-spa-bootstrapper.git --checkout my-branch-name`
+```cookiecutter https://github.com/thinknimble/tn-spa-bootstrapper.git --checkout my-branch-name```
+
 You can run it against your locally cloned changes:
-`cookiecutter tn-spa-bootstrapper/`
+```cookiecutter tn-spa-bootstrapper/```
+
 If you don't want to say "yes" to every prompt, you run:
-`cookiecutter tn-spa-bootstrapper/ --no-input`
+```cookiecutter tn-spa-bootstrapper/ --no-input```
 
 ## Getting your pull request merged in
 
