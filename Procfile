@@ -1,1 +1,0 @@
-release: cookiecutter --no-input .

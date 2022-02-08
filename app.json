@@ -7,9 +7,6 @@
         "DEBUG": {
             "value": "True"
         },
-        "DISABLE_COLLECTSTATIC": {
-            "value": "1"
-        },
         "ENVIRONMENT": {
             "value": "staging"
         },
@@ -35,6 +32,9 @@
     "buildpacks": [
         {
             "url": "heroku/python"
+        },
+        {
+            "url": "https://github.com/weibeld/heroku-buildpack-run.git"
         },
         {
             "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
