@@ -2,10 +2,27 @@
 
 We are always happy to get issues identified and pull requests!
 
+## Testing locally
+
+Make sure to clean up your local DB between runs so you can test things as a fresh install:
+```bash
+sudo -u $(whoami) psql -c "DROP DATABASE <project_slug>_db;
+sudo -u $(whoami) psql -c "DROP USER <project_slug>;"
+```
+
+You can run cookiecutter against the `main` branch on Github:
+`cookiecutter https://github.com/thinknimble/tn-spa-bootstrapper.git`
+You can run it against your own branch:
+`cookiecutter https://github.com/thinknimble/tn-spa-bootstrapper.git --checkout my-branch-name`
+You can run it against your locally cloned changes:
+`cookiecutter tn-spa-bootstrapper/`
+If you don't want to say "yes" to every prompt, you run:
+`cookiecutter tn-spa-bootstrapper/ --no-input`
+
 ## Getting your pull request merged in
 
 1. Keep it small. The smaller the pull request, the more likely I'll pull it in.
-2. Pull requests that fix a current issue get priority for review.
+1. Pull requests that fix a current issue get priority for review.
 
 ## Testing
 
