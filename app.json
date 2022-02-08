@@ -7,6 +7,9 @@
         "DEBUG": {
             "value": "True"
         },
+        "DISABLE_COLLECTSTATIC": {
+            "value": "1"
+        },
         "ENVIRONMENT": {
             "value": "staging"
         },
