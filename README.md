@@ -90,7 +90,7 @@ Create a git repo and push it there::
 git init
 git add .
 git commit -m "first awesome commit"
-git remote add origin https://github.com/thinknimble/the-rock.git
+git remote set-url origin git@github.com:thinknimble/the-rock.git
 git push -u origin main 
 ```
 
