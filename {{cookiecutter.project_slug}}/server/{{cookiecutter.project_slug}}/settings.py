@@ -334,6 +334,35 @@ LOGGING = {
     },
 }
 
+# Rollbar error logging
+if _env_get_required("USE_ROLLBAR") == "True":
+    MIDDLEWARE += [
+        "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
+    ]
+    ROLLBAR = {
+        "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+        "environment": ENVIRONMENT,
+        "branch": "master",
+        "root": BASE_DIR,
+    }
+    LOGGING["handlers"].update(
+        {
+            # Rollbar exception logging handler
+            "rollbar": {
+                "level": "WARNING",
+                "filters": ["require_debug_false"],
+                "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+                "environment": ENVIRONMENT,
+                "class": "rollbar.logger.RollbarHandler",
+            },
+        }
+    )
+    LOGGING["loggers"]["django"]["handlers"].remove("mail_admins")
+    LOGGING["loggers"]["django"]["handlers"].append("rollbar")
+    LOGGING["loggers"]["savi_webhooks_server"]["handlers"].remove("mail_admins")
+    LOGGING["loggers"]["savi_webhooks_server"]["handlers"].append("rollbar")
+
+
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
