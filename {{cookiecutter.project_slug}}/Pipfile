@@ -28,7 +28,6 @@ python-slugify = "==5.0.2"
 Pillow = "==8.3.1"
 django-currentuser = "==0.5.3"
 drf-nested-routers = "==0.93.3"
-
 # Testing
 # ------------------------------------------------------------------------------
 mypy = "==0.910"  # https://github.com/python/mypy
@@ -36,6 +35,7 @@ django-stubs = "==1.8.0"  # https://github.com/typeddjango/django-stubs
 pytest = "==6.2.4"  # https://github.com/pytest-dev/pytest
 pytest-sugar = "==0.9.4"  # https://github.com/Frozenball/pytest-sugar
 django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
+rollbar = "==0.16.2"
 
 [requires]
 python_version = "3.9"
@@ -49,7 +49,6 @@ coverage = "==5.5"  # https://github.com/nedbat/coveragepy
 black = "==21.7b0"  # https://github.com/psf/black
 pylint-django = "==2.4.4"  # https://github.com/PyCQA/pylint-django
 pre-commit = "==2.13.0"  # https://github.com/pre-commit/pre-commit
-
 # Django
 # ------------------------------------------------------------------------------
 factory-boy = "==3.2.0"  # https://github.com/FactoryBoy/factory_boy
