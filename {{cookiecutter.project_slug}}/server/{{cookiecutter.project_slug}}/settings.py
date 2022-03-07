@@ -359,8 +359,8 @@ if _env_get_required("USE_ROLLBAR") == "True":
     )
     LOGGING["loggers"]["django"]["handlers"].remove("mail_admins")
     LOGGING["loggers"]["django"]["handlers"].append("rollbar")
-    LOGGING["loggers"]["savi_webhooks_server"]["handlers"].remove("mail_admins")
-    LOGGING["loggers"]["savi_webhooks_server"]["handlers"].append("rollbar")
+    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].remove("mail_admins")
+    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].append("rollbar")
 
 
 # Popular testing framework that allows logging to stdout while running unit tests
