@@ -81,6 +81,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
 ]
 
 OLD_PASSWORD_FIELD_ENABLED = True
@@ -292,6 +293,15 @@ if not IN_DEV:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     MIDDLEWARE += ["django.middleware.security.SecurityMiddleware"]
 
+#
+# Rollbar logging config
+#
+ROLLBAR = {
+    "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+    "environment": ENVIRONMENT,
+    "branch": "master",
+    "root": BASE_DIR,
+}
 
 #
 # Custom logging configuration
@@ -324,44 +334,22 @@ LOGGING = {
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
         },
+        "rollbar": {
+            "level": "WARNING",
+            "filters": ["require_debug_false"],
+            "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+            "environment": ENVIRONMENT,
+            "class": "rollbar.logger.RollbarHandler",
+        },
     },
     "loggers": {
-        "django": {"handlers": ["console", "mail_admins"], "level": "INFO"},
+        "django": {"handlers": ["console", "mail_admins", "rollbar",], "level": "INFO"},
         # The logger name matters -- it MUST match the name of the app
-        "{{ cookiecutter.project_slug }}": {"handlers": ["console", "mail_admins"], "level": "DEBUG", "propagate": True},
+        "{{ cookiecutter.project_slug }}": {"handlers": ["console", "mail_admins", "rollbar,"], "level": "DEBUG", "propagate": True},
         "{{ cookiecutter.project_slug }}.request": {"handlers": [], "level": "INFO", "propagate": True},
         "{{ cookiecutter.project_slug }}.tasks": {"handlers": [], "level": "INFO", "propagate": True},
     },
 }
-
-# Rollbar error logging
-if _env_get_required("USE_ROLLBAR") == "True":
-    MIDDLEWARE += [
-        "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
-    ]
-    ROLLBAR = {
-        "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
-        "environment": ENVIRONMENT,
-        "branch": "master",
-        "root": BASE_DIR,
-    }
-    LOGGING["handlers"].update(
-        {
-            # Rollbar exception logging handler
-            "rollbar": {
-                "level": "WARNING",
-                "filters": ["require_debug_false"],
-                "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
-                "environment": ENVIRONMENT,
-                "class": "rollbar.logger.RollbarHandler",
-            },
-        }
-    )
-    LOGGING["loggers"]["django"]["handlers"].remove("mail_admins")
-    LOGGING["loggers"]["django"]["handlers"].append("rollbar")
-    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].remove("mail_admins")
-    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].append("rollbar")
-
 
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
