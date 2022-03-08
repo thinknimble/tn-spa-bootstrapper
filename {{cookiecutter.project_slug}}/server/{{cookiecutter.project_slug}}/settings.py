@@ -299,9 +299,10 @@ if not IN_DEV:
 ROLLBAR = {
     "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
     "environment": ENVIRONMENT,
-    "branch": "master",
     "root": BASE_DIR,
 }
+import rollbar
+rollbar.init(**ROLLBAR)
 
 #
 # Custom logging configuration
