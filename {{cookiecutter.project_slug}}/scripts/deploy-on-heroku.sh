@@ -17,6 +17,12 @@ else
     NPM_PRIVATE_TOKEN = "${NPM_PRIVATE_TOKEN}"
     heroku config:set NPM_PRIVATE_TOKEN=$NPM_PRIVATE_TOKEN --app $APP_NAME
 fi
+if [ -z "${ROLLBAR_ACCESS_TOKEN}" ]; then
+    heroku config:set USE_ROLLBAR=False --app $APP_NAME
+else
+    heroku config:set USE_ROLLBAR=True --app $APP_NAME
+    heroku config:set ROLLBAR_ACCESS_TOKEN="${ROLLBAR_ACCSESS_TOKEN}" --app $APP_NAME
+fi
 {%- endif %}
 heroku config:set SECRET_KEY="$(openssl rand -base64 64)" --app $APP_NAME
 heroku config:set DEBUG="True" --app $APP_NAME
