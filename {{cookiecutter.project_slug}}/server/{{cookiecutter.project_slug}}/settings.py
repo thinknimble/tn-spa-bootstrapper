@@ -329,11 +329,6 @@ LOGGING = {
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
         },
-        "mail_admins": {
-            "level": "ERROR",
-            "filters": ["require_debug_false"],
-            "class": "django.utils.log.AdminEmailHandler",
-        },
         "rollbar": {
             "level": "WARNING",
             "filters": ["require_debug_false"],
@@ -343,9 +338,9 @@ LOGGING = {
         },
     },
     "loggers": {
-        "django": {"handlers": ["console", "mail_admins", "rollbar",], "level": "INFO"},
+        "django": {"handlers": ["console", "rollbar",], "level": "INFO"},
         # The logger name matters -- it MUST match the name of the app
-        "{{ cookiecutter.project_slug }}": {"handlers": ["console", "mail_admins", "rollbar,"], "level": "DEBUG", "propagate": True},
+        "{{ cookiecutter.project_slug }}": {"handlers": ["console", "rollbar,"], "level": "DEBUG", "propagate": True},
         "{{ cookiecutter.project_slug }}.request": {"handlers": [], "level": "INFO", "propagate": True},
         "{{ cookiecutter.project_slug }}.tasks": {"handlers": [], "level": "INFO", "propagate": True},
     },
