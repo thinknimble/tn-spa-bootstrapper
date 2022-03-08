@@ -1,0 +1,21 @@
+FROM node:12-alpine
+
+# NPM RC IS USED AT IMAGE BUILD AND CANNOT BE PASSED AS AN ENV VARIABLE
+# THE VALUE WILL BE VISIBLE IN COMMIT HISTORY https://docs.npmjs.com/docker-and-private-modules
+ARG NPM_READ_ONLY_TOKEN
+
+COPY ./client/.npmrc /app/client/.npmrc
+COPY ./client/package.json /app/client/package.json
+RUN npm install @vue/cli@3.7.0 -g
+
+WORKDIR /app/client
+RUN npm i
+
+# start app
+CMD ["npm", "run", "serve"]
+
+
+# reanme docker-compose.yml to docker-local-compose.yml
+# rename docker-build-compose.yml to docker-compose.yml
+
+
