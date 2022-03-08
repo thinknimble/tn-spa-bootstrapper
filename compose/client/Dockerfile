@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:16-alpine
 
 # NPM RC IS USED AT IMAGE BUILD AND CANNOT BE PASSED AS AN ENV VARIABLE
 # THE VALUE WILL BE VISIBLE IN COMMIT HISTORY https://docs.npmjs.com/docker-and-private-modules
@@ -15,7 +15,5 @@ RUN npm i
 CMD ["npm", "run", "serve"]
 
 
-# reanme docker-compose.yml to docker-local-compose.yml
-# rename docker-build-compose.yml to docker-compose.yml
 
 
