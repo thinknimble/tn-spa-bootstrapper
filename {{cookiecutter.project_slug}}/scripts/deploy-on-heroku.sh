@@ -30,7 +30,7 @@ heroku config:set DEBUG="True" --app $APP_NAME
 heroku config:set CURRENT_DOMAIN="$APP_NAME.herokuapp.com" --app $APP_NAME
 heroku config:set ALLOWED_HOSTS="$APP_NAME.herokuapp.com,localhost" --app $APP_NAME
 heroku config:set NPM_CONFIG_PRODUCTION=false --app $APP_NAME
-heroku config:set ROLLBAR_ACCESS_TOKEN="$ROLLBAR_ACCSESS_TOKEN" --app $APP_NAME
+heroku config:set ROLLBAR_ACCESS_TOKEN=$ROLLBAR_ACCSESS_TOKEN --app $APP_NAME
 fi
 git init 
 heroku git:remote --app $APP_NAME
