@@ -301,8 +301,6 @@ ROLLBAR = {
     "environment": ENVIRONMENT,
     "root": BASE_DIR,
 }
-import rollbar
-rollbar.init(**ROLLBAR)
 
 #
 # Custom logging configuration
