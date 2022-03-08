@@ -97,6 +97,59 @@ git push -u origin main
 
 Now take a look at your repo. Don't forget to carefully look at the generated README. Awesome, right?
 
+
+
+
+## Local developmnet with Docker ##
+
+Docker has been added to this app for local development. Using docker can be a replacement during local development as it will run irrespective of your current configurations 
+
+**NOTE: uncomment the host from the .env file to the docker host**
+
+The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
+
+For ease of use you can use the commands from the makefile to run the containers (server,client,database server and client can be ran individually) when you make changes to the original images you will need to rebuild them. 
+
+**Print all available commands**
+- make commands
+
+**Run Server-Client-DB (-d for detached mode)**
+- make run 
+- make run-d 
+
+**Run Client (-d for detached mode)**
+- make run-client
+- make run-client-d
+
+**Run Server-DB (-d for detached mode)**
+***The DB will always run with the server because it is a dependency***
+- make run-server
+- make run-server-d
+
+**Access Client SH**
+- make client-shell
+
+
+**Access Server SH**
+- make server-shell
+
+
+#### If you make changes to the underlying images (eg installing a new package) you will have to rebuild the image ####
+
+**Build Server-Client-DB**
+- make build
+
+**Build Client** 
+make build-client
+
+
+**Build Server**
+make build-server
+
+
+
+
+
 ## Want to Help Us Improve the Bootstrapper?
 
 See the [CONTRIBUTING] file for information about reporting issues, setting up your dev environment, running tests, and making pull requests.
