@@ -105,6 +105,7 @@ Now take a look at your repo. Don't forget to carefully look at the generated RE
 Docker has been added to this app for local development. Using docker can be a replacement during local development as it will run irrespective of your current configurations 
 
 **NOTE: uncomment the host from the .env file to the docker host**
+**NOTE: An initial pipfile lock is required for the backend**
 
 The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
 
