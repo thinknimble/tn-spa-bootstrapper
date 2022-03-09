@@ -27,7 +27,7 @@ def index(request):
     {% if cookiecutter.client_app.lower() == 'None' %}
     return redirect(to="/docs/swagger/")
     {% else %}
-    return render(request,'core/index-placeholder.html')
+    return render(request,'index.html')
     {% endif %}
 
 
