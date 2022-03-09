@@ -1,8 +1,7 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  
+    <img alt="Project Logo" src="../assets/logo.png" />
+    <h2>Welcome to your project!</h2>
   </div>
 </template>
 
@@ -12,13 +11,10 @@ import { CollectionManager } from '@thinknimble/tn-models'
 import { unwrap } from '@/services/utils'
 import User from '@/services/users'
 
-import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'Home',
-  components: {
-    HelloWorld,
-  },
+  components: {  },
 
   props: {},
   data() {
