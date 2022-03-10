@@ -40,6 +40,8 @@ Docker has been added to this app for local development. Using docker can be a r
 **NOTE: An initial pipfile lock is required for the backend**
 
 The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
+If you are starting the project from scratch make sure to install the python packages with pipenv to generate a pipfile.lock 
+Additionally each user must run npm install prior to make run to use the local copy of node_modules
 
 For ease of use you can use the commands from the makefile to run the containers (server,client,database server and client can be ran individually) when you make changes to the original images you will need to rebuild them.
 You can checkout all the commands in the [Makefile](./Makefile)
