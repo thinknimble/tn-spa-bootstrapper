@@ -42,6 +42,11 @@ Docker has been added to this app for local development. Using docker can be a r
 The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
 If you are starting the project from scratch make sure to install the python packages with pipenv to generate a pipfile.lock 
 Additionally each user must run npm install prior to make run to use the local copy of node_modules
+Why is the node modules mounted over?
+1. The user does not have to sh into the container to install new packages
+2. The node modules folder does not overwrite the local version 
+3. Your editor can reference the node_modules for its needs (on your local)
+   
 
 For ease of use you can use the commands from the makefile to run the containers (server,client,database server and client can be ran individually) when you make changes to the original images you will need to rebuild them.
 You can checkout all the commands in the [Makefile](./Makefile)
