@@ -12,114 +12,42 @@ if settings.IN_STAGING or settings.IN_PROD:
     urlpatterns += [
         path(
             r"favicon.ico",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/favicon.ico"), permanent=False
-            ),
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/favicon.ico"), permanent=False),
             name="favicon",
         ),
         path(
-            r"apple-icon-57x57.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-57x57.png"), permanent=False
-            ),
-            name="apple-icon-57",
+            r"android-chrome-192x192.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/android-chrome-192x192.png"), permanent=False),
+            name="android-chrome-icon-192",
         ),
         path(
-            r"apple-icon-60x60.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-60x60.png"), permanent=False
-            ),
-            name="apple-icon-60",
-        ),
-        path(
-            r"apple-icon-72x72.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-72x72.png"), permanent=False
-            ),
-            name="apple-icon-72",
-        ),
-        path(
-            r"apple-icon-76x76.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-76x76.png"), permanent=False
-            ),
-            name="apple-icon-76",
-        ),
-        path(
-            r"apple-icon-114x114.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-114x114.png"), permanent=False
-            ),
-            name="apple-icon-114",
-        ),
-        path(
-            r"apple-icon-120x120.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-120x120.png"), permanent=False
-            ),
-            name="apple-icon-120",
-        ),
-        path(
-            r"apple-icon-144x144.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-144x144.png"), permanent=False
-            ),
-            name="apple-icon-144",
-        ),
-        path(
-            r"apple-icon-152x152.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-152x152.png"), permanent=False
-            ),
-            name="apple-icon-152",
-        ),
-        path(
-            r"apple-icon-180x180.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/apple-icon-180x180.png"), permanent=False
-            ),
-            name="apple-icon-180",
-        ),
-        path(
-            r"android-icon-192x192.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/android-icon-192x192.png"), permanent=False
-            ),
-            name="apple-icon-192",
+            r"android-chrome-512x512.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/android-chrome-512x512.png"), permanent=False),
+            name="android-chrome-icon-512",
         ),
         path(
             r"favicon-32x32.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/favicon-32x32.png"), permanent=False
-            ),
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/favicon-32x32.png"), permanent=False),
             name="favicon-32",
         ),
         path(
-            r"favicon-96x96.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/favicon-96x96.png"), permanent=False
-            ),
-            name="favicon-96",
-        ),
-        path(
             r"favicon-16x16.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/favicon-16x16.png"), permanent=False
-            ),
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/favicon-16x16.png"), permanent=False),
             name="favicon-16",
         ),
         path(
-            r"manifest.json",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/manifest.json"), permanent=False
-            ),
-            name="icon-manifest",
+            r"apple-touch-icon.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/apple-touch-icon.png"), permanent=False),
+            name="apple-touch-icon",
         ),
         path(
-            r"ms-icon-144x144.png",
-            RedirectView.as_view(
-                url=staticfiles_storage.url("favicons/ms-icon-144x144.png"), permanent=False
-            ),
-            name="ms-icon",
+            r"mstile-150x150.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/mstile-150x150.png"), permanent=False),
+            name="mstile-icon",
+        ),
+        path(
+            r"safari-pinned-tab.svg",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/safari-pinned-tab.svg"), permanent=False),
+            name="safari-pinned-tab",
         ),
     ]

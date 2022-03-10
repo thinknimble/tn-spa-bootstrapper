@@ -18,3 +18,17 @@ Once db credentials are set:
 
 ### Frontend
 See the [frontend README](client/README.md)
+
+
+### Favicon Setup
+
+
+The Django app is already configured to serve favorite icons for all browsers and platforms (include, for example, apple-icons and android-icons at various sizes). By default, this icon is the vue/react logo.
+
+Visit [realfavicongenerator.net](https://realfavicongenerator.net/) and upload a high resolution, square version of the image you would like to use as the favicon for this app.
+
+Download the ZIP file of icons that the site generates for you and paste them in the `client/public/static/favicons/` directory.
+
+When we run collectstatic the public folder is copied as is and enables serving of the favicons
+
+
