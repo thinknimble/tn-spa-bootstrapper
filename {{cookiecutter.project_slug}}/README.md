@@ -32,4 +32,31 @@ Download the ZIP file of icons that the site generates for you and paste them in
 
 When we run collectstatic the public folder is copied as is and enables serving of the favicons
 
+## Local developmnet with Docker ##
+
+Docker has been added to this app for local development. Using docker can be a replacement during local development as it will run irrespective of your current configurations 
+
+**NOTE: uncomment the host from the .env file to the docker host**
+**NOTE: An initial pipfile lock is required for the backend**
+
+The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
+
+For ease of use you can use the commands from the makefile to run the containers (server,client,database server and client can be ran individually) when you make changes to the original images you will need to rebuild them.
+You can checkout all the commands in the Makefile
+
+**Print all available commands**
+- make commands
+
+**Run Server-Client-DB (-d for detached mode)**
+- make run 
+- make run-d 
+
+**Run Client (-d for detached mode)**
+- make run-client
+- make run-client-d
+
+**Run Server-DB (-d for detached mode)**
+***The DB will always run with the server because it is a dependency***
+- make run-server
+- make run-server-d
 
