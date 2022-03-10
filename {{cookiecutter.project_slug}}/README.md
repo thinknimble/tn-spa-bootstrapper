@@ -42,7 +42,7 @@ Docker has been added to this app for local development. Using docker can be a r
 The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
 
 For ease of use you can use the commands from the makefile to run the containers (server,client,database server and client can be ran individually) when you make changes to the original images you will need to rebuild them.
-You can checkout all the commands in the Makefile
+You can checkout all the commands in the [Makefile](./Makefile)
 
 **Print all available commands**
 - make commands
