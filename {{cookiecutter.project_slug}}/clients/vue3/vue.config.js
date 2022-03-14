@@ -20,10 +20,12 @@ module.exports = {
       },
     },
   },
+  extensions: ['.js', '.vue', '.json'],
   configureWebpack: {  
     resolve: {  
       alias: {  
-        '@composables': path.resolve(__dirname, 'composables'),  
+        "@": path.join(__dirname, './src')
+        // '@composables': path.resolve(__dirname, 'composables'),  
       },  
     },  
   }
