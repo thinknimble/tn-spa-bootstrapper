@@ -20,12 +20,12 @@ module.exports = {
       },
     },
   },
-  configureWebpack: {  
-    resolve: {  
-      alias: {  
-        "@": path.join(__dirname, 'src/')
-        // '@composables': path.resolve(__dirname, 'composables'),  
-      },  
-    },  
-  }
+  // configureWebpack: {  
+  //   resolve: {  
+  //     alias: {  
+  //       "@": path.join(__dirname, 'src/')
+  //       // '@composables': path.resolve(__dirname, 'composables'),  
+  //     },  
+  //   },  
+  // }
 }
