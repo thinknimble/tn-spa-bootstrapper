@@ -34,6 +34,7 @@ See: [Maintained Foundation fork]
  - [Procfile] for deploying to Heroku
  - Run tests with unittest or pytest
  - Default integration with [pre-commit] for identifying simple issues before submission to code review
+ - Integration with [Rollbar] for error logging
 
 ## Optional Integrations
 
@@ -41,7 +42,6 @@ These features can be enabled after initial project setup:
 
  - Serve static files from Amazon S3 or Whitenoise
  - Integration with [MailHog] for local email testing
- - Integration with [Rollbar] for error logging
 
 ## Usage
 
