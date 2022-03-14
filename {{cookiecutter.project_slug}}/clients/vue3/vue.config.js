@@ -20,7 +20,6 @@ module.exports = {
       },
     },
   },
-  extensions: ['.js', '.vue', '.json'],
   configureWebpack: {  
     resolve: {  
       alias: {  
