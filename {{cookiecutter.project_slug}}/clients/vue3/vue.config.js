@@ -1,3 +1,4 @@
+const path = require('path');  
 module.exports = {
   runtimeCompiler: true,
   assetsDir: 'static',
@@ -19,4 +20,11 @@ module.exports = {
       },
     },
   },
+  configureWebpack: {  
+    resolve: {  
+      alias: {  
+        '@composables': path.resolve(__dirname, 'src/composables'),  
+      },  
+    },  
+  }
 }
