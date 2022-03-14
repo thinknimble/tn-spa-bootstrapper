@@ -1,7 +1,13 @@
 # Setup
-### Bootstrapper setup instructions
+### Bootstrapper post setup instructions
 
-Once you've run cookiecutter and set up the bootstrapper, there are a few more steps you'll need to complete.
+Once you've run cookiecutter and set up the bootstrapper, there are a few more steps you'll want to complete.
+
+
+1. Create database
+
+
+1. Create git repo
 
 
 1. Deploy to Heroku
