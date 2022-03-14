@@ -58,7 +58,7 @@ export default {
     return {
       loginForm,
       onLogin,
-      fieldMap: FIELD_MAP
+      // fieldMap: FIELD_MAP
     }
   }
 }
