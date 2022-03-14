@@ -42,7 +42,7 @@
 
 <script>
 import { computed } from 'vue'
-import { useModelWrapper } from '@/composables/modelValue'
+import { useModelWrapper } from '@/composables/VModalWrapper'
 export default {
   props: {
     modelValue: {},
