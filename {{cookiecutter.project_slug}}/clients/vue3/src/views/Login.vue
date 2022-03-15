@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <h2>Login</h2>
+
     <div class="columns">
       <div class="column"></div>
       <div class="column">
