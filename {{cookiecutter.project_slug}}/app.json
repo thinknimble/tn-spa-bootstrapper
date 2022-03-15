@@ -20,7 +20,7 @@
             "value": "false"
         },
         "PROJECT_PATH": {
-            "value": "my_project"
+            "value": "{{ cookiecutter.project_slug }}"
         },
         "SECRET_KEY": {
             "generator": "secret"
@@ -33,15 +33,6 @@
         }
     },
     "buildpacks": [
-        {
-            "url": "heroku/python"
-        },
-        {
-            "url": "https://github.com/weibeld/heroku-buildpack-run.git"
-        },
-        {
-            "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
-        },
         {
             "url": "heroku/nodejs"
         },
