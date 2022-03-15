@@ -1,7 +1,5 @@
 <template>
   <div class="login">
-    <h2>Login</h2>
-
     <div class="columns">
       <div class="column"></div>
       <div class="column">
@@ -12,15 +10,19 @@
           <div class="card-content">
               <FormField
                 labelText="Email"
+                v-model:modelValue="loginForm.email.value"
                 placeholder="Email"
                 type="text"
                 @blur="loginForm.email.validate()"
+                :errors="loginForm.email.errors"
               />
               <FormField
                 labelText="Password"
+                v-model:modelValue="loginForm.password.value"
                 placeholder="Password"
                 type="password"
                 @blur="loginForm.password.validate()"
+                :errors="loginForm.password.errors"
               />
             <button @click="onLogin" :disabled="!loginForm.isValid" class="button is-primary">Login</button>
           </div>
