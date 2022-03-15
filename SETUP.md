@@ -4,14 +4,17 @@
 Once you've run cookiecutter and set up the bootstrapper, there are a few more steps you'll want to complete.
 
 
-1. Create database
-
+#### Setup Review Apps/Heroku
 
 1. Create git repo
-
-
-1. Deploy to Heroku
-    - review apps?
+```bash
+git init
+git add .
+git commit -m "first awesome commit"
+git remote set-url origin git@github.com:thinknimble/the-rock.git
+git push -u origin main 
+```
+- This should auto-deploy a review app to Heroku
 
 
 1. Add the following config vars to your Heroku Pipeline (i.e., contains all your dynos):
@@ -19,7 +22,10 @@ Once you've run cookiecutter and set up the bootstrapper, there are a few more s
     - `NPM_PRIVATE_TOKEN`
 
 
-1. Domain DNS pointed to Heroku with ACM turned on
+1. Rollbar
+    - Setup your project in the ThinkNimble Rollbar account
+    - Follow the integration setup steps to validate your app
+    - Add the `ROLLBAR_ACCESS_TOKEN` config var to your Heroku Pipeline.
 
 
 1. Mailgun
@@ -27,7 +33,11 @@ Once you've run cookiecutter and set up the bootstrapper, there are a few more s
     - Add the `MAILGUN_API_KEY` config var to your Heroku Pipeline.
 
 
-1. Rollbar
-    - Setup your project in the ThinkNimble Rollbar account
-    - Follow the integration setup steps to validate your app
-    - Add the `ROLLBAR_ACCESS_TOKEN` config var to your Heroku Pipeline.
+1. Domain DNS pointed to Heroku with ACM turned on
+
+
+#### Setup Staging
+##### TODO
+
+#### Setup Production
+##### TODO

@@ -84,16 +84,6 @@ Answer the prompts with your own desired options. For example:
     2 - None
     Choose from 1, 2 [1]: 
 
-Create a git repo and push it there::
-
-```bash
-git init
-git add .
-git commit -m "first awesome commit"
-git remote set-url origin git@github.com:thinknimble/the-rock.git
-git push -u origin main 
-```
-
 Now take a look at your repo. Don't forget to carefully look at the generated README. Awesome, right?
 
 ## Want to Help Us Improve the Bootstrapper?
