@@ -30,7 +30,7 @@ def index(request):
     try:
         return render(request,'index.html')
     except TemplateDoesNotExist:
-        return render(request, 'index-placeholder.html')
+        return render(request, 'core/index-placeholder.html')
     {% endif %}
 
 
