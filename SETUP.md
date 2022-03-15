@@ -37,7 +37,14 @@ git push -u origin main
 
 
 #### Setup Staging
-##### TODO
+
+1. Attach Papertrail
+
+1. Attach Postgres DB
+
 
 #### Setup Production
-##### TODO
+
+1. Attach Papertrail
+
+1. Attach Postgres DB
