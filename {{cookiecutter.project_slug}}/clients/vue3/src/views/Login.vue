@@ -10,7 +10,7 @@
           <div class="card-content">
               <FormField
                 labelText="Email"
-                v-model:modelValue="loginForm.email.value"
+                v-model="loginForm.email.value"
                 placeholder="Email"
                 type="text"
                 @blur="loginForm.email.validate()"
@@ -18,7 +18,7 @@
               />
               <FormField
                 labelText="Password"
-                v-model:modelValue="loginForm.password.value"
+                v-model="loginForm.password.value"
                 placeholder="Password"
                 type="password"
                 @blur="loginForm.password.validate()"
@@ -58,7 +58,7 @@ export default {
     return {
       loginForm,
       onLogin,
-      // fieldMap: FIELD_MAP
+      // fieldMap: 
     }
   }
 }
