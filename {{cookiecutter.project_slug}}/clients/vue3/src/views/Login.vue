@@ -12,7 +12,7 @@
           <div class="card-content">
               <FormField
                 labelText="Email"
-                v-model="loginForm.email.value"
+                v-model:modelValue="loginForm.email.value"
                 placeholder="Email"
                 type="text"
                 @blur="loginForm.email.validate()"
@@ -20,7 +20,7 @@
               />
               <FormField
                 labelText="Password"
-                v-model="loginForm.password.value"
+                v-model:modelValue="loginForm.password.value"
                 placeholder="Password"
                 type="password"
                 @blur="loginForm.password.validate()"
