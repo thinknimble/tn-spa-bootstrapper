@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -28,9 +28,9 @@ def index(request):
     return redirect(to="/docs/swagger/")
     {% else %}
     try:
-        return render(request, "index.html", {})
+        return render(request,'index.html')
     except TemplateDoesNotExist:
-        return render(request, "core/index-placeholder.html", {})
+        return render(request, 'core/index-placeholder.html')
     {% endif %}
 
 
