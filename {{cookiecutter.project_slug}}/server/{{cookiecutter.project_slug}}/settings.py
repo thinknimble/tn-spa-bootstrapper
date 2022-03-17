@@ -81,6 +81,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
 ]
 
 OLD_PASSWORD_FIELD_ENABLED = True
@@ -292,6 +293,14 @@ if not IN_DEV:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     MIDDLEWARE += ["django.middleware.security.SecurityMiddleware"]
 
+#
+# Rollbar logging config
+#
+ROLLBAR = {
+    "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+    "environment": ENVIRONMENT,
+    "root": BASE_DIR,
+}
 
 #
 # Custom logging configuration
@@ -319,16 +328,18 @@ LOGGING = {
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
         },
-        "mail_admins": {
+        "rollbar": {
             "level": "WARNING",
             "filters": ["require_debug_false"],
-            "class": "django.utils.log.AdminEmailHandler",
+            "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+            "environment": ENVIRONMENT,
+            "class": "rollbar.logger.RollbarHandler",
         },
     },
     "loggers": {
-        "django": {"handlers": ["console", "mail_admins"], "level": "INFO"},
+        "django": {"handlers": ["console", "rollbar", ], "level": "INFO"},
         # The logger name matters -- it MUST match the name of the app
-        "{{ cookiecutter.project_slug }}": {"handlers": ["console", "mail_admins"], "level": "DEBUG", "propagate": True},
+        "{{ cookiecutter.project_slug }}": {"handlers": ["console", "rollbar",], "level": "DEBUG", "propagate": True},
         "{{ cookiecutter.project_slug }}.request": {"handlers": [], "level": "INFO", "propagate": True},
         "{{ cookiecutter.project_slug }}.tasks": {"handlers": [], "level": "INFO", "propagate": True},
     },
