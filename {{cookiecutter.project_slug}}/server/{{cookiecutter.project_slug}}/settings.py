@@ -355,7 +355,3 @@ CORS_ALLOWED_ORIGINS = [
     "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
     "https://{{ cookiecutter.project_slug }}.herokuapp.com"
 ]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.herokuapp.com",
-]
