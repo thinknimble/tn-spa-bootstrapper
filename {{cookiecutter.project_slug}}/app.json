@@ -1,0 +1,46 @@
+{
+    "name": "{{ cookiecutter.project_name }}",
+    "env": {
+        "ALLOWED_HOSTS": {
+            "value": ".herokuapp.com"
+        },
+        "DEBUG": {
+            "value": "True"
+        },
+        "DISABLE_COLLECTSTATIC": {
+            "value": 1
+        },
+        "ENVIRONMENT": {
+            "value": "staging"
+        },
+        "MAILGUN_DOMAIN": {
+            "value": "thinknimble.com"
+        },
+        "NPM_CONFIG_PRODUCTION": {
+            "value": "false"
+        },
+        "PROJECT_PATH": {
+            "value": "{{ cookiecutter.project_slug }}"
+        },
+        "SECRET_KEY": {
+            "generator": "secret"
+        }
+    },
+    "addons": ["heroku-postgresql:standard-0"],
+    "environments": {
+        "review": {
+            "addons": ["heroku-postgresql:hobby-dev"]
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "heroku/nodejs"
+        },
+        {
+            "url": "heroku/python"
+        }
+    ],
+    "scripts": {
+        "postdeploy": "./db_setup.sh"
+    }
+}
