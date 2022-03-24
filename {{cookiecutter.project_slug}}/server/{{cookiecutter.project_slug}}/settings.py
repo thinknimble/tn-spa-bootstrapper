@@ -280,7 +280,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # i.e. 100 MB
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL.
-ADMIN_URL = "admin/"
+ADMIN_URL = "staff/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [("ThinkNimble", "support@thinknimble.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
