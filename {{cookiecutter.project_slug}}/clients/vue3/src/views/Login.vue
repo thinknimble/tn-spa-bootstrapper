@@ -8,8 +8,10 @@
             <h1 class="title">Login</h1>
           </div>
           <div class="card-content">
-              <FormField
+            <!-- ORIGINAL -->
+              <!-- <FormField
                 labelText="Email"
+                v-model:modelValue="loginForm.email.value"
                 placeholder="Email"
                 type="text"
                 @blur="loginForm.email.validate()"
@@ -17,10 +19,24 @@
               />
               <FormField
                 labelText="Password"
+                v-model:modelValue="loginForm.password.value"
                 placeholder="Password"
                 type="password"
                 @blur="loginForm.password.validate()"
                 :errors="loginForm.password.errors"
+              /> -->
+              <!-- EDIT FOR TESTING -->
+              <FormField
+                labelText="Email"
+                placeholder="Email"
+                type="text"
+                @blur="loginForm.email.validate()"
+              />
+              <FormField
+                labelText="Password"
+                placeholder="Password"
+                type="password"
+                @blur="loginForm.password.validate()"
               />
             <button @click="onLogin" :disabled="!loginForm.isValid" class="button is-primary">Login</button>
           </div>
