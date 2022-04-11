@@ -1,6 +1,6 @@
 {
   "name": "{{ cookiecutter.project_slug }}",
-  "version": "{{ cookiecutter.version }}",
+  "version": "1.0.0",
   "description": "{{ cookiecutter.project_name }} Client Application",
   "private": true,
   "scripts": {
@@ -8,12 +8,13 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "heroku-postbuild": "vue-cli-service build"
   },
   "dependencies": {
-    "@thinknimble/tn-forms": "^1.0.10",
-    "@thinknimble/tn-models": "^1.2.0",
-    "@thinknimble/tn-utils": "^1.4.0",
+    "@thinknimble/tn-forms": "2.0.0",
+    "@thinknimble/tn-models": "1.2.1",
+    "@thinknimble/tn-utils": "1.6.0",
     "@thinknimble/tn-validators": "^1.1.1",
     "core-js": "^3.6.5",
     "vue": "^3.0.0",

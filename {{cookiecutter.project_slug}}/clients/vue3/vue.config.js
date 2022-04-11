@@ -4,7 +4,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api/': {
-        target: (process.env.DEV_SERVER_BACKEND || '{{ cookiecutter.staging_url }}') + '/api/',
+        target: (process.env.VUE_APP_DEV_SERVER_BACKEND +'/api/'|| 'https://{{ cookiecutter.project_slug }}-staging.herokuapp.com') + '/api/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '',

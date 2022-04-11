@@ -18,9 +18,7 @@ class ApiService {
   static session
   static init
   constructor() {
-    let base_url = process.env.VUE_APP_BASE_API_URL
-      ? process.env.VUE_APP_BASE_API_URL
-      : `${window.location.protocol}//${window.location.hostname}`
+    let base_url = `${window.location.protocol}//${window.location.host}/api`
 
     console.debug(`API Service for ${base_url}`)
 

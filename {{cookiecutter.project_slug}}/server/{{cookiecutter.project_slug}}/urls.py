@@ -1,11 +1,8 @@
-from django.urls import path, include
 from django.contrib import admin
-from graphene_django.views import GraphQLView
-
+from django.urls import include, path
 
 urlpatterns = [
-    path(r"admin/", admin.site.urls),
+    path(r"staff/", admin.site.urls),
     path(r"", include("{{ cookiecutter.project_slug }}.core.favicon_urls")),
     path(r"", include("{{ cookiecutter.project_slug }}.core.urls")),
-    path("graphql", GraphQLView.as_view(graphiql=True)),
 ]

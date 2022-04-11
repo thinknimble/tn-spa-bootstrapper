@@ -1,83 +1,35 @@
-{{cookiecutter.project_name}}
-{{ '=' * cookiecutter.project_name|length }}
+[![Built with Cookiecutter](https://img.shields.io/badge/built%20with-Cookiecutter-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter)
 
-{{cookiecutter.description}}
+# {{cookiecutter.project_name}}
 
-Docs
------
-See detailed `All docs`_.
-.. _settings: ./docs/_build/index.html
+## Setup
 
-Local Deployment
-----------------
+### Django App
+1. Install Postgres (OSX - `brew install postgresql`; Linux - `apt-get`)
+1. Copy .env.example to new file .env 
+1. Run `./init-db.sh` from the `scripts` directory (or view and manually create the database)
 
-See detailed `Local deployment`_.
-.. _settings: ./docs/_build/deployment-locally.html
-
-Heroku Deployment
------------------
-
-See detailed `Heroku deployment`_.
-.. _settings: ./docs/_build/deployment-on-heroku.html
-
-Settings
---------
-
-See detailed `Settings`_.
-.. _settings: ./docs/_build/settings.html
+Once db credentials are set:
+1. run `pipenv install` to install dependencies 
+1. run `pipenv shell` to activate the pipenv shell
+1. run `python manage.py migrate` to migrate database
+1. run `python manage.py runserver` to run the Django API (default - localhost:8000/admin)
 
 
-Type checks
------------
-
-Running type checks with mypy:
-
-::
-
-  $ mypy {{cookiecutter.project_slug}}
-
-Test coverage
--------------
-
-To run the tests, check your test coverage, and generate an HTML coverage report::
-
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
-
-Running tests with py.test
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
-
-  $ pytest
+### Frontend
+See the [frontend README](client/README.md)
 
 
-{%- if cookiecutter.use_sentry == "y" %}
+### Favicon Setup
 
-Test coverage
--------------
 
-Sentry
-^^^^^^
+The Django app is already configured to serve favorite icons for all browsers and platforms (include, for example, apple-icons and android-icons at various sizes). By default, this icon is the vue/react logo.
 
-Sentry is an error logging aggregator service. You can sign up for a free account at  https://sentry.io/signup/  or download and host it yourself.
-The system is setup with reasonable defaults, including 404 logging and integration with the WSGI application.
+***Note your image must be a square otherwise a white bg will appear because the file is cropped if it is not a square go to [iloveimg.com](https://www.iloveimg.com/resize-image) and resize it.*** 
+Visit [realfavicongenerator.net](https://realfavicongenerator.net/) and upload a high resolution, square version of the image you would like to use as the favicon for this app.
 
-You must set the DSN url in production.
-{%- endif %}
+Download the ZIP file of icons that the site generates for you and paste them in the `client/public/static/favicons/` directory.
 
-{%- if cookiecutter.use_rollbar == "y" %}
+When we run collectstatic the public folder is copied as is and enables serving of the favicons
 
-Test coverage
--------------
-
-Rollbar
-^^^^^^^
-
-Rollbar is an error logging aggregator service. You can sign up for a free account at  https://sentry.io/signup/  or download and host it yourself.
-The system is setup with reasonable defaults, including 404 logging and integration with the WSGI application.
-
-You must set the DSN url in production.
-{%- endif %}
 

@@ -21,13 +21,13 @@ with open("README.rst") as readme_file:
     long_description = readme_file.read()
 
 setup(
-    name="tn-cookiecutter",
+    name="tn-spa-bootstrapper",
     version=version,
     description="A Cookiecutter template for creating customizable Django projects quickly with the option of adding client side application (Vue or React).",
     long_description=long_description,
-    author="Moussa Mokhtari",
-    author_email="moussa@thinknimble.com",
-    url="https://github.com/thinknimble/tn-cookiecutter",
+    author="ThinkNimble",
+    author_email="support@thinknimble.com",
+    url="https://github.com/thinknimble/tn-spa-bootstrapper",
     packages=[],
     license="Proprietary",
     zip_safe=False,
@@ -36,7 +36,6 @@ setup(
         "Environment :: Console",
         "Framework :: Django :: 3.0",
         "Client Framework :: Vue",
-        "Client Framework :: React",
         "Intended Audience :: Thinknimble Developers",
         "Natural Language :: English",
         "License :: Proprietary License",

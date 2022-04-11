@@ -10,12 +10,10 @@ TODO: ? restrict Cookiecutter Django project initialization to Python 3.x enviro
 from __future__ import print_function
 
 import os
-import sys
 import random
 import shutil
 import string
 import subprocess
-import platform
 
 try:
     # Inspired by
@@ -39,10 +37,10 @@ def print_thankyou():
     print(
         HINT
         + """
-    e//////////////////////////////////////////////////////////////////////////g
-    r//////////////////////////////////////////////////////////////////////////b
-    y//////////////////////////////////////////////////////////////////////////o
-    l////////////////////////////////////,P,///////////////////////////////////r
+    e/////////////////////////////////////////////////////////////////////////Cg
+    r/////////////////////////////////////////////////////////////////////////nb
+    y/////////////////////////////////////////////////////////////////////////eo
+    l////////////////////////////////////,P,//////////////////////////////////vr
     G///////////////////////////////////,   ,//////////////////////////////////e
     q/////////////////////////////////*      ./////////////////////////////////r
     e////////////////////////////////          ,///////////////////////////////z
@@ -74,41 +72,19 @@ def print_thankyou():
     )
 
 
-"""
-def remove_vue2ts_files():
-    shutil.rmtree(os.path.join("clients", "vue2-ts"))
-
-"""
-
-
 def remove_vue3_files():
     shutil.rmtree(os.path.join("clients", "vue3"))
 
 
-def remove_react_files():
-    shutil.rmtree(os.path.join("clients", "react"))
-
-
 def move_client_to_root(client):
+
     shutil.move(os.path.join("clients", client), os.path.join("client"))
     shutil.rmtree(os.path.join("clients"))
 
-
-def remove_heroku_files():
-    file_names = [
-        os.path.join("{{ cookiecutter.project_slug }}", "Procfile"),
-        os.path.join("{{ cookiecutter.project_slug }}", "runtime.txt"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_celery_files():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "celery_app.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
+    os.rename(
+        os.path.join("client", ".env.local.example"),
+        os.path.join("client", ".env.local"),
+    )
 
 
 def generate_random_string(
@@ -161,7 +137,7 @@ def set_flag(file_path, flag, value=None, formatted=None, *args, **kwargs):
 def set_django_secret_key(file_path):
     django_secret_key = set_flag(
         file_path,
-        "!!!SET DJANGO_SECRET_KEY!!!",
+        "!!!DJANGO_SECRET_KEY!!!",
         length=64,
         using_digits=True,
         using_ascii_letters=True,
@@ -177,22 +153,11 @@ def generate_postgres_user(debug=False):
     return DEBUG_VALUE if debug else generate_random_user()
 
 
-def set_postgres_user(file_path, value):
-    postgres_user = set_flag(
-        file_path,
-        "!!!SET POSTGRES_USER!!!",
-        length=32,
-        value=value,
-        using_ascii_letters=True,
-    )
-    return postgres_user
-
-
 def set_postgres_password(file_path, value=None):
 
     postgres_password = set_flag(
         file_path,
-        "!!!SET POSTGRES_PASSWORD!!!",
+        "!!!POSTGRES_PASSWORD!!!",
         value=value,
         length=64,
         using_digits=True,
@@ -210,42 +175,15 @@ def remove_github_folder():
             os.remove(file_name)
 
 
-def remove_asgi_file():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "asgi.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_async_files():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "websocket.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
-
-def remove_channel_files():
-    file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "routing.py"),
-        os.path.join("server/{{ cookiecutter.project_slug }}", "consumers.py"),
-    ]
-    for file_name in file_names:
-        os.remove(file_name)
-
 def remove_graphql_files():
     file_names = [
-        os.path.join("server/{{ cookiecutter.project_slug }}", "schema.py"),
-        os.path.join("server/{{ cookiecutter.project_slug }}", "types.py"),
-        os.path.join("server/{{ cookiecutter.project_slug }}", "mutations.py"),
+        os.path.join("server/{{ cookiecutter.project_slug }}/core", "schema.py"),
+        os.path.join("server/{{ cookiecutter.project_slug }}/core", "types.py"),
+        os.path.join("server/{{ cookiecutter.project_slug }}/core", "mutations.py"),
     ]
-
-
 def set_keys_in_envs():
     env_file_path = os.path.join(".env.example")
     postgres_init_file = os.path.join("scripts/init-db.sh")
-    postgres_docs_init_file = os.path.join("docs/deployment-locally.rst")
     set_django_secret_key(env_file_path)
 
     secret = generate_random_string(
@@ -253,7 +191,6 @@ def set_keys_in_envs():
     )
     set_postgres_password(env_file_path, value=secret)
     set_postgres_password(postgres_init_file, value=secret)
-    set_postgres_password(postgres_docs_init_file, value=secret)
 
     shutil.copy2(env_file_path, os.path.join(".env"))
 
@@ -261,26 +198,6 @@ def set_keys_in_envs():
 def main():
 
     set_keys_in_envs()
-
-    if "{{ cookiecutter.use_celery }}".lower() == "n":
-        remove_celery_files()
-
-    if "{{ cookiecutter.use_heroku }}".lower() == "n":
-        remove_heroku_files()
-
-    if "{{ cookiecutter.ci_tool }}".lower() == "none":
-        remove_github_folder()
-
-    if "{{ cookiecutter.async }}".lower() == "none":
-        remove_asgi_file()
-        remove_async_files()
-        remove_channel_files()
-
-    if "{{ cookiecutter.async }}".lower() == "django channels":
-        remove_async_files()
-
-    if "{{ cookiecutter.async }}".lower() == "async":
-        remove_channel_files()
 
     if "{{ cookiecutter.client_app }}".lower() == "none":
         shutil.rmtree("clients")
@@ -309,127 +226,20 @@ def main():
     shellscript.wait()
     shellscript.stdin.close()
 
-    print(INFO + "Building docs:" + END)
-    shellscript = subprocess.Popen(
-        [
-            os.path.join(
-                "..", "{{ cookiecutter.project_slug }}", "scripts", "build-docs.sh"
-            )
-        ],
-        stdin=subprocess.PIPE,
-    )
-    shellscript.wait()
-    shellscript.stdin.close()
-
     print_thankyou()
+    print("\n" + SUCCESS + "Awesome! Project initialized..." + END + "\n")
+
+    project_slug = "{{ cookiecutter.project_slug }}"
     print(
-        "\n"
-        + SUCCESS
-        + "Awesome! Project initialized, press Enter to continue..."
-        + END
+        f"{INFO}To initialize the database see {project_slug}/scripts/init-db.sh{END}"
     )
-    input()
-
-    print("\n" + QUESTION + "Do you wanna create the database?(y/n) [n]" + END)
-    sys.stdout.flush()
-    init_db = input()
-    if init_db and init_db.lower() == "y":
-        print(INFO + "Initializing Database" + END)
-        shellscript = subprocess.Popen(
-            [
-                "/bin/bash",
-                "-i",
-                os.path.join(
-                    "..", "{{ cookiecutter.project_slug }}", "scripts", "init-db.sh"
-                ),
-            ],
-            stdin=subprocess.PIPE,
-        )
-        shellscript.wait()
-        shellscript.stdin.close()
-
-        if platform.system() != "Darwin":
-            print(
-                "\n"
-                + QUESTION
-                + "Do you wanna initialize the app (run migrations and install dependencies)?(y/n) [n]"
-                + END
-            )
-            sys.stdout.flush()
-            init_app = input()
-            if init_app and init_app.lower() == "y":
-                print(
-                    INFO
-                    + "Opening another terminal to build and running locally:"
-                    + END
-                )
-                subprocess.Popen(
-                    [
-                        "gnome-terminal",
-                        "--tab",
-                        "-t",
-                        "{{ cookiecutter.project_name }} initialization",
-                        "--",
-                        os.path.join(
-                            "..",
-                            "{{ cookiecutter.project_slug }}",
-                            "scripts",
-                            "init-app.sh",
-                        ),
-                    ],
-                    stdin=subprocess.PIPE,
-                )
-                shellscript.wait()
-                shellscript.stdin.close()
-            print("\n" + QUESTION + "Do you wanna deploy on Heroku?(y/n) [n]" + END)
-            sys.stdout.flush()
-            depoly_on_heroku = input()
-            if depoly_on_heroku and depoly_on_heroku.lower() == "y":
-                print(INFO + "Deploying on Heroku" + END)
-                subprocess.call(
-                    [
-                        os.path.join(
-                            "..",
-                            "{{ cookiecutter.project_slug }}",
-                            "scripts",
-                            "deploy-on-heroku.sh",
-                        )
-                    ]
-                )
-
-            if init_db and init_db.lower() == "n":
-                print(SUCCESS + "Project initialized, keep up the good work!" + END)
-                print(HINT + "$ cd {{ cookiecutter.project_slug }}" + END)
-                print(
-                    HINT
-                    + "$ ./init-db.sh to initialized the DB or create the database with the creds provided in .env file"
-                    + END
-                )
-                print(HINT + "$ pipenv install && pipenv shell" + END)
-                print(
-                    HINT
-                    + "$ python manage.py makemigrations && python manage.py migrate"
-                    + END
-                )
-                if "{{ cookiecutter.client_app }}".lower() != "none":
-                    print(
-                        HINT
-                        + "$ npm install --prefix client && npm run build --prefix client"
-                        + END
-                    )
-                    print(HINT + "$ ./runserver.sh" + END)
-                else:
-                    print(HINT + "$ ./runserver.sh" + END)
-
-            print_thankyou()
-            print(
-                "\n"
-                + SUCCESS
-                + "You did it champ!, We have something to say though!"
-                + HINT
-            )
-            subprocess.call(["jotquote"])
-            print(END)
+    print(f"{INFO}To initialize the app see {project_slug}/scripts/init-app.sh{END}")
+    print(
+        f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}"
+    )
+    print(
+        f"{INFO}To push the project to github {project_slug}/scripts/init-github.sh{END}"
+    )
 
 
 if __name__ == "__main__":
