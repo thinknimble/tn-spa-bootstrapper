@@ -75,6 +75,9 @@ def print_thankyou():
 def remove_vue3_files():
     shutil.rmtree(os.path.join("clients", "vue3"))
 
+def remove_react_files():
+    shutil.rmtree(os.path.join("clients", "react"))
+
 
 def move_client_to_root(client):
 
