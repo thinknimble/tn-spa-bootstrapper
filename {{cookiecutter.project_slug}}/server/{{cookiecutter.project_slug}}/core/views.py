@@ -43,6 +43,7 @@ def index(request):
     except TemplateDoesNotExist:
         return render(request, 'core/index-placeholder.html')
     {% endif %}
+{% endif %}
 
 
 class UserLoginView(generics.GenericAPIView):
