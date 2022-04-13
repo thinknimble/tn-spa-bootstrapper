@@ -60,13 +60,13 @@ export default {
   setup() {
     const loginForm = ref(new LoginForm())
     async function  onLogin(){
-        if(!loginForm.value.isValid){
+        if(!loginForm.email.value.isValid){
             // revalidate to show errors on form in case no blur
-            loginForm.value.validate()
+            loginForm.email.value.validate()
             return
         }
         // unfortunate side effect of new vue reactivity is calling value to unwrap and value from the form 
-        await User.api.login(loginForm.value.value)
+        await User.api.login(loginForm.email.value, loginForm.password.value)
 
     }
     return {

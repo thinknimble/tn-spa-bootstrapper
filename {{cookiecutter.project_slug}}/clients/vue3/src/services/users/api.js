@@ -25,8 +25,8 @@ export default class UserAPI extends ModelAPI {
 
   static ENDPOINT = USERS_ENDPOINT
 
-  login(d) {
-    const data = { email: d.email.toLowerCase(), password: d.password }
+  login(email, password) {
+    const data = { email: email.toLowerCase(), password: password }
     const promise = AxiosClient.post(LOGIN_ENDPOINT, data).catch(
       apiErrorHandler({ apiName: 'UserAPI.login', enable400Alert: false, enable500Alert: false }),
     )
