@@ -71,16 +71,13 @@ export default {
         console.log("loginForm.value", loginForm.value)
         console.log("loginForm.email (keys)", Object.keys(loginForm.email) )
         console.log("loginForm.email", loginForm.email)
-        console.log("loginForm.email.value", loginForm.email.value)
         await User.api.login(loginForm.value.value)
-
     }
     return {
       loginForm,
       onLogin,
-      // fieldMap: 
     }
-  }
+  },
 }
 </script>
 
