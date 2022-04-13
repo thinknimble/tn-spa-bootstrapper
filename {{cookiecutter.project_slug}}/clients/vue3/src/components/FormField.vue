@@ -77,6 +77,10 @@ export default {
     type: {
       default: 'text',
       type: String
+    },
+    value: {
+      default: 'text',
+      type: String
     }
   },
   emits: ['input', 'focus', 'blur', 'update:modelValue'],
