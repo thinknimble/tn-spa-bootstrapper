@@ -78,10 +78,6 @@ export default {
       default: 'text',
       type: String
     },
-    value: {
-      default: 'text',
-      type: String
-    }
   },
   emits: ['input', 'focus', 'blur', 'update:modelValue'],
   setup(props, context) {

@@ -65,8 +65,14 @@ export default {
             loginForm.email.value.validate()
             return
         }
-        // unfortunate side effect of new vue reactivity is calling value to unwrap and value from the form 
-        await User.api.login(loginForm.email.value, loginForm.password.value)
+        // unfortunate side effect of new vue reactivity is calling value to unwrap and value from the form
+        console.log("loginForm (keys)", Object.keys(loginForm) )
+        console.log("loginForm.value (keys)", Object.keys(loginForm.value) )
+        console.log("loginForm.value", loginForm.value)
+        console.log("loginForm.email (keys)", Object.keys(loginForm.email) )
+        console.log("loginForm.email", loginForm.email)
+        console.log("loginForm.email.value", loginForm.email.value)
+        await User.api.login(loginForm.value.value)
 
     }
     return {
