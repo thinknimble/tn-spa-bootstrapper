@@ -9,7 +9,7 @@
           </div>
           <div class="card-content">
             <!-- ORIGINAL -->
-              <!-- <FormField
+              <FormField
                 labelText="Email"
                 v-model:modelValue="loginForm.email.value"
                 placeholder="Email"
@@ -24,9 +24,9 @@
                 type="password"
                 @blur="loginForm.password.validate()"
                 :errors="loginForm.password.errors"
-              /> -->
+              />
               <!-- EDIT FOR TESTING -->
-              <FormField
+              <!-- <FormField
                 labelText="Email"
                 placeholder="Email"
                 type="text"
@@ -37,7 +37,7 @@
                 placeholder="Password"
                 type="password"
                 @blur="loginForm.password.validate()"
-              />
+              /> -->
             <button @click="onLogin" :disabled="!loginForm.isValid" class="button is-primary">Login</button>
           </div>
         </div>
@@ -60,13 +60,13 @@ export default {
   setup() {
     const loginForm = ref(new LoginForm())
     async function  onLogin(){
-        // if(!loginForm.value.isValid){
-        //     // revalidate to show errors on form in case no blur
-        //     loginForm.value.validate()
-        //     return
-        // }
-        // // unfortunate side effect of new vue reactivity is calling value to unwrap and value from the form 
-        // await User.api.login(loginForm.value.value)
+        if(!loginForm.value.isValid){
+            // revalidate to show errors on form in case no blur
+            loginForm.value.validate()
+            return
+        }
+        // unfortunate side effect of new vue reactivity is calling value to unwrap and value from the form 
+        await User.api.login(loginForm.value.value)
 
     }
     return {
