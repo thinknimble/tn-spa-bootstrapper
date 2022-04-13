@@ -70,7 +70,7 @@ export default {
         console.log("loginForm.value (keys)", Object.keys(loginForm.value) )
         console.log("loginForm.value", loginForm.value)
         console.log("loginForm.email (keys)", Object.keys(loginForm.email) )
-        console.log("loginForm.email", loginForm.email)
+        console.log("loginForm.email", loginFormemail)
         await User.api.login(loginForm.value.value)
     }
     return {
