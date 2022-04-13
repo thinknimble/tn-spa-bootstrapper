@@ -67,6 +67,7 @@ celerybeat-schedule
 
 # Environments
 .env
+.env.local
 .venv
 env/
 venv/
@@ -216,3 +217,7 @@ tags
 .idea/
 
 .pytest_cache/
+
+# client folders
+client/node_modules/
+client/build/

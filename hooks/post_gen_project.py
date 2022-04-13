@@ -75,6 +75,9 @@ def print_thankyou():
 def remove_vue3_files():
     shutil.rmtree(os.path.join("clients", "vue3"))
 
+def remove_react_files():
+    shutil.rmtree(os.path.join("clients", "react"))
+
 
 def move_client_to_root(client):
 
@@ -175,6 +178,12 @@ def remove_github_folder():
             os.remove(file_name)
 
 
+def remove_graphql_files():
+    file_names = [
+        os.path.join("server/{{ cookiecutter.project_slug }}/core", "schema.py"),
+        os.path.join("server/{{ cookiecutter.project_slug }}/core", "types.py"),
+        os.path.join("server/{{ cookiecutter.project_slug }}/core", "mutations.py"),
+    ]
 def set_keys_in_envs():
     env_file_path = os.path.join(".env.example")
     postgres_init_file = os.path.join("scripts/init-db.sh")
@@ -198,7 +207,15 @@ def main():
         os.remove(os.path.join("package.json"))
 
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
+
+        remove_react_files()
         move_client_to_root("vue3")
+    elif "{{ cookiecutter.client_app }}".lower() == "react":
+        remove_vue3_files()
+        move_client_to_root("react")
+
+    if "{{ cookiecutter.use_graphql }}".lower() == "n":
+        remove_graphql_files()
 
     print(INFO + "Installing necessary requirements:" + END)
     shellscript = subprocess.Popen(

@@ -1,6 +1,9 @@
 import os
 
 import dj_database_url
+{% if cookiecutter.use_graphql == 'y' %}
+from datetime import timedelta
+{% endif %}
 
 
 def _env_get_required(setting_name):
@@ -59,6 +62,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    {% if cookiecutter.client_app == "React" %}
+    "whitenoise.runserver_nostatic",
+    {% endif %}
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
@@ -68,7 +74,30 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
+    {% if cookiecutter.use_graphql == 'y' %}
+    "graphene_django",
+    {% endif %}
 ]
+
+{% if cookiecutter.use_graphql == 'y' %}
+GRAPHENE = {
+    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+}
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+{% endif %}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -95,10 +124,17 @@ ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+        {% if cookiecutter.client_app != "React" %}
         "APP_DIRS": True,
         "DIRS": [
             os.path.join(BASE_DIR, "../client/dist/"),
         ],
+        {% else %}
+        "DIRS": [
+            os.path.join(BASE_DIR, "..", "client", 'build'),
+        ],
+        "APP_DIRS": True, # this setting must come after "DIRS"!
+        {% endif %}
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -188,8 +224,13 @@ if DEBUG:  # for testing
 #
 # Static files (CSS, JavaScript, Images)
 #
+{% if cookiecutter.client_app != "React" %}
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
+{% else %}
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "client", "build")
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "client", "build", "static")
+{% endif %}
 
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
@@ -197,8 +238,8 @@ MEDIA_URL = "/media/"
 {%- if cookiecutter.client_app != 'None' %}
 {%- if cookiecutter.client_app == 'Vue3' %}
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/dist/static"), ]
-{%- elif cookiecutter.client_app == 'React' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/build/static"), ]
+{% elif cookiecutter.client_app == 'React' %}
+STATICFILES_DIRS = [os.path.join(STATIC_ROOT, "static"),]
 {% endif %}
 {% endif %}
 
@@ -352,6 +393,12 @@ CORS_ALLOWED_ORIGINS = [
 {%- if cookiecutter.client_app.lower() != 'none' %}
     "http://localhost:8089",
 {% endif %}
+{% if cookiecutter.use_graphql == 'y' %}
+    "http://localhost:3000"
+{% endif %}
     "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
     "https://{{ cookiecutter.project_slug }}.herokuapp.com"
 ]
+{% if cookiecutter.use_graphql == 'y' %}
+CORS_ALLOW_CREDENTIALS = True
+{% endif %}

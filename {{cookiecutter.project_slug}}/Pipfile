@@ -30,6 +30,10 @@ django-currentuser = "==0.5.3"
 drf-nested-routers = "==0.93.3"
 django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
 rollbar = "==0.16.2"
+{%- if cookiecutter.use_graphql == "y" %}
+graphene_django = "==3.0.0b7"
+django-graphql-jwt = "*"
+{%- endif %}
 # Testing
 # ------------------------------------------------------------------------------
 mypy = "==0.910"  # https://github.com/python/mypy
