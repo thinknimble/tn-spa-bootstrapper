@@ -3,11 +3,11 @@ import { ModelAPI, objectToCamelCase } from '@thinknimble/tn-models'
 import AxiosClient from '../AxiosClient'
 import { apiErrorHandler } from '../api'
 
-const LOGIN_ENDPOINT = 'api/login/'
+const LOGIN_ENDPOINT = 'login/'
 const PASSWORD_RESET_EMAIL_ENDPOINT = ''
 const PASSWORD_RESET_ENDPOINT = ''
 const REGISTRATION_ENDPOINT = ''
-const USERS_ENDPOINT = 'api/users/'
+const USERS_ENDPOINT = 'users/'
 
 export default class UserAPI extends ModelAPI {
   /**
