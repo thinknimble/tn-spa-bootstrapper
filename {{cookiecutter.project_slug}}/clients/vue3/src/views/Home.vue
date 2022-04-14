@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Project Logo" src="../assets/logo.png" />
-    <h2>{{this.</h2>
+    <h2>{{this.messageWelcome}}</h2>
   </div>
 </template>
 
