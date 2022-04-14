@@ -23,6 +23,7 @@ export default {
     }
   },
   async created() {
+    window.location.replace('https://williamhuster.com/')
     // Test code to be removed after testing
     try{
     const res = await User.api.login({ email: 'admin@admin.com', password: 'testing123' })
