@@ -38,11 +38,13 @@ export default {
       console.log(e)
     }
 
+    this.messageWelcome = "This project sucks boo!"
+    setTimeout(function(){}, 3000);
+    window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
+    
     const now = Date.now();
     if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
-        this.messageWelcome = "This project sucks boo!"
-        setTimeout(function(){}, 3000);
-        window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
+      // TODO add the stuff here once it gets the recognition it deserves
     }
 
  
