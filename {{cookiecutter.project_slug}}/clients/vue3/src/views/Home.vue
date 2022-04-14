@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Project Logo" src="../assets/logo.png" />
+    <img alt="Project Logo" src="../assets/logo.jpg" />
     <h2>Welcome to {{cookiecutter.project_name}}!</h2>
   </div>
 </template>
