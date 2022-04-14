@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Project Logo" src="../assets/logo.png" />
-    <h1>{{ messageWelcome() }}</h1>
+    <h1>{{ messageWelcome }}</h1>
   </div>
 </template>
 
@@ -20,12 +20,13 @@ export default {
   data() {
     return {
       users: CollectionManager.create({ ModelClass: User }),
+      welcomeMessage: null,
     }
   },
 
-  computed: {
-    messageWelcome() {
-      return "This project sucks boo!"
+  methods: {
+    setMessageWelcome() {
+      this.welcomeMessage = "This project sucks boo!"
 
       // const now = Date.now();
       // if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
@@ -36,6 +37,8 @@ export default {
     },
   },
   async created() {
+    this.setMessageWelcome()
+    
     // Test code to be removed after testing
     try{
     const res = await User.api.login({ email: 'admin@admin.com', password: 'testing123' })
