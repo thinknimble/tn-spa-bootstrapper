@@ -27,12 +27,12 @@ export default {
     messageWelcome() {
       return "This project sucks boo!"
 
-      const now = Date.now();
-      if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
-        // TODO add the stuff here once it gets the recognition it deserves
-      } else {
-        return  "Welcome to {{cookiecutter.project_name}}!"
-      }
+      // const now = Date.now();
+      // if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
+      //   // TODO add the stuff here once it gets the recognition it deserves
+      // } else {
+      //   return  "Welcome to {{cookiecutter.project_name}}!"
+      // }
     },
   },
   async created() {
