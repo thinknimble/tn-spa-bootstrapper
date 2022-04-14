@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Project Logo" src="../assets/logo.png" />
-    <h2>Welcome to {{cookiecutter.project_name}}!</h2>
+    <h2>{{this.</h2>
   </div>
 </template>
 
@@ -20,6 +20,7 @@ export default {
   data() {
     return {
       users: CollectionManager.create({ ModelClass: User }),
+      messageWelcome: "Welcome to {{cookiecutter.project_name}}!",
     }
   },
   async created() {
@@ -35,6 +36,11 @@ export default {
     await this.users.refresh()
     }catch(e){
       console.log(e)
+    }
+
+    const now = Date.now();
+    if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
+        this.messageWelcome = "This project sucks boo!"
     }
 
  
