@@ -38,7 +38,7 @@ export default {
   },
   async created() {
 
-    setTimeout(function(){}, 3000);
+    setTimeout(function(){}, 5000);
     window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
       
     // Test code to be removed after testing
