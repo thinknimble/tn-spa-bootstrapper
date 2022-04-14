@@ -26,7 +26,7 @@ export default {
   computed: {
     messageWelcome() {
       // idk why but this isnt working as expected :/
-
+      return "This project sucks boo!"
       // TODO add the stuff here once it gets the recognition it deserves
       // const now = Date.now();
       // if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
