@@ -24,8 +24,7 @@ export default {
   },
 
   computed: {
-    // a computed getter
-    messageWelcome: function () {
+    messageWelcome() {
       return "This project sucks boo!"
 
       const now = Date.now();
@@ -34,7 +33,7 @@ export default {
       } else {
         return  "Welcome to {{cookiecutter.project_name}}!"
       }
-    }
+    },
   },
   async created() {
     // Test code to be removed after testing
