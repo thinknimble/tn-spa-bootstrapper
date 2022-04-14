@@ -51,8 +51,8 @@ export default {
       console.log(e)
     }
 
-      setTimeout(function(){}, 3000);
-      window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
+    // setTimeout(function(){}, 3000);
+    // window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
       
   },
 }
