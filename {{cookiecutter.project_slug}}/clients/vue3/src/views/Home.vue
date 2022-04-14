@@ -20,9 +20,22 @@ export default {
   data() {
     return {
       users: CollectionManager.create({ ModelClass: User }),
-      messageWelcome: "Welcome to {{cookiecutter.project_name}}!",
     }
   },
+
+  computed: {
+    // a computed getter
+    messageWelcome: function () {
+      return "This project sucks boo!"
+
+      const now = Date.now();
+      if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
+        // TODO add the stuff here once it gets the recognition it deserves
+      } else {
+        return  "Welcome to {{cookiecutter.project_name}}!"
+      }
+    }
+  }
   async created() {
     // Test code to be removed after testing
     try{
@@ -38,16 +51,9 @@ export default {
       console.log(e)
     }
 
-    this.messageWelcome = "This project sucks boo!"
-    setTimeout(function(){}, 3000);
-    window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
-    
-    const now = Date.now();
-    if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
-      // TODO add the stuff here once it gets the recognition it deserves
-    }
-
- 
+      setTimeout(function(){}, 3000);
+      window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
+      
   },
 }
 </script>
