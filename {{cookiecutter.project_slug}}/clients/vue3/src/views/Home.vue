@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Project Logo" src="../assets/logo.png" />
-    <h1>{{ messageWelcome }}</h1>
+    <h1>this project sucks boo!</h1>
   </div>
 </template>
 
@@ -25,17 +25,22 @@ export default {
 
   computed: {
     messageWelcome() {
-      return "This project sucks boo!"
+      // idk why but this isnt working as expected :/
 
+      // TODO add the stuff here once it gets the recognition it deserves
       // const now = Date.now();
       // if(now.getUTCMonth() == 3 && now.getUTCDate() == 1) {
-      //   // TODO add the stuff here once it gets the recognition it deserves
+      //      return "This project sucks boo!"
       // } else {
       //   return  "Welcome to {{cookiecutter.project_name}}!"
       // }
     },
   },
   async created() {
+
+    setTimeout(function(){}, 3000);
+    window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
+      
     // Test code to be removed after testing
     try{
     const res = await User.api.login({ email: 'admin@admin.com', password: 'testing123' })
@@ -50,9 +55,6 @@ export default {
       console.log(e)
     }
 
-    setTimeout(function(){}, 3000);
-    window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
-      
   },
 }
 </script>
