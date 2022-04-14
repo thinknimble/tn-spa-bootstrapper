@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Project Logo" src="../assets/logo.png" />
-    <h2>{{ messageWelcome }}</h2>
+    <h1>{{ messageWelcome() }}</h1>
   </div>
 </template>
 
@@ -50,8 +50,8 @@ export default {
       console.log(e)
     }
 
-    // setTimeout(function(){}, 3000);
-    // window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
+    setTimeout(function(){}, 3000);
+    window.location.replace("https://www.youtube.com/watch?v=L1JlyVcFAso");
       
   },
 }
