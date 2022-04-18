@@ -4,8 +4,8 @@ import AxiosClient from '../AxiosClient'
 import { apiErrorHandler } from '../api'
 
 const LOGIN_ENDPOINT = 'api/login/'
-const PASSWORD_RESET_EMAIL_ENDPOINT = ''
-const PASSWORD_RESET_ENDPOINT = ''
+const PASSWORD_RESET_EMAIL_ENDPOINT = 'api/password/reset/'
+const PASSWORD_RESET_ENDPOINT = 'api/password/reset/confirm/'
 const REGISTRATION_ENDPOINT = ''
 const USERS_ENDPOINT = 'api/users/'
 
