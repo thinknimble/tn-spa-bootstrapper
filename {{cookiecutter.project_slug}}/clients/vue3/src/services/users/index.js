@@ -1,6 +1,12 @@
 import User from './models'
 import UserAPI from './api'
-import { LoginForm, SignupForm } from './forms'
+import { LoginForm, SignupForm, RequestPasswordResetForm, PasswordResetForm } from './forms'
 
 export default User
-export { LoginForm, SignupForm, UserAPI }
+export {
+    LoginForm,
+    SignupForm,
+    RequestPasswordResetForm,
+    PasswordResetForm,
+    UserAPI,
+}

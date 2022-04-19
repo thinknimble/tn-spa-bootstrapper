@@ -12,3 +12,11 @@ export class SignupForm extends Form {
   static email = new FormField({ validators: [new RequiredValidator(), new EmailValidator()] })
   static password = new FormField({ validators: [new RequiredValidator()] })
 }
+
+export class RequestPasswordResetForm extends Form {
+  static email = new FormField({ validators: [new RequiredValidator(), new EmailValidator()] })
+}
+
+export class PasswordResetForm extends Form {
+  static password = new FormField({ validators: [new RequiredValidator()] })
+}
