@@ -97,11 +97,6 @@ git push -u origin main
 
 Now take a look at your repo. Don't forget to carefully look at the generated README. Awesome, right?
 
-
-
-
-
-
 ## Want to Help Us Improve the Bootstrapper?
 
 See the [CONTRIBUTING] file for information about reporting issues, setting up your dev environment, running tests, and making pull requests.

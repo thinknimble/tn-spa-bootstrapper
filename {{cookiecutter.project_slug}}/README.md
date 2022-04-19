@@ -32,21 +32,24 @@ Download the ZIP file of icons that the site generates for you and paste them in
 
 When we run collectstatic the public folder is copied as is and enables serving of the favicons
 
-## Local developmnet with Docker ##
+## Local development with Docker ##
 
 Docker has been added to this app for local development. Using docker can be a replacement during local development as it will run irrespective of your current configurations 
 
-**NOTE: uncomment the host from the .env file to the docker host**
+**NOTE: Change DB_HOST in your .env file to use the docker host**
+
 **NOTE: An initial pipfile lock is required for the backend**
 
 The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
+
 If you are starting the project from scratch make sure to install the python packages with pipenv to generate a pipfile.lock 
+
 Additionally each user must run npm install prior to make run to use the local copy of node_modules
+
 Why is the node modules mounted over?
 1. The user does not have to sh into the container to install new packages
 2. The node modules folder does not overwrite the local version 
 3. Your editor can reference the node_modules for its needs (on your local)
-   
 
 For ease of use you can use the commands from the makefile to run the containers (server,client,database server and client can be ran individually) when you make changes to the original images you will need to rebuild them.
 You can checkout all the commands in the [Makefile](./Makefile)
@@ -66,4 +69,3 @@ You can checkout all the commands in the [Makefile](./Makefile)
 ***The DB will always run with the server because it is a dependency***
 - make run-server
 - make run-server-d
-
