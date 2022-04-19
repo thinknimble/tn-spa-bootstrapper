@@ -1,24 +1,41 @@
 <template>
   <div class="login">
-    <h1>This is a login page</h1>
-    <form @submit.prevent="login">
-      <label>
-        Email:
-        <br />
+    <form @submit.prevent="attemptLogin()">
+
+      <!-- email field -->
+      <div class="form-block">
+        <label for="email-field">Email:</label>
         <input
-          v-model="email"
+          id="email-field"
+          type="email"
+          placeholder="Email"
           spellcheck="false"
+          v-model="loginForm.email.value"
+          @blur="loginForm.email.validate()"
         />
-      </label>
-      <label>
-        Password:
-        <br />
+        <ul v-if="loginForm.email.errors.length">
+          <li v-for="(error, index) in loginForm.email.errors" :key="index">
+            {{ error.message }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- password field -->
+      <div class="form-block">
+        <label for="password-field">Password:</label>
         <input
+          id="password-field"
           type="password"
-          v-model="password"
-          spellcheck="false"
+          placeholder="Password"
+          v-model="loginForm.password.value"
+          @blur="loginForm.password.validate()"
         />
-      </label>
+        <ul v-if="loginForm.password.errors.length">
+          <li v-for="(error, index) in loginForm.password.errors" :key="index">
+            {{ error.message }}
+          </li>
+        </ul>
+      </div>
 
       <button type="submit">Login</button>
     </form>
@@ -26,43 +43,48 @@
 </template>
 
 <script>
-import User from '@/services/users'
+import { ref } from 'vue'
+import User, { LoginForm } from '@/services/users/'
 
 export default {
   name: 'Login',
-  data() {
-    return {
-      user: {
-        email: '',
-        password: '',
-      },
-    }
-  },
-  methods: {
-    login() {
-      if (this.$refs.form.checkValidity()) {
-        User.api
-          .login(this.user)
-          .then(this.handleUser)
-          .catch(this.handleError)
-      } else this.$refs.form.reportValidity()
-    },
-    handleUser(user) {
-      // // Update Store
-      // this.$store.dispatch('setUser', user.data)
+  setup() {
+    const loginForm = ref(new LoginForm())
 
-      // // Redirect
-      // let route = this.$route.query.redirect
-      // if (!route && user.data.is_admin) route = { name: 'DashboardAdmin' }
-      // if (!route && (user.data.is_vendor || user.data.is_integrator)) route = { name: 'Dashboard' }
-      // if (!route) route = { name: 'SystemSearch' }
-      // this.$router.push(route)
-    },
-    handleError() {
-      // this.$Alert.alert({ message: 'Incorrect email/password combination', timeout: 2000 })
-    },
+    function handleLoginSuccess(data) {
+      alert('Succesful login, see console for data.')
+      console.log('success', data)
+    }
+
+    function handleLoginFailure(error) {
+      alert(error)
+    }
+
+    function attemptLogin() {
+      const form = loginForm.value
+      form.validate()
+      if (!form.isValid) return
+
+      User.api
+        .login({ email: form.email.value, password: form.password.value })
+        .then(handleLoginSuccess)
+        .catch(handleLoginFailure)
+    }
+
+    return {
+      loginForm,
+      attemptLogin,
+    } 
   },
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+
+.form-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+</style>

@@ -6,7 +6,7 @@ import { apiErrorHandler } from '../api'
 const LOGIN_ENDPOINT = 'api/login/'
 const PASSWORD_RESET_EMAIL_ENDPOINT = 'api/password/reset/'
 const PASSWORD_RESET_ENDPOINT = 'api/password/reset/confirm/'
-const REGISTRATION_ENDPOINT = ''
+const REGISTRATION_ENDPOINT = 'api/users/'
 const USERS_ENDPOINT = 'api/users/'
 
 export default class UserAPI extends ModelAPI {
@@ -33,16 +33,20 @@ export default class UserAPI extends ModelAPI {
     return promise
   }
 
-  registerUser(registerForm) {
-    const data = registerForm
-
+  registerUser(d) {
+    const data = {
+      firstName: d.firstName,
+      lastName: d.lastName,
+      email: d.email.toLowerCase(),
+      password: d.password,
+    }
     return this.client
       .post(REGISTRATION_ENDPOINT, this.cls.toAPI(data))
       .then((response) => response.data)
       .then((data) => this.cls.fromAPI(data))
       .catch(
         apiErrorHandler({
-          apiName: 'Register User',
+          apiName: 'UserAPI.registerUser',
           enable400Alert: true,
           enable500Alert: true,
         }),
@@ -60,7 +64,7 @@ export default class UserAPI extends ModelAPI {
       .then((response) => objectToCamelCase(response))
       .catch(
         apiErrorHandler({
-          apiName: 'Request Password Reset API',
+          apiName: 'UserAPI.requestPasswordReset',
         }),
       )
   }
@@ -73,6 +77,6 @@ export default class UserAPI extends ModelAPI {
     return this.client
       .post(url, data)
       .then((response) => this.cls.fromAPI(response.data))
-      .catch(apiErrorHandler({ apiName: 'API error' }))
+      .catch(apiErrorHandler({ apiName: 'UserAPI.resetPassword' }))
   }
 }
