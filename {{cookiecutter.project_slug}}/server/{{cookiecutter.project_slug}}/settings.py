@@ -394,7 +394,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8089",
 {% endif %}
 {% if cookiecutter.use_graphql == 'y' %}
-    "http://localhost:3000"
+    "http://localhost:3000",
 {% endif %}
     "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
     "https://{{ cookiecutter.project_slug }}.herokuapp.com"

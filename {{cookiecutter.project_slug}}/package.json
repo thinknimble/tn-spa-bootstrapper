@@ -1,7 +1,11 @@
 {
   "scripts": {
+    {% if cookiecutter.client_app == 'React' %}
+    "build": "cd client && npm install && npm run build"
+    {% else %}
     "postinstall": "cd client && npm install",
     "heroku-postbuild": "cd client && npm run heroku-postbuild"
+    {% endif %}
   },
   "engines": {
     "node": "14.17.4",
