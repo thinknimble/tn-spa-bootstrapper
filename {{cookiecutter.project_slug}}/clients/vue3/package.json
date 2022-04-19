@@ -12,7 +12,7 @@
     "heroku-postbuild": "vue-cli-service build"
   },
   "dependencies": {
-    "@thinknimble/tn-forms": "2.0.0",
+    "@thinknimble/tn-forms": "^2.0.9",
     "@thinknimble/tn-models": "1.2.1",
     "@thinknimble/tn-utils": "1.6.0",
     "@thinknimble/tn-validators": "^1.1.1",
