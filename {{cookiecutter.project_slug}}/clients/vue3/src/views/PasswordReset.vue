@@ -19,7 +19,7 @@
         </ul>
       </div>
 
-      <button type="submit">Request Password Reset</button>
+      <button type="submit">Reset Password</button>
     </form>
   </div>
 </template>
