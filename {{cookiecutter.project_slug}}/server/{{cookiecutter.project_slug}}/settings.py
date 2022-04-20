@@ -155,9 +155,6 @@ WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
 2. Specify DB_NAME, DB_USER, DB_PASS, and DB_HOST Directly in the env file.
 """
 
-# Use Docker host if running localling in Docker. Else require it as an ENV Var
-DB_HOST = "host.docker.internal" if os.environ.get("INSIDE_DOCKER") else _env_get_required("DB_HOST")
-
 # Update database configuration with dj_database_url
 heroku_default_db = dj_database_url.config()
 if bool(heroku_default_db):
@@ -169,7 +166,7 @@ else:
             "NAME": _env_get_required("DB_NAME"),
             "USER": _env_get_required("DB_USER"),
             "PASSWORD": os.environ.get("DB_PASS", ""),
-            "HOST": DB_HOST,
+            "HOST": _env_get_required("DB_HOST"),
             "CONN_MAX_AGE": 600,
         },
     }
