@@ -12,9 +12,7 @@
           @blur="signupForm.firstName.validate()"
         />
         <ul v-if="signupForm.firstName.errors.length">
-          <li v-for="(error, index) in signupForm.firstName.errors" :key="index">
-            {{ error.message }}
-          </li>
+          <li v-for="(error, index) in signupForm.firstName.errors" :key="index" v-text="error.message" />
         </ul>
       </div>
 
@@ -29,9 +27,7 @@
           @blur="signupForm.lastName.validate()"
         />
         <ul v-if="signupForm.lastName.errors.length">
-          <li v-for="(error, index) in signupForm.lastName.errors" :key="index">
-            {{ error.message }}
-          </li>
+          <li v-for="(error, index) in signupForm.lastName.errors" :key="index" v-text="error.message" />
         </ul>
       </div>
 
@@ -47,9 +43,7 @@
           @blur="signupForm.email.validate()"
         />
         <ul v-if="signupForm.email.errors.length">
-          <li v-for="(error, index) in signupForm.email.errors" :key="index">
-            {{ error.message }}
-          </li>
+          <li v-for="(error, index) in signupForm.email.errors" :key="index" v-text="error.message" />
         </ul>
       </div>
 
@@ -64,9 +58,7 @@
           @blur="signupForm.password.validate()"
         />
         <ul v-if="signupForm.password.errors.length">
-          <li v-for="(error, index) in signupForm.password.errors" :key="index">
-            {{ error.message }}
-          </li>
+          <li v-for="(error, index) in signupForm.password.errors" :key="index" v-text="error.message" />
         </ul>
       </div>
 

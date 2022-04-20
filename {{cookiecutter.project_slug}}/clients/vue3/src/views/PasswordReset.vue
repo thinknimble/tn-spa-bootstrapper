@@ -13,9 +13,7 @@
           @blur="passwordResetForm.password.validate()"
         />
         <ul v-if="passwordResetForm.password.errors.length">
-          <li v-for="(error, index) in passwordResetForm.password.errors" :key="index">
-            {{ error.message }}
-          </li>
+          <li v-for="(error, index) in passwordResetForm.password.errors" :key="index" v-text="error.message" />
         </ul>
       </div>
 
