@@ -14,8 +14,8 @@
           @blur="loginForm.email.validate()"
         />
         <ul v-if="loginForm.email.errors.length">
-          <li v-for="(e, index) in loginForm.email.errors" :key="index">
-            {{ e.message }}
+          <li v-for="(error, index) in loginForm.email.errors" :key="index">
+            {{ error.message }}
           </li>
         </ul>
       </div>
