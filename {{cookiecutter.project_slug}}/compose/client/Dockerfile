@@ -11,9 +11,4 @@ RUN npm install @vue/cli@3.7.0 -g
 WORKDIR /app/client
 RUN npm i
 
-# start app
 CMD ["npm", "run", "serve"]
-
-
-
-
