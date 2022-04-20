@@ -56,8 +56,8 @@ export default {
       console.log('success', data)
     }
 
-    function handleLoginFailure(error) {
-      alert(error)
+    function handleLoginFailure(err) {
+      alert(err)
     }
 
     function attemptLogin() {
