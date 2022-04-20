@@ -32,33 +32,39 @@ import User, { RequestPasswordResetForm } from '@/services/users/'
 export default {
   name: 'RequestPasswordReset',
   setup() {
-    const requestPasswordResetForm = ref(new RequestPasswordResetForm())
+    const { requestPasswordResetForm, attemptResetRequest } = useRequestPasswordResetForm()
 
-    function handleResetRequestSuccess(data) {
-      alert('Succesful request, see console for data.')
-      console.log('success', data)
-    }
-
-    function handleResetRequestFailure(error) {
-      alert(error)
-    }
-
-    function attemptResetRequest() {
-      const form = requestPasswordResetForm.value
-      form.validate()
-      if (!form.isValid) return
-
-      User.api
-        .requestPasswordReset(form.email.value)
-        .then(handleResetRequestSuccess)
-        .catch(handleResetRequestFailure)
-    }
-
-    return {
-      requestPasswordResetForm,
-      attemptResetRequest,
-    } 
+    return { requestPasswordResetForm, attemptResetRequest }
   },
+}
+
+function useRequestPasswordResetForm() {
+  const requestPasswordResetForm = ref(new RequestPasswordResetForm())
+
+  function handleResetRequestSuccess(data) {
+    alert('Succesful request, see console for data.')
+    console.log('success', data)
+  }
+
+  function handleResetRequestFailure(error) {
+    alert(error)
+  }
+
+  function attemptResetRequest() {
+    const form = requestPasswordResetForm.value
+    form.validate()
+    if (!form.isValid) return
+
+    User.api
+      .requestPasswordReset(form.email.value)
+      .then(handleResetRequestSuccess)
+      .catch(handleResetRequestFailure)
+  }
+
+  return {
+    requestPasswordResetForm,
+    attemptResetRequest,
+  }
 }
 </script>
 

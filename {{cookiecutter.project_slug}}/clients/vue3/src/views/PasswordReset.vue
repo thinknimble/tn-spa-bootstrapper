@@ -33,40 +33,46 @@ import User, { PasswordResetForm } from '@/services/users/'
 export default {
   name: 'PasswordReset',
   setup() {
-    const passwordResetForm = ref(new PasswordResetForm())
-    const route = useRoute()
+    const { passwordResetForm, attemptPasswordReset } = usePasswordResetForm()
 
-    function handleResetSuccess(data) {
-      alert('Succesful password reset, see console for data.')
-      console.log('success', data)
-    }
-
-    function handleResetFailure(error) {
-      alert(error)
-    }
-
-    function attemptPasswordReset() {
-      const form = passwordResetForm.value
-      form.validate()
-      if (!form.isValid) return
-
-      const { uid, token } = route.params
-
-      User.api
-        .resetPassword({
-          uid,
-          token,
-          password: form.password.value,
-        })
-        .then(handleResetSuccess)
-        .catch(handleResetFailure)
-    }
-
-    return {
-      passwordResetForm,
-      attemptPasswordReset,
-    } 
+    return { passwordResetForm, attemptPasswordReset }
   },
+}
+
+function usePasswordResetForm() {
+  const passwordResetForm = ref(new PasswordResetForm())
+  const route = useRoute()
+
+  function handleResetSuccess(data) {
+    alert('Succesful password reset, see console for data.')
+    console.log('success', data)
+  }
+
+  function handleResetFailure(error) {
+    alert(error)
+  }
+
+  function attemptPasswordReset() {
+    const form = passwordResetForm.value
+    form.validate()
+    if (!form.isValid) return
+
+    const { uid, token } = route.params
+
+    User.api
+      .resetPassword({
+        uid,
+        token,
+        password: form.password.value,
+      })
+      .then(handleResetSuccess)
+      .catch(handleResetFailure)
+  }
+
+  return {
+    passwordResetForm,
+    attemptPasswordReset,
+  } 
 }
 </script>
 

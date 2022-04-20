@@ -49,33 +49,39 @@ import User, { LoginForm } from '@/services/users/'
 export default {
   name: 'Login',
   setup() {
-    const loginForm = ref(new LoginForm())
+    const { loginForm, attemptLogin } = useLoginForm()
 
-    function handleLoginSuccess(data) {
-      alert('Succesful login, see console for data.')
-      console.log('success', data)
-    }
-
-    function handleLoginFailure(err) {
-      alert(err)
-    }
-
-    function attemptLogin() {
-      const form = loginForm.value
-      form.validate()
-      if (!form.isValid) return
-
-      User.api
-        .login({ email: form.email.value, password: form.password.value })
-        .then(handleLoginSuccess)
-        .catch(handleLoginFailure)
-    }
-
-    return {
-      loginForm,
-      attemptLogin,
-    } 
+    return { loginForm, attemptLogin }
   },
+}
+
+function useLoginForm() {
+  const loginForm = ref(new LoginForm())
+
+  function handleLoginSuccess(data) {
+    alert('Succesful login, see console for data.')
+    console.log('success', data)
+  }
+
+  function handleLoginFailure(err) {
+    alert(err)
+  }
+
+  function attemptLogin() {
+    const form = loginForm.value
+    form.validate()
+    if (!form.isValid) return
+
+    User.api
+      .login({ email: form.email.value, password: form.password.value })
+      .then(handleLoginSuccess)
+      .catch(handleLoginFailure)
+  }
+
+  return {
+    loginForm,
+    attemptLogin,
+  } 
 }
 </script>
 

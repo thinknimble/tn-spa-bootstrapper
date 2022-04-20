@@ -82,38 +82,44 @@ import User, { SignupForm } from '@/services/users/'
 export default {
   name: 'Signup',
   setup() {
-    const signupForm = ref(new SignupForm())
+     const { signupForm, attemptUserRegistration } = useSignupForm()
 
-    function handleRegistrationSuccess(data) {
-      alert('Succesful user registration, see console for data.')
-      console.log('success', data)
-    }
-
-    function handleRegistrationFailure(error) {
-      alert(error)
-    }
-
-    function attemptUserRegistration() {
-      const form = signupForm.value
-      form.validate()
-      if (!form.isValid) return
-
-      User.api
-        .registerUser({
-          firstName: form.firstName.value,
-          lastName: form.lastName.value,
-          email: form.email.value,
-          password: form.password.value
-        })
-        .then(handleRegistrationSuccess)
-        .catch(handleRegistrationFailure)
-    }
-
-    return {
-      signupForm,
-      attemptUserRegistration,
-    } 
+     return { signupForm, attemptUserRegistration }
   },
+}
+
+function useSignupForm() {
+  const signupForm = ref(new SignupForm())
+
+  function handleRegistrationSuccess(data) {
+    alert('Succesful user registration, see console for data.')
+    console.log('success', data)
+  }
+
+  function handleRegistrationFailure(error) {
+    alert(error)
+  }
+
+  function attemptUserRegistration() {
+    const form = signupForm.value
+    form.validate()
+    if (!form.isValid) return
+
+    User.api
+      .registerUser({
+        firstName: form.firstName.value,
+        lastName: form.lastName.value,
+        email: form.email.value,
+        password: form.password.value
+      })
+      .then(handleRegistrationSuccess)
+      .catch(handleRegistrationFailure)
+  }
+
+  return {
+    signupForm,
+    attemptUserRegistration,
+  }
 }
 </script>
 
