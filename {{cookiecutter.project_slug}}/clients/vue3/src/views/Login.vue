@@ -1,37 +1,23 @@
 <template>
   <div class="login">
     <form @submit.prevent="attemptLogin()">
+      <InputField
+        v-model:value="form.email.value"
+        :errors="form.email.errors"
+        @blur="form.email.validate()"
+        type="email"
+        label="Email:"
+        placeholder="Email"
+      />
 
-      <!-- email field -->
-      <div class="form-block">
-        <label for="email-field">Email:</label>
-        <input
-          id="email-field"
-          type="email"
-          placeholder="Email"
-          spellcheck="false"
-          v-model="loginForm.email.value"
-          @blur="loginForm.email.validate()"
-        />
-        <ul v-if="loginForm.email.errors.length">
-          <li v-for="(error, index) in loginForm.email.errors" :key="index" v-text="error.message" />
-        </ul>
-      </div>
-
-      <!-- password field -->
-      <div class="form-block">
-        <label for="password-field">Password:</label>
-        <input
-          id="password-field"
-          type="password"
-          placeholder="Password"
-          v-model="loginForm.password.value"
-          @blur="loginForm.password.validate()"
-        />
-        <ul v-if="loginForm.password.errors.length">
-          <li v-for="(error, index) in loginForm.password.errors" :key="index" v-text="error.message" />
-        </ul>
-      </div>
+      <InputField
+        v-model:value="form.password.value"
+        :errors="form.password.errors"
+        @blur="form.password.validate()"
+        type="password"
+        label="Password:"
+        placeholder="Password"
+      />
 
       <button type="submit">Login</button>
     </form>
@@ -41,52 +27,43 @@
 <script>
 import { ref } from 'vue'
 import User, { LoginForm } from '@/services/users/'
+import InputField from '@/components/inputs/InputField'
 
 export default {
   name: 'Login',
-  setup() {
-    const { loginForm, attemptLogin } = useLoginForm()
-
-    return { loginForm, attemptLogin }
+  components: {
+    InputField,
   },
-}
+  setup() {
+    const form = ref(new LoginForm())
 
-function useLoginForm() {
-  const loginForm = ref(new LoginForm())
+    function handleLoginSuccess(data) {
+      alert('Succesful login, see console for data.')
+      console.log('success', data)
+    }
 
-  function handleLoginSuccess(data) {
-    alert('Succesful login, see console for data.')
-    console.log('success', data)
-  }
+    function handleLoginFailure(error) {
+      alert(error)
+    }
 
-  function handleLoginFailure(error) {
-    alert(error)
-  }
+    function attemptLogin() {
+      // unwrap form
+      const form = form.value
+      form.validate()
+      if (!form.isValid) return
 
-  function attemptLogin() {
-    const form = loginForm.value
-    form.validate()
-    if (!form.isValid) return
+      User.api
+        .login({ email: form.email.value, password: form.password.value })
+        .then(handleLoginSuccess)
+        .catch(handleLoginFailure)
+    }
 
-    User.api
-      .login({ email: form.email.value, password: form.password.value })
-      .then(handleLoginSuccess)
-      .catch(handleLoginFailure)
-  }
-
-  return {
-    loginForm,
-    attemptLogin,
-  } 
+    return {
+      form,
+      attemptLogin,
+    }
+  },
 }
 </script>
 
-<style scoped lang="scss">
-
-.form-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-</style>
+<style scoped lang="scss"></style>
