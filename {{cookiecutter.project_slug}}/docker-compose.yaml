@@ -56,6 +56,3 @@ services:
         # this is set when calling npm run start it can be blank because at this point we have already installed the packages
         # setting this as a var is also an option but in that case using chokidar will not work as it is
         - NPM_READ_ONLY_TOKEN=''
-
-
-

@@ -154,7 +154,6 @@ WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
 1. Heroku - we use dj_database_url to interpret Heroku's DATABASE_URL env variable.
 2. Specify DB_NAME, DB_USER, DB_PASS, and DB_HOST Directly in the env file.
 """
-
 # Update database configuration with dj_database_url
 heroku_default_db = dj_database_url.config()
 if bool(heroku_default_db):
