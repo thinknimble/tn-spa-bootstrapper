@@ -4,68 +4,20 @@
 
 ## Setup
 
-### Django App
-1. Install Postgres (OSX - `brew install postgresql`; Linux - `apt-get`)
-1. Copy .env.example to new file .env 
-1. Run `./init-db.sh` from the `scripts` directory (or view and manually create the database)
+### Docker
+If this is your first time...
+1. [Install Docker](https://www.docker.com/)
+1. Run `pipenv lock` to generate a Pipfile.lock
+1. (Optional) Run `npm install` so you have node_modules available outside of Docker
+1. View other available scripts/commands with `make commands`
 
-Once db credentials are set:
-1. run `pipenv install` to install dependencies 
-1. run `pipenv shell` to activate the pipenv shell
-1. run `python manage.py migrate` to migrate database
-1. run `python manage.py runserver` to run the Django API (default - localhost:8000/admin)
+Now you will only ever need one command:
+`make run` or `docker compose up`
 
+### Backend
+If not using Docker...
+See the [backend README](server/README.md)
 
 ### Frontend
+If not using Docker...
 See the [frontend README](client/README.md)
-
-
-### Favicon Setup
-
-
-The Django app is already configured to serve favorite icons for all browsers and platforms (include, for example, apple-icons and android-icons at various sizes). By default, this icon is the vue/react logo.
-
-***Note your image must be a square otherwise a white bg will appear because the file is cropped if it is not a square go to [iloveimg.com](https://www.iloveimg.com/resize-image) and resize it.*** 
-Visit [realfavicongenerator.net](https://realfavicongenerator.net/) and upload a high resolution, square version of the image you would like to use as the favicon for this app.
-
-Download the ZIP file of icons that the site generates for you and paste them in the `client/public/static/favicons/` directory.
-
-When we run collectstatic the public folder is copied as is and enables serving of the favicons
-
-## Local development with Docker ##
-
-Docker has been added to this app for local development. Using docker can be a replacement during local development as it will run irrespective of your current configurations 
-
-**NOTE: Change DB_HOST in your .env file to use the docker host**
-
-**NOTE: An initial pipfile lock is required for the backend**
-
-The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
-
-If you are starting the project from scratch make sure to install the python packages with pipenv to generate a pipfile.lock 
-
-Additionally each user must run npm install prior to make run to use the local copy of node_modules
-
-Why is the node modules mounted over?
-1. The user does not have to sh into the container to install new packages
-2. The node modules folder does not overwrite the local version 
-3. Your editor can reference the node_modules for its needs (on your local)
-
-For ease of use you can use the commands from the makefile to run the containers (server,client,database server and client can be ran individually) when you make changes to the original images you will need to rebuild them.
-You can checkout all the commands in the [Makefile](./Makefile)
-
-**Print all available commands**
-- make commands
-
-**Run Server-Client-DB (-d for detached mode)**
-- make run 
-- make run-d 
-
-**Run Client (-d for detached mode)**
-- make run-client
-- make run-client-d
-
-**Run Server-DB (-d for detached mode)**
-***The DB will always run with the server because it is a dependency***
-- make run-server
-- make run-server-d

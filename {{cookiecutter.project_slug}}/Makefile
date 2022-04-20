@@ -55,13 +55,13 @@ run-server:
 	docker compose up server
 
 run-d:
-	docker compose up
+	docker compose up -d
 
 run-client-d:
-	docker compose up client
+	docker compose up client -d
 
 run-server-d:
-	docker compose up server
+	docker compose up server -d
 
 restart:
 	docker compose down && docker-compose up
