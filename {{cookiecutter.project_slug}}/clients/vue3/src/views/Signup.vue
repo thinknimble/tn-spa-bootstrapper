@@ -43,9 +43,13 @@
 <script>
 import { ref } from 'vue'
 import User, { SignupForm } from '@/services/users/'
+import InputField from '@/components/inputs/InputField'
 
 export default {
   name: 'Signup',
+  components: {
+    InputField,
+  },
   setup() {
     const form = ref(new SignupForm())
 
