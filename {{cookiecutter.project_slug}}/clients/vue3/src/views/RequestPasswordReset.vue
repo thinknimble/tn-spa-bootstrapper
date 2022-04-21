@@ -39,12 +39,12 @@ export default {
 
     function attemptResetRequest() {
       // unwrap form
-      const form = form.value
-      form.validate()
-      if (!form.isValid) return
+      const unwrappedForm = form.value
+      unwrappedForm.validate()
+      if (!unwrappedForm.isValid) return
 
       User.api
-        .requestPasswordReset(form.email.value)
+        .requestPasswordReset(unwrappedForm.email.value)
         .then(handleResetRequestSuccess)
         .catch(handleResetRequestFailure)
     }

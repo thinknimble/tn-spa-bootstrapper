@@ -64,16 +64,16 @@ export default {
 
     function attemptUserRegistration() {
       // unwrap form
-      const form = form.value
-      form.validate()
-      if (!form.isValid) return
+      const unwrappedForm = form.value
+      unwrappedForm.validate()
+      if (!unwrappedForm.isValid) return
 
       User.api
         .registerUser({
-          firstName: form.firstName.value,
-          lastName: form.lastName.value,
-          email: form.email.value,
-          password: form.password.value,
+          firstName: unwrappedForm.firstName.value,
+          lastName: unwrappedForm.lastName.value,
+          email: unwrappedForm.email.value,
+          password: unwrappedForm.password.value,
         })
         .then(handleRegistrationSuccess)
         .catch(handleRegistrationFailure)

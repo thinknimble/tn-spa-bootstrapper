@@ -42,9 +42,9 @@ export default {
 
     function attemptPasswordReset() {
       // unwrap form
-      const form = form.value
-      form.validate()
-      if (!form.isValid) return
+      const unwrappedForm = form.value
+      unwrappedForm.validate()
+      if (!unwrappedForm.isValid) return
 
       const { uid, token } = route.params
 
@@ -52,7 +52,7 @@ export default {
         .resetPassword({
           uid,
           token,
-          password: form.password.value,
+          password: unwrappedForm.password.value,
         })
         .then(handleResetSuccess)
         .catch(handleResetFailure)

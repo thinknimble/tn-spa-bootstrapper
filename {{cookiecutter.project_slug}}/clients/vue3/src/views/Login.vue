@@ -48,12 +48,12 @@ export default {
 
     function attemptLogin() {
       // unwrap form
-      const form = form.value
-      form.validate()
-      if (!form.isValid) return
+      const unwrappedForm = form.value
+      unwrappedForm.validate()
+      if (!unwrappedForm.isValid) return
 
       User.api
-        .login({ email: form.email.value, password: form.password.value })
+        .login({ email: unwrappedForm.email.value, password: unwrappedForm.password.value })
         .then(handleLoginSuccess)
         .catch(handleLoginFailure)
     }
