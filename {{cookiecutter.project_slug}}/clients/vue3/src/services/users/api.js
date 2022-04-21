@@ -55,7 +55,7 @@ export default class UserAPI extends ModelAPI {
   }
 
   requestPasswordReset(email) {
-    const url = `${PASSWORD_RESET_EMAIL_ENDPOINT}${email.toLowerCase()}/`
+    const url = `${PASSWORD_RESET_EMAIL_ENDPOINT}?email=${email.toLowerCase()}`
     const obj = {
       email: email,
     }
