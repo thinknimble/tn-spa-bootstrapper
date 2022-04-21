@@ -3,11 +3,12 @@ import { ModelAPI, objectToCamelCase } from '@thinknimble/tn-models'
 import AxiosClient from '../AxiosClient'
 import { apiErrorHandler } from '../api'
 
-const LOGIN_ENDPOINT = 'api/login/'
-const PASSWORD_RESET_EMAIL_ENDPOINT = 'api/password/reset/'
-const PASSWORD_RESET_ENDPOINT = 'api/password/reset/confirm/'
-const REGISTRATION_ENDPOINT = 'api/users/'
-const USERS_ENDPOINT = 'api/users/'
+// NOTE: The AxiosClient is congfigured to include '/api' in the baseUrl
+const LOGIN_ENDPOINT = '/login/'
+const PASSWORD_RESET_EMAIL_ENDPOINT = '/password/reset/'
+const PASSWORD_RESET_ENDPOINT = '/password/reset/confirm/'
+const REGISTRATION_ENDPOINT = '/users/'
+const USERS_ENDPOINT = '/users/'
 
 export default class UserAPI extends ModelAPI {
   /**
