@@ -23,7 +23,8 @@ const routes = [
   {
     path: '/password/reset',
     name: 'RequestPasswordReset',
-    component: () => import(/* webpackChunkName: "requestPasswordReset" */ '../views/RequestPasswordReset.vue'),
+    component: () =>
+      import(/* webpackChunkName: "requestPasswordReset" */ '../views/RequestPasswordReset.vue'),
   },
   {
     path: '/password/reset/confirm/:uid/:token',
