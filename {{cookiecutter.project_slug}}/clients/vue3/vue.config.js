@@ -4,7 +4,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/api/': {
-        target: (process.env.VUE_APP_DEV_SERVER_BACKEND || 'http://server:8000'),
+        target: (process.env.VUE_APP_DEV_SERVER_BACKEND || 'http://server:8000') + '/api',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '',
