@@ -120,6 +120,7 @@ def request_reset_link(request, *args, **kwargs):
         return Response(status=status.HTTP_204_NO_CONTENT)
     reset_context = user.reset_password_context()
 
+    # send email
     subject = render_to_string("registration/forgot_password_subject.txt")
     send_html_email(
         subject,
@@ -128,8 +129,6 @@ def request_reset_link(request, *args, **kwargs):
         [user.email],
         context=reset_context,
     )
-
-    # send email
 
     return Response(status=status.HTTP_204_NO_CONTENT)
 

@@ -23,7 +23,7 @@ urlpatterns = [
         # This URL must be named, because django.contrib.auth calls it via a reverse-lookup
         name="password_reset_confirm",
     ),
-    path(r"api/password/reset/", rest_auth_views.PasswordResetView.as_view()),
+    path(r"api/password/reset/", core_views.request_reset_link),
     path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
     
 ]
