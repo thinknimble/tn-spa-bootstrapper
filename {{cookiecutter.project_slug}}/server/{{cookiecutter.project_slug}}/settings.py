@@ -331,8 +331,13 @@ if not IN_DEV:
 #
 # Rollbar logging config
 #
+if IN_STAGING or IN_PROD:
+    ROLLBAR_ACCESS_TOKEN = config("ROLLBAR_ACCESS_TOKEN")
+else:
+    ROLLBAR_ACCESS_TOKEN = config("ROLLBAR_ACCESS_TOKEN")
+
 ROLLBAR = {
-    "access_token": config("ROLLBAR_ACCESS_TOKEN"),
+    "access_token": ROLLBAR_ACCESS_TOKEN,
     "environment": ENVIRONMENT,
     "root": BASE_DIR,
 }
@@ -366,7 +371,7 @@ LOGGING = {
         "rollbar": {
             "level": "WARNING",
             "filters": ["require_debug_false"],
-            "access_token": config("ROLLBAR_ACCESS_TOKEN"),
+            "access_token": ROLLBAR_ACCESS_TOKEN,
             "environment": ENVIRONMENT,
             "class": "rollbar.logger.RollbarHandler",
         },
