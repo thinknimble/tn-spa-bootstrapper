@@ -331,7 +331,7 @@ if not IN_DEV:
 #
 # Rollbar logging config
 #
-if IN_STAGING or IN_PROD:
+if IN_PROD:
     ROLLBAR_ACCESS_TOKEN = config("ROLLBAR_ACCESS_TOKEN")
 else:
     ROLLBAR_ACCESS_TOKEN = config("ROLLBAR_ACCESS_TOKEN")
