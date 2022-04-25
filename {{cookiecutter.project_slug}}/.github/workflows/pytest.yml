@@ -4,7 +4,7 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
     env:
-      SECRET_KEY: "${{ secrets.SECRET_KEY }}"
+      SECRET_KEY: {{ "${{ secrets.SECRET_KEY }}" }}
     steps:
       - uses: actions/checkout@v2
       - run: pipx install pipenv
