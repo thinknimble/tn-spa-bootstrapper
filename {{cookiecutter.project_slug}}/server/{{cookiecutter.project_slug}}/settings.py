@@ -5,14 +5,6 @@ import dj_database_url
 from datetime import timedelta
 {% endif %}
 
-
-def _env_get_required(setting_name):
-    """Get the value of an environment variable and assert that it is set."""
-    setting = os.environ.get(setting_name)
-    assert setting not in {None, ""}, "{0} must be defined as an environment variable.".format(setting_name)
-    return setting
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,6 +12,13 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 IN_DEV = ENVIRONMENT == "development"
 IN_STAGING = ENVIRONMENT == "staging"
 IN_PROD = ENVIRONMENT == "production"
+
+def _env_get_required(setting_name):
+    """Get the value of an environment variable and assert that it is set."""
+    setting = os.environ.get(setting_name)
+    if IN_STAGING or IN_PROD:
+        assert setting not in {None, ""}, "{0} must be defined as an environment variable.".format(setting_name)
+    return setting
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = _env_get_required("SECRET_KEY")
