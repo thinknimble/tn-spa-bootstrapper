@@ -373,7 +373,6 @@ if ROLLBAR_ACCESS_TOKEN:
     ROLLBAR = {
         "access_token": ROLLBAR_ACCESS_TOKEN,
         "environment": ENVIRONMENT,
-        "branch": "main",
         "root": BASE_DIR,
     }
     LOGGING["handlers"].update(
