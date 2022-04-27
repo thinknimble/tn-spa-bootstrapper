@@ -22,3 +22,8 @@ See the [backend README](server/README.md)
 ### Frontend
 If not using Docker...
 See the [frontend README](client/README.md)
+
+
+## Testing
+`pipenv install --dev`
+`pipenv run pytest server/my_project`

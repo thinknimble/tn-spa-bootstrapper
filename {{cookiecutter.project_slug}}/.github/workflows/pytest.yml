@@ -13,5 +13,5 @@ jobs:
           python-version: '3.9'
           cache: 'pipenv'
       - run: pipenv install --dev --deploy
-      - run: pipenv run pytest --mccabe --cov={{ cookiecutter.project_slug }} -vv {{ cookiecutter.project_slug }}
+      - run: pipenv run pytest --mccabe --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
       - run: pipenv run coverage report --fail-under=20

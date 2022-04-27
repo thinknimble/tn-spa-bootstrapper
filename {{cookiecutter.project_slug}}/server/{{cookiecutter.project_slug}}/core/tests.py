@@ -22,7 +22,6 @@ def test_create_user():
     assert user.id
     assert user.datetime_created
     assert user.last_edited
-    assert not user.is_removed
 
     # PermissionsMixin
     assert hasattr(user, "is_superuser")
