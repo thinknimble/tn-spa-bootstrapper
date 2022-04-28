@@ -48,8 +48,8 @@ export default class UserAPI extends ModelAPI {
       .catch(
         apiErrorHandler({
           apiName: 'UserAPI.registerUser',
-          enable400Alert: true,
-          enable500Alert: true,
+          enable400Alert: false,
+          enable500Alert: false,
         }),
       )
   }
