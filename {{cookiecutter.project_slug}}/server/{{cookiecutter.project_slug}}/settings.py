@@ -366,9 +366,9 @@ LOGGING = {
 #
 # Rollbar logging config
 #
-ROLLBAR_ACCESS_TOKEN = _env_get_required("ROLLBAR_ACCESS_TOKEN") if IN_PROD else os.environ.get("ROLLBAR_ACCESS_TOKEN")
+ROLLBAR_ACCESS_TOKEN = config("ROLLBAR_ACCESS_TOKEN", default="")
 
-if ROLLBAR_ACCESS_TOKEN:
+if IN_PROD or ROLLBAR_ACCESS_TOKEN:
     MIDDLEWARE += ["rollbar.contrib.django.middleware.RollbarNotifierMiddleware"]
     ROLLBAR = {
         "access_token": ROLLBAR_ACCESS_TOKEN,
