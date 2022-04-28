@@ -1,31 +1,25 @@
-import os
-
-import dj_database_url
 {% if cookiecutter.use_graphql == 'y' %}
 from datetime import timedelta
 {% endif %}
+import os
 
-
-def _env_get_required(setting_name):
-    """Get the value of an environment variable and assert that it is set."""
-    setting = os.environ.get(setting_name)
-    assert setting not in {None, ""}, "{0} must be defined as an environment variable.".format(setting_name)
-    return setting
+import dj_database_url
+from decouple import config
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+ENVIRONMENT = config("ENVIRONMENT", default="development")
 IN_DEV = ENVIRONMENT == "development"
 IN_STAGING = ENVIRONMENT == "staging"
 IN_PROD = ENVIRONMENT == "production"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = _env_get_required("SECRET_KEY")
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = _env_get_required("DEBUG") == "True"
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 if IN_DEV:
     SERVER_EMAIL = "{{ cookiecutter.project_name }} Development <noreply-dev@{{ cookiecutter.project_slug }}.com>"
@@ -37,15 +31,15 @@ else:
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # Email address of the staff who should receive certain emails
-STAFF_EMAIL = os.environ.get("STAFF_EMAIL", "no-reply@thinknimble.com")
+STAFF_EMAIL = config("STAFF_EMAIL", default="no-reply@thinknimble.com")
 
 #
 # Domain Configuration
 #
-CURRENT_DOMAIN = _env_get_required("CURRENT_DOMAIN")
-CURRENT_PORT = os.environ.get("CURRENT_PORT")
+CURRENT_DOMAIN = config("CURRENT_DOMAIN")
+CURRENT_PORT = config("CURRENT_PORT", cast=int)
 ALLOWED_HOSTS = []
-ALLOWED_HOSTS += _env_get_required("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(',')])
 if CURRENT_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(CURRENT_DOMAIN)
 
@@ -162,10 +156,10 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": _env_get_required("DB_NAME"),
-            "USER": _env_get_required("DB_USER"),
-            "PASSWORD": os.environ.get("DB_PASS", ""),
-            "HOST": _env_get_required("DB_HOST"),
+            "NAME": config("DB_NAME"),
+            "USER": config("DB_USER"),
+            "PASSWORD": config("DB_PASS", default=""),
+            "HOST": config("DB_HOST"),
             "CONN_MAX_AGE": 600,
         },
     }
@@ -258,9 +252,9 @@ if not IN_DEV:
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     ANYMAIL = {
-        "MAILGUN_API_KEY": _env_get_required("MAILGUN_API_KEY"),
-        "MAILGUN_SENDER_DOMAIN": _env_get_required("MAILGUN_DOMAIN"),
-        "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL", "https://api.mailgun.net/v3"),
+        "MAILGUN_API_KEY": config("MAILGUN_API_KEY"),
+        "MAILGUN_SENDER_DOMAIN": config("MAILGUN_DOMAIN"),
+        "MAILGUN_API_URL": config("MAILGUN_API_URL", default="https://api.mailgun.net/v3"),
     }
     {%- elif cookiecutter.mail_service == 'Amazon SES' %}
     # https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
@@ -273,11 +267,11 @@ if not IN_DEV:
     #
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     ANYMAIL = {}
-    EMAIL_HOST = _env_get_required("SMTP_HOST")
-    EMAIL_PORT = os.environ.get("SMTP_PORT", 587)
-    EMAIL_HOST_USER = _env_get_required("SMTP_USER")
-    EMAIL_HOST_PASSWORD = _env_get_required("SMTP_PASSWORD")
-    EMAIL_ALLOWED_DOMAINS = _env_get_required("SMTP_VALID_TESTING_DOMAINS")
+    EMAIL_HOST = config("SMTP_HOST")
+    EMAIL_PORT = config("SMTP_PORT", default=587, cast=int)
+    EMAIL_HOST_USER = config("SMTP_USER")
+    EMAIL_HOST_PASSWORD = config("SMTP_PASSWORD")
+    EMAIL_ALLOWED_DOMAINS = config("SMTP_VALID_TESTING_DOMAINS")
     EMAIL_USE_TLS = True
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -288,13 +282,13 @@ else:
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
-if os.environ.get("USE_AWS_STORAGE", "False") == "True":
-    AWS_ACCESS_KEY_ID = _env_get_required("AWS_ACCESS_KEY_ID")
-    AWS_STORAGE_BUCKET_NAME = _env_get_required("AWS_STORAGE_BUCKET_NAME")
-    AWS_SECRET_ACCESS_KEY = _env_get_required("AWS_SECRET_ACCESS_KEY")
+if config("USE_AWS_STORAGE", default=False):
+    AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
     AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
-    AWS_LOCATION = os.environ.get("AWS_LOCATION", "")
-    AWS_S3_REGION_NAME = _env_get_required("AWS_S3_REGION_NAME")
+    AWS_LOCATION = config("AWS_LOCATION", default="")
+    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
 
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
@@ -338,7 +332,7 @@ if not IN_DEV:
 # Rollbar logging config
 #
 ROLLBAR = {
-    "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+    "access_token": config("ROLLBAR_ACCESS_TOKEN"),
     "environment": ENVIRONMENT,
     "root": BASE_DIR,
 }
@@ -372,7 +366,7 @@ LOGGING = {
         "rollbar": {
             "level": "WARNING",
             "filters": ["require_debug_false"],
-            "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
+            "access_token": config("ROLLBAR_ACCESS_TOKEN"),
             "environment": ENVIRONMENT,
             "class": "rollbar.logger.RollbarHandler",
         },
