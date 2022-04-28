@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import { requireAuth } from '@/services/auth'
+import Home from '@/views/Home.vue'
 
 const routes = [
   {
@@ -30,6 +31,12 @@ const routes = [
     path: '/password/reset/confirm/:uid/:token',
     name: 'ResetPassword',
     component: () => import(/* webpackChunkName: "resetPassword" */ '../views/ResetPassword.vue'),
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    beforeEnter: requireAuth,
+    component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
   },
 ]
 

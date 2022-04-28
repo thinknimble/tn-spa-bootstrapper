@@ -26,6 +26,8 @@
 
 <script>
 import { ref } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import User, { LoginForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 
@@ -35,11 +37,18 @@ export default {
     InputField,
   },
   setup() {
+    const store = useStore()
+    const router = useRouter()
     const form = ref(new LoginForm())
 
-    function handleLoginSuccess(data) {
-      alert('Succesful login, see console for data.')
-      console.log('success', data)
+    async function handleLoginSuccess({ data }) {
+      await store.dispatch('setUser', User.fromAPI(data))
+      const redirectPath = router.currentRoute.value.query.redirect
+      if (redirectPath) {
+        router.push({ path: redirectPath })
+      } else {
+        router.push({ name: 'Dashboard' })
+      }
     }
 
     function handleLoginFailure(error) {
