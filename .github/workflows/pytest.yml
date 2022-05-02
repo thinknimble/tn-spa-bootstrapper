@@ -1,7 +1,7 @@
 name: Unit Tests 
 on: [push]
 jobs:
-  pytest_cookiecutter:
+  Pytest CookieCutter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,7 +13,7 @@ jobs:
       - run: pipenv install --dev --deploy
       - name: Test with pytest
         run: pipenv run pytest
-  pytest_my_project:
+  Pytest Generated Project:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,7 +25,8 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: pipenv run cookiecutter . --no-input -f
-      - run: |
+      - name: Run pytest
+        run: |
           cd my_project
           pipenv install --dev --deploy --skip-lock
           pipenv run pytest --mccabe --cov=my_project -vv server/my_project
