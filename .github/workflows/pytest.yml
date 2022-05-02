@@ -3,16 +3,13 @@ on: [push]
 jobs:
   pytest_cookiecutter:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - run: pipx install pipenv
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.9'
       - run: pipenv install --dev --deploy
       - name: Test with pytest
         run: pipenv run pytest
