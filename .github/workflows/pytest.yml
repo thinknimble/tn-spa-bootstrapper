@@ -28,5 +28,5 @@ jobs:
       - run: |
           cd my_project
           pipenv install --dev --deploy --skip-lock
-      - run: pipenv run pytest --mccabe --cov=my_project -vv server/my_project
-      - run: pipenv run coverage report --fail-under=20
+          pipenv run pytest --mccabe --cov=my_project -vv server/my_project
+          pipenv run coverage report --fail-under=20
