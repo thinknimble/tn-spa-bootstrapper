@@ -30,6 +30,6 @@ jobs:
       - run: cookiecutter . --no-input -f
       - run: |
           cd my_project
-          pipenv install --dev --deploy
+          pipenv install --dev --deploy --skip-lock
           pipenv run pytest --mccabe --cov=my_project -vv server/my_project
           pipenv run coverage report --fail-under=20
