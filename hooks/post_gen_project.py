@@ -84,6 +84,7 @@ def move_client_to_root(client):
     shutil.move(os.path.join("clients", client), os.path.join("client"))
     shutil.rmtree(os.path.join("clients"))
 
+    # FAILS HERE when you try to run cookiecutter with -f to replace files
     os.rename(
         os.path.join("client", ".env.local.example"),
         os.path.join("client", ".env.local"),
@@ -179,6 +180,7 @@ def remove_github_folder():
 
 
 def remove_graphql_files():
+    # ?????? does nothing???
     file_names = [
         os.path.join("server/{{ cookiecutter.project_slug }}/core", "schema.py"),
         os.path.join("server/{{ cookiecutter.project_slug }}/core", "types.py"),

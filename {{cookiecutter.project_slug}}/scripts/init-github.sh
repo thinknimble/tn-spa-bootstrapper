@@ -6,6 +6,7 @@
 git init
 git add .
 git commit -m "Initial commit"
+# git remote add origin git@github.com:thinknimble/social_currant.git
 gh repo create thinknimble/{{cookiecutter.project_slug}} --private -y
 git push origin main
 printf "\033[0;32mRepo https://github.com/thinknimble/{{cookiecutter.project_slug}}/\033[0m \n"

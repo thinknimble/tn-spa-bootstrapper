@@ -37,7 +37,7 @@ STAFF_EMAIL = config("STAFF_EMAIL", default="no-reply@thinknimble.com")
 # Domain Configuration
 #
 CURRENT_DOMAIN = config("CURRENT_DOMAIN")
-CURRENT_PORT = config("CURRENT_PORT", cast=int)
+CURRENT_PORT = config("CURRENT_PORT", default="")
 ALLOWED_HOSTS = []
 ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(',')])
 if CURRENT_DOMAIN not in ALLOWED_HOSTS:

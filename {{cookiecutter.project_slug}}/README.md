@@ -25,5 +25,5 @@ See the [frontend README](client/README.md)
 
 
 ## Testing
-`pipenv install --dev`
-`pipenv run pytest server/my_project`
+1. `pipenv install --dev`
+1. `pipenv run pytest server/{{cookiecutter.project_name}}`

@@ -34,6 +34,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     if ! [ "$?" ]; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
+    echo "##### Updating Brew..."
     brew update
     which psql:
     if ! [ "$?" ]; then
