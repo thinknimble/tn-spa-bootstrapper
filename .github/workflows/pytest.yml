@@ -1,7 +1,7 @@
 name: Unit Tests 
 on: [push]
 jobs:
-  Pytest CookieCutter:
+  Pytest_CookieCutter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,7 +13,7 @@ jobs:
       - run: pipenv install --dev --deploy
       - name: Test with pytest
         run: pipenv run pytest
-  Pytest Generated Project:
+  Pytest_Generated_Project:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
