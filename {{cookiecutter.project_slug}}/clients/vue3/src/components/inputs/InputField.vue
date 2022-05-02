@@ -1,19 +1,27 @@
 <template>
-  <div class="form-block">
-    <label v-if="label" :for="`${label}-field`" v-text="label" />
-    <input
-      :id="`${label}-field`"
-      :type="type"
-      :placeholder="placeholder"
-      spellcheck="false"
-      v-model="val"
-      @input="$emit('input', $event)"
-      @blur="$emit('blur')"
-      @focus="$emit('focus', $event)"
+  <div class="field">
+    <label v-if="label" class="label" :for="`${label}-field`" v-text="label" />
+    <div class="control">
+      <input
+        class="input"
+        :class="{
+          'is-danger': errors.length,
+        }"
+        :id="`${label}-field`"
+        :type="type"
+        :placeholder="placeholder"
+        spellcheck="false"
+        v-model="val"
+        @input="$emit('input', $event)"
+        @blur="$emit('blur')"
+        @focus="$emit('focus', $event)"
+      />
+    </div>
+    <p
+      class="help is-danger"
+      v-if="errors.length"
+      v-text="errors.map((err) => err.message).join(', ')"
     />
-    <ul v-if="errors.length">
-      <li v-for="(error, index) in errors" :key="index" v-text="error.message" />
-    </ul>
   </div>
 </template>
 
@@ -55,11 +63,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.form-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-</style>
+<style scoped lang="scss"></style>
