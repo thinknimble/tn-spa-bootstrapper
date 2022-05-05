@@ -37,7 +37,7 @@ STAFF_EMAIL = config("STAFF_EMAIL", default="no-reply@thinknimble.com")
 # Domain Configuration
 #
 CURRENT_DOMAIN = config("CURRENT_DOMAIN")
-CURRENT_PORT = config("CURRENT_PORT", cast=int)
+CURRENT_PORT = config("CURRENT_PORT", default="")
 ALLOWED_HOSTS = []
 ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(',')])
 if CURRENT_DOMAIN not in ALLOWED_HOSTS:
@@ -282,7 +282,7 @@ else:
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
-if config("USE_AWS_STORAGE", default=False):
+if config("USE_AWS_STORAGE", cast=bool, default=False):
     AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")

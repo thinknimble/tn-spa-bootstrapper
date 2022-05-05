@@ -1,0 +1,33 @@
+name: Unit Tests 
+on: [push]
+jobs:
+  Pytest_CookieCutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pipx install pipenv
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - run: pipenv install --dev --deploy
+      - name: Test with pytest
+        run: pipenv run pytest
+  Pytest_Generated_Project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: pipenv run cookiecutter . --no-input -f
+      - name: Pytest, McCabe, and Coverage
+        run: |
+          cd my_project
+          pipenv install --dev --deploy --skip-lock
+          pipenv run pytest --mccabe --cov=my_project -vv server/my_project
+          pipenv run coverage report --fail-under=20
