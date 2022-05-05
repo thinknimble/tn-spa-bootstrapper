@@ -41,8 +41,8 @@ export default {
     const router = useRouter()
     const form = ref(new LoginForm())
 
-    async function handleLoginSuccess({ data }) {
-      await store.dispatch('setUser', User.fromAPI(data))
+    async function handleLoginSuccess(user) {
+      await store.dispatch('setUser', user)
       const redirectPath = router.currentRoute.value.query.redirect
       if (redirectPath) {
         router.push({ path: redirectPath })

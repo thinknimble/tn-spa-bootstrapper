@@ -28,10 +28,16 @@ export default class UserAPI extends ModelAPI {
 
   login(d) {
     const data = { email: d.email.toLowerCase(), password: d.password }
-    const promise = AxiosClient.post(LOGIN_ENDPOINT, data).catch(
-      apiErrorHandler({ apiName: 'UserAPI.login', enable400Alert: false, enable500Alert: false }),
+    return this.client
+      .post(LOGIN_ENDPOINT, data)
+      .then((response) => this.cls.fromAPI(response.data))
+      .catch(
+        apiErrorHandler({
+          apiName: 'UserAPI.login',
+          enable400Alert: false,
+          enable500Alert: false
+        }),
     )
-    return promise
   }
 
   registerUser(d) {
@@ -43,8 +49,7 @@ export default class UserAPI extends ModelAPI {
     }
     return this.client
       .post(REGISTRATION_ENDPOINT, this.cls.toAPI(data))
-      .then((response) => response.data)
-      .then((data) => this.cls.fromAPI(data))
+      .then((response) => this.cls.fromAPI(response.data))
       .catch(
         apiErrorHandler({
           apiName: 'UserAPI.registerUser',
