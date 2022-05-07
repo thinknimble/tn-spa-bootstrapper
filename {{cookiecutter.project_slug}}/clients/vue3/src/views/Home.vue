@@ -7,10 +7,6 @@
 
 <script>
 import { CollectionManager } from '@thinknimble/tn-models'
-
-import { unwrap } from '@/services/utils'
-import User from '@/services/users'
-
 export default {
   name: 'Home',
   components: {},
