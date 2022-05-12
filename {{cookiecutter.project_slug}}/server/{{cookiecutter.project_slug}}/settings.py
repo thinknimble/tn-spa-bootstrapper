@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     # Local
     "{{ cookiecutter.project_slug }}.common",
     "{{ cookiecutter.project_slug }}.core",
-    "{{ cookiecutter.project_slug }}.matching",
     # Django
     "django.contrib.admin",
     "django.contrib.auth",

@@ -61,6 +61,7 @@ def get_random_secret_key():
 def remove_client_files(client):
     rmtree(join("clients", client))
 
+
 def move_client_to_root(client):
     if exists("client"):
         # We must be running as an update script
@@ -125,7 +126,7 @@ def main():
         remove_graphql_files()
 
     print_thankyou()
-    print(F"\n{SUCCESS}Awesome! Project initialized...{END}\n")
+    print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")
 
     project_slug = "{{ cookiecutter.project_slug }}"
     print(f"{INFO}To install missing system requirements see {project_slug}/scripts/install-reqs.sh{END}")

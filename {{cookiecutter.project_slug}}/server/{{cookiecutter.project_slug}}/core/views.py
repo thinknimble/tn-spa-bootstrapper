@@ -29,19 +29,16 @@ from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSe
 @never_cache
 def index(request):
     return TemplateResponse(request, "index.html")
+{% elif cookiecutter.client_app.lower() == 'None' %}
+def index(request):
+    return redirect(to="/docs/swagger/")
 {% else %}
 def index(request):
-    {% if cookiecutter.client_app.lower() == 'None' %}
-    return redirect(to="/docs/swagger/")
-    {% else %}
     try:
         return render(request, "index.html")
     except TemplateDoesNotExist:
         return render(request, "core/index-placeholder.html")
-    {% endif %}
 {% endif %}
-
-
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
     authentication_classes = ()
