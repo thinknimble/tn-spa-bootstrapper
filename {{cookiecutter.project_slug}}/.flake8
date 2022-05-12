@@ -1,4 +1,5 @@
 [flake8]
+exclude = .git,*migrations*
 # Match the line-length we configured for black in pyproject.toml
 max-line-length = 140
 extend-ignore =
