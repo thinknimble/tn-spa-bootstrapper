@@ -22,7 +22,6 @@ from .permissions import CreateOnlyPermissions
 {% if cookiecutter.use_graphql == 'n' %}
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 {% endif %}
-
 {% if cookiecutter.use_graphql == 'y' %}
 # Serve React frontend
 @ensure_csrf_cookie
@@ -39,6 +38,7 @@ def index(request):
     except TemplateDoesNotExist:
         return render(request, "core/index-placeholder.html")
 {% endif %}
+
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
     authentication_classes = ()
