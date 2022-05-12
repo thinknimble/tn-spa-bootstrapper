@@ -17,8 +17,7 @@ from {{ cookiecutter.project_slug }}.utils.misc import send_html_email
 
 from .models import User
 from .permissions import CreateOnlyPermissions
-{% if cookiecutter.use_graphql == 'n' %}
-from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+{% if cookiecutter.use_graphql == 'n' %}from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 {% endif %}
 {% if cookiecutter.use_graphql == 'y' %}
 # Serve React frontend
