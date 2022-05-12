@@ -1,0 +1,54 @@
+name: Linter
+on: [push]
+jobs:
+  Black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: pipenv run cookiecutter . --no-input -f
+      - uses: psf/black@stable
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: pipenv run cookiecutter . --no-input -f
+      - name: Run flake8
+        run: |
+          cd my_project
+          pipenv install --dev --deploy --skip-lock
+          pipenv run flake8 server
+  ESLint_and_Prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: pipenv run cookiecutter . --no-input -f
+      - name: Install dependencies
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        working-directory: ./my_project/client
+        run: |
+          npm install
+      - name: Run ESLint
+        working-directory: ./my_project/client
+        run: npx eslint --ext .js,.vue src
