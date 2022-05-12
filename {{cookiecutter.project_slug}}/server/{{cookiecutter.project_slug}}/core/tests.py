@@ -1,13 +1,11 @@
-from .models import User
-
 import pytest
+
+from .models import User
 
 
 @pytest.mark.django_db
 def test_create_user():
-    user = User.objects.create_user(
-        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
-    )
+    user = User.objects.create_user(email="test@example.com", password="password", first_name="Leslie", last_name="Burke")
 
     assert user.email == "test@example.com"
     assert user.password
@@ -30,9 +28,7 @@ def test_create_user():
 
 @pytest.mark.django_db
 def test_create_superuser():
-    superuser = User.objects.create_superuser(
-        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
-    )
+    superuser = User.objects.create_superuser(email="test@example.com", password="password", first_name="Leslie", last_name="Burke")
 
     assert superuser.is_superuser
     assert superuser.last_name == "Burke"
