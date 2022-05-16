@@ -8,8 +8,8 @@
     {% endif %}
   },
   "engines": {
-    "node": "14.17.4",
-    "npm": "6.14.14"
+    "node": "14.*.*",
+    "npm": "6.*.*"
   },
   "cacheDirectories": [
     "client/node_modules"
