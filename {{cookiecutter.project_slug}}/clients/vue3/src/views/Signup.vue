@@ -57,8 +57,8 @@ export default {
     const router = useRouter()
     const form = ref(new SignupForm())
 
-    async function handleRegistrationSuccess({ data }) {
-      await store.dispatch('setUser', User.fromAPI(data))
+    async function handleRegistrationSuccess(user) {
+      await store.dispatch('setUser', user)
       const redirectPath = router.currentRoute.value.query.redirect
       if (redirectPath) {
         router.push({ path: redirectPath })
