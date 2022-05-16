@@ -1,7 +1,4 @@
-from decimal import (
-    Decimal,
-    ROUND_DOWN,
-)
+from decimal import ROUND_DOWN, Decimal
 
 
 def round_decimal(value, quantize=".01"):

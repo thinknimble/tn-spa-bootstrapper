@@ -3,9 +3,9 @@ from email.mime.application import MIMEApplication
 from io import StringIO
 
 from django.conf import settings
-from django.utils import timezone
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 
 def datetime_appended_filepath(instance, filename):
@@ -50,9 +50,7 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     #         if domain not in valid_domains:
     #             return
 
-    assert isinstance(
-        send_to, (list, tuple, str)
-    ), "send_to must be an instance of list, tuple, or str"
+    assert isinstance(send_to, (list, tuple, str)), "send_to must be an instance of list, tuple, or str"
 
     if isinstance(send_to, str):
         send_to = [send_to]

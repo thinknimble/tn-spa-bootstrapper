@@ -1,6 +1,5 @@
-from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import login
-
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 

@@ -1,14 +1,11 @@
 import uuid  # noqa
 
-from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
-from django.template.loader import render_to_string
+from django.db import models
 
-
-from {{ cookiecutter.project_slug }}.utils import sites as site_utils
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
+from {{ cookiecutter.project_slug }}.utils import sites as site_utils
 
 
 class UserManager(BaseUserManager):

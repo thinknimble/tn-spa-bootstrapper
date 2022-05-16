@@ -41,11 +41,10 @@ More advanced example of calling code:
             ...
 
 """
-import io
 import csv
+import io
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
 from rest_framework.exceptions import ValidationError
 
 
@@ -151,9 +150,7 @@ class CSVParser:
                 self._col_lookup[header]
             except KeyError:
                 required_headers = ", ".join(self.required_headers)
-                raise ValidationError(
-                    detail=f"CSV missing one of required columns ({required_headers})."
-                )
+                raise ValidationError(detail=f"CSV missing one of required columns ({required_headers}).")
 
     def _parse_csv(self):
         """
@@ -217,9 +214,7 @@ class CSVParser:
         """
         # Validate this header is a header we're expecting
         if header.upper() not in self.duplicate_headers:
-            raise ValidationError(
-                detail=f"Duplicate header {header} not in specified duplicate headers."
-            )
+            raise ValidationError(detail=f"Duplicate header {header} not in specified duplicate headers.")
 
         # Look up locations of columns
         return self._dup_col_lookup[header.upper()]
