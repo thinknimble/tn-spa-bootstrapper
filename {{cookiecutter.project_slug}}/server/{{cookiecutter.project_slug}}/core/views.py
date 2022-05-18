@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from {{ cookiecutter.project_slug }}.utils.misc import send_html_email
+from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 from .models import User
 from .permissions import CreateOnlyPermissions
