@@ -2,7 +2,7 @@
 
 A production-ready Django SPA app on Heroku in 20-min or less!
 
-![Example deployment (main branch)](https://tn-spa-bootstrapper-staging.herokuapp.com/)
+[Example deployment (main branch)]
 
 ## Quick Start
 
@@ -111,3 +111,4 @@ See the [CONTRIBUTING] file for information about reporting issues, setting up y
 [Rollbar]: https://docs.rollbar.com/docs
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [Maintained Foundation Fork]: https://github.com/Parbhat/cookiecutter-django-foundation
+[Example deployment (main branch)]: https://tn-spa-bootstrapper-staging.herokuapp.com/
