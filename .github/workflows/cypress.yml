@@ -20,9 +20,9 @@ jobs:
           headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
-          CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
-          CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
-          CYPRESS_baseUrl: "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com/"
+          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: "https://tn-spa-bootstrapper-staging.herokuapp.com/"
   Firefox:
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +36,6 @@ jobs:
           headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
-          CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
-          CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
-          CYPRESS_baseUrl: "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com/"
+          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: "https://tn-spa-bootstrapper-staging.herokuapp.com/"

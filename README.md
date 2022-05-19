@@ -1,6 +1,8 @@
 # Thinknimble SPA Bootstrapper (Django | Vue | React)
 
-Thinknimble Cookiecutter is a framework for jumpstarting production-ready Django projects along side with client side SPA quickly.
+A production-ready Django SPA app on Heroku in 20-min or less!
+
+![Example deployment (main branch)](https://tn-spa-bootstrapper-staging.herokuapp.com/)
 
 ## Quick Start
 
