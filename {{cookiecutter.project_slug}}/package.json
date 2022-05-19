@@ -12,7 +12,8 @@
     "npm": "6.*.*"
   },
   "cacheDirectories": [
-    "client/node_modules"
+    "client/node_modules",
+    ".cache/Cypress"
   ],
   "dependencies": {
   }
