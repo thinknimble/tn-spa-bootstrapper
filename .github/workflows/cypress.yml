@@ -1,0 +1,41 @@
+name: Cypress Tests
+on: 
+  workflow_run:
+    workflows: [Unit Tests, Linter]
+    types:
+      - completed
+    branches:
+      - 'main'
+jobs:
+  Chrome:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run on Staging 
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: client
+          browser: chrome
+          headless: true
+        env: 
+          NPM_CONFIG_PRODUCTION: false
+          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: "https://tn-spa-bootstrapper-staging.herokuapp.com/"
+  Firefox:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run on Staging 
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: client
+          browser: firefox
+          headless: true
+        env: 
+          NPM_CONFIG_PRODUCTION: false
+          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: "https://tn-spa-bootstrapper-staging.herokuapp.com/"

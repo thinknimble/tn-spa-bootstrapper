@@ -1,4 +1,11 @@
 ### Python template
+
+# project specific
+node_modules/
+server/static/
+server/media-files/
+package-lock.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -24,6 +31,11 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# Ignore Cypress environment variables & media
+client/cypress.env.json
+client/tests/e2e/screenshots/*
+client/tests/e2e/videos/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
