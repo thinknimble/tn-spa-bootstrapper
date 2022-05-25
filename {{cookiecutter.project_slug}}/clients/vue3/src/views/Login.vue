@@ -6,7 +6,7 @@
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
-        id="test-email"
+        data-cy="email"
         label="Email:"
         placeholder="Email"
       />
@@ -16,12 +16,12 @@
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
-        id="test-password"
+        data-cy="password"
         label="Password:"
         placeholder="Password"
       />
 
-      <button id="test-submit" type="submit">Login</button>
+      <button data-cy="submit" type="submit">Login</button>
     </form>
   </div>
 </template>
