@@ -20,8 +20,9 @@ Now you will only ever need one command:
 
 More info regarding docker...
 
-**NOTE: uncomment the host from the .env file to the docker host**
-**NOTE: An initial pipfile lock is required for the backend**
+**NB: uncomment the host from the .env file to the docker host**
+
+**NB: An initial pipfile lock is required for the backend**
 
 The docker configuration is managed using a docker-compose.yaml, to begin you will need to install docker and set up an account with docker hub
 If you are starting the project from scratch make sure to install the python packages with pipenv to generate a pipfile.lock (any new installs will require a new build)
