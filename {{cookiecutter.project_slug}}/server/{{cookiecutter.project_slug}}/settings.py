@@ -51,6 +51,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    {% if cookiecutter.client_app == "React" %}
+    "whitenoise.runserver_nostatic",
+    {% endif %}
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
@@ -60,8 +63,30 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
+    {% if cookiecutter.use_graphql == 'y' %}
+    "graphene_django",
+    {% endif %}
 ]
 
+{% if cookiecutter.use_graphql == 'y' %}
+GRAPHENE = {
+    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+}
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+{% endif %}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -87,10 +112,17 @@ ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+        {% if cookiecutter.client_app != "React" %}
         "APP_DIRS": True,
         "DIRS": [
             os.path.join(BASE_DIR, "../client/dist/"),
         ],
+        {% else %}
+        "DIRS": [
+            os.path.join(BASE_DIR, "..", "client", 'build'),
+        ],
+        "APP_DIRS": True, # this setting must come after "DIRS"!
+        {% endif %}
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -180,16 +212,24 @@ if DEBUG:  # for testing
 #
 # Static files (CSS, JavaScript, Images)
 #
-
+{% if cookiecutter.client_app != "React" %}
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
-
+{% else %}
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "client", "build")
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "client", "build", "static")
+{% endif %}
 
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "../client/dist/static"),
-]
+
+{%- if cookiecutter.client_app != 'None' %}
+{%- if cookiecutter.client_app == 'Vue3' %}
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/dist/static"), ]
+{% elif cookiecutter.client_app == 'React' %}
+STATICFILES_DIRS = [os.path.join(STATIC_ROOT, "static"),]
+{% endif %}
+{% endif %}
 
 
 STATICFILES_FINDERS = [
@@ -202,6 +242,7 @@ STATICFILES_FINDERS = [
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
 INSTALLED_APPS += ["anymail"]  # noqa F405
 if not IN_DEV:
+    {%- if cookiecutter.mail_service == 'Mailgun' %}
     # https://anymail.readthedocs.io/en/stable/esps/mailgun/
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
@@ -210,6 +251,26 @@ if not IN_DEV:
         "MAILGUN_SENDER_DOMAIN": config("MAILGUN_DOMAIN"),
         "MAILGUN_API_URL": config("MAILGUN_API_URL", default="https://api.mailgun.net/v3"),
     }
+    {%- elif cookiecutter.mail_service == 'Amazon SES' %}
+    # https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
+    EMAIL_BACKEND = "anymail.backends.amazon_ses.EmailBackend"
+    ANYMAIL = {}
+    {%- elif cookiecutter.mail_service == 'Custom SMTP' %}
+
+    #
+    # Custom SMTP settings
+    #
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    ANYMAIL = {}
+    EMAIL_HOST = config("SMTP_HOST")
+    EMAIL_PORT = config("SMTP_PORT", default=587, cast=int)
+    EMAIL_HOST_USER = config("SMTP_USER")
+    EMAIL_HOST_PASSWORD = config("SMTP_PASSWORD")
+    EMAIL_ALLOWED_DOMAINS = config("SMTP_VALID_TESTING_DOMAINS")
+    EMAIL_USE_TLS = True
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    {% endif %}
 
 # STORAGES
 # ----------------------------------------------------------------------------
@@ -338,5 +399,16 @@ if IN_PROD or ROLLBAR_ACCESS_TOKEN:
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:8089", "https://{{ cookiecutter.project_slug
-}}-staging.herokuapp.com", "https://{{ cookiecutter.project_slug }}.herokuapp.com"]
+CORS_ALLOWED_ORIGINS = [
+{%- if cookiecutter.client_app.lower() != 'none' %}
+    "http://localhost:8089",
+{% endif %}
+{% if cookiecutter.use_graphql == 'y' %}
+    "http://localhost:3000",
+{% endif %}
+    "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
+    "https://{{ cookiecutter.project_slug }}.herokuapp.com"
+]
+{% if cookiecutter.use_graphql == 'y' %}
+CORS_ALLOW_CREDENTIALS = True
+{% endif %}
