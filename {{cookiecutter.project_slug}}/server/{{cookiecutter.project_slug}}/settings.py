@@ -4,7 +4,7 @@ import dj_database_url
 from decouple import config
 {% if cookiecutter.use_graphql == 'y' -%}
 from datetime import timedelta
-{%- endif %}
+{%- endif -%}
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     {% if cookiecutter.client_app == "React" -%}
     "whitenoise.runserver_nostatic",
-    {%- endif %}
+    {%- endif -%}
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
@@ -66,12 +66,12 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
-    {% if cookiecutter.use_graphql == 'y' -%}
+    {%- if cookiecutter.use_graphql == 'y' -%}
     "graphene_django",
     {%- endif %}
 ]
 
-{% if cookiecutter.use_graphql == 'y' -%}
+{%- if cookiecutter.use_graphql == 'y' -%}
 GRAPHENE = {
     "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
     "MIDDLEWARE": [
