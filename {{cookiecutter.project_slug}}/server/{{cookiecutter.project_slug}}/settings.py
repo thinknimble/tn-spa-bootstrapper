@@ -4,7 +4,7 @@ import dj_database_url
 from decouple import config
 {% if cookiecutter.use_graphql == 'y' -%}
 from datetime import timedelta
-{% endif -%}
+{%- endif %}
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    {%- if cookiecutter.client_app == "React" -%}
+    {% if cookiecutter.client_app == "React" -%}
     "whitenoise.runserver_nostatic",
     {%- endif %}
     "django.contrib.staticfiles",
@@ -68,10 +68,10 @@ INSTALLED_APPS = [
     "django_extensions",
     {% if cookiecutter.use_graphql == 'y' -%}
     "graphene_django",
-    {%- endif -%}
+    {%- endif %}
 ]
 
-{%- if cookiecutter.use_graphql == 'y' -%}
+{% if cookiecutter.use_graphql == 'y' -%}
 GRAPHENE = {
     "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
     "MIDDLEWARE": [
@@ -80,7 +80,7 @@ GRAPHENE = {
 }
 
 GRAPHQL_JWT = {
-    'JWT_VERIFY_EXPIRATION': True,
+    "JWT_VERIFY_EXPIRATION": True,
     "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
 }
@@ -120,11 +120,11 @@ TEMPLATES = [
         "DIRS": [
             os.path.join(BASE_DIR, "../client/dist/"),
         ],
-        {% else %}
+        {% else -%}
         "DIRS": [
-            os.path.join(BASE_DIR, "..", "client", 'build'),
+            os.path.join(BASE_DIR, "..", "client", "build"),
         ],
-        "APP_DIRS": True, # this setting must come after "DIRS"!
+        "APP_DIRS": True,  # this setting must come after "DIRS"!
         {% endif -%}
         "OPTIONS": {
             "context_processors": [
@@ -228,9 +228,13 @@ MEDIA_URL = "/media/"
 
 {%- if cookiecutter.client_app != 'None' %}
 {%- if cookiecutter.client_app == 'Vue3' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/dist/static"), ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "../client/dist/static"),
+]
 {% elif cookiecutter.client_app == 'React' %}
-STATICFILES_DIRS = [os.path.join(STATIC_ROOT, "static"),]
+STATICFILES_DIRS = [
+    os.path.join(STATIC_ROOT, "static"),
+]
 {% endif -%}
 {% endif -%}
 
@@ -272,7 +276,7 @@ if not IN_DEV:
     EMAIL_ALLOWED_DOMAINS = config("SMTP_VALID_TESTING_DOMAINS")
     EMAIL_USE_TLS = True
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     {% endif %}
 
 # STORAGES
@@ -402,16 +406,14 @@ if IN_PROD or ROLLBAR_ACCESS_TOKEN:
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
-CORS_ALLOWED_ORIGINS = [
-{%- if cookiecutter.client_app.lower() != 'none' %}
-    "http://localhost:8089",
+CORS_ALLOWED_ORIGINS = ["https://{{ cookiecutter.project_slug }}-staging.herokuapp.com", "https://{{ cookiecutter.project_slug }}.herokuapp.com"]
+{% if cookiecutter.client_app.lower() != 'none' -%}
+CORS_ALLOWED_ORIGINS.append("http://localhost:8089")
 {% endif -%}
-{% if cookiecutter.use_graphql == 'y' %}
-    "http://localhost:3000",
-{%- endif %}
-    "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
-    "https://{{ cookiecutter.project_slug }}.herokuapp.com"
-]
+{% if cookiecutter.use_graphql == 'y' -%}
+CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
+{%- endif -%}
+
 {% if cookiecutter.use_graphql == 'y' %}
 CORS_ALLOW_CREDENTIALS = True
 {% endif -%}

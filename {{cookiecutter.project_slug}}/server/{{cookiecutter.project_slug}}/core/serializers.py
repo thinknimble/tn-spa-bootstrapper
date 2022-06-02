@@ -5,6 +5,7 @@ from rest_framework.authtoken.models import Token
 
 from .models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -15,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "full_name",
         )
+
 
 class UserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(allow_blank=False, required=True)
