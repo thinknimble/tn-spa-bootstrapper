@@ -36,9 +36,7 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     #         if domain not in valid_domains:
     #             return
 
-    assert isinstance(
-        send_to, (list, tuple, str)
-    ), "send_to must be an instance of list, tuple, or str"
+    assert isinstance(send_to, (list, tuple, str)), "send_to must be an instance of list, tuple, or str"
 
     if isinstance(send_to, str):
         send_to = [send_to]
