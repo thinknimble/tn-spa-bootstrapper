@@ -1,7 +1,8 @@
 <template>
-  <div class="form-block">
-    <label v-if="label" :for="`${label}-field`" v-text="label" />
+  <div class="w-full flex flex-col items-start pt-6">
+    <label class="text-sm font-bold" v-if="label" :for="`${label}-field`" v-text="label" />
     <input
+      class="bg-slate-400 border p-3 mt-1.5 rounded w-full"
       :id="`${label}-field`"
       :type="type"
       :placeholder="placeholder"
