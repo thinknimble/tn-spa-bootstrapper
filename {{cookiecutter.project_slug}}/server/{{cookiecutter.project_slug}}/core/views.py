@@ -37,9 +37,6 @@ def index(request):
     except FileNotFoundError:
         return TemplateResponse(request, "core/index-placeholder.html")
 
-
-
-
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
     authentication_classes = ()
