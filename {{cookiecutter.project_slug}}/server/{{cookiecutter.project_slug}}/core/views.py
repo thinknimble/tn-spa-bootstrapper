@@ -14,7 +14,6 @@ from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-
 from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 from .models import User
@@ -36,6 +35,7 @@ def index(request):
         return TemplateResponse(request, "index.html")
     except FileNotFoundError:
         return TemplateResponse(request, "core/index-placeholder.html")
+
 
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
