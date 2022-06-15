@@ -30,7 +30,7 @@ from .serializers import UserLoginSerializer, UserSerializer
 @never_cache
 def index(request):
     try:
-        index_path=os.path.join(settings.BASE_DIR.replace('server','client'),'dist/index.html')
+        index_path = os.path.join(settings.BASE_DIR.replace('server', 'client'), 'dist/index.html')
         if not os.path.exists(index_path):
             raise FileNotFoundError
         return TemplateResponse(request, "index.html")

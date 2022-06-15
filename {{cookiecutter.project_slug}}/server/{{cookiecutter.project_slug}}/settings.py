@@ -281,6 +281,13 @@ else:
 
 # STORAGES
 # ----------------------------------------------------------------------------
+#
+
+# STATIC
+# ------------------------
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
@@ -295,16 +302,14 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
+    STATIC_FILES_LOCATION = AWS_LOCATION + "/media"
     DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
     STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
-    STATIC_URL = f"https://{aws_s3_domain}/static/"
-    MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
-#
-# STATIC
-# ------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STATIC_URL = f"https://{aws_s3_domain}/{STATIC_FILES_LOCATION}/"
+    MEDIA_URL = f"https://{aws_s3_domain}/{PRIVATE_MEDIAFILES_LOCATION}/"
+
 
 # Maximum size, in bytes, of a request before it will be streamed to the
 # file system instead of into memory.
