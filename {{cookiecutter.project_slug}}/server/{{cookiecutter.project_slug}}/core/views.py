@@ -1,14 +1,16 @@
+import os
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
-{% if cookiecutter.use_graphql == 'y' %}from django.template.response import TemplateResponse
+from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
-{% endif %}from rest_framework import generics, mixins, permissions, status, viewsets
+from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -22,22 +24,21 @@ from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSe
 {% else %}
 from .serializers import UserLoginSerializer, UserSerializer
 {% endif %}
-{% if cookiecutter.use_graphql == 'y' %}
+
 # Serve React frontend
 @ensure_csrf_cookie
 @never_cache
 def index(request):
-    return TemplateResponse(request, "index.html")
-{% elif cookiecutter.client_app.lower() == 'None' %}
-def index(request):
-    return redirect(to="/docs/swagger/")
-{% else %}
-def index(request):
     try:
-        return render(request, "index.html")
-    except TemplateDoesNotExist:
-        return render(request, "core/index-placeholder.html")
-{% endif %}
+        index_path=os.path.join(settings.STATIC_ROOT,'index.html')
+        if not os.path.exists(index_path):
+            raise FileNotFoundError
+        return TemplateResponse(request, "index.html")
+    except FileNotFoundError:
+        return TemplateResponse(request, "core/index-placeholder.html")
+
+
+
 
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
