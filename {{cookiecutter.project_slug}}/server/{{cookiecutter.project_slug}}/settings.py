@@ -288,7 +288,6 @@ else:
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
-
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
 if config("USE_AWS_STORAGE", cast=bool, default=False):

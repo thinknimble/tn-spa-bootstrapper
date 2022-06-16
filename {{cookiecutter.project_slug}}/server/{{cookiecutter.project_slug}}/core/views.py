@@ -1,11 +1,9 @@
 import os
+
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
@@ -14,6 +12,7 @@ from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+
 from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 from .models import User
