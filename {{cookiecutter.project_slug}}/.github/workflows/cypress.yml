@@ -13,19 +13,19 @@ jobs:
         if: success() && steps.findPr.outputs.number
         run: echo "BASE_URL=https://{{ cookiecutter.project_slug }}-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
         env:
-          PR: ${{ steps.findPr.outputs.pr }}
+          PR: {{ "${{ steps.findPr.outputs.pr }}" }}
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
     outputs:
-      BASE_URL: ${{ env.BASE_URL }}
+      BASE_URL: {{ "${{ env.BASE_URL }}" }}
   Chrome:
     runs-on: ubuntu-20.04
     needs: Setup
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
+      - name: Run against {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
         uses: cypress-io/github-action@v2
         with:
           working-directory: client
@@ -35,14 +35,14 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
           CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
-          CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}
+          CYPRESS_baseUrl: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
   Firefox:
     runs-on: ubuntu-latest
     needs: Setup
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
+      - name: Run against {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
         uses: cypress-io/github-action@v2
         with:
           working-directory: client
@@ -52,4 +52,4 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
           CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
-          CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}
+          CYPRESS_baseUrl: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
