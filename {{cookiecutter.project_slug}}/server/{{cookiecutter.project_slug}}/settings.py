@@ -65,12 +65,12 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
-    {%- if cookiecutter.use_graphql == 'y' -%}
+    {% if cookiecutter.use_graphql == 'y' -%}
     "graphene_django",
     {%- endif %}
 ]
 
-{%- if cookiecutter.use_graphql == 'y' -%}
+{% if cookiecutter.use_graphql == 'y' -%}
 
 GRAPHENE = {
     "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
@@ -298,10 +298,9 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
     AWS_LOCATION = config("AWS_LOCATION", default="")
     AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
 
-    aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
-    STATIC_FILES_LOCATION = AWS_LOCATION + "/media"
+    STATIC_FILES_LOCATION = AWS_LOCATION + "/static"
     DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
     STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
