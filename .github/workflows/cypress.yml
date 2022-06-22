@@ -2,7 +2,7 @@ name: Cypress Tests
 on: push
 jobs:
   Setup:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: jwalton/gh-find-current-pr@v1
         id: findPr
@@ -14,9 +14,9 @@ jobs:
         run: echo "BASE_URL=https://tn-spa-bootstrapper-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
         env:
           PR: ${{ steps.findPr.outputs.pr }}
-        - name: Raise for error
-          if: env.BASE_URL == ''
-          run: exit 1
+      - name: Raise for error
+        if: env.BASE_URL == ''
+        run: exit 1
     outputs:
       BASE_URL: ${{ env.BASE_URL }}
   Chrome:
