@@ -302,11 +302,11 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
     STATIC_FILES_LOCATION = AWS_LOCATION + "/static"
     DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
+    STATICFILES_STORAGE = "instructionlibraries.utils.storages.StaticStorage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
 
-    STATIC_URL = f"https://{aws_s3_domain}/{STATIC_FILES_LOCATION}/"
-    MEDIA_URL = f"https://{aws_s3_domain}/{PRIVATE_MEDIAFILES_LOCATION}/"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_FILES_LOCATION}/"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PRIVATE_MEDIAFILES_LOCATION}/"
 
 
 # Maximum size, in bytes, of a request before it will be streamed to the
