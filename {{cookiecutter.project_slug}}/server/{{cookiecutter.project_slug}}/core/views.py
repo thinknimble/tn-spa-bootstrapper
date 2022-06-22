@@ -27,13 +27,11 @@ from .serializers import UserLoginSerializer, UserSerializer
 @ensure_csrf_cookie
 @never_cache
 def index(request):
-    try:
-        index_path = os.path.join(settings.BASE_DIR.replace('server', 'client'), 'dist/index.html')
-        if not os.path.exists(index_path):
-            raise FileNotFoundError
-        return TemplateResponse(request, "index.html")
-    except FileNotFoundError:
+
+    index_path = os.path.join(settings.BASE_DIR.replace('server', 'client'), 'dist/index.html')
+    if not os.path.exists(index_path):
         return TemplateResponse(request, "core/index-placeholder.html")
+    return TemplateResponse(request, "index.html")
 
 
 class UserLoginView(generics.GenericAPIView):
