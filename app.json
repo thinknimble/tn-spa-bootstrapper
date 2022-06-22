@@ -50,6 +50,6 @@
         }
     ],
     "scripts": {
-        "postdeploy": "./db_setup.sh"
+        "postdeploy": "./scripts/db_setup.sh"
     }
 }
