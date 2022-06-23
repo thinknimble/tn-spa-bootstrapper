@@ -36,7 +36,7 @@ jobs:
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v2
         with:
-          working-directory: client
+          working-directory: my_project/client
           browser: chrome
           headless: true
         env: 
@@ -61,7 +61,7 @@ jobs:
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v2
         with:
-          working-directory: client
+          working-directory: my_project/client
           browser: firefox
           headless: true
         env: 
