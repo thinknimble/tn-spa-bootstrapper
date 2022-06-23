@@ -1,9 +1,11 @@
 import os
-{% if cookiecutter.use_graphql == 'y' -%}
-from datetime import timedelta
-{%- endif %}
+
 import dj_database_url
+{% if cookiecutter.use_graphql == 'y' %}
+from datetime import timedelta
+{% endif %}
 from decouple import config
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,9 +55,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    {% if cookiecutter.client_app == "React" -%}
-    "whitenoise.runserver_nostatic",
-    {%- endif -%}
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
@@ -65,31 +64,14 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
+    {% if cookiecutter.client_app == "React" -%}
+    "whitenoise.runserver_nostatic",
+    {%- endif -%}
     {% if cookiecutter.use_graphql == 'y' -%}
-    "graphene_django",
-    {%- endif %}
+    "graphene_django"
+    {% endif -%}
 ]
 
-{% if cookiecutter.use_graphql == 'y' -%}
-
-GRAPHENE = {
-    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
-    "MIDDLEWARE": [
-        "graphql_jwt.middleware.JSONWebTokenMiddleware",
-    ],
-}
-
-GRAPHQL_JWT = {
-    "JWT_VERIFY_EXPIRATION": True,
-    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
-    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
-}
-
-AUTHENTICATION_BACKENDS = [
-    "graphql_jwt.backends.JSONWebTokenBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
-{%- endif %}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -112,32 +94,30 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        {% if cookiecutter.client_app != "React" -%}
-        "APP_DIRS": True,
-        "DIRS": [
-            os.path.join(BASE_DIR, "../client/dist/"),
-        ],
-        {% else -%}
-        "DIRS": [
-            os.path.join(BASE_DIR, "..", "client", "build"),
-        ],
-        "APP_DIRS": True,  # this setting must come after "DIRS"!
-        {% endif -%}
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ]
-        },
-    }
+WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
+
+{% if cookiecutter.use_graphql == 'y' -%}
+
+GRAPHENE = {
+    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+}
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
-WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
+
+{%- endif %}
 
 # Database
 """There are two ways to specifiy the database connection
@@ -212,36 +192,47 @@ REST_FRAMEWORK = {
 if DEBUG:  # for testing
     REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].append("rest_framework.authentication.SessionAuthentication")
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"].append("rest_framework.renderers.BrowsableAPIRenderer")
-#
-# Static files (CSS, JavaScript, Images)
-#
-{% if cookiecutter.client_app != "React" -%}
+
+# DIRS Definition
+
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
-{% else %}
-STATIC_ROOT = os.path.join(BASE_DIR, "..", "client", "build")
-MEDIA_ROOT = os.path.join(BASE_DIR, "..", "client", "build", "static")
-{% endif -%}
-
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
-{%- if cookiecutter.client_app != 'None' %}
-{%- if cookiecutter.client_app == 'Vue3' %}
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "../client/dist/static"),
-]
+# CLIENT SIDE BUILD DIRS
+
+{% if cookiecutter.client_app == "Vue3" %}
+CLIENT_BUILD_DIR = "../client/dist/"
+CLIENT_STATIC_FILES = "../client/dist/static"
 {% elif cookiecutter.client_app == 'React' %}
-STATICFILES_DIRS = [
-    os.path.join(STATIC_ROOT, "static"),
+CLIENT_STATIC_FILES = "../build/static"
+CLIENT_BUILD_DIR = "../client/dist/"
+{% else %}
+CLIENT_STATIC_FILES = STATIC_ROOT
+CLIENT_BUILD_DIR = ""
+{% endif %}
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            CLIENT_BUILD_DIR
+        ],
+        "APP_DIRS": True,  # this setting must come after "DIRS"!
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ]
+        },
+    }
 ]
-{% endif -%}
-{% endif -%}
 
-
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, CLIENT_STATIC_FILES),
 ]
 
 # Anymail
@@ -286,7 +277,6 @@ else:
 # STATIC
 # ------------------------
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
@@ -415,8 +405,5 @@ CORS_ALLOWED_ORIGINS.append("http://localhost:8089")
 {% endif -%}
 {% if cookiecutter.use_graphql == 'y' -%}
 CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
-{%- endif -%}
-
-{% if cookiecutter.use_graphql == 'y' %}
 CORS_ALLOW_CREDENTIALS = True
 {% endif -%}
