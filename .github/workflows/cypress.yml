@@ -17,12 +17,6 @@ jobs:
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
-    outputs:
-      BASE_URL: ${{ env.BASE_URL }}
-  Chrome:
-    runs-on: ubuntu-20.04
-    needs: Setup
-    steps:
       - name: Checkout
         uses: actions/checkout@v2
       - run: pipx install pipenv
@@ -38,6 +32,12 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./my_project/client
         run: npm install
+    outputs:
+      BASE_URL: ${{ env.BASE_URL }}
+  Chrome:
+    runs-on: ubuntu-20.04
+    needs: Setup
+    steps:
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v2
         with:
@@ -53,16 +53,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: Setup
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - run: pipx install pipenv
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-          cache: 'pipenv'
-      - name: Install bootstrapper dependencies
-        run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v2
         with:
