@@ -33,6 +33,11 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: pipenv run cookiecutter . --no-input -f
+      - name: Install frontend dependencies
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        working-directory: ./my_project/client
+        run: npm install
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v2
         with:
