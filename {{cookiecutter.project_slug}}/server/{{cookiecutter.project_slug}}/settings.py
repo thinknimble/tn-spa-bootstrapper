@@ -1,11 +1,10 @@
 import os
+{%- if cookiecutter.use_graphql == 'y' %}
+from datetime import timedelta
+{%- endif %}
 
 import dj_database_url
-{% if cookiecutter.use_graphql == 'y' %}
-from datetime import timedelta
-{% endif %}
 from decouple import config
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,9 +63,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
-    {% if cookiecutter.client_app == "React" -%}
+    {%- if cookiecutter.client_app == "React" %}
     "whitenoise.runserver_nostatic",
-    {%- endif -%}
+    {%- endif %}
     {% if cookiecutter.use_graphql == 'y' -%}
     "graphene_django"
     {% endif -%}
@@ -96,8 +95,7 @@ ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 
 WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
 
-{% if cookiecutter.use_graphql == 'y' -%}
-
+{%- if cookiecutter.use_graphql == 'y' %}
 GRAPHENE = {
     "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
     "MIDDLEWARE": [
@@ -115,8 +113,6 @@ AUTHENTICATION_BACKENDS = [
     "graphql_jwt.backends.JSONWebTokenBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
-
-
 {%- endif %}
 
 # Database
@@ -268,7 +264,7 @@ if not IN_DEV:
     EMAIL_USE_TLS = True
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    {% endif %}
+    {%- endif %}
 
 # STORAGES
 # ----------------------------------------------------------------------------
