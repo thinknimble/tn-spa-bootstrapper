@@ -1,7 +1,7 @@
 <template>
   <div class="login flex justify-center">
     <form
-      class="md:shadow-lg max-w-xl w-full p-10 rounded flex items-start flex-col"
+      class="box"
       @submit.prevent="attemptLogin()"
     >
       <h2 class="text-4xl font-bold">Log In.</h2>
@@ -21,7 +21,7 @@
         label="Password:"
         placeholder="Password"
       />
-      <button class="w-full bg-primary p-1.5 my-5 rounded" type="submit">Login</button>
+      <button class="btn bg-primary" type="submit">Login</button>
       <div class="flex self-center">
         <p class="mr-1">Don't have an account?</p>
         <router-link to="/signup" class="font-bold text-primary">Sign up</router-link>
