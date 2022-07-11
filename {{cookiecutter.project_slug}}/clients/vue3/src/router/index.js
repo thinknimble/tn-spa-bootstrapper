@@ -38,6 +38,12 @@ const routes = [
     beforeEnter: requireAuth,
     component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'PageNotFound',
+    beforeEnter: requireAuth,
+    component: () => import('../views/PageNotFound.vue'),
+  },
 ]
 
 const router = createRouter({
