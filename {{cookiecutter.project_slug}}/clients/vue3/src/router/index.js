@@ -41,7 +41,6 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     name: 'PageNotFound',
-    beforeEnter: requireAuth,
     component: () => import('../views/PageNotFound.vue'),
   },
 ]
