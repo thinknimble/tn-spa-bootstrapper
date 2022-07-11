@@ -1,6 +1,11 @@
 <template>
   <div class="page-not-found">
-    <h1><span class="error">404</span> Page Not Found</h1>
+    <h1 class="page-not-found__error">404</h1>
+    <img alt="Project Logo" src="../assets/logo.png" />
+    <h2 class="page-not-found__header">Oops!<br />We couldn't find the page you're looking for.</h2>
+    <p class="page-not-found__route">
+      Click <router-link to="/">here</router-link> to return to the home page.
+    </p>
   </div>
 </template>
 
