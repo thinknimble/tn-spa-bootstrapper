@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
+  <div class="home flex flex-col items-center">
     <img alt="Project Logo" src="../assets/logo.png" />
-    <h2>Welcome to {{cookiecutter.project_name}}!</h2>
+    <h1>Welcome to {{ cookiecutter.project_name }}!</h1>
   </div>
 </template>
 
@@ -9,6 +9,6 @@
 export default {
   name: 'Home',
   components: {},
-  setup(){}
+  setup() {},
 }
 </script>
