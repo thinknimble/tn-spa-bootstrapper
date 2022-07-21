@@ -2,19 +2,27 @@
 module.exports = {
   content: ['./index.html', './src/**/*.{vue,js}'],
   theme: {
-    colors: {
-      white: '#ffffff',
-      black: '#000000',
-      success: '#4faf64',
-      warning: '#f4b942',
-      error: '#d72638',
-      primary: '#042642',
-      accent: '#d93a00',
+    extend: {
+      colors: {
+        primary: '#042642',
+        accent: '#d93a00',
+        success: '#4faf64',
+        warning: '#f4b942',
+        error: '#d72638',
+      },
+      fontFamily: {
+        avenir: ['Avenir', 'Helvetica', 'Arial', 'sans-serif'],
+      },
     },
-    fontFamily: {
-      avenir: ['Avenir', 'Helvetica', 'Arial', 'sans-serif'],
+    container: {
+      padding: {
+        DEFAULT: '1rem',
+        sm: '2rem',
+        lg: '4rem',
+        xl: '5rem',
+        '2xl': '6rem',
+      },
     },
-    extend: {},
   },
   plugins: [],
 }
