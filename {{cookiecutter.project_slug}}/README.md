@@ -8,8 +8,8 @@
 If this is your first time...
 1. [Install Docker](https://www.docker.com/)
 1. Run `pipenv lock` to generate a Pipfile.lock
-1. Run `npm install` so you have node_modules available outside of Docker
-1. `make build`
+1. (Optional) Run `cd client && npm install` so you have node_modules available outside of Docker
+1. Back in the root directory, run `make build`
 1. View other available scripts/commands with `make commands`
 
 Now you will only ever need one command:
@@ -23,8 +23,7 @@ See the [backend README](server/README.md)
 If not using Docker...
 See the [frontend README](client/README.md)
 
+
 ## Testing
 1. `pipenv install --dev`
-1. `pipenv run pytest server/{{cookiecutter.project_slug}}`
-
-1. `npm run cypress`
+1. `pipenv run pytest server/{{cookiecutter.project_name}}`
