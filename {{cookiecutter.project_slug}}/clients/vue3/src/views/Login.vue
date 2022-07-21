@@ -1,7 +1,9 @@
 <template>
-  <div class="login container mx-auto content-center">
-    <h1 class="login__header text-2xl font-bold mb-6">Log In.</h1>
-    <form class="login__form flex flex-col items-center" @submit.prevent="attemptLogin()">
+  <div
+    class="login container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg"
+  >
+    <h1 class="heading--bold">Log In.</h1>
+    <form class="flex flex-col items-center" @submit.prevent="attemptLogin()">
       <InputField
         v-model="form.email.value"
         :errors="form.email.errors"
@@ -20,7 +22,13 @@
         label="Password"
         placeholder="Enter password..."
       />
-      <button class="bg-primary hover:bg-primary text-white font-bold py-2 px-4 rounded" data-cy="submit" type="submit">Login</button>
+      <button class="btn--primary" data-cy="submit" type="submit">Login</button>
+      <div class="flex self-center m-4">
+        <p class="mr-2">Don't have an account?</p>
+        <router-link to="/signup" class="font-bold text-primary hover:underline">
+          Sign up
+        </router-link>
+      </div>
     </form>
   </div>
 </template>
@@ -76,4 +84,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="css"></style>
