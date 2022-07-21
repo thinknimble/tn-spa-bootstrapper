@@ -8,7 +8,7 @@
 # Example: build and run all docker containers for development
 #
 #   make build
-#   make run-all
+#   make run
 #
 # This will start all of the docker containers in 'detached' mode (that is,
 # running in the background).
