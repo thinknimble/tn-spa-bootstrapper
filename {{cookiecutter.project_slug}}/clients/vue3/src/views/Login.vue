@@ -2,23 +2,22 @@
   <div class="login">
     <form @submit.prevent="attemptLogin()">
       <InputField
-        v-model:value="form.email.value"
+        v-model="form.email.value"
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
         data-cy="email"
-        label="Email:"
-        placeholder="Email"
+        label="Email"
+        placeholder="Enter email..."
       />
-
       <InputField
-        v-model:value="form.password.value"
+        v-model="form.password.value"
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
         data-cy="password"
-        label="Password:"
-        placeholder="Password"
+        label="Password"
+        placeholder="Enter password..."
       />
 
       <button data-cy="submit" type="submit">Login</button>
