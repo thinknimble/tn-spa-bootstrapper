@@ -1,27 +1,31 @@
 <template>
-  <div class="login">
-    <form @submit.prevent="attemptLogin()">
+  <div class="login flex justify-center">
+    <form
+      class="box"
+      @submit.prevent="attemptLogin()"
+    >
+      <h2 class="text-4xl font-bold">Log In.</h2>
       <InputField
         v-model:value="form.email.value"
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
-        data-cy="email"
         label="Email:"
         placeholder="Email"
       />
-
       <InputField
         v-model:value="form.password.value"
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
-        data-cy="password"
         label="Password:"
         placeholder="Password"
       />
-
-      <button data-cy="submit" type="submit">Login</button>
+      <button class="btn bg-primary" type="submit">Login</button>
+      <div class="flex self-center">
+        <p class="mr-1">Don't have an account?</p>
+        <router-link to="/signup" class="font-bold text-primary">Sign up</router-link>
+      </div>
     </form>
   </div>
 </template>
