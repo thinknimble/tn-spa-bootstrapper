@@ -1,6 +1,6 @@
 <template>
-  <div class="form-block">
-    <label v-if="label" :for="`${label}-field`" v-text="label" />
+  <div class="input-field flex flex-col items-start mb-2 w-full">
+    <label v-if="label" :for="`${label}-field`" v-text="label" class="input--label" />
     <input
       :id="`${label}-field`"
       :type="type"
@@ -10,9 +10,15 @@
       @input="$emit('input', $event)"
       @blur="$emit('blur')"
       @focus="$emit('focus', $event)"
+      class="input"
     />
     <ul v-if="errors.length">
-      <li v-for="(error, index) in errors" :key="index" v-text="error.message" />
+      <li
+        v-for="(error, index) in errors"
+        :key="index"
+        v-text="error.message"
+        class="input--error"
+      />
     </ul>
   </div>
 </template>
@@ -55,11 +61,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.form-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-</style>
+<style scoped lang="css"></style>
