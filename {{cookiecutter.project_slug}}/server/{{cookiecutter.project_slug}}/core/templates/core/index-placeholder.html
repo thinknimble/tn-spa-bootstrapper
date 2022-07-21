@@ -8,8 +8,23 @@
   <title>{{ cookiecutter.project_name }} &middot; Down for Maintenance</title>
 </head>
 
-<body>
-  <h1>This site is currently offline for maintenance.</h1>
-</body>
+
+  <body>
+    <div style='display:flex; flex-direction:column;justify-content:center;align-items:center;'>
+      <h1> Hi, Welcome to the Django Portal </h1>
+      You are seeing this page for one of two reasons
+      <ul>
+      <li>You have not built your client side </li>
+      <li>Or you have built your client side and haven't collected your static files</li>
+      <ul>
+      <i><strong>To fix this run:</strong> </i>
+      <ul>
+      <li><code> npm run build || yarn run build </code> </li>
+      <li> <code> python server/manage.py collectstatic --no-input</code> </li>
+
+      </ul>
+      </div>
+  </body>
+
 
 </html>
