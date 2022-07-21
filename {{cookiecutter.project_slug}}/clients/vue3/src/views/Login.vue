@@ -5,7 +5,7 @@
     <h1 class="heading--bold">Log In.</h1>
     <form class="flex flex-col items-center" @submit.prevent="attemptLogin()">
       <InputField
-        :value="form.email.value"
+        v-model:value="form.email.value"
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
@@ -14,7 +14,7 @@
         placeholder="Enter email..."
       />
       <InputField
-        :value="form.password.value"
+        v-model:value="form.password.value"
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
@@ -26,7 +26,7 @@
       <div class="flex self-center m-4">
         <p class="mr-2">Don't have an account?</p>
         <router-link to="/signup" class="font-bold text-primary hover:underline">
-          Sign up
+          Sign up.
         </router-link>
       </div>
     </form>

@@ -4,7 +4,7 @@
   >
     <form class="flex flex-col items-center" @submit.prevent="attemptUserRegistration()">
       <InputField
-        :value="form.firstName.value"
+        v-model:value="form.firstName.value"
         :errors="form.firstName.errors"
         @blur="form.firstName.validate()"
         label="First Name:"
@@ -12,7 +12,7 @@
       />
 
       <InputField
-        :value="form.lastName.value"
+        v-model:value="form.lastName.value"
         :errors="form.lastName.errors"
         @blur="form.lastName.validate()"
         label="Last Name:"
@@ -20,7 +20,7 @@
       />
 
       <InputField
-        :value="form.email.value"
+        v-model:value="form.email.value"
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
@@ -29,7 +29,7 @@
       />
 
       <InputField
-        :value="form.password.value"
+        v-model:value="form.password.value"
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
