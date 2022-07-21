@@ -1,6 +1,7 @@
 <template>
-  <div class="login">
-    <form @submit.prevent="attemptLogin()">
+  <div class="login container mx-auto content-center">
+    <h1 class="login__header text-2xl font-bold mb-6">Log In.</h1>
+    <form class="login__form flex flex-col items-center" @submit.prevent="attemptLogin()">
       <InputField
         v-model="form.email.value"
         :errors="form.email.errors"
@@ -19,8 +20,7 @@
         label="Password"
         placeholder="Enter password..."
       />
-
-      <button data-cy="submit" type="submit">Login</button>
+      <button class="bg-primary hover:bg-primary text-white font-bold py-2 px-4 rounded" data-cy="submit" type="submit">Login</button>
     </form>
   </div>
 </template>
