@@ -5,7 +5,7 @@
     <h1 class="heading--bold">Log In.</h1>
     <form class="flex flex-col items-center" @submit.prevent="attemptLogin()">
       <InputField
-        v-model="form.email.value"
+        :value="form.email.value"
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
@@ -14,7 +14,7 @@
         placeholder="Enter email..."
       />
       <InputField
-        v-model="form.password.value"
+        :value="form.password.value"
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
