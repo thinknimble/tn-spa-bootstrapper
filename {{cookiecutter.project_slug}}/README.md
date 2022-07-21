@@ -27,3 +27,5 @@ See the [frontend README](client/README.md)
 ## Testing
 1. `pipenv install --dev`
 1. `pipenv run pytest server/{{cookiecutter.project_name}}`
+
+1. `npm run cypress`
