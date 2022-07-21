@@ -1,8 +1,10 @@
 <template>
-  <div class="signup">
-    <form @submit.prevent="attemptUserRegistration()">
+  <div
+    class="signup container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg"
+  >
+    <form class="flex flex-col items-center" @submit.prevent="attemptUserRegistration()">
       <InputField
-        v-model:value="form.firstName.value"
+        :value="form.firstName.value"
         :errors="form.firstName.errors"
         @blur="form.firstName.validate()"
         label="First Name:"
@@ -10,7 +12,7 @@
       />
 
       <InputField
-        v-model:value="form.lastName.value"
+        :value="form.lastName.value"
         :errors="form.lastName.errors"
         @blur="form.lastName.validate()"
         label="Last Name:"
@@ -18,7 +20,7 @@
       />
 
       <InputField
-        v-model:value="form.email.value"
+        :value="form.email.value"
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
@@ -27,7 +29,7 @@
       />
 
       <InputField
-        v-model:value="form.password.value"
+        :value="form.password.value"
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
@@ -96,4 +98,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="css"></style>
