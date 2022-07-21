@@ -2,6 +2,7 @@
   <div
     class="signup container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg"
   >
+    <h1 class="heading--bold">Sign Up.</h1>
     <form class="flex flex-col items-center" @submit.prevent="attemptUserRegistration()">
       <InputField
         v-model:value="form.firstName.value"
@@ -36,8 +37,13 @@
         label="Password:"
         placeholder="Password"
       />
-
-      <button type="submit">Signup</button>
+      <button class="btn--primary" type="submit">Sign Up</button>
+      <div class="flex self-center m-4">
+        <p class="mr-2">Already have an account?</p>
+        <router-link to="/login" class="font-bold text-primary hover:underline">
+          Log in.
+        </router-link>
+      </div>
     </form>
   </div>
 </template>
