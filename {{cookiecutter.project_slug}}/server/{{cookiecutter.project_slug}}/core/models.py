@@ -5,7 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.db import models
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
-from {{ cookiecutter.project_slug }}.utils import sites as site_utils
+from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
 
 
 class UserManager(BaseUserManager):
@@ -61,7 +61,7 @@ class User(AbstractUser, AbstractBaseModel):
 
     def reset_password_context(self):
         return dict(
-            domain=site_utils.get_site_url(),
+            domain=get_site_url(),
             uid=str(self.id),
             token=default_token_generator.make_token(self),
             user=self,

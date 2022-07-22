@@ -21,6 +21,13 @@
         placeholder="Password"
       />
 
+      <router-link
+        :to="{ name: 'RequestPasswordReset' }"
+        tag="button"
+      >
+        Forgot Password?
+      </router-link>
+
       <button data-cy="submit" type="submit">Login</button>
     </form>
   </div>
