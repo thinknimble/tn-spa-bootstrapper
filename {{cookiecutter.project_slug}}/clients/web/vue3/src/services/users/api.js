@@ -71,7 +71,7 @@ export default class UserAPI extends ModelAPI {
 
   resetPassword({ uid, token, password }) {
     const url = `${PASSWORD_RESET_ENDPOINT}${uid}/${token}/`
-    const data = { password }
+    const data = { password: password }
     return this.client
       .post(url, data)
       .then((response) => this.cls.fromAPI(response.data))
