@@ -90,6 +90,7 @@ def request_reset_link(request, *args, **kwargs):
     reset_context = user.reset_password_context()
 
     logger.info(f"Password reset for user: {email}")
+    logger.info(reset_context)
     send_html_email(
         "Password reset for {{ cookiecutter.project_name }}",
         "registration/password_reset.html",
