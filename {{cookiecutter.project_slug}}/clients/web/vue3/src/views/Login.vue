@@ -33,7 +33,7 @@
         tag="button"
       >
         Forgot Password?
-      <router-link/>
+      </router-link>
     </form>
   </div>
 </template>
