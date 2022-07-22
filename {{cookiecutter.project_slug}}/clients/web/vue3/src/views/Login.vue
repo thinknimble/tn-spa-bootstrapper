@@ -27,6 +27,13 @@
           Sign up.
         </router-link>
       </div>
+
+      <router-link
+        :to="{ name: 'RequestPasswordReset' }"
+        tag="button"
+      >
+        Forgot Password?
+      <router-link/>
     </form>
   </div>
 </template>
