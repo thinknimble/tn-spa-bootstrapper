@@ -91,6 +91,10 @@ def request_reset_link(request, *args, **kwargs):
 
     logger.info(f"Password reset for user: {email}")
     logger.info(reset_context)
+    domain = reset_context["domain"]
+    uid = reset_context["uid"]
+    token = reset_context["token"]
+    logger.info(f"URL will be {domain}/password/reset/confirm/{uid}/{token}")
     send_html_email(
         "Password reset for {{ cookiecutter.project_name }}",
         "registration/password_reset.html",
@@ -105,6 +109,7 @@ def request_reset_link(request, *args, **kwargs):
 @api_view(["post"])
 @permission_classes([permissions.AllowAny])
 def reset_password(request, *args, **kwargs):
+    logger.info(f"Password reset requested with {kwargs}")
     id = kwargs.get("id")
     token = kwargs.get("token")
     user = User.objects.filter(id=id).first()
