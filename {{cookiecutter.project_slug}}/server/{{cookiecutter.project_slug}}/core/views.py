@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
@@ -12,6 +14,8 @@ from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 from .models import User
 from .permissions import CreateOnlyPermissions
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class UserLoginView(generics.GenericAPIView):
@@ -76,15 +80,16 @@ class UserViewSet(
         return Response(user, status=status.HTTP_200_OK)
 
 
-@api_view(["get"])
+@api_view(["post"])
 @permission_classes([permissions.AllowAny])
 def request_reset_link(request, *args, **kwargs):
-    email = kwargs.get("email")
+    email = request.data.get("email")
     user = User.objects.filter(email=email).first()
     if not user:
         return Response(status=status.HTTP_204_NO_CONTENT)
     reset_context = user.reset_password_context()
 
+    logger.info(f"Password reset for user: {email}")
     send_html_email(
         "Password reset for {{ cookiecutter.project_name }}",
         "registration/password_reset.html",

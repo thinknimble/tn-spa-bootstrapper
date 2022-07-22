@@ -60,12 +60,13 @@ export default class UserAPI extends ModelAPI {
   }
 
   requestPasswordReset(email) {
-    const url = `${PASSWORD_RESET_EMAIL_ENDPOINT}?email=${email.toLowerCase()}`
-    return this.client.get(url).catch(
+    const data = { email: email }
+    const promise = this.client.post(PASSWORD_RESET_EMAIL_ENDPOINT, data).catch(
       apiErrorHandler({
         apiName: 'UserAPI.requestPasswordReset',
       }),
     )
+    return promise
   }
 
   resetPassword({ uid, token, password }) {
