@@ -8,16 +8,16 @@
         v-model:value="form.firstName.value"
         :errors="form.firstName.errors"
         @blur="form.firstName.validate()"
-        label="First Name:"
-        placeholder="First name"
+        label="First Name"
+        placeholder="Enter first name..."
       />
 
       <InputField
         v-model:value="form.lastName.value"
         :errors="form.lastName.errors"
         @blur="form.lastName.validate()"
-        label="Last Name:"
-        placeholder="Last name"
+        label="Last Name"
+        placeholder="Enter last name..."
       />
 
       <InputField
@@ -25,8 +25,8 @@
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
-        label="Email:"
-        placeholder="Email"
+        label="Email"
+        placeholder="Enter email..."
       />
 
       <InputField
@@ -34,8 +34,8 @@
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
-        label="Password:"
-        placeholder="Password"
+        label="Password"
+        placeholder="Enter password..."
       />
       <button class="btn--primary" type="submit">Sign Up</button>
       <div class="flex self-center m-4">
