@@ -36,6 +36,6 @@
 }
 
 .subtitle--bold {
-  @apply title;
+  @apply subtitle;
   @apply font-bold;
 }
