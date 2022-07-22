@@ -1,0 +1,41 @@
+/* Headings & Text */
+
+/* h1 headers */
+.heading {
+  @apply text-3xl mb-6;
+}
+
+.heading--bold {
+  @apply heading;
+  @apply font-bold;
+}
+
+/* h2 headers */
+.subheading {
+  @apply text-2xl mb-5;
+}
+
+.subheading--bold {
+  @apply subheading;
+  @apply font-bold;
+}
+
+/* h3 headers */
+.title {
+  @apply text-xl mb-4;
+}
+
+.title--bold {
+  @apply title;
+  @apply font-bold;
+}
+
+/* h4 headers */
+.subtitle {
+  @apply text-lg mb-3;
+}
+
+.subtitle--bold {
+  @apply subtitle;
+  @apply font-bold;
+}

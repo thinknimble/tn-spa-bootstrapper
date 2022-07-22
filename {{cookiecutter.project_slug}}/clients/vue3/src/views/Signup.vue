@@ -1,20 +1,23 @@
 <template>
-  <div class="signup">
-    <form @submit.prevent="attemptUserRegistration()">
+  <div
+    class="signup container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg"
+  >
+    <h1 class="heading--bold">Sign Up.</h1>
+    <form class="flex flex-col items-center" @submit.prevent="attemptUserRegistration()">
       <InputField
         v-model:value="form.firstName.value"
         :errors="form.firstName.errors"
         @blur="form.firstName.validate()"
-        label="First Name:"
-        placeholder="First name"
+        label="First Name"
+        placeholder="Enter first name..."
       />
 
       <InputField
         v-model:value="form.lastName.value"
         :errors="form.lastName.errors"
         @blur="form.lastName.validate()"
-        label="Last Name:"
-        placeholder="Last name"
+        label="Last Name"
+        placeholder="Enter last name..."
       />
 
       <InputField
@@ -22,8 +25,8 @@
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
-        label="Email:"
-        placeholder="Email"
+        label="Email"
+        placeholder="Enter email..."
       />
 
       <InputField
@@ -31,11 +34,16 @@
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
-        label="Password:"
-        placeholder="Password"
+        label="Password"
+        placeholder="Enter password..."
       />
-
-      <button type="submit">Signup</button>
+      <button class="btn--primary" type="submit">Sign Up</button>
+      <div class="flex self-center m-4">
+        <p class="mr-2">Already have an account?</p>
+        <router-link to="/login" class="font-bold text-primary hover:underline">
+          Log in.
+        </router-link>
+      </div>
     </form>
   </div>
 </template>
@@ -96,4 +104,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="css"></style>
