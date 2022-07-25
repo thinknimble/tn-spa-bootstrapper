@@ -14,6 +14,6 @@ web: gunicorn {{ cookiecutter.project_slug }}.wsgi --chdir=server --log-file -
 #   3. Up-to-date build numbers shown in app (ideally auto-generated at build-and-deploy time)
 #
 # Comment the line below to disable migrations automatically after a Heroku push.
-release: python server/manage.py makemigrations --noinput && python server/manage.py migrate --noinput
+release: python server/manage.py makemigrations --noinput && python server/manage.py migrate --noinput && ./.heroku/release.sh
 
 

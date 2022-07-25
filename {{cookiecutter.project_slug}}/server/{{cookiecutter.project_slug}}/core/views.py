@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
@@ -22,6 +24,8 @@ from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSe
 {% else %}
 from .serializers import UserLoginSerializer, UserSerializer
 {% endif %}
+logger = logging.getLogger(__name__)
+
 {% if cookiecutter.use_graphql == 'y' %}
 # Serve React frontend
 @ensure_csrf_cookie
@@ -102,20 +106,25 @@ class UserViewSet(
         return Response(user, status=status.HTTP_200_OK)
 
 
-@api_view(["get"])
+@api_view(["post"])
 @permission_classes([permissions.AllowAny])
 def request_reset_link(request, *args, **kwargs):
-    email = kwargs.get("email")
+    email = request.data.get("email")
     user = User.objects.filter(email=email).first()
     if not user:
         return Response(status=status.HTTP_204_NO_CONTENT)
     reset_context = user.reset_password_context()
 
-    # send email
-    subject = render_to_string("registration/forgot_password_subject.txt")
+    subject = render_to_string("registration/password_reset_subject.txt")
+    logger.info(f"Password reset for user: {email}")
+    logger.info(reset_context)
+    domain = reset_context["domain"]
+    uid = reset_context["uid"]
+    token = reset_context["token"]
+    logger.info(f"URL will be {domain}/password/reset/confirm/{uid}/{token}")
     send_html_email(
         subject,
-        "registration/forgot_password_email.html",
+        "registration/password_reset_email.html",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
         context=reset_context,
@@ -127,9 +136,11 @@ def request_reset_link(request, *args, **kwargs):
 @api_view(["post"])
 @permission_classes([permissions.AllowAny])
 def reset_password(request, *args, **kwargs):
+    logger.info(f"Password reset requested with {kwargs}")
     id = kwargs.get("id")
     token = kwargs.get("token")
     user = User.objects.filter(id=id).first()
+    logger.info(f"Resetting password for {user} with {id} and {token}")
     if not user or not token:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
     is_valid = default_token_generator.check_token(user, token)
