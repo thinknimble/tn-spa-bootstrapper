@@ -1,5 +1,4 @@
 import os
-
 {% if cookiecutter.use_graphql == 'y' -%}
 from datetime import timedelta
 
