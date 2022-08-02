@@ -1,6 +1,8 @@
 import os
+
 {% if cookiecutter.use_graphql == 'y' -%}
 from datetime import timedelta
+
 {%- endif %}
 import dj_database_url
 from decouple import config
@@ -215,25 +217,33 @@ if DEBUG:  # for testing
 #
 # Static files (CSS, JavaScript, Images)
 #
-{% if cookiecutter.client_app != "React" -%}
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
-{% else %}
-STATIC_ROOT = os.path.join(BASE_DIR, "..", "client", "build")
-MEDIA_ROOT = os.path.join(BASE_DIR, "..", "client", "build", "static")
-{% endif -%}
+# Django will create directories for STATIC_ROOT and MEDIA_ROOT.
+# Static files are things like JS, CSS, and images. Media files are
+# user-uploaded files. By default, media files are stored on the local
+# file system when uploaded. This is fine for development, but but when
+# on Heroku, you must use an external system like AWS S3, because the
+# Heroku file system is destroyed during each deployment.
+#
 
+# Static files will be collected into 'static' when `manage.py collectstatic` is run
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media-files")
+
+# Static and media files will be served from under these paths.
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
 {%- if cookiecutter.client_app != 'None' %}
 {%- if cookiecutter.client_app == 'Vue3' %}
+# Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "../client/dist/static"),
 ]
 {% elif cookiecutter.client_app == 'React' %}
+# Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
-    os.path.join(STATIC_ROOT, "static"),
+    os.path.join(BASE_DIR, "..", "client", "build"),
+    os.path.join(BASE_DIR, "..", "client", "build", "static"),
 ]
 {% endif -%}
 {% endif -%}
