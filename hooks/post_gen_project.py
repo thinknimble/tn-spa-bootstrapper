@@ -117,10 +117,16 @@ def main():
         remove(join("package.json"))
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
         remove_client_files("react")
+        remove_client_files("NextJS")
         move_client_to_root("vue3")
     elif "{{ cookiecutter.client_app }}".lower() == "react":
         remove_client_files("vue3")
+        remove_client_files("NextJS")
         move_client_to_root("react")
+    elif "{{ cookiecutter.client_app }}".lower() == "NextJS":
+        remove_client_files("vue3")
+        remove_client_files("react")
+        move_client_to_root("NextJS")
 
     if "{{ cookiecutter.use_graphql }}".lower() == "n":
         remove_graphql_files()
