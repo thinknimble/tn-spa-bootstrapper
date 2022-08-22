@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, ReactNode } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { VERIFY_TOKEN, REFRESH_TOKEN } from "./mutations";
@@ -12,38 +12,53 @@ import { PUBLIC_ROUTES } from "./routes";
 // 2a. unset localStorage token & exp on logout
 // 2b. call client.clearStore() on logout
 
-export const AuthContext = React.createContext({
+const AUTH_TOKEN_KEY = 'auth-token'
+const EXPIRATION_DATE_KEY = 'exp'
+const TOKEN_CHECK_INTERVAL_MS = 60000
+
+const useInterval = (fn:()=>void,intervalMs:number)=>{
+
+  useEffect(()=>{
+    const intervalId = setInterval(fn,intervalMs)
+
+    return ()=>{
+      clearInterval(intervalId)
+    }
+  },[fn, intervalMs])
+}
+
+type AuthState={
+  token:string | null,
+  updateToken:(token:string)=>void  
+}
+
+export const AuthContext = React.createContext<AuthState>({
   token: null,
-  updateToken: (token: any) => {}, // set default signature to expect function
+  updateToken: (token) => {}, // set default signature to expect function
 });
 
 export function logout() {
   client.clearStore();
-  localStorage.setItem("auth-token", null);
-  localStorage.setItem("exp", null);
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(EXPIRATION_DATE_KEY);
 }
 
-export function AuthProvider({ children }: { children: any }) {
-  let navigate = useNavigate();
-  let location = useLocation();
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // check localStorage for an auth token
-  let storedToken = localStorage.getItem("auth-token");
-  if (storedToken === "null") {
-    storedToken = null;
-  }
+  const storedToken = localStorage.getItem(AUTH_TOKEN_KEY);
   const [token, setToken] = useState(storedToken);
 
   // check localStorage for an expiration datetime
-  let storedExp: Date | string = localStorage.getItem("exp");
-  if (storedExp === "null") {
-    storedExp = null;
-  }
-  const [expDate, setExpDate] = useState<Date|string>(storedExp);
+  const storedExp = localStorage.getItem(EXPIRATION_DATE_KEY);
+
+  const [expDate, setExpDate] = useState<Date | null>(storedExp ? new Date(storedExp) : null);
 
   const [refreshToken] = useMutation(REFRESH_TOKEN, {
     onCompleted: (data) => {
-      localStorage.setItem("auth-token", data.refreshToken.token);
+      localStorage.setItem(AUTH_TOKEN_KEY, data.refreshToken.token);
       setToken(data.refreshToken.token);
       const exp: Date = new Date(data.refreshToken.payload.exp * 1000);
       setExpDate(exp);
@@ -52,29 +67,24 @@ export function AuthProvider({ children }: { children: any }) {
   });
 
   // if token is about to expire, refresh it
-  function checkTokenExp() {
-    let now: Date = new Date(Date.now());
+  const checkTokenExpiration = useCallback(()=>{
     if (expDate) {
-      // @ts-ignore
-      const timeRemaining = expDate - now;
+      const timeRemaining = expDate.valueOf() - Date.now();
       const expiresSoon = timeRemaining > 0 && timeRemaining < 60000;
       if (expiresSoon) {
         refreshToken({ variables: { token } });
       }
     }
-  }
+  },[expDate, refreshToken, token])
 
   // every minute, check to see if token is about to expire
-  setTimeout(() => {
-    checkTokenExp();
-  }, 60000);
+  useInterval(checkTokenExpiration,TOKEN_CHECK_INTERVAL_MS)
 
   const [verifyToken] = useMutation(VERIFY_TOKEN, {
     onCompleted: (data) => {
       // use payload exp to set a countdown to refresh the token
       const exp: Date = new Date(data.verifyToken.payload.exp * 1000);
-      // @ts-ignore
-      localStorage.setItem("exp", exp);
+      localStorage.setItem(EXPIRATION_DATE_KEY, exp.toISOString());
       setExpDate(exp);
     },
     onError: (error) => {
@@ -90,18 +100,19 @@ export function AuthProvider({ children }: { children: any }) {
     },
   });
 
+  //restrict private rutes
   useEffect(() => {
     if (!token && !PUBLIC_ROUTES.includes(location.pathname)) {
       navigate("/log-in");
     } else if (token) {
       verifyToken({ variables: { token } });
-      checkTokenExp();
+      checkTokenExpiration();
     }
-  }, [token, location.pathname]);
+  }, [token, location.pathname, checkTokenExpiration, navigate, verifyToken]);
 
   const auth = { token, updateToken: setToken };
 
   return (
-    <AuthContext.Provider value={auth as any}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
   );
 }
