@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "../pages/Home";
-import App from "../App"
+import {App} from "../App"
 
 export const PUBLIC_ROUTES = ["/home"]
 
