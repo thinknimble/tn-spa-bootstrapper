@@ -15,13 +15,8 @@ import { PUBLIC_ROUTES } from "./routes";
 export const AuthContext = React.createContext({
   token: null,
   updateToken: (token: any) => {}, // set default signature to expect function
+  logout: () => {}
 });
-
-export function logout() {
-  client.clearStore();
-  localStorage.setItem("auth-token", null);
-  localStorage.setItem("exp", null);
-}
 
 export function AuthProvider({ children }: { children: any }) {
   let navigate = useNavigate();
@@ -32,7 +27,14 @@ export function AuthProvider({ children }: { children: any }) {
   if (storedToken === "null") {
     storedToken = null;
   }
-  const [token, setToken] = useState(storedToken);
+  const [token, setToken] = useState<string | null>(storedToken);
+
+  function logout() {
+    client.clearStore();
+    localStorage.setItem("auth-token", JSON.stringify(null));
+    localStorage.setItem("exp", JSON.stringify(null));
+    setToken(null)
+  }
 
   // check localStorage for an expiration datetime
   let storedExp: Date | string = localStorage.getItem("exp");
@@ -99,7 +101,7 @@ export function AuthProvider({ children }: { children: any }) {
     }
   }, [token, location.pathname]);
 
-  const auth = { token, updateToken: setToken };
+  const auth = { token, updateToken: setToken, logout };
 
   return (
     <AuthContext.Provider value={auth as any}>{children}</AuthContext.Provider>
