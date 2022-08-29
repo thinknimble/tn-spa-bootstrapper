@@ -312,9 +312,9 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
     STATIC_FILES_LOCATION = AWS_LOCATION + "/static"
     DEFAULT_FILE_STORAGE = "miles_for_military.core.handlers.PrivateMediaStorage"
-    #STATICFILES_STORAGE = "miles_for_military.core.handlers.StaticStorage"
+#   #STATICFILES_STORAGE = "miles_for_military.core.handlers.StaticStorage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
-    #STATIC_URL = f"https://{aws_s3_domain}/{STATIC_FILES_LOCATION}/"
+#   #STATIC_URL = f"https://{aws_s3_domain}/{STATIC_FILES_LOCATION}/"
     MEDIA_URL = f"https://{aws_s3_domain}/{PRIVATE_MEDIAFILES_LOCATION}/"
 #
 
