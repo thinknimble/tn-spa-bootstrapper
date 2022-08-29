@@ -242,7 +242,7 @@ STATICFILES_DIRS = [
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "..", "client", "build"),
-    os.path.join(BASE_DIR, "..", "client", "build", "static"),
+    os.path.join(BASE_DIR, "..", "client", "build", "media-files"),
 ]
 {% endif -%}
 {% endif -%}
@@ -288,12 +288,17 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
     {% endif %}
 
+# STATIC
+# ------------------------
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # STORAGES
 # ----------------------------------------------------------------------------
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
 if config("USE_AWS_STORAGE", cast=bool, default=False):
+    print("configging correct")
     AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
@@ -303,17 +308,15 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
 
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
-    PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
-    DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
-    COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
-    STATIC_URL = f"https://{aws_s3_domain}/static/"
-    MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
+    PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
+    STATIC_FILES_LOCATION = AWS_LOCATION + "/static"
+    DEFAULT_FILE_STORAGE = "miles_for_military.core.handlers.PrivateMediaStorage"
+    #STATICFILES_STORAGE = "miles_for_military.core.handlers.StaticStorage"
+    COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
+    #STATIC_URL = f"https://{aws_s3_domain}/{STATIC_FILES_LOCATION}/"
+    MEDIA_URL = f"https://{aws_s3_domain}/{PRIVATE_MEDIAFILES_LOCATION}/"
 #
-# STATIC
-# ------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Maximum size, in bytes, of a request before it will be streamed to the
 # file system instead of into memory.
