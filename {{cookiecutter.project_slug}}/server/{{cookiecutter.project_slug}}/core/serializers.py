@@ -1,10 +1,21 @@
-from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import login
-
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
 from .models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+        )
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -57,15 +68,3 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            "id",
-            "email",
-            "first_name",
-            "last_name",
-            "full_name",
-        )

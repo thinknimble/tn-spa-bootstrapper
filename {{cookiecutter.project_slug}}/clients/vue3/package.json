@@ -6,13 +6,14 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "cypress": "source ../.env && npx cypress open",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "heroku-postbuild": "vue-cli-service build"
   },
   "dependencies": {
-    "@thinknimble/tn-forms": "2.0.0",
+    "@thinknimble/tn-forms": "^2.0.9",
     "@thinknimble/tn-models": "1.2.1",
     "@thinknimble/tn-utils": "1.6.0",
     "@thinknimble/tn-validators": "^1.1.1",
@@ -37,6 +38,7 @@
     "@vue/test-utils": "^2.0.0-0",
     "babel-eslint": "^10.1.0",
     "chai": "^4.1.2",
+    "cypress": "^8.6.0",
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^7.0.0",

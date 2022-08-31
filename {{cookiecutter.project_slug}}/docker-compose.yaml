@@ -1,0 +1,58 @@
+version: "3.4"
+
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+
+services:
+  postgres:
+    restart: always
+    image: postgres:12
+    ports:
+      - 5432:5432
+    env_file:
+      - ".env"
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data/
+      - local_postgres_data_backups:/backups
+
+  server:
+    build:
+      context: .
+      dockerfile: ./compose/server/Dockerfile
+    restart: always
+    command: /start
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    env_file:
+      - ".env"
+    environment:
+      - DB_HOST=postgres
+    ports:
+      - "8000:8000"
+    user: ${DOCKER_UID}
+
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile: ./compose/client/Dockerfile
+      args:
+        NPM_READ_ONLY_TOKEN: $NPM_READ_ONLY_TOKEN
+    volumes:
+      - ".:/app"
+      - "/app/node_modules"
+    ports:
+      - "8080:8080"
+      #- "49153:49153"
+    environment:
+        - CHOKIDAR_USEPOLLING=true
+        # this is set when calling npm run start it can be blank because at this point we have already installed the packages
+        # setting this as a var is also an option but in that case using chokidar will not work as it is
+        - NPM_READ_ONLY_TOKEN=''

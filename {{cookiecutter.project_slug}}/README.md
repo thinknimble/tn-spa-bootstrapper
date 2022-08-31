@@ -4,32 +4,28 @@
 
 ## Setup
 
-### Django App
-1. Install Postgres (OSX - `brew install postgresql`; Linux - `apt-get`)
-1. Copy .env.example to new file .env 
-1. Run `./init-db.sh` from the `scripts` directory (or view and manually create the database)
+### Docker
+If this is your first time...
+1. [Install Docker](https://www.docker.com/)
+1. Run `pipenv lock` to generate a Pipfile.lock
+1. Run `cd client && npm install` so you have node_modules available outside of Docker
+1. Back in the root directory, run `make build`
+1. View other available scripts/commands with `make commands`
 
-Once db credentials are set:
-1. run `pipenv install` to install dependencies 
-1. run `pipenv shell` to activate the pipenv shell
-1. run `python manage.py migrate` to migrate database
-1. run `python manage.py runserver` to run the Django API (default - localhost:8000/admin)
+Now you will only ever need one command:
+`make run` or `docker compose up`
 
+### Backend
+If not using Docker...
+See the [backend README](server/README.md)
 
 ### Frontend
+If not using Docker...
 See the [frontend README](client/README.md)
 
 
-### Favicon Setup
+## Testing
+1. `pipenv install --dev`
+1. `pipenv run pytest server/{{cookiecutter.project_slug}}`
 
-
-The Django app is already configured to serve favorite icons for all browsers and platforms (include, for example, apple-icons and android-icons at various sizes). By default, this icon is the vue/react logo.
-
-***Note your image must be a square otherwise a white bg will appear because the file is cropped if it is not a square go to [iloveimg.com](https://www.iloveimg.com/resize-image) and resize it.*** 
-Visit [realfavicongenerator.net](https://realfavicongenerator.net/) and upload a high resolution, square version of the image you would like to use as the favicon for this app.
-
-Download the ZIP file of icons that the site generates for you and paste them in the `client/public/static/favicons/` directory.
-
-When we run collectstatic the public folder is copied as is and enables serving of the favicons
-
-
+1. `npm run cypress`

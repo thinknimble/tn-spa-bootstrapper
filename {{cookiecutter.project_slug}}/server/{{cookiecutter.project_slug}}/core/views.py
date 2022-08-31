@@ -1,38 +1,43 @@
-from django.shortcuts import render, redirect
-from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.template.exceptions import TemplateDoesNotExist
 from django.contrib.auth.tokens import default_token_generator
+from django.db import transaction
+from django.shortcuts import render
+from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
-
-from rest_framework import viewsets, generics, status, permissions, mixins
+{% if cookiecutter.use_graphql == 'y' %}from django.template.response import TemplateResponse
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import ensure_csrf_cookie
+{% endif %}from rest_framework import generics, mixins, permissions, status, viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.decorators import (
-    api_view,
-    permission_classes,
-    authentication_classes,
-)
 
-from {{ cookiecutter.project_slug }}.utils.misc import datetime_appended_filepath, send_html_email
-from {{ cookiecutter.project_slug }}.utils import sites as site_utils
+from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 from .models import User
-from .serializers import UserSerializer, UserLoginSerializer, UserRegistrationSerializer
 from .permissions import CreateOnlyPermissions
-
-
+{% if cookiecutter.use_graphql == 'n' -%}
+from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+{% else %}
+from .serializers import UserLoginSerializer, UserSerializer
+{% endif %}
+{% if cookiecutter.use_graphql == 'y' %}
+# Serve React frontend
+@ensure_csrf_cookie
+@never_cache
 def index(request):
-    {% if cookiecutter.client_app.lower() == 'None' %}
+    return TemplateResponse(request, "index.html")
+{% elif cookiecutter.client_app.lower() == 'None' %}
+def index(request):
     return redirect(to="/docs/swagger/")
-    {% else %}
+{% else %}
+def index(request):
     try:
-        return render(request,'index.html')
+        return render(request, "index.html")
     except TemplateDoesNotExist:
-        return render(request, 'core/index-placeholder.html')
-    {% endif %}
-
+        return render(request, "core/index-placeholder.html")
+{% endif %}
 
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
@@ -50,9 +55,7 @@ class UserLoginView(generics.GenericAPIView):
         # Get the user entity, from which we can get (or create) the auth token
         user = authenticate(**serializer.validated_data)
         if user is None:
-            raise ValidationError(
-                detail="Incorrect email and password combination. Please try again."
-            )
+            raise ValidationError(detail="Incorrect email and password combination. Please try again.")
 
         response_data = UserLoginSerializer.login(user, request)
         return Response(response_data)
@@ -108,6 +111,7 @@ def request_reset_link(request, *args, **kwargs):
         return Response(status=status.HTTP_204_NO_CONTENT)
     reset_context = user.reset_password_context()
 
+    # send email
     subject = render_to_string("registration/forgot_password_subject.txt")
     send_html_email(
         subject,
@@ -116,8 +120,6 @@ def request_reset_link(request, *args, **kwargs):
         [user.email],
         context=reset_context,
     )
-
-    # send email
 
     return Response(status=status.HTTP_204_NO_CONTENT)
 

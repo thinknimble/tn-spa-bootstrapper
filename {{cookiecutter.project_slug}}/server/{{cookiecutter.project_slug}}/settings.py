@@ -1,28 +1,24 @@
 import os
+{% if cookiecutter.use_graphql == 'y' -%}
+from datetime import timedelta
 
+{%- endif %}
 import dj_database_url
-
-
-def _env_get_required(setting_name):
-    """Get the value of an environment variable and assert that it is set."""
-    setting = os.environ.get(setting_name)
-    assert setting not in {None, ""}, "{0} must be defined as an environment variable.".format(setting_name)
-    return setting
-
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+ENVIRONMENT = config("ENVIRONMENT", default="development")
 IN_DEV = ENVIRONMENT == "development"
 IN_STAGING = ENVIRONMENT == "staging"
 IN_PROD = ENVIRONMENT == "production"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = _env_get_required("SECRET_KEY")
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = _env_get_required("DEBUG") == "True"
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 if IN_DEV:
     SERVER_EMAIL = "{{ cookiecutter.project_name }} Development <noreply-dev@{{ cookiecutter.project_slug }}.com>"
@@ -34,15 +30,16 @@ else:
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # Email address of the staff who should receive certain emails
-STAFF_EMAIL = os.environ.get("STAFF_EMAIL", "no-reply@thinknimble.com")
+STAFF_EMAIL = config("STAFF_EMAIL", default="no-reply@thinknimble.com")
 
 #
 # Domain Configuration
 #
-CURRENT_DOMAIN = _env_get_required("CURRENT_DOMAIN")
-CURRENT_PORT = os.environ.get("CURRENT_PORT")
+CURRENT_DOMAIN = config("CURRENT_DOMAIN")
+CURRENT_PORT = config("CURRENT_PORT")
+HEROKU_APP_NAME = config("HEROKU_APP_NAME", default=None)
 ALLOWED_HOSTS = []
-ALLOWED_HOSTS += _env_get_required("ALLOWED_HOSTS").split(",")
+ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")])
 if CURRENT_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(CURRENT_DOMAIN)
 
@@ -52,13 +49,15 @@ INSTALLED_APPS = [
     # Local
     "{{ cookiecutter.project_slug }}.common",
     "{{ cookiecutter.project_slug }}.core",
-
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    {% if cookiecutter.client_app == "React" -%}
+    "whitenoise.runserver_nostatic",
+    {%- endif -%}
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
@@ -68,7 +67,30 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_extensions",
+    {%- if cookiecutter.use_graphql == 'y' -%}
+    "graphene_django",
+    {%- endif %}
 ]
+
+{%- if cookiecutter.use_graphql == 'y' -%}
+GRAPHENE = {
+    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+}
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+{%- endif %}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -81,7 +103,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "rollbar.contrib.django.middleware.RollbarNotifierMiddleware",
 ]
 
 OLD_PASSWORD_FIELD_ENABLED = True
@@ -95,10 +116,17 @@ ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+        {% if cookiecutter.client_app != "React" -%}
         "APP_DIRS": True,
         "DIRS": [
             os.path.join(BASE_DIR, "../client/dist/"),
         ],
+        {% else -%}
+        "DIRS": [
+            os.path.join(BASE_DIR, "..", "client", "build"),
+        ],
+        "APP_DIRS": True,  # this setting must come after "DIRS"!
+        {% endif -%}
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -126,10 +154,10 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": _env_get_required("DB_NAME"),
-            "USER": _env_get_required("DB_USER"),
-            "PASSWORD": os.environ.get("DB_PASS", ""),
-            "HOST": _env_get_required("DB_HOST"),
+            "NAME": config("DB_NAME"),
+            "USER": config("DB_USER"),
+            "PASSWORD": config("DB_PASS", default=""),
+            "HOST": config("DB_HOST"),
             "CONN_MAX_AGE": 600,
         },
     }
@@ -188,19 +216,37 @@ if DEBUG:  # for testing
 #
 # Static files (CSS, JavaScript, Images)
 #
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "media-files")
+# Django will create directories for STATIC_ROOT and MEDIA_ROOT.
+# Static files are things like JS, CSS, and images. Media files are
+# user-uploaded files. By default, media files are stored on the local
+# file system when uploaded. This is fine for development, but but when
+# on Heroku, you must use an external system like AWS S3, because the
+# Heroku file system is destroyed during each deployment.
+#
 
+# Static files will be collected into 'static' when `manage.py collectstatic` is run
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media-files")
+
+# Static and media files will be served from under these paths.
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
 {%- if cookiecutter.client_app != 'None' %}
 {%- if cookiecutter.client_app == 'Vue3' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/dist/static"), ]
-{%- elif cookiecutter.client_app == 'React' %}
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "../client/build/static"), ]
-{% endif %}
-{% endif %}
+# Django will look for client-side build files in this directory
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "../client/dist/static"),
+]
+{% elif cookiecutter.client_app == 'React' %}
+# Django will look for client-side build files in this directory
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "..", "client", "build"),
+    os.path.join(BASE_DIR, "..", "client", "build", "static"),
+]
+{% endif -%}
+{% endif -%}
+
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -217,9 +263,9 @@ if not IN_DEV:
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     ANYMAIL = {
-        "MAILGUN_API_KEY": _env_get_required("MAILGUN_API_KEY"),
-        "MAILGUN_SENDER_DOMAIN": _env_get_required("MAILGUN_DOMAIN"),
-        "MAILGUN_API_URL": os.environ.get("MAILGUN_API_URL", "https://api.mailgun.net/v3"),
+        "MAILGUN_API_KEY": config("MAILGUN_API_KEY"),
+        "MAILGUN_SENDER_DOMAIN": config("MAILGUN_DOMAIN"),
+        "MAILGUN_API_URL": config("MAILGUN_API_URL", default="https://api.mailgun.net/v3"),
     }
     {%- elif cookiecutter.mail_service == 'Amazon SES' %}
     # https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
@@ -232,34 +278,34 @@ if not IN_DEV:
     #
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     ANYMAIL = {}
-    EMAIL_HOST = _env_get_required("SMTP_HOST")
-    EMAIL_PORT = os.environ.get("SMTP_PORT", 587)
-    EMAIL_HOST_USER = _env_get_required("SMTP_USER")
-    EMAIL_HOST_PASSWORD = _env_get_required("SMTP_PASSWORD")
-    EMAIL_ALLOWED_DOMAINS = _env_get_required("SMTP_VALID_TESTING_DOMAINS")
+    EMAIL_HOST = config("SMTP_HOST")
+    EMAIL_PORT = config("SMTP_PORT", default=587, cast=int)
+    EMAIL_HOST_USER = config("SMTP_USER")
+    EMAIL_HOST_PASSWORD = config("SMTP_PASSWORD")
+    EMAIL_ALLOWED_DOMAINS = config("SMTP_VALID_TESTING_DOMAINS")
     EMAIL_USE_TLS = True
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-{% endif %}
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    {% endif %}
 
 # STORAGES
 # ----------------------------------------------------------------------------
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
-if os.environ.get("USE_AWS_STORAGE", "False") == "True":
-    AWS_ACCESS_KEY_ID = _env_get_required("AWS_ACCESS_KEY_ID")
-    AWS_STORAGE_BUCKET_NAME = _env_get_required("AWS_STORAGE_BUCKET_NAME")
-    AWS_SECRET_ACCESS_KEY = _env_get_required("AWS_SECRET_ACCESS_KEY")
+if config("USE_AWS_STORAGE", cast=bool, default=False):
+    AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
     AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
-    AWS_LOCATION = os.environ.get("AWS_LOCATION", "")
-    AWS_S3_REGION_NAME = _env_get_required("AWS_S3_REGION_NAME")
+    AWS_LOCATION = config("AWS_LOCATION", default="")
+    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
 
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
     DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    STATICFILES_STORAGE = "{{cookiecutter.project_slug}}.utils.storages.StaticRootS3Boto3Storage"
+    STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
     STATIC_URL = f"https://{aws_s3_domain}/static/"
     MEDIA_URL = f"https://{aws_s3_domain}/media/"
@@ -280,7 +326,7 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # i.e. 100 MB
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL.
-ADMIN_URL = "admin/"
+ADMIN_URL = "staff/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [("ThinkNimble", "support@thinknimble.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
@@ -292,15 +338,6 @@ if not IN_DEV:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     MIDDLEWARE += ["django.middleware.security.SecurityMiddleware"]
-
-#
-# Rollbar logging config
-#
-ROLLBAR = {
-    "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
-    "environment": ENVIRONMENT,
-    "root": BASE_DIR,
-}
 
 #
 # Custom logging configuration
@@ -328,30 +365,64 @@ LOGGING = {
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
         },
-        "rollbar": {
-            "level": "WARNING",
-            "filters": ["require_debug_false"],
-            "access_token": _env_get_required("ROLLBAR_ACCESS_TOKEN"),
-            "environment": ENVIRONMENT,
-            "class": "rollbar.logger.RollbarHandler",
-        },
     },
     "loggers": {
-        "django": {"handlers": ["console", "rollbar", ], "level": "INFO"},
+        "django": {
+            "handlers": [
+                "console",
+            ],
+            "level": "INFO",
+        },
         # The logger name matters -- it MUST match the name of the app
-        "{{ cookiecutter.project_slug }}": {"handlers": ["console", "rollbar",], "level": "DEBUG", "propagate": True},
+        "{{ cookiecutter.project_slug }}": {
+            "handlers": [
+                "console",
+            ],
+            "level": "DEBUG",
+            "propagate": True,
+        },
         "{{ cookiecutter.project_slug }}.request": {"handlers": [], "level": "INFO", "propagate": True},
         "{{ cookiecutter.project_slug }}.tasks": {"handlers": [], "level": "INFO", "propagate": True},
     },
 }
 
+#
+# Rollbar logging config
+#
+ROLLBAR_ACCESS_TOKEN = config("ROLLBAR_ACCESS_TOKEN", default="")
+
+if IN_PROD or ROLLBAR_ACCESS_TOKEN:
+    MIDDLEWARE += ["rollbar.contrib.django.middleware.RollbarNotifierMiddleware"]
+    ROLLBAR = {
+        "access_token": ROLLBAR_ACCESS_TOKEN,
+        "environment": ENVIRONMENT,
+        "root": BASE_DIR,
+    }
+    LOGGING["handlers"].update(
+        {
+            "rollbar": {
+                "level": "WARNING",
+                "filters": ["require_debug_false"],
+                "access_token": ROLLBAR_ACCESS_TOKEN,
+                "environment": ENVIRONMENT,
+                "class": "rollbar.logger.RollbarHandler",
+            }
+        }
+    )
+    LOGGING["loggers"]["django"]["handlers"].append("rollbar")
+    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].append("rollbar")
+
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
-CORS_ALLOWED_ORIGINS = [
-{%- if cookiecutter.client_app.lower() != 'none' %}
-    "http://localhost:8089",
-{% endif %}
-    "https://{{ cookiecutter.project_slug }}-staging.herokuapp.com",
-    "https://{{ cookiecutter.project_slug }}.herokuapp.com"
-]
+CORS_ALLOWED_ORIGINS = ["https://{{ cookiecutter.project_slug }}-staging.herokuapp.com", "https://{{ cookiecutter.project_slug }}.herokuapp.com"]
+{% if cookiecutter.client_app.lower() != 'none' -%}
+CORS_ALLOWED_ORIGINS.append("http://localhost:8089")
+{% endif -%}
+{% if cookiecutter.use_graphql == 'y' -%}
+CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
+{%- endif -%}
+
+{% if cookiecutter.use_graphql == 'y' %}
+CORS_ALLOW_CREDENTIALS = True
+{% endif -%}

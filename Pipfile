@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+cookiecutter = "==2.1.1"
+sh = "==1.14.2"
+binaryornot = "==0.4.4"
+jotquote = "==0.9.4"
+black = "==22.3.0"
+isort = "==5.9.3"
+flake8 = "==3.9.2"
+flake8-isort = "==4.0.0"
+pre-commit = "==2.13.0"
+tox = "==3.24.0"
+pytest = "==6.2.4"
+pytest-cookies = "==0.6.1"
+pytest-instafail = "==0.4.2"
+PyYAML = "==5.4.1"
+PyGithub = "==1.55"
+Jinja2 = "==3.0.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

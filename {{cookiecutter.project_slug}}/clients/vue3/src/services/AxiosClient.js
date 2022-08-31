@@ -18,21 +18,20 @@ class ApiService {
   static session
   static init
   constructor() {
-    let base_url = `${window.location.protocol}//${window.location.host}/api`
+    let baseURL = `${window.location.protocol}//${window.location.host}/api`
 
-    console.debug(`API Service for ${base_url}`)
+    console.debug(`API Service for ${baseURL}`)
 
     ApiService.session = axios.create({
-      baseURL: base_url,
+      baseURL,
       headers: {
         ...CSRF.getHeaders(),
       },
     })
     ApiService.session.interceptors.request.use(
       async (config) => {
-        const token = store.state.auth?.user?.token || null
-        if (token) {
-          config.headers['Authorization'] = `Token ${token}`
+        if (store.getters.isLoggedIn) {
+          config.headers['Authorization'] = `Token ${store.getters.token}`
         }
         return config
       },
