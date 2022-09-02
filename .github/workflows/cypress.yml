@@ -49,7 +49,7 @@ jobs:
         working-directory: ./my_project/client
         run: npm install
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           working-directory: my_project/client
           browser: chrome
