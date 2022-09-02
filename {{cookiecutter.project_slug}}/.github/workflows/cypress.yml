@@ -1,5 +1,8 @@
 name: Cypress Tests
-on: push
+on:
+  pull_request:
+    types: [opened]
+
 jobs:
   Setup:
     runs-on: ubuntu-latest
@@ -17,6 +20,8 @@ jobs:
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
+      - name: Raise for URL not up
+        run: curl --fail env.BASE_URL
     outputs:
       BASE_URL: {{ "${{ env.BASE_URL }}" }}
   Chrome:
