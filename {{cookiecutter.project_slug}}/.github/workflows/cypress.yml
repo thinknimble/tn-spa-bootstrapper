@@ -14,7 +14,7 @@ jobs:
         if: success() && steps.findPr.outputs.number
         run: echo "BASE_URL=https://{{ cookiecutter.project_slug }}-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
         env:
-          PR: ${{ steps.findPr.outputs.pr }}
+          PR: {{ "${{ steps.findPr.outputs.pr }}" }}
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
