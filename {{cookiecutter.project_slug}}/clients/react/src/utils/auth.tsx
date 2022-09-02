@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, ReactNode } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useMutation } from "@apollo/client";
-import { VERIFY_TOKEN, REFRESH_TOKEN } from "./mutations";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { client } from "../apolloClient";
+import { REFRESH_TOKEN, VERIFY_TOKEN } from "./mutations";
 import { PUBLIC_ROUTES } from "./routes";
 
 // create a mechanism for authenticating each request that is sent
@@ -12,25 +12,26 @@ import { PUBLIC_ROUTES } from "./routes";
 // 2a. unset localStorage token & exp on logout
 // 2b. call client.clearStore() on logout
 
-const AUTH_TOKEN_KEY = 'auth-token'
-const EXPIRATION_DATE_KEY = 'exp'
-const TOKEN_CHECK_INTERVAL_MS = 60000
+const appName = process.env["REACT_APP_NAME"];
+const AUTH_TOKEN_KEY = `${appName}-auth-token`;
+const EXPIRATION_DATE_KEY = `${appName}-exp`;
+const TOKEN_CHECK_INTERVAL_MS = 60000;
+const REFRESH_THRESHOLD = 60000;
 
-const useInterval = (fn:()=>void,intervalMs:number)=>{
+const useInterval = (fn: () => void, intervalMs: number) => {
+  useEffect(() => {
+    const intervalId = setInterval(fn, intervalMs);
 
-  useEffect(()=>{
-    const intervalId = setInterval(fn,intervalMs)
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fn, intervalMs]);
+};
 
-    return ()=>{
-      clearInterval(intervalId)
-    }
-  },[fn, intervalMs])
-}
-
-type AuthState={
-  token:string | null,
-  updateToken:(token:string)=>void  
-}
+type AuthState = {
+  token: string | null;
+  updateToken: (token: string) => void;
+};
 
 export const AuthContext = React.createContext<AuthState>({
   token: null,
@@ -51,47 +52,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const storedToken = localStorage.getItem(AUTH_TOKEN_KEY);
   const [token, setToken] = useState(storedToken);
 
+  //sync react with external system
+  useEffect(() => {
+    token && localStorage.setItem(AUTH_TOKEN_KEY, token);
+  }, [token]);
+
   // check localStorage for an expiration datetime
-  const storedExp = localStorage.getItem(EXPIRATION_DATE_KEY);
-
-  const [expDate, setExpDate] = useState<Date | null>(storedExp ? new Date(storedExp) : null);
-
   const [refreshToken] = useMutation(REFRESH_TOKEN, {
     onCompleted: (data) => {
-      localStorage.setItem(AUTH_TOKEN_KEY, data.refreshToken.token);
       setToken(data.refreshToken.token);
       const exp: Date = new Date(data.refreshToken.payload.exp * 1000);
-      setExpDate(exp);
+      localStorage.setItem(EXPIRATION_DATE_KEY, exp.toISOString());
     },
     onError: (error) => console.error(error),
   });
 
   // if token is about to expire, refresh it
-  const checkTokenExpiration = useCallback(()=>{
-    if (expDate) {
+  const checkTokenExpiration = useCallback(() => {
+    const storedExpDate = localStorage.getItem(EXPIRATION_DATE_KEY);
+    const storedToken = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (storedExpDate && storedToken) {
+      const expDate = new Date(storedExpDate);
       const timeRemaining = expDate.valueOf() - Date.now();
-      const expiresSoon = timeRemaining > 0 && timeRemaining < 60000;
-      if (expiresSoon) {
-        refreshToken({ variables: { token } });
-      }
+      const expiresSoon =
+        timeRemaining > 0 && timeRemaining < REFRESH_THRESHOLD;
+      expiresSoon && refreshToken({ variables: { storedToken } });
     }
-  },[expDate, refreshToken, token])
+  }, [refreshToken]);
 
   // every minute, check to see if token is about to expire
-  useInterval(checkTokenExpiration,TOKEN_CHECK_INTERVAL_MS)
+  useInterval(checkTokenExpiration, TOKEN_CHECK_INTERVAL_MS);
 
   const [verifyToken] = useMutation(VERIFY_TOKEN, {
     onCompleted: (data) => {
       // use payload exp to set a countdown to refresh the token
       const exp: Date = new Date(data.verifyToken.payload.exp * 1000);
       localStorage.setItem(EXPIRATION_DATE_KEY, exp.toISOString());
-      setExpDate(exp);
     },
     onError: (error) => {
       if (error.message === "Signature has expired") {
         // if token is expired, user must re-authenticate
         setToken(null);
-        setExpDate(null);
+        localStorage.removeItem(EXPIRATION_DATE_KEY);
         logout();
         navigate("/log-in");
       } else {
@@ -112,7 +114,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const auth = { token, updateToken: setToken };
 
-  return (
-    <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
