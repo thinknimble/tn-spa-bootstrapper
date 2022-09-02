@@ -27,8 +27,6 @@ jobs:
           else
             echo "NOT in maintenance. Likely Heroku trigger after successful deploy";
           fi
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
     outputs:
       BASE_URL: ${{ env.BASE_URL }}
   Chrome:
