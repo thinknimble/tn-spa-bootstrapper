@@ -4,6 +4,10 @@
 
 ## Setup
 
+### Github & Heroku
+1. [Generate an auth token for Heroku](https://devcenter.heroku.com/articles/heroku-cli-commands#heroku-authorizations-create) and add it to the [repo secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) so Github Actions can research Heroku
+1. [Generate an auth token for Github](https://docs.github.com/en/actions/security-guides/automatic-token-authentication) and add it as [an environment variable](https://devcenter.heroku.com/articles/config-vars) in Heroku so Heroku can trigger Github Actions
+
 ### Docker
 If this is your first time...
 1. [Install Docker](https://www.docker.com/)
