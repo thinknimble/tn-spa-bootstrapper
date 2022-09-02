@@ -1,7 +1,5 @@
 name: Cypress Tests
-on:
-  pull_request:
-    types: [opened]
+on: workflow_call
 
 jobs:
   Setup:
@@ -16,45 +14,80 @@ jobs:
         if: success() && steps.findPr.outputs.number
         run: echo "BASE_URL=https://{{ cookiecutter.project_slug }}-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
         env:
-          PR: {{ "${{ steps.findPr.outputs.pr }}" }}
+          PR: ${{ steps.findPr.outputs.pr }}
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
-      - name: Raise for URL not up
-        run: curl --fail env.BASE_URL
+      - name: Raise for maintenance mode
+        run: |
+          html_body=$(curl ${{ env.BASE_URL }})
+          if echo $html_body | grep -q "Offline for Maintenance";
+          then
+            exit 1
+          else
+            echo "NOT in maintenance. Likely Heroku trigger after successful deploy";
+          fi
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
     outputs:
-      BASE_URL: {{ "${{ env.BASE_URL }}" }}
+      BASE_URL: ${{ env.BASE_URL }}
   Chrome:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: Setup
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run against {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: pipenv run cookiecutter . --no-input -f
+      - name: Install frontend dependencies
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        working-directory: ./my_project/client
+        run: npm install
+      - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v2
         with:
-          working-directory: client
+          working-directory: my_project/client
           browser: chrome
           headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
-          CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
-          CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
-          CYPRESS_baseUrl: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
+          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}
   Firefox:
     runs-on: ubuntu-latest
     needs: Setup
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run against {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
-        uses: cypress-io/github-action@v2
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
         with:
-          working-directory: client
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: pipenv run cookiecutter . --no-input -f
+      - name: Install frontend dependencies
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        working-directory: ./my_project/client
+        run: npm install
+      - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
+        uses: cypress-io/github-action@v4
+        with:
+          working-directory: my_project/client
           browser: firefox
           headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
-          CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
-          CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
-          CYPRESS_baseUrl: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
+          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}

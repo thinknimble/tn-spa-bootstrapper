@@ -9,12 +9,10 @@ jobs:
         id: findPr
       - name: Set URL for Staging
         if: github.ref_name == 'main'
-        run: |
-          echo "BASE_URL=https://tn-spa-bootstrapper-staging.herokuapp.com/" >> $GITHUB_ENV
+        run: echo "BASE_URL=https://tn-spa-bootstrapper-staging.herokuapp.com/" >> $GITHUB_ENV
       - name: Set URL for PR
         if: success() && steps.findPr.outputs.number
-        run: |
-          echo "BASE_URL=https://tn-spa-bootstrapper-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
+        run: echo "BASE_URL=https://tn-spa-bootstrapper-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
         env:
           PR: ${{ steps.findPr.outputs.pr }}
       - name: Raise for error
