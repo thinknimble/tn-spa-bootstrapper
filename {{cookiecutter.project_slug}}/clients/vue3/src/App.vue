@@ -1,16 +1,18 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link>
-    <template v-if="isLoggedIn">
-      | <router-link to="/dashboard">Dashboard</router-link> |
-      <span id="logout" @click="logout()">Logout</span>
-    </template>
-    <template v-else>
-      | <router-link to="/login" data-cy="login">Login</router-link> |
-      <router-link to="/signup">Signup</router-link>
-    </template>
+  <div class="app">
+    <div id="nav">
+      <router-link to="/">Home</router-link>
+      <template v-if="isLoggedIn">
+        | <router-link to="/dashboard">Dashboard</router-link> |
+        <span id="logout" @click="logout()">Logout</span>
+      </template>
+      <template v-else>
+        | <router-link to="/login" data-cy="login">Login</router-link> |
+        <router-link to="/signup">Signup</router-link>
+      </template>
+    </div>
+    <router-view />
   </div>
-  <router-view />
 </template>
 
 <script>
@@ -64,6 +66,6 @@ export default {
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: var(--primary);
 }
 </style>
