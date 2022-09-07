@@ -1,40 +1,28 @@
-import * as React from "react"
-import {
-  ChakraProvider,
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-} from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import Logo from "./components/Logo"
-import theme from "./theme"
-import { Outlet } from "react-router-dom"
+import React from "react"
+import "./App.css"
+import { ROUTES } from "src/utils/routes"
+import { AuthProvider } from "src/utils/auth"
+import { Outlet, BrowserRouter as Router } from "react-router-dom"
+import { useQuery, ApolloProvider } from "@apollo/client"
+import { client } from "./apolloClient"
+
+// function App() {
+//   return (
+//     <h1 className="text-3xl font-bold underline text-red-600">
+//       Simple React Typescript Tailwind Sample
+//     </h1>
+//   )
+// }
+
+// export default App
 
 export const App = () => (
-  <ChakraProvider theme={theme}>
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <ColorModeSwitcher justifySelf="flex-end" />
-        <VStack spacing={8}>
-          <Logo h="40vmin" pointerEvents="none" />
-          <Text>
-            Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
-          </Text>
-          <Link
-            color="teal.500"
-            href="https://chakra-ui.com"
-            fontSize="2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn Chakra
-          </Link>
-        </VStack>
-      </Grid>
-    </Box>
-    <Outlet />
-  </ChakraProvider>
+  <>
+    <Router>
+      <ApolloProvider client={client}>
+        <AuthProvider>{ROUTES}</AuthProvider>
+        <Outlet />
+      </ApolloProvider>
+    </Router>
+  </>
 )

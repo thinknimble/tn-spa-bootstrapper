@@ -1,0 +1,22 @@
+name: Unit Tests 
+on: [push]
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pipenv'
+      - run: pipenv install --dev --deploy
+      - name: 'Create env file'
+        run: |
+          touch .env
+          cat .env.example > .env
+          cat .env
+      - run: pipenv run pytest --mccabe --cov=tailtest -vv server/tailtest
+      - run: pipenv run coverage report --fail-under=20
