@@ -3,8 +3,13 @@
 @import './inputs.css';
 
 /* Router Active Link Styling */
+.router {
+  @apply text-primary font-bold px-4 hover:cursor-pointer;
+}
+
 .exact-active-link {
-  color: theme('colors.accent');
+  /* color: theme('colors.accent'); */
+  @apply text-accent;
 }
 
 /* Containers */
