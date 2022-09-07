@@ -4,7 +4,7 @@
 
 /* Router Active Link Styling */
 .router {
-  @apply text-primary font-bold px-4;
+  @apply text-primary font-bold px-3;
 }
 
 .router:hover {
@@ -12,7 +12,6 @@
 }
 
 .exact-active-link {
-  /* color: theme('colors.accent'); */
   @apply text-accent;
 }
 
