@@ -5,3 +5,7 @@
 @import './styles/abstracts/headings.css';
 @import './styles/components/buttons.css';
 @import './styles/components/inputs.css';
+
+.exact-active-link {
+  color: theme('colors.accent');
+}

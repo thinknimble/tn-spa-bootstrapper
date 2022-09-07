@@ -56,9 +56,3 @@ export default {
   },
 }
 </script>
-
-<style scoped lang="css">
-.router-link-exact-active {
-  color: theme('colors.accent');
-}
-</style>
