@@ -1,6 +1,6 @@
 <template>
-  <div class="app font-avenir antialiased text-center">
-    <div id="nav" class="nav flex justify-center p-7">
+  <div class="font-avenir antialiased text-center">
+    <div class="flex justify-center p-7">
       <router-link to="/" class="router font-bold px-2 hover:cursor-pointer active:bg-blue-600">
         Home
       </router-link>

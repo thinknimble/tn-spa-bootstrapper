@@ -1,5 +1,5 @@
 <template>
-  <div class="input-field flex flex-col items-start mb-2 w-full">
+  <div class="flex flex-col items-start mb-2 w-full">
     <label v-if="label" :for="`${label}-field`" v-text="label" class="input--label" />
     <input
       :id="`${label}-field`"
