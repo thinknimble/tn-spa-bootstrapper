@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <h1 class="heading--bold">Log In.</h1>
+    <h1 class="heading font-bold">Log In.</h1>
     <form class="flex flex-col items-center" @submit.prevent="attemptLogin()">
       <InputField
         v-model:value="form.email.value"

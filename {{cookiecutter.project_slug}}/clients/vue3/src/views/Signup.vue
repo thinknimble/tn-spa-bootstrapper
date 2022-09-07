@@ -1,6 +1,6 @@
 <template>
   <div class="form-container">
-    <h1 class="heading--bold">Sign Up.</h1>
+    <h1 class="heading font-bold">Sign Up.</h1>
     <form class="flex flex-col items-center" @submit.prevent="attemptUserRegistration()">
       <InputField
         v-model:value="form.firstName.value"
