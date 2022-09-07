@@ -1,6 +1,6 @@
-@import './styles/headings.css';
-@import './styles/buttons.css';
-@import './styles/inputs.css';
+@import './headings.css';
+@import './buttons.css';
+@import './inputs.css';
 
 /* Router Active Link Styling */
 .exact-active-link {
