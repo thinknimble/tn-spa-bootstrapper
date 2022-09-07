@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg"
-  >
+  <div class="form-container">
     <h1 class="heading--bold">Sign Up.</h1>
     <form class="flex flex-col items-center" @submit.prevent="attemptUserRegistration()">
       <InputField
