@@ -1,0 +1,13 @@
+@import './styles/headings.css';
+@import './styles/buttons.css';
+@import './styles/inputs.css';
+
+/* Router Active Link Styling */
+.exact-active-link {
+  color: theme('colors.accent');
+}
+
+/* Containers */
+.form-container {
+  @apply container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg;
+}
