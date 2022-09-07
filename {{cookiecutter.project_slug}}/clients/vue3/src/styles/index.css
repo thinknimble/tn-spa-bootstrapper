@@ -4,7 +4,11 @@
 
 /* Router Active Link Styling */
 .router {
-  @apply text-primary font-bold px-4 hover:cursor-pointer;
+  @apply text-primary font-bold px-4;
+}
+
+.router:hover {
+  @apply cursor-pointer;
 }
 
 .exact-active-link {
