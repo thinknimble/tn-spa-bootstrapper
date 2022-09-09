@@ -6,6 +6,8 @@ from drf_yasg.views import get_schema_view
 from rest_auth import views as rest_auth_views
 from rest_framework import permissions
 from rest_framework_nested import routers
+from django.views.decorators.csrf import csrf_exempt
+from graphene_django.views import GraphQLView
 
 from {{ cookiecutter.project_slug }}.core import views as core_views
 
@@ -53,5 +55,6 @@ if settings.DEBUG:  # pragma: no cover
     urlpatterns += [path("api-auth/", include("rest_framework.urls"))]
 
 urlpatterns += [
+    re_path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=settings.DEBUG))),
     re_path(r".*", core_views.index),
 ]

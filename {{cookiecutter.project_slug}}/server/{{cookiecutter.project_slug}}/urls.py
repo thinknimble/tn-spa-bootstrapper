@@ -9,7 +9,7 @@ urlpatterns = [
     {% if cookiecutter.use_graphql == 'y' -%}
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=settings.DEBUG))),
     {% endif -%}
-    path(r"staff/", admin.site.urls),
+    path(r"admin", admin.site.urls),
     path(r"", include("{{ cookiecutter.project_slug }}.core.favicon_urls")),
     path(r"", include("{{ cookiecutter.project_slug }}.core.urls")),
 ]
