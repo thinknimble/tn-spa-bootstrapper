@@ -1,8 +1,5 @@
 import os
-{% if cookiecutter.use_graphql == 'y' -%}
 from datetime import timedelta
-
-{%- endif %}
 import dj_database_url
 from decouple import config
 
@@ -21,11 +18,11 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 if IN_DEV:
-    SERVER_EMAIL = "{{ cookiecutter.project_name }} Development <noreply-dev@{{ cookiecutter.project_slug }}.com>"
+    SERVER_EMAIL = "My Project Development <noreply-dev@my_project.com>"
 elif IN_STAGING:
-    SERVER_EMAIL = "{{ cookiecutter.project_name }} Staging <noreply-staging@{{ cookiecutter.project_slug }}.com>"
+    SERVER_EMAIL = "My Project Staging <noreply-staging@my_project.com>"
 else:
-    SERVER_EMAIL = "{{ cookiecutter.project_name }} <noreply@{{ cookiecutter.project_slug }}.com>"
+    SERVER_EMAIL = "My Project <noreply@my_project.com>"
 
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
@@ -47,18 +44,15 @@ if CURRENT_DOMAIN not in ALLOWED_HOSTS:
 
 INSTALLED_APPS = [
     # Local
-    "{{ cookiecutter.project_slug }}.common",
-    "{{ cookiecutter.project_slug }}.core",
+    "my_project.common",
+    "my_project.core",
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    {% if cookiecutter.client_app == "React" -%}
-    "whitenoise.runserver_nostatic",
-    {%- endif -%}
-    "django.contrib.staticfiles",
+    "whitenoise.runserver_nostatic","django.contrib.staticfiles",
     # Third Party
     "corsheaders",
     "drf_yasg",
@@ -66,18 +60,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
-    "django_extensions",
-    {%- if cookiecutter.use_graphql == 'y' -%}
-    "graphene_django",
-    {%- endif %}
-]
-
-
-{%- if cookiecutter.use_graphql == 'y' -%}
-
-{% %}
-GRAPHENE = {
-    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
+    "django_extensions","graphene_django",
+]GRAPHENE = {
+    "SCHEMA": "my_project.core.schema.schema",
     "MIDDLEWARE": [
         "graphql_jwt.middleware.JSONWebTokenMiddleware",
     ],
@@ -93,7 +78,6 @@ AUTHENTICATION_BACKENDS = [
     "graphql_jwt.backends.JSONWebTokenBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
-{%- endif %}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -114,22 +98,15 @@ LOGOUT_URL = "rest_framework:logout"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
+ROOT_URLCONF = "my_project.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        {% if cookiecutter.client_app != "React" -%}
-        "APP_DIRS": True,
-        "DIRS": [
-            os.path.join(BASE_DIR, "../client/dist/"),
-        ],
-        {% else -%}
         "DIRS": [
             os.path.join(BASE_DIR, "..", "client", "build"),
         ],
         "APP_DIRS": True,  # this setting must come after "DIRS"!
-        {% endif -%}
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -141,7 +118,7 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
+WSGI_APPLICATION = "my_project.wsgi.application"
 
 # Database
 """There are two ways to specifiy the database connection
@@ -197,7 +174,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
-    "DEFAULT_PAGINATION_CLASS": "{{ cookiecutter.project_slug }}.core.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "my_project.core.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ],
@@ -234,23 +211,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media-files")
 # Static and media files will be served from under these paths.
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
-
-{%- if cookiecutter.client_app != 'None' %}
-{%- if cookiecutter.client_app == 'Vue3' %}
-# Django will look for client-side build files in this directory
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "../client/dist/static"),
-]
-{% elif cookiecutter.client_app == 'React' %}
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "..", "client", "build"),
     os.path.join(BASE_DIR, "..", "client", "build", "static"),
 ]
-{% endif -%}
-{% endif -%}
-
-
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -261,7 +226,6 @@ STATICFILES_FINDERS = [
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
 INSTALLED_APPS += ["anymail"]  # noqa F405
 if not IN_DEV:
-    {%- if cookiecutter.mail_service == 'Mailgun' %}
     # https://anymail.readthedocs.io/en/stable/esps/mailgun/
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
@@ -270,26 +234,6 @@ if not IN_DEV:
         "MAILGUN_SENDER_DOMAIN": config("MAILGUN_DOMAIN"),
         "MAILGUN_API_URL": config("MAILGUN_API_URL", default="https://api.mailgun.net/v3"),
     }
-    {%- elif cookiecutter.mail_service == 'Amazon SES' %}
-    # https://anymail.readthedocs.io/en/stable/esps/amazon_ses/
-    EMAIL_BACKEND = "anymail.backends.amazon_ses.EmailBackend"
-    ANYMAIL = {}
-    {%- elif cookiecutter.mail_service == 'Custom SMTP' %}
-
-    #
-    # Custom SMTP settings
-    #
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    ANYMAIL = {}
-    EMAIL_HOST = config("SMTP_HOST")
-    EMAIL_PORT = config("SMTP_PORT", default=587, cast=int)
-    EMAIL_HOST_USER = config("SMTP_USER")
-    EMAIL_HOST_PASSWORD = config("SMTP_PASSWORD")
-    EMAIL_ALLOWED_DOMAINS = config("SMTP_VALID_TESTING_DOMAINS")
-    EMAIL_USE_TLS = True
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    {% endif %}
 
 # STORAGES
 # ----------------------------------------------------------------------------
@@ -307,8 +251,8 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
-    DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
+    DEFAULT_FILE_STORAGE = "my_project.utils.storages.PrivateMediaStorage"
+    STATICFILES_STORAGE = "my_project.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
     STATIC_URL = f"https://{aws_s3_domain}/static/"
     MEDIA_URL = f"https://{aws_s3_domain}/media/"
@@ -377,15 +321,15 @@ LOGGING = {
             "level": "INFO",
         },
         # The logger name matters -- it MUST match the name of the app
-        "{{ cookiecutter.project_slug }}": {
+        "my_project": {
             "handlers": [
                 "console",
             ],
             "level": "DEBUG",
             "propagate": True,
         },
-        "{{ cookiecutter.project_slug }}.request": {"handlers": [], "level": "INFO", "propagate": True},
-        "{{ cookiecutter.project_slug }}.tasks": {"handlers": [], "level": "INFO", "propagate": True},
+        "my_project.request": {"handlers": [], "level": "INFO", "propagate": True},
+        "my_project.tasks": {"handlers": [], "level": "INFO", "propagate": True},
     },
 }
 
@@ -413,19 +357,12 @@ if IN_PROD or ROLLBAR_ACCESS_TOKEN:
         }
     )
     LOGGING["loggers"]["django"]["handlers"].append("rollbar")
-    LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].append("rollbar")
+    LOGGING["loggers"]["my_project"]["handlers"].append("rollbar")
 
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
-CORS_ALLOWED_ORIGINS = ["https://{{ cookiecutter.project_slug }}-staging.herokuapp.com", "https://{{ cookiecutter.project_slug }}.herokuapp.com"]
-{% if cookiecutter.client_app.lower() != 'none' -%}
+CORS_ALLOWED_ORIGINS = ["https://my_project-staging.herokuapp.com", "https://my_project.herokuapp.com"]
 CORS_ALLOWED_ORIGINS.append("http://localhost:8089")
-{% endif -%}
-{% if cookiecutter.use_graphql == 'y' -%}
 CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
-{%- endif -%}
-
-{% if cookiecutter.use_graphql == 'y' %}
 CORS_ALLOW_CREDENTIALS = True
-{% endif -%}

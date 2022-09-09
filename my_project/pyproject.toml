@@ -1,0 +1,12 @@
+[tool.black]
+line-length = 140
+target-version = ['py39']
+exclude = 'migrations'
+
+[tool.isort]
+py_version = 39
+line_length = 140
+include_trailing_comma = true
+use_parentheses = true
+force_grid_wrap = 0
+multi_line_output = 3
