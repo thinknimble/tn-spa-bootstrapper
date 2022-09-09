@@ -36,7 +36,7 @@ STAFF_EMAIL = config("STAFF_EMAIL", default="no-reply@thinknimble.com")
 # Domain Configuration
 #
 CURRENT_DOMAIN = config("CURRENT_DOMAIN")
-CURRENT_PORT = config("CURRENT_PORT")
+CURRENT_PORT = config("CURRENT_PORT", default=None)
 HEROKU_APP_NAME = config("HEROKU_APP_NAME", default=None)
 ALLOWED_HOSTS = []
 ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")])
@@ -73,6 +73,7 @@ INSTALLED_APPS = [
 ]
 
 {%- if cookiecutter.use_graphql == 'y' -%}
+
 GRAPHENE = {
     "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
     "MIDDLEWARE": [
