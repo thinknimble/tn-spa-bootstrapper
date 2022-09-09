@@ -72,7 +72,9 @@ INSTALLED_APPS = [
     {%- endif %}
 ]
 
+
 {%- if cookiecutter.use_graphql == 'y' -%}
+
 
 GRAPHENE = {
     "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
