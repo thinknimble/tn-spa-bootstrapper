@@ -25,10 +25,6 @@ jobs:
           heroku maintenance:on --app=${{ needs.Setup.outputs.APP_NAME }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      - name: Set Github API key for callbacks coming from ${{ needs.Setup.outputs.APP_NAME }}
-        run: heroku config:set GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} --app=${{ needs.Setup.outputs.APP_NAME }}
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   Cypress:
     needs: Maintenance-On
     uses: ./.github/workflows/cypress.yml
