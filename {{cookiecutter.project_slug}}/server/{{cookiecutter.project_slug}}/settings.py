@@ -298,7 +298,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
 if config("USE_AWS_STORAGE", cast=bool, default=False):
-    print("configging correct")
     AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
