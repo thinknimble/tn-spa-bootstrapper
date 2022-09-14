@@ -242,7 +242,7 @@ STATICFILES_DIRS = [
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "..", "client", "build"),
-    os.path.join(BASE_DIR, "..", "client", "build", "media-files"),
+    os.path.join(BASE_DIR, "..", "client", "build", "static"),
 ]
 {% endif -%}
 {% endif -%}
@@ -311,8 +311,8 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
 
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
     STATIC_FILES_LOCATION = AWS_LOCATION + "/static"
-    DEFAULT_FILE_STORAGE = "miles_for_military.core.handlers.PrivateMediaStorage"
-#   #STATICFILES_STORAGE = "miles_for_military.core.handlers.StaticStorage"
+    DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.core.handlers.PrivateMediaStorage"
+#   #STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.core.handlers.StaticStorage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
 #   #STATIC_URL = f"https://{aws_s3_domain}/{STATIC_FILES_LOCATION}/"
     MEDIA_URL = f"https://{aws_s3_domain}/{PRIVATE_MEDIAFILES_LOCATION}/"
