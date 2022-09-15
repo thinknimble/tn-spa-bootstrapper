@@ -28,6 +28,9 @@ jobs:
   Cypress:
     needs: Maintenance-On
     uses: ./.github/workflows/cypress.yml
+    secrets:
+      CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+      CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
   Maintenance-Off:
     if: ${{ always() }}
     needs: [Setup, Cypress]

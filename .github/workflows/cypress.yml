@@ -1,6 +1,11 @@
 name: Cypress Tests
-on: workflow_call
-
+on:
+  workflow_call:
+    secrets:
+      CYPRESS_TEST_USER_EMAIL:
+        required: true
+      CYPRESS_TEST_USER_PASS:
+        required: true
 jobs:
   Setup:
     runs-on: ubuntu-latest
@@ -30,8 +35,8 @@ jobs:
     outputs:
       BASE_URL: ${{ env.BASE_URL }}
   Chrome:
-    runs-on: ubuntu-latest
     needs: Setup
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -53,15 +58,17 @@ jobs:
         with:
           working-directory: my_project/client
           browser: chrome
-          headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
           CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
           CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}
   Firefox:
-    runs-on: ubuntu-latest
     needs: Setup
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
+      options: --user 1001
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -83,7 +90,6 @@ jobs:
         with:
           working-directory: my_project/client
           browser: firefox
-          headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
