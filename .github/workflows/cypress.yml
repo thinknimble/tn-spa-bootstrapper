@@ -72,7 +72,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: pipx install pipenv
+      - run: |
+          # Cypress slim container image doesn't come with pipx
+          python3 -m pip install --user pipx
+          pipx install pipenv
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
