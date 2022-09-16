@@ -74,6 +74,7 @@ jobs:
         uses: actions/checkout@v2
       - run: |
           # Cypress slim container image doesn't come with pipx
+          python -m ensurepip --upgrade
           python3 -m pip install --user pipx
           pipx install pipenv
       - uses: actions/setup-python@v2
