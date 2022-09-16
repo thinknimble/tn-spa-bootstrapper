@@ -67,7 +67,7 @@ jobs:
     needs: Setup
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
+      image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user root
     steps:
       - name: Checkout
