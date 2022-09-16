@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node16.13.2-chrome100-ff98  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
-      options: --user 1001
+      options: --user root
     steps:
       - name: Checkout
         uses: actions/checkout@v2
