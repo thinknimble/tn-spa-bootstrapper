@@ -80,6 +80,7 @@ jobs:
           python3 -m pip install pipx
           python3 -m pipx ensurepath
           pipx install pipenv
+          pipx ensurepath
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
