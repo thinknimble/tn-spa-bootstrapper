@@ -75,7 +75,7 @@ jobs:
       - run: |
           # Cypress slim container image doesn't come with pipx
           apt update -qq
-          apt install -y python3-pip
+          apt install -y python3-venv python3-pip
           # apt-get install python3-venv python3-pip
           python3 -m pip install pipx
           python3 -m pipx ensurepath
