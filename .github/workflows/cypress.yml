@@ -77,9 +77,9 @@ jobs:
           apt update -qq
           apt install -y python3-venv python3-pip
           # apt-get install python3-venv python3-pip
-          python3 -m pip install pipx
-          python3 -m pipx ensurepath
-          pipx install pipenv
+          # python3 -m pip install pipx
+          # python3 -m pipx ensurepath
+          python3 -m pip install pipenv
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
