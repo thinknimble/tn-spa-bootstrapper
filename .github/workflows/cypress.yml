@@ -77,11 +77,6 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: pipenv run cookiecutter . --no-input -f
-      - name: Install frontend dependencies
-        env:
-          NPM_CONFIG_PRODUCTION: false
-        working-directory: ./my_project/client
-        run: npm install
   FirefoxRun:
     needs: Firefox
     runs-on: ubuntu-latest
@@ -89,6 +84,11 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
+      - name: Install frontend dependencies
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        working-directory: ./my_project/client
+        run: npm install
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v4
         with:
