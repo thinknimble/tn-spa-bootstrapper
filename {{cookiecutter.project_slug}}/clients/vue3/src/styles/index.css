@@ -1,0 +1,21 @@
+@import './headings.css';
+@import './buttons.css';
+@import './inputs.css';
+
+/* Router Active Link Styling */
+.router {
+  @apply text-primary font-bold px-3;
+}
+
+.router:hover {
+  @apply cursor-pointer;
+}
+
+.exact-active-link {
+  @apply text-accent;
+}
+
+/* Containers */
+.form-container {
+  @apply container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg;
+}

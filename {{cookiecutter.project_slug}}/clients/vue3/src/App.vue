@@ -1,16 +1,22 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link>
-    <template v-if="isLoggedIn">
-      | <router-link to="/dashboard">Dashboard</router-link> |
-      <span id="logout" @click="logout()">Logout</span>
-    </template>
-    <template v-else>
-      | <router-link to="/login" data-cy="login">Login</router-link> |
-      <router-link to="/signup">Signup</router-link>
-    </template>
+  <div class="font-avenir antialiased text-center">
+    <div class="flex justify-center p-7">
+      <router-link to="/" class="router">Home</router-link>
+      <template v-if="isLoggedIn">
+        |
+        <router-link to="/dashboard" class="router">Dashboard</router-link>
+        |
+        <span id="logout" class="router underline" @click="logout()">Logout</span>
+      </template>
+      <template v-else>
+        |
+        <router-link to="/login" data-cy="login" class="router">Login</router-link>
+        |
+        <router-link to="/signup" class="router">Signup</router-link>
+      </template>
+    </div>
+    <router-view />
   </div>
-  <router-view />
 </template>
 
 <script>
@@ -36,34 +42,3 @@ export default {
   },
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav #logout {
-  /* Same style as a link */
-  font-weight: bold;
-  color: #2c3e50;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
