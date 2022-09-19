@@ -46,6 +46,7 @@ jobs:
         with:
           name: my_project
           path: my_project/
+          retention-days: 1
     outputs:
       BASE_URL: ${{ env.BASE_URL }}
   Chrome:
