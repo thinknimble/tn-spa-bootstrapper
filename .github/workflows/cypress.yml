@@ -84,6 +84,10 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
+      - run: |
+          echo $(ls .)
+          echo $(ls my_project)
+          echo $(ls my_project/client)
       - name: Install frontend dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
