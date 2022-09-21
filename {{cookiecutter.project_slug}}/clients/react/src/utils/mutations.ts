@@ -2,6 +2,7 @@ import gql from "graphql-tag";
 
 /* add GraphQL client-side mutations here */
 
+
 // Auth mutations
 export const LOG_IN = gql`
   mutation logIn($email: String!, $password: String!) {

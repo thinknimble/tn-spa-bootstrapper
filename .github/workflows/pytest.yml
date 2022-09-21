@@ -24,7 +24,11 @@ jobs:
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
+      - run: |
+          react_or_vue=$(./scripts/vue_or_react.sh)
+          config_file="cookiecutter/${react_or_vue}_template.yaml"
+          echo $config_file
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Pytest, McCabe, and Coverage
         run: |
           cd my_project

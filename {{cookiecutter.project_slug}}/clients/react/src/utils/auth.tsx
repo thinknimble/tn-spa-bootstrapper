@@ -12,6 +12,7 @@ import { PUBLIC_ROUTES } from "./routes";
 // 2a. unset localStorage token & exp on logout
 // 2b. call client.clearStore() on logout
 
+
 export const AuthContext = React.createContext({
   token: null,
   updateToken: (token: any) => {}, // set default signature to expect function
