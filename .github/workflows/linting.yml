@@ -25,6 +25,7 @@ jobs:
     needs: Setup
     steps:
       - uses: actions/checkout@v2
+      - run: pipx install pipenv
       - uses: actions/download-artifact@v3
         with:
           name: my_project
@@ -39,6 +40,7 @@ jobs:
     needs: Setup
     steps:
       - uses: actions/checkout@v2
+      - run: pipx install pipenv
       - uses: actions/download-artifact@v3
         with:
           name: my_project
