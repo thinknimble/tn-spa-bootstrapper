@@ -30,6 +30,7 @@ jobs:
           config_file="cookiecutter/${react_or_vue}_template.yaml"
           echo "bar"
           echo $config_file
+          echo "bat"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Pytest, McCabe, and Coverage
         run: |
