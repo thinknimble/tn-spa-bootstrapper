@@ -1,7 +1,7 @@
 name: Linter
 on: [push]
 jobs:
-  Setup:
+  Black:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,21 +15,6 @@ jobs:
       - run: |
           config_file=$(./scripts/vue_or_react.sh)
           pipenv run cookiecutter . --config-file $config_file --no-input -f
-      - uses: actions/upload-artifact@v3
-        with:
-          name: my_project
-          path: my_project/
-          retention-days: 1
-  Black:
-    runs-on: ubuntu-latest
-    needs: Setup
-    steps:
-      - uses: actions/checkout@v2
-      - run: pipx install pipenv
-      - uses: actions/download-artifact@v3
-        with:
-          name: my_project
-          path: my_project/
       - name: Run Black
         working-directory: ./my_project/server
         run: |
@@ -37,14 +22,18 @@ jobs:
           pipenv run black .
   flake8:
     runs-on: ubuntu-latest
-    needs: Setup
     steps:
       - uses: actions/checkout@v2
       - run: pipx install pipenv
-      - uses: actions/download-artifact@v3
+      - uses: actions/setup-python@v2
         with:
-          name: my_project
-          path: my_project/
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: |
+          config_file=$(./scripts/vue_or_react.sh)
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Run flake8
         working-directory: ./my_project/server
         run: |
@@ -52,13 +41,18 @@ jobs:
           pipenv run flake8
   ESLint_and_Prettier:
     runs-on: ubuntu-latest
-    needs: Setup
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v3
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
         with:
-          name: my_project
-          path: my_project/
+          python-version: '3.9'
+          cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: |
+          config_file=$(./scripts/vue_or_react.sh)
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
