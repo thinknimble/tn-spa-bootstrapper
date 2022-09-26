@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Tell Heroku that the app is  
+      - name: Update Heroku on what type of app to build (Vue or React)
         run: |
           config_file=$(./scripts/vue_or_react.sh)
           heroku config:set BUILDPACK_RUN="pipenv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ needs.Setup.outputs.APP_NAME }}
