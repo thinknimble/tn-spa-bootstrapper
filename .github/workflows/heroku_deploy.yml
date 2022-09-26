@@ -25,7 +25,7 @@ jobs:
           config_file=$(./scripts/vue_or_react.sh)
           run_string="pipenv run cookiecutter . --config-file $config_file --no-input -f"
           echo $run_string
-          heroku config:set BUILDPACK_RUN='${{ run_string }}' --app=${{ needs.Setup.outputs.APP_NAME }}
+          heroku config:set BUILDPACK_RUN=$run_string --app=${{ needs.Setup.outputs.APP_NAME }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       - name: Turn Maintenance Mode On for ${{ needs.Setup.outputs.APP_NAME }} 
