@@ -4,6 +4,9 @@
         "ALLOWED_HOSTS": {
             "value": ".herokuapp.com"
         },
+        "BUILDPACK_RUN": {
+            "value": "pipenv run cookiecutter . --config-file cookiecutter/vue_template.yaml --no-input -f"
+        },
         "DEBUG": {
             "value": "True"
         },

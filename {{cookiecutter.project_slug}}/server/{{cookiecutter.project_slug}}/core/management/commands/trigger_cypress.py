@@ -5,11 +5,7 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = "Rerun Cypress Github Action now that Heroku has finished deploying"
-    headers = {
-        "Authorization": "",
-        "Content-Type": "application/json",
-        "Accept": "application/vnd.github+json"
-    }
+    headers = {"Authorization": "", "Content-Type": "application/json", "Accept": "application/vnd.github+json"}
     github_root = None
 
     def find_cypress_workflow_id(self, branch):

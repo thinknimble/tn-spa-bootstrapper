@@ -2,8 +2,6 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
-from django.shortcuts import render
-from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 {% if cookiecutter.use_graphql == 'y' %}from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
@@ -16,9 +14,7 @@ from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 
 from .models import User
 from .permissions import CreateOnlyPermissions
-{% if cookiecutter.use_graphql == 'n' -%}from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer{% else %}
-from .serializers import UserLoginSerializer, UserSerializer
-{% endif %}
+from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
 {% if cookiecutter.use_graphql == 'y' %}
 # Serve React frontend
