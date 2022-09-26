@@ -19,6 +19,7 @@ jobs:
     needs: Setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Tell Heroku that the app is  
         run: |
           config_file=$(./scripts/vue_or_react.sh)
