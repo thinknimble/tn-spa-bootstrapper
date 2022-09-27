@@ -2,6 +2,9 @@ name: Linter
 on: [push]
 jobs:
   Black:
+    strategy:
+      matrix:
+        fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,7 +16,8 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |
-          config_file=$(./scripts/vue_or_react.sh)
+          # config_file=$(./scripts/vue_or_react.sh)
+          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Run Black
         working-directory: ./my_project/server
@@ -44,6 +48,9 @@ jobs:
           pipenv install --dev --deploy
           pipenv run flake8
   ESLint_and_Prettier:
+    strategy:
+      matrix:
+        fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -55,7 +62,8 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |
-          config_file=$(./scripts/vue_or_react.sh)
+          # config_file=$(./scripts/vue_or_react.sh)
+          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Install dependencies
         env:
