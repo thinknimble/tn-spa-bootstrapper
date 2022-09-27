@@ -33,6 +33,7 @@ jobs:
         run: pipenv install --dev --deploy
       - run: |
           config_file=$(./scripts/vue_or_react.sh)
+          echo $config_file
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Run flake8
         working-directory: ./my_project/server
