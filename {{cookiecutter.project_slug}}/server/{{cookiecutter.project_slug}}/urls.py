@@ -6,8 +6,7 @@ from django.urls import include, path
 {% if cookiecutter.use_graphql == 'y' -%}
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
-{%- endif %}
-
+{% endif %}
 urlpatterns = [
     {% if cookiecutter.use_graphql == 'y' -%}
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=settings.DEBUG))),

@@ -1,5 +1,5 @@
 import os
-{% if cookiecutter.use_graphql == 'y' -%}
+{%- if cookiecutter.use_graphql == 'y' %}
 from datetime import timedelta
 {%- endif %}
 
@@ -69,9 +69,8 @@ INSTALLED_APPS = [
     "django_extensions",
     {% if cookiecutter.use_graphql == 'y' -%}
     "graphene_django",
-    {%- endif %}
+    {% endif -%}
 ]
-
 {% if cookiecutter.use_graphql == 'y' -%}
 GRAPHENE = {
     "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",

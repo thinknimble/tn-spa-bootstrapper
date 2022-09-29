@@ -15,6 +15,9 @@ jobs:
         run: pipenv run pytest
   Pytest_Generated_Project:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fe_type: [react, vue]
     steps:
       - uses: actions/checkout@v2
       - run: pipx install pipenv
@@ -25,7 +28,7 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |
-          config_file=$(./scripts/vue_or_react.sh)
+          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Pytest, McCabe, and Coverage
         run: |
