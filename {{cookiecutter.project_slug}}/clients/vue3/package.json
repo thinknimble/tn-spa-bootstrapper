@@ -16,7 +16,6 @@
     "@thinknimble/tn-forms": "^2.0.9",
     "@thinknimble/tn-models": "1.2.1",
     "@thinknimble/tn-utils": "1.6.0",
-    "@thinknimble/tn-validators": "^1.1.1",
     "autoprefixer": "^9.8.8",
     "axios": "^0.22.0",
     "core-js": "^3.6.5",
