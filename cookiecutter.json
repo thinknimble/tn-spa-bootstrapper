@@ -9,17 +9,10 @@
   ],
   "_copy_without_render": [
     "clients/vue3/src/views/dashboard",
-    "clients/vue3/src/components"
+    "clients/vue3/src/components",
+    "clients/react/src/pages"
   ],
-  "mail_service": [
-    "Mailgun",
-    "Amazon SES",
-    "Custom SMTP"
-  ],
+  "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
   "use_graphql": "n",
-  "client_app": [
-    "Vue3",
-    "React",
-    "None"
-  ]
+  "client_app": ["Vue3", "React", "None"]
 }
