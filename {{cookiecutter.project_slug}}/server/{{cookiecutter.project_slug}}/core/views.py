@@ -7,27 +7,25 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 {% if cookiecutter.use_graphql == 'y' %}from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import ensure_csrf_cookie
-{% endif %}from rest_framework import generics, mixins, permissions, status, viewsets
+from django.views.decorators.csrf import ensure_csrf_cookie{% endif %}from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
+from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 
 from .models import User
 from .permissions import CreateOnlyPermissions
-{% if cookiecutter.use_graphql == 'n' -%}
-from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
-{% else %}
+{% if cookiecutter.use_graphql == 'n' -%}from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer{% else %}
 from .serializers import UserLoginSerializer, UserSerializer
 {% endif %}
+
 {% if cookiecutter.use_graphql == 'y' %}
 # Serve React frontend
 @ensure_csrf_cookie
 @never_cache
 def index(request):
-   return TemplateResponse(request, ["index.html", "core/index-placeholder.html"])
+    return TemplateResponse(request, ["index.html", "core/index-placeholder.html"])
 {% elif cookiecutter.client_app.lower() == 'None' %}
 def index(request):
     return redirect(to="/docs/swagger/")

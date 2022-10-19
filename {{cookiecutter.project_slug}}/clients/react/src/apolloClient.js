@@ -2,8 +2,8 @@ import {
   ApolloClient,
   InMemoryCache,
 } from "@apollo/client";
-import { createHttpLink } from "apollo-link-http";
-import { setContext } from "apollo-link-context";
+import { createHttpLink } from '@apollo/client/link/http'
+import { setContext } from '@apollo/client/link/context'
 import getCookie from "./utils/getCookie";
 
 

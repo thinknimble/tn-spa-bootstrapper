@@ -1,5 +1,11 @@
 name: Cypress Tests
-on: push
+on:
+  workflow_call:
+    secrets:
+      CYPRESS_TEST_USER_EMAIL:
+        required: true
+      CYPRESS_TEST_USER_PASS:
+        required: true
 jobs:
   Setup:
     runs-on: ubuntu-latest
@@ -17,37 +23,47 @@ jobs:
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
+      - name: Raise for maintenance mode
+        run: |
+          html_body=$(curl {{ "${{ env.BASE_URL }}" }})
+          if echo $html_body | grep -q "Offline for Maintenance";
+          then
+            exit 1
+          else
+            echo "NOT in maintenance. Likely Heroku trigger after successful deploy";
+          fi
     outputs:
       BASE_URL: {{ "${{ env.BASE_URL }}" }}
   Chrome:
-    runs-on: ubuntu-20.04
     needs: Setup
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run against {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           working-directory: client
           browser: chrome
-          headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
           CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
           CYPRESS_baseUrl: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
   Firefox:
-    runs-on: ubuntu-latest
     needs: Setup
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
+      options: --user 1001
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run against {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           working-directory: client
           browser: firefox
-          headless: true
         env: 
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: {{ "${{ secrets.CYPRESS_TEST_USER_EMAIL }}" }}
