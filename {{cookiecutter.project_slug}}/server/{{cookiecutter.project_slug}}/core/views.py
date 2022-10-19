@@ -27,7 +27,7 @@ from .serializers import UserLoginSerializer, UserSerializer
 @ensure_csrf_cookie
 @never_cache
 def index(request):
-    return TemplateResponse(request, "index.html")
+   return TemplateResponse(request, ["index.html", "core/index-placeholder.html"])
 {% elif cookiecutter.client_app.lower() == 'None' %}
 def index(request):
     return redirect(to="/docs/swagger/")
