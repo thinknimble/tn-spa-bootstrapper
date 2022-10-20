@@ -33,7 +33,7 @@ export default function LogIn() {
       localStorage.setItem("auth-token", data.tokenAuth.token)
       updateToken(data.tokenAuth.token)
 
-      navigate("/verify")
+      navigate("/home")
     },
     onError: (error: any) => {
       if (error.message === "Please enter valid credentials") {
@@ -79,6 +79,8 @@ export default function LogIn() {
                 setEmail(e.target.value)
               }}
               my={5}
+              value={email}
+              id="id"
             />
             <Input
               mb={error ? 2 : 5}
@@ -87,6 +89,8 @@ export default function LogIn() {
               onChange={(e) => {
                 setPassword(e.target.value)
               }}
+              value={password}
+              id="password"
             />
             {error ? (
               <FormErrorMessage mb={5}>
