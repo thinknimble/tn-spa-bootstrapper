@@ -4,5 +4,6 @@
 import LogIn from "./LogIn"
 import Home from "./Home"
 import Layout from "./Layout"
+import SignUp from "./SignUp"
 
-export { LogIn, Home, Layout }
+export { LogIn, Home, Layout, SignUp }
