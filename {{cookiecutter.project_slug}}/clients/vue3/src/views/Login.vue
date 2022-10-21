@@ -1,27 +1,32 @@
 <template>
-  <div class="login">
-    <form @submit.prevent="attemptLogin()">
+  <div class="form-container">
+    <h1 class="heading font-bold">Log In.</h1>
+    <form class="flex flex-col items-center" @submit.prevent="attemptLogin()">
       <InputField
         v-model:value="form.email.value"
         :errors="form.email.errors"
         @blur="form.email.validate()"
         type="email"
         data-cy="email"
-        label="Email:"
-        placeholder="Email"
+        label="Email"
+        placeholder="Enter email..."
       />
-
       <InputField
         v-model:value="form.password.value"
         :errors="form.password.errors"
         @blur="form.password.validate()"
         type="password"
         data-cy="password"
-        label="Password:"
-        placeholder="Password"
+        label="Password"
+        placeholder="Enter password..."
       />
-
-      <button data-cy="submit" type="submit">Login</button>
+      <button class="btn--primary" data-cy="submit" type="submit">Login</button>
+      <div class="flex self-center m-4">
+        <p class="mr-2">Don't have an account?</p>
+        <router-link to="/signup" class="font-bold text-primary hover:underline">
+          Sign up.
+        </router-link>
+      </div>
     </form>
   </div>
 </template>
@@ -77,4 +82,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="css"></style>

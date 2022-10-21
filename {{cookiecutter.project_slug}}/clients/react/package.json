@@ -15,8 +15,6 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.3.2",
-    "apollo-link-context": "^1.0.20",
-    "apollo-link-http": "^1.5.17",
     "framer-motion": "^4.0.0",
     "graphql": "^16.0.1",
     "graphql-tag": "^2.12.6",
