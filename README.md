@@ -6,11 +6,7 @@ A production-ready Django SPA app on Heroku in 20-min or less!
 
 ## Quick Start
 
-First, get cookiecutter:
-
-```bash
-python3 -m pip install cookiecutter
-```
+First, get cookiecutter, as detailed in the [official documentation](https://cookiecutter.readthedocs.io/en/stable/installation.html#install-cookiecutter).
 
 Now run it against this repo:
 

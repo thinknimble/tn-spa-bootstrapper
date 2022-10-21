@@ -1,0 +1,10 @@
+/* Buttons */
+
+.btn {
+  @apply w-full p-1.5 my-5 rounded;
+}
+
+.btn--primary {
+  @apply btn;
+  @apply bg-primary text-white font-bold py-2 px-4;   
+}
