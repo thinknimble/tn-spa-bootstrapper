@@ -30,7 +30,7 @@ export default function SignUp() {
 
   let navigate = useNavigate()
 
-  const { register, handleSubmit, getValues } = useForm<FormValues>()
+  const { register, handleSubmit } = useForm<FormValues>()
 
   const [logIn] = useMutation(LOG_IN, {
     onCompleted: (data: any) => {
