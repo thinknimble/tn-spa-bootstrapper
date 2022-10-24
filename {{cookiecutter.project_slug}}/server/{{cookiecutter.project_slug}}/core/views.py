@@ -3,6 +3,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.template.loader import render_to_string
+
+from django.shortcuts import render
+from django.template.exceptions import TemplateDoesNotExist
+
 {% if cookiecutter.use_graphql == 'y' %}from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie{% endif %}from rest_framework import generics, mixins, permissions, status, viewsets
