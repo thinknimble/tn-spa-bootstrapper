@@ -9,7 +9,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - run: pipenv install --dev --deploy
       - name: Test with pytest
         run: pipenv run pytest
@@ -20,7 +20,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
