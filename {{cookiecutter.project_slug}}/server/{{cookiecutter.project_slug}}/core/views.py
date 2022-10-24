@@ -2,14 +2,17 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
-from django.template.loader import render_to_string
-
+{% if cookiecutter.client_app == "React" -%}
 from django.shortcuts import render
 from django.template.exceptions import TemplateDoesNotExist
-
-{% if cookiecutter.use_graphql == 'y' %}from django.template.response import TemplateResponse
+{% endif -%}
+from django.template.loader import render_to_string
+{% if cookiecutter.use_graphql == 'y' -%}
+from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import ensure_csrf_cookie{% endif %}from rest_framework import generics, mixins, permissions, status, viewsets
+from django.views.decorators.csrf import ensure_csrf_cookie
+{% endif -%}
+from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
