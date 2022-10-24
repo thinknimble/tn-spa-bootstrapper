@@ -8,7 +8,6 @@ import {
   Box,
   HStack,
   Link,
-  FormHelperText,
 } from "@chakra-ui/react"
 import { useMutation } from "@apollo/client"
 import { CREATE_USER, LOG_IN } from "../utils/mutations"
@@ -21,7 +20,6 @@ interface FormValues {
   password: string
   firstName: string
   lastName: string
-  phoneNumber: string
 }
 
 export default function SignUp() {
@@ -32,13 +30,13 @@ export default function SignUp() {
 
   let navigate = useNavigate()
 
-  const { register, handleSubmit } = useForm<FormValues>()
+  const { register, handleSubmit, getValues } = useForm<FormValues>()
 
   const [logIn] = useMutation(LOG_IN, {
     onCompleted: (data: any) => {
       localStorage.setItem("auth-token", data.tokenAuth.token)
       updateToken(data.tokenAuth.token)
-      navigate("/dashboard")
+      navigate("/home")
     },
     onError: (error: any) => {},
   })
@@ -79,14 +77,13 @@ export default function SignUp() {
       <Heading>WELCOME</Heading>
       <Text my={5}>Enter your details below to create an account</Text>
       <form onSubmit={handleSignup}>
-        <HStack justify={"space-between"}>
+        <HStack justify={"space-between"} mb={5}>
           <Input
             isRequired={true}
             placeholder="First Name"
             {...register("firstName", { required: true })}
           />
           <Input
-            mb={"20px !important"}
             isRequired={true}
             placeholder="Last Name"
             {...register("lastName", { required: true })}
@@ -97,7 +94,7 @@ export default function SignUp() {
             mb={error === "email" ? 2 : 5}
             type="email"
             isRequired={true}
-            placeholder="Non Military Email"
+            placeholder="Email"
             {...register("email", { required: true })}
           />
           {error === "email" ? (
@@ -106,24 +103,6 @@ export default function SignUp() {
             </FormErrorMessage>
           ) : (
             <></>
-          )}
-        </FormControl>
-        <FormControl isInvalid={error === "phone"}>
-          <Input
-            mb={0}
-            isRequired={true}
-            type="tel"
-            placeholder="Phone Number"
-            {...register("phoneNumber", { required: true })}
-          />
-          {error === "phone" ? (
-            <FormErrorMessage mb={5}>
-              Invalid format, include numbers only
-            </FormErrorMessage>
-          ) : (
-            <FormHelperText mb={5}>
-              Include numbers only, no symbols
-            </FormHelperText>
           )}
         </FormControl>
 
@@ -135,6 +114,7 @@ export default function SignUp() {
             {...register("password", {
               required: true,
             })}
+            mb={5}
           />
           <Input
             isRequired={true}
