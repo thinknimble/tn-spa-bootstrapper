@@ -101,9 +101,6 @@ export default function LogIn() {
             )}
           </FormControl>
           <Button onClick={handleLogin}>Sign In</Button>
-          <Link fontSize="14px" textDecor={"underline"} href="/forgot-password">
-            Forgot Password
-          </Link>
         </VStack>
       </GridItem>
       <GridItem>
