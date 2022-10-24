@@ -20,5 +20,4 @@ class CreateUser(graphene.Mutation):
 
     def mutate(self, info, data):
         user = get_user_model().objects.create_user(**data)
-        print(user)
         return CreateUser(user=user)
