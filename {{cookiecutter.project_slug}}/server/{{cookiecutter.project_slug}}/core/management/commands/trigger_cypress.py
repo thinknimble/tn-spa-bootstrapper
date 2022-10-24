@@ -31,7 +31,7 @@ class Command(BaseCommand):
         self.headers["Authorization"] = f"Bearer {config('GITHUB_TOKEN')}"
         org = "thinknimble"
         repo = "tn-spa-bootstrapper"
-        branch = config("HEROKU_BRANCH")
+        branch = config("HEROKU_BRANCH", "main")
         self.github_root = f"https://api.github.com/repos/{org}/{repo}"
 
         workflow_id = self.find_cypress_workflow_id(branch)

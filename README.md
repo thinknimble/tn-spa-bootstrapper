@@ -19,7 +19,7 @@ cookiecutter git@github.com:thinknimble/tn-spa-bootstrapper.git
 See: [Maintained Foundation fork]
 
  - For Django 3.1
- - Uses Python 3.9 by default
+ - Uses Python 3.10 by default
  - Renders Django projects with 100% starting test coverage
  - Secure by default. We believe in SSL.
  - Optimized development and production settings
