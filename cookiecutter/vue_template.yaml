@@ -1,2 +1,3 @@
 default_context:
+  project_name: "My Project Vue"
   client_app: "Vue3"
