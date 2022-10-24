@@ -42,7 +42,7 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |
-          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
+          config_file=$(./scripts/vue_or_react.sh)
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - uses: actions/upload-artifact@v3
         with:
