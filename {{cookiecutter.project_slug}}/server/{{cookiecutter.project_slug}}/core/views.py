@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
-{% if cookiecutter.client_app == "React" -%}
+{% if cookiecutter.client_app == "Vue3" -%}
 from django.shortcuts import render
 from django.template.exceptions import TemplateDoesNotExist
 {% endif -%}
