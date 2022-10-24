@@ -61,11 +61,6 @@ jobs:
         with:
           name: my_project
           path: my_project/
-      - name: Install frontend dependencies
-        env:
-          NPM_CONFIG_PRODUCTION: false
-        working-directory: ./my_project/client
-        run: npm install
       - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
         uses: cypress-io/github-action@v4
         with:
