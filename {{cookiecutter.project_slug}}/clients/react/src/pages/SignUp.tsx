@@ -50,9 +50,7 @@ export default function SignUp() {
       })
     },
     onError: (error: any) => {
-      if (error.message.includes("duplicate key value")) {
-        setError("email")
-      } else if (error.message.includes("value too long")) {
+   if (error.message.includes("value too long")) {
         setError("phone")
       } else {
         console.error(error)
@@ -97,13 +95,7 @@ export default function SignUp() {
             placeholder="Email"
             {...register("email", { required: true })}
           />
-          {error === "email" ? (
-            <FormErrorMessage mb={5}>
-              An account with this email already exists
-            </FormErrorMessage>
-          ) : (
-            <></>
-          )}
+         
         </FormControl>
 
         <FormControl isInvalid={!passwordMatch}>
