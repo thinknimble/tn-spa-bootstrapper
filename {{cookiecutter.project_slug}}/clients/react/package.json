@@ -15,6 +15,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-router-dom": "^5.3.2",
+    "cypress": "^8.6.0",
     "framer-motion": "^4.0.0",
     "graphql": "^16.0.1",
     "graphql-tag": "^2.12.6",
@@ -31,6 +32,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "cypress": "source ../.env && npx cypress open",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "heroku-postbuild": "npm build"
