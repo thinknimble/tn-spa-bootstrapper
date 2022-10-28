@@ -28,3 +28,15 @@ export const VERIFY_TOKEN = gql`
     }
   }
 `;
+
+
+export const CREATE_USER = gql`
+  mutation CreateUser($data: UserInput!) {
+    createUser(data: $data) {
+      user {
+        id
+        email
+      }
+    }
+  }
+`
