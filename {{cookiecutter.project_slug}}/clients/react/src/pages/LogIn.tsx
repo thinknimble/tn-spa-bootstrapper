@@ -17,13 +17,15 @@ import {
 import { useMutation } from "@apollo/client"
 import { LOG_IN } from "../utils/mutations"
 import { AuthContext } from "../utils/auth"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import Logo from "src/assets/images/logo.svg"
 
 export default function LogIn() {
+  const params = useLocation()
+  const autoError = params.state?.autoError
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(autoError ? true : false)
 
   const { updateToken } = useContext(AuthContext)
 
@@ -94,7 +96,7 @@ export default function LogIn() {
             />
             {error ? (
               <FormErrorMessage mb={5}>
-                Incorrect email and/or password
+                {autoError ? autoError : "Incorrect email and/or password"}
               </FormErrorMessage>
             ) : (
               <></>

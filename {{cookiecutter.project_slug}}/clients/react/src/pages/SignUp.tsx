@@ -38,7 +38,14 @@ export default function SignUp() {
       updateToken(data.tokenAuth.token)
       navigate("/home")
     },
-    onError: (error: any) => {},
+    onError: (error: any) => {
+        navigate("/log-in", {
+            state: {
+              autoError:
+                "Something went wrong during auto-login. Please try again.",
+            },
+          })    
+        },
   })
   const [createUser] = useMutation(CREATE_USER, {
     onCompleted: (data: any) => {
