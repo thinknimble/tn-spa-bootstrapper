@@ -42,7 +42,7 @@ export default function SignUp() {
         navigate("/log-in", {
             state: {
               autoError:
-                "Something went wrong during auto-login. Please try again.",
+                "There was a problem logging you in. Please try again.",
             },
           })    
         },
