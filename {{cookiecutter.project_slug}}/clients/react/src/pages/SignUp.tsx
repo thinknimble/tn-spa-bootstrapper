@@ -129,6 +129,7 @@ export default function SignUp() {
             background: "#6683A9",
             color: "white",
           }}
+          type="submit"
         >
           Sign Up
         </button>
