@@ -22,8 +22,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Update Heroku on what type of app to build (Vue or React)
         run: |
-          heroku builds:cache:purge --app=${{ needs.Setup.outputs.APP_NAME }}
           config_file=$(./scripts/vue_or_react.sh)
+          heroku plugins:install heroku-builds
+          heroku builds:cache:purge --app=${{ needs.Setup.outputs.APP_NAME }}
           heroku config:set BUILDPACK_RUN="pipenv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ needs.Setup.outputs.APP_NAME }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
