@@ -3,6 +3,8 @@
     <img alt="Project Logo" src="../assets/logo.png" />
     <h1>Welcome to {{cookiecutter.project_name}}!</h1>
   </div>
+  <div>
+  </div>
 </template>
 
 <script>
