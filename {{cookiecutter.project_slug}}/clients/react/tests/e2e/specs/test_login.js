@@ -1,14 +1,13 @@
 describe('Tests login workflow', () => {
-  it('Home page has link to login', () => {
+  it('Home page auto redirects to login', () => {
     cy.visit('/')
-    cy.get('[data-cy=login]').click()
-    cy.url().should('include', '/login')
+    cy.url().should('include', '/log-in')
   })
 
-  it('Filling in email and passwords goes to', () => {
+  it('Filling in email and passwords goes to home', () => {
     cy.get('[data-cy=email]').type(Cypress.env('TEST_USER_EMAIL'))
     cy.get('[data-cy=password]').type(Cypress.env('TEST_USER_PASS'))
     cy.contains('[data-cy=submit]', 'Login').click()
-    cy.url().should('include', '/dashboard')
+    cy.url().should('include', '/home')
   })
 })

@@ -28,5 +28,4 @@ class Mutation(AuthMutation, graphene.ObjectType):
     create_user = CreateUser.Field()
 
 
-
 schema = graphene.Schema(query=Query, mutation=Mutation)
