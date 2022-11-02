@@ -19,7 +19,6 @@ jobs:
     needs: Setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - name: Turn Maintenance Mode On for ${{ needs.Setup.outputs.APP_NAME }} 
         run: |
           echo "Turning on maintenance so Cypress status starts as failing until rerun happens later."
@@ -37,6 +36,7 @@ jobs:
     needs: [Setup, Cypress]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Turn Maintenance Mode Off for ${{ needs.Setup.outputs.APP_NAME }} 
         run: |
           echo "Turning off maintenance so Heroku triggering rerun of Cypress will succeed";
