@@ -23,9 +23,15 @@ jobs:
       - name: Update Heroku on what type of app to build (Vue or React)
         run: |
           config_file=$(./scripts/vue_or_react.sh)
-          heroku plugins:install heroku-builds
-          heroku builds:cache:purge --app=${{ needs.Setup.outputs.APP_NAME }}
-          heroku config:set BUILDPACK_RUN="pipenv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ needs.Setup.outputs.APP_NAME }}
+          current_config=$(heroku config:get BUILDPACK_RUN --app=${{ needs.Setup.outputs.APP_NAME }})
+          if echo "$current_config" | grep -q "config_file"; then
+            echo "Keeping current config of $config_file"
+          else
+            echo "Switching Heroku to build with $config_file instead"
+            heroku plugins:install heroku-builds
+            heroku builds:cache:purge --app=${{ needs.Setup.outputs.APP_NAME }}
+            heroku config:set BUILDPACK_RUN="pipenv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ needs.Setup.outputs.APP_NAME }}
+          fi
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       - name: Turn Maintenance Mode On for ${{ needs.Setup.outputs.APP_NAME }} 

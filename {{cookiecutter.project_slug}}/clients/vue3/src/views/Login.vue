@@ -27,6 +27,8 @@
           Sign up.
         </router-link>
       </div>
+      <div>
+      </div>
     </form>
   </div>
 </template>
