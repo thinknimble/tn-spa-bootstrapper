@@ -37,7 +37,7 @@ class Command(BaseCommand):
         if config("ENVIRONMENT") != "production":
             self.headers["Authorization"] = f"Bearer {config('GITHUB_TOKEN')}"
             org = "thinknimble"
-            repo = "{{ cookiecutter.project_slug }}"
+            repo = config("GITHUB_REPO", "{{ cookiecutter.project_slug }}")
             branch = config("HEROKU_BRANCH", "main")
             self.github_root = f"https://api.github.com/repos/{org}/{repo}"
 
