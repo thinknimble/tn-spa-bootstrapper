@@ -34,12 +34,13 @@ class Command(BaseCommand):
         requests.post(rerun_job_url, headers=self.headers)
 
     def handle(self, *args, **kwargs):
-        self.headers["Authorization"] = f"Bearer {config('GITHUB_TOKEN')}"
-        org = "thinknimble"
-        repo = "{{ cookiecutter.project_slug }}"
-        branch = config("HEROKU_BRANCH", "main")
-        self.github_root = f"https://api.github.com/repos/{org}/{repo}"
+        if config("ENVIRONMENT") != "production":
+            self.headers["Authorization"] = f"Bearer {config('GITHUB_TOKEN')}"
+            org = "thinknimble"
+            repo = "{{ cookiecutter.project_slug }}"
+            branch = config("HEROKU_BRANCH", "main")
+            self.github_root = f"https://api.github.com/repos/{org}/{repo}"
 
-        workflow_id = self.find_cypress_workflow_id(branch)
-        job_id = self.find_job_id_for_cypress_step(workflow_id)
-        self.rerun_job(job_id)
+            workflow_id = self.find_cypress_workflow_id(branch)
+            job_id = self.find_job_id_for_cypress_step(workflow_id)
+            self.rerun_job(job_id)
