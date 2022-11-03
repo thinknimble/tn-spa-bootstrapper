@@ -35,9 +35,9 @@ STAFF_EMAIL = config("STAFF_EMAIL", default="no-reply@thinknimble.com")
 #
 # Domain Configuration
 #
-CURRENT_DOMAIN = config("CURRENT_DOMAIN")
+HEROKU_APP_NAME = config("HEROKU_APP_NAME", default="{{ cookiecutter.project_slug }}-staging")
+CURRENT_DOMAIN = config("CURRENT_DOMAIN", default=f"{HEROKU_APP_NAME}.herokuapp.com")
 CURRENT_PORT = config("CURRENT_PORT", default="")
-HEROKU_APP_NAME = config("HEROKU_APP_NAME", default=None)
 ALLOWED_HOSTS = []
 ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")])
 if CURRENT_DOMAIN not in ALLOWED_HOSTS:
@@ -196,6 +196,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "{{ cookiecutter.project_slug }}.core.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
@@ -209,9 +210,6 @@ REST_FRAMEWORK = {
     "DEFAULT_VERSION": "1.0",
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
 }
-if DEBUG:  # for testing
-    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"].append("rest_framework.authentication.SessionAuthentication")
-    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"].append("rest_framework.renderers.BrowsableAPIRenderer")
 #
 # Static files (CSS, JavaScript, Images)
 #

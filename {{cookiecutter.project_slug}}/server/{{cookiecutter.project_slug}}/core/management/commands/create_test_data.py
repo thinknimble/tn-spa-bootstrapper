@@ -8,9 +8,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         superuser_password = config("DJANGO_SUPERUSER_PASSWORD")
-        cypress_email = config("CYPRESS_TEST_USER_EMAIL")
         cypress_password = config("CYPRESS_TEST_USER_PASS")
         get_user_model().objects.create_superuser(
             email="admin@thinknimble.com", password=superuser_password, first_name="Admin", last_name="ThinkNimble"
         )
-        get_user_model().objects.create_user(email=cypress_email, password=cypress_password, first_name="Cypress", last_name="E2E_test")
+        get_user_model().objects.create_user(
+            email="cypress@example.com", password=cypress_password, first_name="Cypress", last_name="E2E_test"
+        )
