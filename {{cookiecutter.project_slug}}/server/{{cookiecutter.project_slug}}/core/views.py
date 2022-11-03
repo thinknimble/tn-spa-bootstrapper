@@ -63,7 +63,6 @@ class UserLoginView(generics.GenericAPIView):
         return Response(response_data)
 
 
-# TODO: Add relevant mixins to manipulate users via API
 class UserViewSet(
     viewsets.GenericViewSet,
     mixins.RetrieveModelMixin,
