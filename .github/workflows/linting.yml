@@ -2,6 +2,9 @@ name: Linter
 on: [push]
 jobs:
   Black:
+    strategy:
+      matrix:
+        fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -12,13 +15,18 @@ jobs:
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
+      - run: |
+          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Run Black
         working-directory: ./my_project/server
         run: |
           pipenv install --dev --deploy
           pipenv run black .
   flake8:
+    strategy:
+      matrix:
+        fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -29,13 +37,18 @@ jobs:
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
+      - run: |
+          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Run flake8
         working-directory: ./my_project/server
         run: |
           pipenv install --dev --deploy
           pipenv run flake8
   ESLint_and_Prettier:
+    strategy:
+      matrix:
+        fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +59,9 @@ jobs:
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
+      - run: |
+          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false

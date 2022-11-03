@@ -41,7 +41,9 @@ jobs:
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
+      - run: |
+          config_file=$(./scripts/vue_or_react.sh)
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - uses: actions/upload-artifact@v3
         with:
           name: my_project

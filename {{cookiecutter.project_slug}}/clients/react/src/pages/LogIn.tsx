@@ -82,6 +82,7 @@ export default function LogIn() {
               }}
               my={5}
               value={email}
+              data-cy="email"
               id="id"
             />
             <Input
@@ -92,6 +93,7 @@ export default function LogIn() {
                 setPassword(e.target.value)
               }}
               value={password}
+              data-cy="password"
               id="password"
             />
             {error ? (
@@ -102,7 +104,7 @@ export default function LogIn() {
               <></>
             )}
           </FormControl>
-          <Button onClick={handleLogin}>Sign In</Button>
+          <Button data-cy="submit" onClick={handleLogin}>Sign In</Button>
         </VStack>
       </GridItem>
       <GridItem>
