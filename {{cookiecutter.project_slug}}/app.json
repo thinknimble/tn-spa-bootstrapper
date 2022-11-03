@@ -1,5 +1,5 @@
 {
-    "name": "{{ cookiecutter.project_nam }}",
+    "name": "{{ cookiecutter.project_name }}",
     "env": {
         "ALLOWED_HOSTS": {
             "value": ".herokuapp.com"
