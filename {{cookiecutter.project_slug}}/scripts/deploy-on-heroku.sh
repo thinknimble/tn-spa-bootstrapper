@@ -14,15 +14,6 @@ heroku buildpacks:add --index 1 heroku/nodejs --app $APP_NAME
 echo "Please fill in your ROLLBAR_ACCESS_TOKEN"
 read -p 'ROLLBAR_ACCESS_TOKEN: ' ROLLBAR_ACCESS_TOKEN
 
-
-if [ -z "${NPM_READ_ONLY_TOKEN}" ]; then
-    echo "Please fill in your NPM_READ_ONLY_TOKEN"
-    read -p 'NPM_READ_ONLY_TOKEN: ' NPM_READ_ONLY_TOKEN
-    heroku config:set NPM_READ_ONLY_TOKEN=$NPM_READ_ONLY_TOKEN --app $APP_NAME
-else
-    NPM_READ_ONLY_TOKEN = "${NPM_READ_ONLY_TOKEN}"
-    heroku config:set NPM_READ_ONLY_TOKEN=$NPM_READ_ONLY_TOKEN --app $APP_NAME
-fi
 {%- endif %}
 
 heroku config:set SECRET_KEY="$(openssl rand -base64 64)" --app $APP_NAME

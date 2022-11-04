@@ -2,8 +2,6 @@ name: Cypress Tests
 on:
   workflow_call:
     secrets:
-      CYPRESS_TEST_USER_EMAIL:
-        required: true
       CYPRESS_TEST_USER_PASS:
         required: true
 jobs:
@@ -37,11 +35,13 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
+      - run: |
+          config_file=$(./scripts/vue_or_react.sh)
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - uses: actions/upload-artifact@v3
         with:
           name: my_project
@@ -71,7 +71,7 @@ jobs:
           browser: chrome
         env: 
           NPM_CONFIG_PRODUCTION: false
-          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
           CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
           CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}
   Firefox:
@@ -99,6 +99,6 @@ jobs:
           browser: firefox
         env: 
           NPM_CONFIG_PRODUCTION: false
-          CYPRESS_TEST_USER_EMAIL: ${{ secrets.CYPRESS_TEST_USER_EMAIL }}
+          CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
           CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
           CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}

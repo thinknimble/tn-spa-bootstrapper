@@ -1,4 +1,4 @@
-# vue
+# Vue3
 
 ## Favicon Setup
 

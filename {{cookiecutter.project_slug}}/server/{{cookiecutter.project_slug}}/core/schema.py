@@ -2,6 +2,7 @@ import graphene
 import graphql_jwt
 from graphql_jwt.decorators import login_required
 
+from .mutations import CreateUser
 from .types import UserType
 
 
@@ -24,7 +25,7 @@ class AuthMutation(graphene.ObjectType):
 
 
 class Mutation(AuthMutation, graphene.ObjectType):
-    pass
+    create_user = CreateUser.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

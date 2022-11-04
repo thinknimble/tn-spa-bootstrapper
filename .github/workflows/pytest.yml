@@ -9,22 +9,27 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - run: pipenv install --dev --deploy
       - name: Test with pytest
         run: pipenv run pytest
   Pytest_Generated_Project:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        fe_type: [react, vue]
     steps:
       - uses: actions/checkout@v2
       - run: pipx install pipenv
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
-      - run: pipenv run cookiecutter . --no-input -f
+      - run: |
+          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Pytest, McCabe, and Coverage
         run: |
           cd my_project
