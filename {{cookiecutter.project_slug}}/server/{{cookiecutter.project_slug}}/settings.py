@@ -119,10 +119,12 @@ TEMPLATES = [
         "APP_DIRS": True,
         "DIRS": [
             os.path.join(BASE_DIR, "../client/dist/"),
+            os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
         ],
         {% else -%}
         "DIRS": [
             os.path.join(BASE_DIR, "..", "client", "build"),
+            os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
         ],
         "APP_DIRS": True,  # this setting must come after "DIRS"!
         {% endif -%}
@@ -423,3 +425,15 @@ CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
 {% if cookiecutter.use_graphql == 'y' %}
 CORS_ALLOW_CREDENTIALS = True
 {% endif -%}
+
+SWAGGER_SETTINGS = {
+    "LOGIN_URL": "/login",
+    "USE_SESSION_AUTH": False,
+    "PERSIST_AUTH": True,
+    "SECURITY_DEFINITIONS": {
+        "Token": {"type": "apiKey", "name": "Authorization", "in": "header"},
+    },
+    "JSON_EDITOR": True,
+    "SHOW_REQUEST_HEADERS": True,
+    "OPERATIONS_SORTER": "alpha",
+}

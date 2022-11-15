@@ -38,8 +38,8 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="support@{{ cookiecutter.project_slug }}.com"),
         license=openapi.License(name="BSD License"),
     ),
-    public=False,
-    permission_classes=[permissions.IsAuthenticated],
+    public=True,
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = urlpatterns + [
