@@ -14,7 +14,7 @@
             "value": "development"
         },
         "PROJECT_PATH": {
-            "value": "modat_api"
+            "value": "{{ cookiecutter.project_slug }}"
         },
         "NPM_CONFIG_PRODUCTION": {
             "value": "false"
