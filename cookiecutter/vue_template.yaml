@@ -1,0 +1,3 @@
+default_context:
+  client_app: "Vue3"
+  use_graphql: "n"
