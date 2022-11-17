@@ -11,7 +11,7 @@
     "clients/vue3/src/views/dashboard",
     "clients/vue3/src/components",
     "clients/react/src/pages",
-    "server/{{cookiecutter.project_slug}}/client"
+    "*/swagger-ui.html"
   ],
   "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
   "use_graphql": "n",
