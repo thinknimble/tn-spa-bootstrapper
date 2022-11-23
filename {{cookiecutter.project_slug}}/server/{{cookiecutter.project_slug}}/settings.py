@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "django_nose",
     "rest_framework",
     "rest_framework.authtoken",
+    "dj_rest_auth",
     "django_filters",
     "django_extensions",
     {% if cookiecutter.use_graphql == 'y' -%}
