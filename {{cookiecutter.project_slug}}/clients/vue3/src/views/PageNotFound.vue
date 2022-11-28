@@ -14,17 +14,3 @@ export default {
   name: 'PageNotFound',
 }
 </script>
-
-<style scoped lang="scss">
-.page-not-found {
-  &__error {
-    margin: unset;
-    font-weight: 800;
-    font-size: 64px;
-  }
-
-  &__route {
-    font-size: 18px;
-  }
-}
-</style>
