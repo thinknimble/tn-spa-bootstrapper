@@ -3,9 +3,7 @@
     <h1 class="text-7xl font-extrabold">404</h1>
     <img alt="Project Logo" src="../assets/logo.png" />
     <h2 class="text-xl font-bold mb-4">Oops!<br />We couldn't find the page you're looking for.</h2>
-    <p class="text-xl underline">
-      Click <router-link to="/">here</router-link> to return to the home page.
-    </p>
+    <router-link to="/" class="text-xl underline">Return to the home page.</router-link>
   </div>
 </template>
 
