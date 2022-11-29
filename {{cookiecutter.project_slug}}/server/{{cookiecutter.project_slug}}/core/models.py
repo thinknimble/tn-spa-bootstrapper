@@ -3,6 +3,9 @@ import uuid  # noqa
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 from {{ cookiecutter.project_slug }}.utils import sites as site_utils
@@ -69,3 +72,9 @@ class User(AbstractUser, AbstractBaseModel):
 
     class Meta:
         ordering = ["email"]
+
+
+@receiver(post_save, sender=User)
+def create_auth_token_add_permissions(sender, instance, created, **kwargs):
+    if created:
+        Token.objects.create(user=instance)

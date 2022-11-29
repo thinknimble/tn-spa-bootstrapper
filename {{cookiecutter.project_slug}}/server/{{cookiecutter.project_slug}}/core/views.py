@@ -41,7 +41,6 @@ def index(request):
 {% endif %}
 
 class UserLoginView(generics.GenericAPIView):
-    swagger_schema = None
     serializer_class = UserLoginSerializer
     authentication_classes = ()
     permission_classes = ()
@@ -69,7 +68,6 @@ class UserViewSet(
     mixins.ListModelMixin,
     mixins.UpdateModelMixin,
 ):
-    swagger_schema = None
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
