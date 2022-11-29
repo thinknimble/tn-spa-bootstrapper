@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext } from "react";
 import {
   Heading,
   Input,
@@ -13,36 +13,36 @@ import {
   Hide,
   FormControl,
   FormErrorMessage,
-} from "@chakra-ui/react"
-import { useMutation } from "@apollo/client"
-import { LOG_IN } from "../utils/mutations"
-import { AuthContext } from "../utils/auth"
-import { useNavigate, useLocation } from "react-router-dom"
-import Logo from "src/assets/images/logo.svg"
+} from "@chakra-ui/react";
+import { useMutation } from "@apollo/client";
+import { LOG_IN } from "../utils/mutations";
+import { AuthContext } from "../utils/auth";
+import { useNavigate, useLocation } from "react-router-dom";
+import Logo from "src/assets/images/logo.svg";
 
 export default function LogIn() {
-  const params = useLocation()
-  const autoError = params.state?.autoError
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState(autoError ? true : false)
+  const params = useLocation();
+  const autoError = params.state?.autoError;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(autoError ? true : false);
 
-  const { updateToken } = useContext(AuthContext)
+  const { updateToken } = useContext(AuthContext);
 
-  let navigate = useNavigate()
+  let navigate = useNavigate();
   const [logIn] = useMutation(LOG_IN, {
     onCompleted: (data: any) => {
-      localStorage.setItem("auth-token", data.tokenAuth.token)
-      updateToken(data.tokenAuth.token)
+      localStorage.setItem("auth-token", data.tokenAuth.token);
+      updateToken(data.tokenAuth.token);
 
-      navigate("/home")
+      navigate("/home");
     },
     onError: (error: any) => {
       if (error.message === "Please enter valid credentials") {
-        setError(true)
+        setError(true);
       }
     },
-  })
+  });
 
   const handleLogin = () => {
     logIn({
@@ -50,8 +50,8 @@ export default function LogIn() {
         email,
         password,
       },
-    })
-  }
+    });
+  };
 
   return (
     <Grid
@@ -78,7 +78,7 @@ export default function LogIn() {
             <Input
               placeholder="Email"
               onChange={(e) => {
-                setEmail(e.target.value)
+                setEmail(e.target.value);
               }}
               my={5}
               value={email}
@@ -90,7 +90,7 @@ export default function LogIn() {
               placeholder="Password"
               type="password"
               onChange={(e) => {
-                setPassword(e.target.value)
+                setPassword(e.target.value);
               }}
               value={password}
               data-cy="password"
@@ -104,7 +104,9 @@ export default function LogIn() {
               <></>
             )}
           </FormControl>
-          <Button data-cy="submit" onClick={handleLogin}>Sign In</Button>
+          <Button data-cy="submit" onClick={handleLogin}>
+            Sign In
+          </Button>
         </VStack>
       </GridItem>
       <GridItem>
@@ -130,5 +132,5 @@ export default function LogIn() {
         </Text>
       </GridItem>
     </Grid>
-  )
+  );
 }
