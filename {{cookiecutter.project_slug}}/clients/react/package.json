@@ -48,7 +48,8 @@
     "test": "vitest run src",
     "test:watch": "vitest src",
     "test:single": "vitest $0",
-    "heroku-postbuild": "npm build"
+    "heroku-postbuild": "npm build",
+    "prettier": "prettier --write ./src"
   },
   "browserslist": {
     "production": [

@@ -1,12 +1,12 @@
-import React from "react";
-import { vi } from "vitest";
-import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, waitFor } from "@testing-library/react";
-import { Link, MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
-import { render } from "src/test-utils";
-import { AuthProvider } from "../auth";
+import React from 'react'
+import { vi } from 'vitest'
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, waitFor } from '@testing-library/react'
+import { Link, MemoryRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { render } from 'src/test-utils'
+import { AuthProvider } from '../auth'
 
-vi.mock("../routes"); // check ../___mocks__/routes.tsx for mocked routes module constants
+vi.mock('../routes') // check ../___mocks__/routes.tsx for mocked routes module constants
 
 function Home() {
   return (
@@ -20,19 +20,19 @@ function Home() {
       </Link>
       <Outlet />
     </div>
-  );
+  )
 }
 
 function Test() {
-  return <div data-testid="test-component">Test Component</div>;
+  return <div data-testid="test-component">Test Component</div>
 }
 
 function LogIn() {
-  return <div data-testid="test-login">Test Login Component</div>;
+  return <div data-testid="test-login">Test Login Component</div>
 }
 
 function Private() {
-  return <div data-testid="private-page">Test Private Page</div>;
+  return <div data-testid="private-page">Test Private Page</div>
 }
 
 const TEST_ROUTES = (
@@ -47,51 +47,51 @@ const TEST_ROUTES = (
       </Routes>
     </AuthProvider>
   </MemoryRouter>
-);
+)
 
-const TestProvider = <MockedProvider>{TEST_ROUTES}</MockedProvider>;
+const TestProvider = <MockedProvider>{TEST_ROUTES}</MockedProvider>
 
-const mockedUseNavigate = vi.fn();
+const mockedUseNavigate = vi.fn()
 
 // mock useNavigate
-vi.mock("react-router-dom", () => ({
-  ...(vi.importActual("react-router-dom") as any),
+vi.mock('react-router-dom', () => ({
+  ...(vi.importActual('react-router-dom') as any),
   useNavigate: () => mockedUseNavigate,
-}));
+}))
 
 beforeEach(() => {
-  vi.clearAllMocks();
-});
+  vi.clearAllMocks()
+})
 
-describe("logged out user", () => {
-  test("home route redirects to log-in", async () => {
-    render(TestProvider);
-
-    await waitFor(() => {
-      expect(mockedUseNavigate).toHaveBeenCalledTimes(1);
-      expect(mockedUseNavigate).toHaveBeenCalledWith("/log-in");
-    });
-  });
-
-  test("private route redirects to log-in", async () => {
-    const { getByTestId } = render(TestProvider);
-
-    await fireEvent.click(getByTestId("test-private-link"));
+describe('logged out user', () => {
+  test('home route redirects to log-in', async () => {
+    render(TestProvider)
 
     await waitFor(() => {
-      expect(mockedUseNavigate).toHaveBeenCalledTimes(2);
-      expect(mockedUseNavigate).toHaveBeenCalledWith("/log-in");
-    });
-  });
+      expect(mockedUseNavigate).toHaveBeenCalledTimes(1)
+      expect(mockedUseNavigate).toHaveBeenCalledWith('/log-in')
+    })
+  })
 
-  test("public route renders component", async () => {
-    const { getByTestId } = render(TestProvider);
+  test('private route redirects to log-in', async () => {
+    const { getByTestId } = render(TestProvider)
 
-    await fireEvent.click(getByTestId("test-link"));
+    await fireEvent.click(getByTestId('test-private-link'))
 
     await waitFor(() => {
-      expect(mockedUseNavigate).toHaveBeenCalledTimes(1);
-      expect(getByTestId("test-component")).toBeInTheDocument();
-    });
-  });
-});
+      expect(mockedUseNavigate).toHaveBeenCalledTimes(2)
+      expect(mockedUseNavigate).toHaveBeenCalledWith('/log-in')
+    })
+  })
+
+  test('public route renders component', async () => {
+    const { getByTestId } = render(TestProvider)
+
+    await fireEvent.click(getByTestId('test-link'))
+
+    await waitFor(() => {
+      expect(mockedUseNavigate).toHaveBeenCalledTimes(1)
+      expect(getByTestId('test-component')).toBeInTheDocument()
+    })
+  })
+})

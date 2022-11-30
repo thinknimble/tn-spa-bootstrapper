@@ -1,8 +1,8 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
-import { Home, Layout, LogIn, SignUp } from "src/pages";
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
+import { Home, Layout, LogIn, SignUp } from 'src/pages'
 
-export const PUBLIC_ROUTES = ["/home", "/log-in", "/sign-up"];
+export const PUBLIC_ROUTES = ['/home', '/log-in', '/sign-up']
 
 export const AppRoutes = () => {
   return (
@@ -14,5 +14,5 @@ export const AppRoutes = () => {
         {/* add more routes here */}
       </Route>
     </Routes>
-  );
-};
+  )
+}

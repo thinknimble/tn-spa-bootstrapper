@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 /* add GraphQL client-side mutations here */
 
@@ -9,7 +9,7 @@ export const LOG_IN = gql`
       token
     }
   }
-`;
+`
 
 export const REFRESH_TOKEN = gql`
   mutation RefreshToken($token: String!) {
@@ -19,7 +19,7 @@ export const REFRESH_TOKEN = gql`
       refreshExpiresIn
     }
   }
-`;
+`
 
 export const VERIFY_TOKEN = gql`
   mutation VerifyToken($token: String!) {
@@ -27,8 +27,7 @@ export const VERIFY_TOKEN = gql`
       payload
     }
   }
-`;
-
+`
 
 export const CREATE_USER = gql`
   mutation CreateUser($data: UserInput!) {
