@@ -6,7 +6,6 @@ const config: ThemeConfig = {
   useSystemColorMode: false,
 }
 
-// @ts-ignore
 const theme = extendTheme({
   config,
 })

@@ -29,15 +29,15 @@ export function LogIn() {
 
   const { updateToken } = useContext(AuthContext)
 
-  let navigate = useNavigate()
+  const navigate = useNavigate()
   const [logIn] = useMutation(LOG_IN, {
-    onCompleted: (data: any) => {
+    onCompleted: (data: { tokenAuth: { token: string } }) => {
       localStorage.setItem('auth-token', data.tokenAuth.token)
       updateToken(data.tokenAuth.token)
 
       navigate('/home')
     },
-    onError: (error: any) => {
+    onError: (error: { message?: string }) => {
       if (error.message === 'Please enter valid credentials') {
         setError(true)
       }
@@ -125,7 +125,7 @@ export function LogIn() {
       </GridItem>
       <GridItem rowStart={2} colStart={2} colEnd={4}>
         <Text mt={5} fontSize="14px" textAlign={'center'}>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link fontWeight="bold" textDecor={'underline'} href="/sign-up">
             Sign up here
           </Link>

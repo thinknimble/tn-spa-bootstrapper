@@ -55,7 +55,7 @@ const mockedUseNavigate = vi.fn()
 
 // mock useNavigate
 vi.mock('react-router-dom', () => ({
-  ...(vi.importActual('react-router-dom') as any),
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockedUseNavigate,
 }))
 

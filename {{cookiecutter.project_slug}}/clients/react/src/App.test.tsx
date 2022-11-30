@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
-import './utils/__tests__/mediaMock'
-import { screen } from '@testing-library/react'
-import { render } from './test-utils'
-import { App, AppRoot } from './App'
 import { MockedProvider } from '@apollo/client/testing'
+import { screen } from '@testing-library/react'
+import { App } from './App'
+import { render } from './test-utils'
+import './utils/__tests__/mediaMock'
 
 describe('App test', () => {
   test('Renders login', () => {

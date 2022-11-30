@@ -28,17 +28,17 @@ export function SignUp() {
   const [error, setError] = useState('')
   const { updateToken } = useContext(AuthContext)
 
-  let navigate = useNavigate()
+  const navigate = useNavigate()
 
   const { register, handleSubmit } = useForm<FormValues>()
 
   const [logIn] = useMutation(LOG_IN, {
-    onCompleted: (data: any) => {
+    onCompleted: (data: { tokenAuth: { token: string } }) => {
       localStorage.setItem('auth-token', data.tokenAuth.token)
       updateToken(data.tokenAuth.token)
       navigate('/home')
     },
-    onError: (error: any) => {
+    onError: () => {
       navigate('/log-in', {
         state: {
           autoError: 'There was a problem logging you in. Please try again.',
@@ -47,7 +47,13 @@ export function SignUp() {
     },
   })
   const [createUser] = useMutation(CREATE_USER, {
-    onCompleted: (data: any) => {
+    onCompleted: (data: {
+      createUser: {
+        user: {
+          email: string
+        }
+      }
+    }) => {
       logIn({
         variables: {
           email: data.createUser.user.email,
@@ -55,7 +61,7 @@ export function SignUp() {
         },
       })
     },
-    onError: (error: any) => {
+    onError: (error: { message: string }) => {
       if (error.message.includes('value too long')) {
         setError('phone')
       } else {
