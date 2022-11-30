@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { HStack, Image, Box } from "@chakra-ui/react";
 import Logo from "src/assets/images/logo.svg";
 
-export default function Layout() {
+export function Layout() {
   return (
     <Box>
       <HStack m="0 auto" maxW={"700px"} justify={"space-between"}>

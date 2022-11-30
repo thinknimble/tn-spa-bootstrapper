@@ -20,7 +20,7 @@ import { AuthContext } from "../utils/auth";
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "src/assets/images/logo.svg";
 
-export default function LogIn() {
+export function LogIn() {
   const params = useLocation();
   const autoError = params.state?.autoError;
   const [email, setEmail] = useState("");

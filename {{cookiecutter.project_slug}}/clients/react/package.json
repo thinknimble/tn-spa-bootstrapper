@@ -4,12 +4,9 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.4.17",
-    "@chakra-ui/react": "^2.4.2",
+    "@chakra-ui/react": "2.3.4",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@testing-library/jest-dom": "^5.9.0",
-    "@testing-library/react": "^10.2.1",
-    "@testing-library/user-event": "^12.0.2",
     "cypress": "^8.6.0",
     "framer-motion": "^7.6.15",
     "graphql": "^16.0.1",
@@ -21,20 +18,27 @@
     "react-router-dom": "^6.0.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@types/react-router-dom": "^5.3.2",
     "@vitejs/plugin-react": "^2.2.0",
+    "jsdom": "^20.0.3",
     "typescript": "^4.6.4",
     "vite": "^3.2.3",
-    "vite-tsconfig-paths": "^3.6.0"
+    "vite-tsconfig-paths": "^3.6.0",
+    "vitest": "^0.25.3"
   },
   "proxy": "http://localhost:8000",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
     "cypress": "source ../.env && npx cypress open",
-    "test": "react-scripts test",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:single": "vitest $0",
     "heroku-postbuild": "npm build"
   },
   "browserslist": {

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext } from "react";
 import {
   Heading,
   Input,
@@ -8,45 +8,44 @@ import {
   Box,
   HStack,
   Link,
-} from "@chakra-ui/react"
-import { useMutation } from "@apollo/client"
-import { CREATE_USER, LOG_IN } from "../utils/mutations"
-import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
-import { AuthContext } from "../utils/auth"
+} from "@chakra-ui/react";
+import { useMutation } from "@apollo/client";
+import { CREATE_USER, LOG_IN } from "../utils/mutations";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../utils/auth";
 
 interface FormValues {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
 }
 
-export default function SignUp() {
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [passwordMatch, setPasswordMatch] = useState(true)
-  const [error, setError] = useState("")
-  const { updateToken } = useContext(AuthContext)
+export function SignUp() {
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [error, setError] = useState("");
+  const { updateToken } = useContext(AuthContext);
 
-  let navigate = useNavigate()
+  let navigate = useNavigate();
 
-  const { register, handleSubmit } = useForm<FormValues>()
+  const { register, handleSubmit } = useForm<FormValues>();
 
   const [logIn] = useMutation(LOG_IN, {
     onCompleted: (data: any) => {
-      localStorage.setItem("auth-token", data.tokenAuth.token)
-      updateToken(data.tokenAuth.token)
-      navigate("/home")
+      localStorage.setItem("auth-token", data.tokenAuth.token);
+      updateToken(data.tokenAuth.token);
+      navigate("/home");
     },
     onError: (error: any) => {
-        navigate("/log-in", {
-            state: {
-              autoError:
-                "There was a problem logging you in. Please try again.",
-            },
-          })    
+      navigate("/log-in", {
+        state: {
+          autoError: "There was a problem logging you in. Please try again.",
         },
-  })
+      });
+    },
+  });
   const [createUser] = useMutation(CREATE_USER, {
     onCompleted: (data: any) => {
       logIn({
@@ -54,16 +53,16 @@ export default function SignUp() {
           email: data.createUser.user.email,
           password: confirmPassword,
         },
-      })
+      });
     },
     onError: (error: any) => {
-   if (error.message.includes("value too long")) {
-        setError("phone")
+      if (error.message.includes("value too long")) {
+        setError("phone");
       } else {
-        console.error(error)
+        console.error(error);
       }
     },
-  })
+  });
 
   const handleSignup = handleSubmit((data: FormValues) => {
     if (confirmPassword === data.password) {
@@ -71,11 +70,11 @@ export default function SignUp() {
         variables: {
           data,
         },
-      })
+      });
     } else {
-      setPasswordMatch(false)
+      setPasswordMatch(false);
     }
-  })
+  });
 
   return (
     <Box maxWidth={"700px"} mt={10} mx={{ base: 5, md: 80 }}>
@@ -102,7 +101,6 @@ export default function SignUp() {
             placeholder="Email"
             {...register("email", { required: true })}
           />
-         
         </FormControl>
 
         <FormControl isInvalid={!passwordMatch}>
@@ -121,7 +119,7 @@ export default function SignUp() {
             placeholder="Confirm Password"
             type="password"
             onChange={(e) => {
-              setConfirmPassword(e.target.value)
+              setConfirmPassword(e.target.value);
             }}
           />
           <FormErrorMessage>Passwords do not match</FormErrorMessage>
@@ -149,5 +147,5 @@ export default function SignUp() {
         </Link>
       </Text>
     </Box>
-  )
+  );
 }
