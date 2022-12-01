@@ -2,7 +2,7 @@ import { IFormField } from '@thinknimble/tn-forms'
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 
 /**
- * Given an unknown array type. Narrow it down to a tuple of [[IFormField<Ti>,Ti],[IFormField<Ti+1>,Ti+1],...]. If the type does not match this pattern then it returns never
+ * Given an unknown array type. Narrow it down to a tuple of `[[IFormField<Ti>,Ti],[IFormField<Ti+1>,Ti+1],...]` If the type does not match this pattern then it returns never
  */
 export type ConvertToFieldTuple<
   T extends readonly unknown[],
@@ -23,7 +23,8 @@ export type ConvertToFieldTuple<
 type FormState<T> = {
   form: T
   /**
-   * Changes the current value of the field and returns whether the changed field is valid after the changne
+   * Changes the current value of the field, validates it and refreshes the form reference
+   * @returns whether the changed field is valid after the change
    */
   createFormFieldChangeHandler: <T>(field: IFormField<T>) => (value: T) => boolean
   /**
