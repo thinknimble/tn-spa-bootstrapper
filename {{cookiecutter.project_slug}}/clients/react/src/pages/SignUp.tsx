@@ -1,36 +1,26 @@
-import React, { useState, useContext } from 'react'
+import { useMutation } from '@apollo/client'
 import {
-  Heading,
-  Input,
-  Text,
+  Box,
   FormControl,
   FormErrorMessage,
-  Box,
+  Heading,
   HStack,
+  Input,
   Link,
+  Text,
 } from '@chakra-ui/react'
-import { useMutation } from '@apollo/client'
-import { CREATE_USER, LOG_IN } from '../utils/mutations'
-import { useForm } from 'react-hook-form'
+import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { SignupForm, TSignupForm } from 'src/forms'
+import { FormProvider, useTnForm } from 'src/store'
 import { AuthContext } from '../utils/auth'
+import { CREATE_USER, LOG_IN } from '../utils/mutations'
 
-interface FormValues {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
-}
-
-export function SignUp() {
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [passwordMatch, setPasswordMatch] = useState(true)
+export function SignUpInner() {
   const [error, setError] = useState('')
   const { updateToken } = useContext(AuthContext)
-
+  const { form, createFormFieldChangeHandler, validate } = useTnForm<TSignupForm>()
   const navigate = useNavigate()
-
-  const { register, handleSubmit } = useForm<FormValues>()
 
   const [logIn] = useMutation(LOG_IN, {
     onCompleted: (data: { tokenAuth: { token: string } }) => {
@@ -57,12 +47,13 @@ export function SignUp() {
       logIn({
         variables: {
           email: data.createUser.user.email,
-          password: confirmPassword,
+          password: form.confirmPassword.value,
         },
       })
     },
     onError: (error: { message: string }) => {
       if (error.message.includes('value too long')) {
+        //TODO: what is this?? there's no phone in this form
         setError('phone')
       } else {
         console.error(error)
@@ -70,17 +61,18 @@ export function SignUp() {
     },
   })
 
-  const handleSignup = handleSubmit((data: FormValues) => {
-    if (confirmPassword === data.password) {
-      createUser({
-        variables: {
-          data,
+  const handleSignup = () => {
+    createUser({
+      variables: {
+        data: {
+          email: form.email.value,
+          password: form.password.value,
+          firstName: form.firstName.value,
+          lastName: form.lastName.value,
         },
-      })
-    } else {
-      setPasswordMatch(false)
-    }
-  })
+      },
+    })
+  }
 
   return (
     <Box maxWidth={'700px'} mt={10} mx={{ base: 5, md: 80 }}>
@@ -91,12 +83,17 @@ export function SignUp() {
           <Input
             isRequired={true}
             placeholder="First Name"
-            {...register('firstName', { required: true })}
+            value={form.firstName.value}
+            onChange={(e) => {
+              createFormFieldChangeHandler(form.firstName)(e.target.value)
+            }}
           />
           <Input
             isRequired={true}
             placeholder="Last Name"
-            {...register('lastName', { required: true })}
+            onChange={(e) => {
+              createFormFieldChangeHandler(form.lastName)(e.target.value)
+            }}
           />
         </HStack>
         <FormControl isInvalid={error === 'email'}>
@@ -105,19 +102,24 @@ export function SignUp() {
             type="email"
             isRequired={true}
             placeholder="Email"
-            {...register('email', { required: true })}
+            value={form.email.value}
+            onChange={(e) => {
+              createFormFieldChangeHandler(form.email)(e.target.value)
+            }}
           />
         </FormControl>
 
-        <FormControl isInvalid={!passwordMatch}>
+        <FormControl isInvalid={Boolean(form.confirmPassword.errors?.length)}>
           <Input
             isRequired={true}
             placeholder="Password"
             type="password"
-            {...register('password', {
-              required: true,
-            })}
             mb={5}
+            value={form.password.value}
+            onChange={(e) => {
+              createFormFieldChangeHandler(form.password)(e.target.value)
+              validate()
+            }}
           />
           <Input
             isRequired={true}
@@ -125,7 +127,8 @@ export function SignUp() {
             placeholder="Confirm Password"
             type="password"
             onChange={(e) => {
-              setConfirmPassword(e.target.value)
+              createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
+              validate()
             }}
           />
           <FormErrorMessage>Passwords do not match</FormErrorMessage>
@@ -153,5 +156,13 @@ export function SignUp() {
         </Link>
       </Text>
     </Box>
+  )
+}
+
+export const SignUp = () => {
+  return (
+    <FormProvider<SignupForm> formClass={SignupForm}>
+      <SignUpInner />
+    </FormProvider>
   )
 }

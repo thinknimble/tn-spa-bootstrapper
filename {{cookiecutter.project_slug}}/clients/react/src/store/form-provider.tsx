@@ -14,8 +14,8 @@ export type ConvertToFieldTuple<
           Rest,
           readonly [...TResult, readonly [IFormField<TValue>, TValueCompare]]
         >
-      : 'inner'
-    : 'outer'
+      : never
+    : never
   : TResult['length'] extends 0
   ? never
   : TResult
@@ -40,6 +40,10 @@ type FormState<T> = {
     fieldValueTuple: ConvertToFieldTuple<TFieldTuples>,
   ) => void
   overrideForm: (form: T) => void
+  /**
+   * Validates the whole form and refreshes the form reference. Especially useful when validation across multiple fields is required (such as MustMatchValidator)
+   */
+  validate: () => void
 }
 
 const defaultValue = {
@@ -60,7 +64,7 @@ export const useTnForm = <TForm,>() => {
 }
 
 //? This is requiring both a type parameter and a formClass prop, which both technically are the same type (the form class in question). However some errors appear when I try to match those two
-export const FormProvider = <TForm extends { replicate: () => TForm }>({
+export const FormProvider = <TForm extends { replicate: () => TForm; validate: () => void }>({
   children,
   formClass,
 }: {
@@ -84,28 +88,36 @@ export const FormProvider = <TForm extends { replicate: () => TForm }>({
     setForm(newForm)
   }, [])
   const setFields = useCallback(
-    // we are not enforcing the parameter type here since we already do for whoever calls setFields so this is safe to have its parameter loosely typed and thus prevent fighting against TS within the forEach loop.
-    (fieldValueTuples: [field: IFormField, value: unknown][]) => {
-      fieldValueTuples.forEach(([field, value]) => {
-        field.value = value
-        field.validate()
-        field.isTouched = true
-      })
+    <TFieldTuples extends readonly unknown[]>(
+      fieldValueTuples: ConvertToFieldTuple<TFieldTuples>,
+    ) => {
+      if (Array.isArray(fieldValueTuples))
+        (fieldValueTuples as readonly [field: IFormField, value: unknown][]).forEach(
+          ([field, value]) => {
+            field.value = value
+            field.validate()
+            field.isTouched = true
+          },
+        )
       const newForm = form.replicate()
-      form.replicate()
       setForm(newForm)
     },
     [form],
   )
+  const validate = useCallback(() => {
+    form.validate()
+    setForm(form.replicate())
+  }, [form])
 
-  const value = useMemo(() => {
+  const value: FormState<TForm> = useMemo(() => {
     return {
       form,
       createFormFieldChangeHandler,
       overrideForm,
       setFields,
+      validate,
     }
-  }, [createFormFieldChangeHandler, form, overrideForm, setFields])
+  }, [createFormFieldChangeHandler, form, overrideForm, setFields, validate])
 
   return <FormContext.Provider value={value}>{children}</FormContext.Provider>
 }

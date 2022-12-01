@@ -19,15 +19,16 @@ import { LOG_IN } from '../utils/mutations'
 import { AuthContext } from '../utils/auth'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Logo from 'src/assets/images/logo.svg'
+import { FormProvider, useTnForm } from 'src/store'
+import { LoginForm, TLoginForm } from 'src/forms'
 
-export function LogIn() {
+export function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState(autoError ? true : false)
 
   const { updateToken } = useContext(AuthContext)
+  const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
 
   const navigate = useNavigate()
   const [logIn] = useMutation(LOG_IN, {
@@ -47,8 +48,8 @@ export function LogIn() {
   const handleLogin = () => {
     logIn({
       variables: {
-        email,
-        password,
+        email: form.email.value,
+        password: form.password.value,
       },
     })
   }
@@ -78,10 +79,10 @@ export function LogIn() {
             <Input
               placeholder="Email"
               onChange={(e) => {
-                setEmail(e.target.value)
+                createFormFieldChangeHandler(form.email)(e.target.value)
               }}
               my={5}
-              value={email}
+              value={form.email.value}
               data-cy="email"
               id="id"
             />
@@ -90,9 +91,9 @@ export function LogIn() {
               placeholder="Password"
               type="password"
               onChange={(e) => {
-                setPassword(e.target.value)
+                createFormFieldChangeHandler(form.password)(e.target.value)
               }}
-              value={password}
+              value={form.password.value}
               data-cy="password"
               id="password"
             />
@@ -132,5 +133,13 @@ export function LogIn() {
         </Text>
       </GridItem>
     </Grid>
+  )
+}
+
+export const LogIn = () => {
+  return (
+    <FormProvider<LoginForm> formClass={LoginForm}>
+      <LogInInner />
+    </FormProvider>
   )
 }
