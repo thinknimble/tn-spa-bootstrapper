@@ -6,9 +6,7 @@ Tn-spa-bootstrapper react client
 
 ### Pre-requisites
 
-For working in this client, you will probably need to modify the parent `package.json` at.
-
-For the project to run properly remove the templating syntax:
+For working in this client, you will probably need to modify the parent `package.json`, remove the templating syntax:
 
 ```diff
 {
