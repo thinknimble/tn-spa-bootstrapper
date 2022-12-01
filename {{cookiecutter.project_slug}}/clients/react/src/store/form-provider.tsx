@@ -51,10 +51,10 @@ const defaultValue = {
   setFields: () => undefined,
 }
 
-const StepFormContext = createContext<unknown>(defaultValue)
+const FormContext = createContext<unknown>(defaultValue)
 
 export const useTnForm = <TForm,>() => {
-  const unknownCtx: unknown = useContext(StepFormContext)
+  const unknownCtx: unknown = useContext(FormContext)
   if (!unknownCtx) throw new Error('Hook must be used within a FormProvider')
   return unknownCtx as FormState<TForm>
 }
@@ -107,5 +107,5 @@ export const FormProvider = <TForm extends { replicate: () => TForm }>({
     }
   }, [createFormFieldChangeHandler, form, overrideForm, setFields])
 
-  return <StepFormContext.Provider value={value}>{children}</StepFormContext.Provider>
+  return <FormContext.Provider value={value}>{children}</FormContext.Provider>
 }
