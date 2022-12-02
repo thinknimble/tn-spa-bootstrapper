@@ -6,3 +6,6 @@ DATABASES = {
         "NAME": os.path.join(BASE_DIR, "test_db.sqlite3"),  # noqa
     }
 }
+
+MEDIA_URL = "/media/"
+DEFAULT_FILE_STORAGE = STATICFILES_STORAGE
