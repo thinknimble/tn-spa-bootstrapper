@@ -306,9 +306,9 @@ if config("USE_AWS_STORAGE", cast=bool, default=False) and not IS_REVIEW_APP:
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
     DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    #STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
+    # STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
-    #STATIC_URL = f"https://{aws_s3_domain}/static/"
+    # STATIC_URL = f"https://{aws_s3_domain}/static/"
     MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
 #
