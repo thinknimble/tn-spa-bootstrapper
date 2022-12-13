@@ -10,6 +10,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 {% if cookiecutter.use_graphql == 'y' %}
+
 # Serve React frontend
 @ensure_csrf_cookie
 @never_cache
