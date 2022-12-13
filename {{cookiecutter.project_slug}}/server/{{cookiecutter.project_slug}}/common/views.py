@@ -2,7 +2,6 @@
 from django.shortcuts import render
 from django.template.exceptions import TemplateDoesNotExist
 {% endif -%}
-from django.template.loader import render_to_string
 {% if cookiecutter.use_graphql == 'y' -%}
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
