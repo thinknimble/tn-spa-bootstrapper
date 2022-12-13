@@ -1,4 +1,4 @@
-{-% if cookiecutter.client_app == "Vue3" -%}
+{%- if cookiecutter.client_app == "Vue3" -%}
 from django.shortcuts import render
 from django.template.exceptions import TemplateDoesNotExist
 {% endif -%}
