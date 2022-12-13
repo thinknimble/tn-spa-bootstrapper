@@ -23,4 +23,4 @@ def index(request):
         return render(request, "index.html")
     except TemplateDoesNotExist:
         return render(request, "core/index-placeholder.html")
-{% endif %}
+{% endif -%}
