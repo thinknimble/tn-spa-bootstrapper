@@ -1,7 +1,7 @@
 {%- if cookiecutter.client_app == "Vue3" -%}
 from django.shortcuts import render
 from django.template.exceptions import TemplateDoesNotExist
-{% endif -%}
+{% endif %}
 {% if cookiecutter.use_graphql == 'y' -%}
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
