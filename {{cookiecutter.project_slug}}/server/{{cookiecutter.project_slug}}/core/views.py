@@ -15,6 +15,7 @@ from .models import User
 from .permissions import CreateOnlyPermissions
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
+
 class UserLoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
     authentication_classes = ()
