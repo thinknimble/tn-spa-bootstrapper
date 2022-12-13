@@ -14,10 +14,10 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 @never_cache
 def index(request):
     return TemplateResponse(request, ["index.html", "core/index-placeholder.html"])
-{% elif cookiecutter.client_app.lower() == 'None' %}
+{% elif cookiecutter.client_app.lower() == 'None' -%}
 def index(request):
     return redirect(to="/docs/swagger/")
-{% else %}
+{% else -%}
 def index(request):
     try:
         return render(request, "index.html")

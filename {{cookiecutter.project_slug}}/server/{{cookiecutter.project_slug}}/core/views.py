@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.template.loader import render_to_string
-
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
