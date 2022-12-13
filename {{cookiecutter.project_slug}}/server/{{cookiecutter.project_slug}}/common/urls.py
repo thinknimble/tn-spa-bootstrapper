@@ -9,7 +9,6 @@ from rest_framework_nested import routers
 from {{ cookiecutter.project_slug }}.common import views as common_views
 from {{ cookiecutter.project_slug }}.core import urls as core_urls
 
-
 router = routers.SimpleRouter()
 if settings.DEBUG:
     router = routers.DefaultRouter()
