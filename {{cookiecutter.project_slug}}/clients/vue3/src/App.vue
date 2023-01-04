@@ -1,6 +1,6 @@
 <template>
   <div class="font-avenir antialiased text-center">
-    <div class="flex justify-center p-7">
+    <nav class="flex justify-center p-7">
       <router-link to="/" class="router">Home</router-link>
       <template v-if="isLoggedIn">
         |
@@ -14,8 +14,7 @@
         |
         <router-link to="/signup" class="router">Signup</router-link>
       </template>
-    </div>
-    <router-view />
+    </nav>
   </div>
 </template>
 
