@@ -15,6 +15,9 @@
         <router-link to="/signup" class="router">Signup</router-link>
       </template>
     </nav>
+    <main>
+      <router-view />
+    </main>
   </div>
 </template>
 
