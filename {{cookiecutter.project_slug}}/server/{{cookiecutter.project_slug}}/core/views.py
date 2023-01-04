@@ -120,5 +120,6 @@ def reset_password(request, *args, **kwargs):
     if not is_valid:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
     user.set_password(request.data.get("password"))
+    user.save()
     u = UserLoginSerializer.login(user, request)
     return Response(status=status.HTTP_200_OK, data=u)
