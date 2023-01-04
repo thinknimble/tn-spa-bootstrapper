@@ -1,8 +1,7 @@
+import secrets
 from os import remove, rename
 from os.path import exists, join
-import secrets
 from shutil import copy2, move, rmtree
-
 
 END = "\x1b[0m"
 QUESTION = "\x1b[0;36m [QUESTION]: "
@@ -91,6 +90,7 @@ def remove_graphql_files():
         join("server/{{ cookiecutter.project_slug }}/core", "schema.py"),
         join("server/{{ cookiecutter.project_slug }}/core", "types.py"),
         join("server/{{ cookiecutter.project_slug }}/core", "mutations.py"),
+        join("server/{{ cookiecutter.project_slug }}/core", "jwt_auth.py"),
     ]
     for file_name in file_names:
         if exists(file_name):
