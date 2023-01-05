@@ -199,7 +199,11 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "{{ cookiecutter.project_slug }}.core.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        {% if cookiecutter.use_graphql == 'y' -%}
+        "{{ cookiecutter.project_slug }}.core.jwt_auth.JSONWebTokenAuthentication",
+        {% else -%}
         "rest_framework.authentication.TokenAuthentication",
+        {% endif -%}
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": [
