@@ -21,6 +21,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import Logo from 'src/assets/images/logo.svg'
 import { FormProvider, useTnForm } from 'src/store'
 import { LoginForm, TLoginForm } from 'src/forms'
+import { LoginFormInputs } from 'src/forms/login'
 
 export function LogInInner() {
   const params = useLocation()
@@ -82,7 +83,7 @@ export function LogInInner() {
                 createFormFieldChangeHandler(form.email)(e.target.value)
               }}
               my={5}
-              value={form.email.value}
+              value={form.email.value ?? ''}
               data-cy="email"
               id="id"
             />
@@ -93,7 +94,7 @@ export function LogInInner() {
               onChange={(e) => {
                 createFormFieldChangeHandler(form.password)(e.target.value)
               }}
-              value={form.password.value}
+              value={form.password.value ?? ''}
               data-cy="password"
               id="password"
             />
@@ -138,7 +139,7 @@ export function LogInInner() {
 
 export const LogIn = () => {
   return (
-    <FormProvider<LoginForm> formClass={LoginForm}>
+    <FormProvider<LoginFormInputs> formClass={LoginForm}>
       <LogInInner />
     </FormProvider>
   )

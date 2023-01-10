@@ -1,4 +1,5 @@
-import { IFormField } from '@thinknimble/tn-forms'
+import Form, { IFormField, IValidator, Validator } from '@thinknimble/tn-forms'
+import { IFormLevelValidator } from '@thinknimble/tn-forms/lib/cjs/types/interfaces'
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 
 /**
@@ -64,28 +65,55 @@ export const useTnForm = <TForm,>() => {
   return unknownCtx as FormState<TForm>
 }
 
-//? This is requiring both a type parameter and a formClass prop, which both technically are the same type (the form class in question). However some errors appear when I try to match those two
-export const FormProvider = <TForm extends { replicate: () => TForm; validate: () => void }>({
+type BaseFormInputs = Record<string, IFormField>
+type FormLevelValidators = Record<string, IFormLevelValidator>
+
+const addFormLevelValidatorsMutate = <
+  TInputs extends BaseFormInputs,
+  TForm extends Form<TInputs> = Form<TInputs>,
+>(
+  form: TForm,
+  validators: FormLevelValidators,
+) => {
+  Object.entries(validators).forEach(([fieldName, validator]) => {
+    form.addFormLevelValidator(fieldName, validator)
+  })
+}
+
+export const FormProvider = <TFormInputs extends BaseFormInputs>({
   children,
   formClass,
+  formLevelValidators = {},
 }: {
   children: ReactNode
-  formClass: { create: () => unknown }
+  formClass: { create(): Form<TFormInputs> }
+  /**
+   * Reference which validators you want to persist through form replication
+   */
+  formLevelValidators?: FormLevelValidators
 }) => {
-  const [form, setForm] = useState(formClass.create() as TForm)
+  const [form, setForm] = useState(formClass.create())
+
+  const customReplicate = useCallback(() => {
+    const newForm = form.replicate()
+    addFormLevelValidatorsMutate<TFormInputs>(newForm, formLevelValidators)
+    return newForm
+  }, [form, formLevelValidators])
+
   const createFormFieldChangeHandler = useCallback(
     <T,>(field: IFormField<T>) =>
       (value: T) => {
         field.value = value
         field.validate()
         field.isTouched = true
-        const newForm = form.replicate()
+        const newForm = customReplicate()
         setForm(newForm)
         return field.isValid
       },
-    [form],
+    [form, customReplicate],
   )
-  const overrideForm = useCallback((newForm: TForm) => {
+
+  const overrideForm = useCallback((newForm: Form<TFormInputs>) => {
     setForm(newForm)
   }, [])
   const setFields = useCallback(
@@ -100,17 +128,19 @@ export const FormProvider = <TForm extends { replicate: () => TForm; validate: (
             field.isTouched = true
           },
         )
-      const newForm = form.replicate()
+      const newForm = customReplicate()
       setForm(newForm)
     },
     [form],
   )
+
   const validate = useCallback(() => {
     form.validate()
-    setForm(form.replicate())
+    const newForm = customReplicate()
+    setForm(newForm)
   }, [form])
 
-  const value: FormState<TForm> = useMemo(() => {
+  const value: FormState<Form<TFormInputs>> = useMemo(() => {
     return {
       form,
       createFormFieldChangeHandler,

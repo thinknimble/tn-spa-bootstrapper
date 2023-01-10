@@ -1,6 +1,6 @@
 import Form, { FormField, IFormField } from '@thinknimble/tn-forms'
 
-type LoginFormInputs = {
+export type LoginFormInputs = {
   email: IFormField<string>
   password: IFormField<string>
 }

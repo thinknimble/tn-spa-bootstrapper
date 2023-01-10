@@ -12,6 +12,7 @@ import {
 import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SignupForm, TSignupForm } from 'src/forms'
+import { SignupInputs } from 'src/forms/signup'
 import { FormProvider, useTnForm } from 'src/store'
 import { AuthContext } from '../utils/auth'
 import { CREATE_USER, LOG_IN } from '../utils/mutations'
@@ -83,7 +84,7 @@ export function SignUpInner() {
           <Input
             isRequired={true}
             placeholder="First Name"
-            value={form.firstName.value}
+            value={form.firstName.value ?? ''}
             onChange={(e) => {
               createFormFieldChangeHandler(form.firstName)(e.target.value)
             }}
@@ -102,7 +103,7 @@ export function SignUpInner() {
             type="email"
             isRequired={true}
             placeholder="Email"
-            value={form.email.value}
+            value={form.email.value ?? ''}
             onChange={(e) => {
               createFormFieldChangeHandler(form.email)(e.target.value)
             }}
@@ -115,7 +116,7 @@ export function SignUpInner() {
             placeholder="Password"
             type="password"
             mb={5}
-            value={form.password.value}
+            value={form.password.value ?? ''}
             onChange={(e) => {
               createFormFieldChangeHandler(form.password)(e.target.value)
               validate()
@@ -161,7 +162,7 @@ export function SignUpInner() {
 
 export const SignUp = () => {
   return (
-    <FormProvider<SignupForm> formClass={SignupForm}>
+    <FormProvider<SignupInputs> formClass={SignupForm}>
       <SignUpInner />
     </FormProvider>
   )
