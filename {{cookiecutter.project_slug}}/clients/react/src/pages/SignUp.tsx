@@ -9,11 +9,11 @@ import {
   Link,
   Text,
 } from '@chakra-ui/react'
+import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SignupForm, TSignupForm } from 'src/forms'
 import { SignupInputs } from 'src/forms/signup'
-import { FormProvider, useTnForm } from 'src/store'
 import { AuthContext } from '../utils/auth'
 import { CREATE_USER, LOG_IN } from '../utils/mutations'
 

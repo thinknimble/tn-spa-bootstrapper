@@ -8,6 +8,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@thinknimble/tn-forms": "^3.0.0",
+    "@thinknimble/tn-forms-react": "^1.0.0",
     "cypress": "^8.6.0",
     "framer-motion": "^7.6.15",
     "graphql": "^16.0.1",

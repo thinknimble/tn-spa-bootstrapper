@@ -19,9 +19,9 @@ import { LOG_IN } from '../utils/mutations'
 import { AuthContext } from '../utils/auth'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Logo from 'src/assets/images/logo.svg'
-import { FormProvider, useTnForm } from 'src/store'
 import { LoginForm, TLoginForm } from 'src/forms'
 import { LoginFormInputs } from 'src/forms/login'
+import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 
 export function LogInInner() {
   const params = useLocation()
