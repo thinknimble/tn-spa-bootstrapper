@@ -35,7 +35,7 @@ type AuthState = {
 
 export const AuthContext = React.createContext<AuthState>({
   token: null,
-  updateToken: (token) => {}, // set default signature to expect function
+  updateToken: (token) => undefined, // set default signature to expect function
 })
 
 export function logout() {
