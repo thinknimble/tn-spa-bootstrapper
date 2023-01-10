@@ -110,7 +110,7 @@ export const FormProvider = <TFormInputs extends BaseFormInputs>({
         setForm(newForm)
         return field.isValid
       },
-    [form, customReplicate],
+    [customReplicate],
   )
 
   const overrideForm = useCallback((newForm: Form<TFormInputs>) => {
@@ -131,14 +131,14 @@ export const FormProvider = <TFormInputs extends BaseFormInputs>({
       const newForm = customReplicate()
       setForm(newForm)
     },
-    [form],
+    [customReplicate],
   )
 
   const validate = useCallback(() => {
     form.validate()
     const newForm = customReplicate()
     setForm(newForm)
-  }, [form])
+  }, [customReplicate, form])
 
   const value: FormState<Form<TFormInputs>> = useMemo(() => {
     return {
