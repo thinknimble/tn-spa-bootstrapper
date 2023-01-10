@@ -13,6 +13,7 @@ ENVIRONMENT = config("ENVIRONMENT", default="development")
 IN_DEV = ENVIRONMENT == "development"
 IN_STAGING = ENVIRONMENT == "staging"
 IN_PROD = ENVIRONMENT == "production"
+IS_REVIEW_APP = config("HEROKU_PR_NUMBER", default=0)  # 0 here will result in false PR numbers start 1+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
@@ -198,7 +199,11 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "{{ cookiecutter.project_slug }}.core.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
+        {% if cookiecutter.use_graphql == 'y' -%}
+        "{{ cookiecutter.project_slug }}.core.jwt_auth.JSONWebTokenAuthentication",
+        {% else -%}
         "rest_framework.authentication.TokenAuthentication",
+        {% endif -%}
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": [
@@ -293,7 +298,7 @@ else:
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
-if config("USE_AWS_STORAGE", cast=bool, default=False):
+if config("USE_AWS_STORAGE", cast=bool, default=False) and not IS_REVIEW_APP:
     AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
@@ -305,9 +310,9 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
     DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
+    # STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
-    STATIC_URL = f"https://{aws_s3_domain}/static/"
+    # STATIC_URL = f"https://{aws_s3_domain}/static/"
     MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
 #
