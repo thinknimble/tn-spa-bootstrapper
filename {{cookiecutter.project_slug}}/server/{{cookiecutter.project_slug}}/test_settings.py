@@ -1,8 +1,18 @@
+from decouple import config
+
 from {{ cookiecutter.project_slug }}.settings import *  # noqa
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "test_db.sqlite3"),  # noqa
+MEDIA_URL = "/media/"
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
+if config("CI", False):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": config("TEST_DB_NAME"),
+            "USER": config("TEST_DB_USER"),
+            "PASSWORD": config("TEST_DB_PASS", default=""),
+            "HOST": config("DB_HOST"),
+            "CONN_MAX_AGE": 600,
+        },
     }
-}
