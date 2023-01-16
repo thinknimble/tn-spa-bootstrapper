@@ -1,4 +1,3 @@
-import factory
 import pytest
 from django.test import Client
 from pytest_factoryboy import register
