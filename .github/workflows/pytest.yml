@@ -1,4 +1,4 @@
-name: Unit Tests 
+name: Unit Tests
 on: [push]
 jobs:
   Pytest_CookieCutter:
@@ -15,6 +15,17 @@ jobs:
         run: pipenv run pytest
   Pytest_Generated_Project:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: my_project_test_db
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     strategy:
       matrix:
         fe_type: [react, vue]
