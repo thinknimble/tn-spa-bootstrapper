@@ -19,9 +19,9 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: my_project_test_db
+          POSTGRES_USER: testuser
           POSTGRES_PASSWORD: testpass
-          POSTGRES_DB: testdb
+          POSTGRES_DB: my_project_test_db
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
