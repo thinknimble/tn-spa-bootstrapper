@@ -13,6 +13,8 @@
     "heroku-postbuild": "vue-cli-service build"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.7",
+    "@heroicons/vue": "^2.0.14",
     "@thinknimble/tn-forms": "^2.0.9",
     "@thinknimble/tn-models": "1.2.1",
     "@thinknimble/tn-utils": "1.6.0",
