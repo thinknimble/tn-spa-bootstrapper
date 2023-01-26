@@ -17,5 +17,5 @@
 
 /* Containers */
 .form-container {
-  @apply container w-full sm:max-w-prose content-center mx-auto py-5 bg-gray-100 rounded-lg;
+  @apply container w-full sm:max-w-prose content-center mx-auto py-5 bg-slate-200 rounded-lg;
 }
