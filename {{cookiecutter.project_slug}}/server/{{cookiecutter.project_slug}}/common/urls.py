@@ -18,11 +18,11 @@ urlpatterns = [*core_urls.urlpatterns]
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="njc API",
+        title="{{cookiecutter.project_slug}} API",
         default_version="1.0",
-        description="njc Docs",
+        description="{{cookiecutter.project_slug}} Docs",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="support@njc.com"),
+        contact=openapi.Contact(email="support@thinknimble.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=False,
