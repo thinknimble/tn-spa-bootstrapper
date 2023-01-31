@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { screen } from '@testing-library/react'
-import { App } from './app.rest'
+import { App } from './app'
 import { render } from './test-utils'
 import './utils/__tests__/mediaMock'
 

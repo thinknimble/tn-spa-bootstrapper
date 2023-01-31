@@ -1,27 +1,27 @@
-import React, { useState, useContext } from 'react'
 import {
-  Heading,
-  Input,
-  Text,
-  Grid,
-  GridItem,
   Button,
-  VStack,
-  Link,
-  Image,
-  Show,
-  Hide,
   FormControl,
   FormErrorMessage,
+  Grid,
+  GridItem,
+  Heading,
+  Hide,
+  Image,
+  Input,
+  Link,
+  Show,
+  Text,
+  VStack,
 } from '@chakra-ui/react'
-import { useMutation } from '@apollo/client'
-import { LOG_IN } from '../utils/mutations'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
+import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
+import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Logo from 'src/assets/images/logo.svg'
 import { LoginForm, TLoginForm } from 'src/forms'
 import { LoginFormInputs } from 'src/forms/login'
-import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { useAuth } from 'src/utils/auth.gql'
+import { postLogin } from 'src/services/auth'
+import { useAuth } from 'src/utils/auth'
 
 export function LogInInner() {
   const params = useLocation()
@@ -32,8 +32,8 @@ export function LogInInner() {
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
 
   const navigate = useNavigate()
-  const [logIn] = useMutation(LOG_IN, {
-    onCompleted: (data: { tokenAuth: { token: string } }) => {
+  const { mutate: logIn } = useMutation(postLogin, {
+    onSuccess: (data: { tokenAuth: { token: string } }) => {
       localStorage.setItem('auth-token', data.tokenAuth.token)
       updateToken(data.tokenAuth.token)
 
@@ -48,10 +48,8 @@ export function LogInInner() {
 
   const handleLogin = () => {
     logIn({
-      variables: {
-        email: form.email.value,
-        password: form.password.value,
-      },
+      email: form.email.value ?? '',
+      password: form.password.value ?? '',
     })
   }
 

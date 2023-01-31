@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/client'
 import {
   Box,
   FormControl,
@@ -9,13 +8,14 @@ import {
   Link,
   Text,
 } from '@chakra-ui/react'
+import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SignupForm, TSignupForm } from 'src/forms'
 import { SignupInputs } from 'src/forms/signup'
-import { useAuth } from '../utils/auth.gql'
-import { CREATE_USER, LOG_IN } from '../utils/mutations'
+import { postCreateUser, postLogin } from 'src/services/auth'
+import { useAuth } from '../utils/auth'
 
 export function SignUpInner() {
   const [error, setError] = useState('')
@@ -23,8 +23,8 @@ export function SignUpInner() {
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TSignupForm>()
   const navigate = useNavigate()
 
-  const [logIn] = useMutation(LOG_IN, {
-    onCompleted: (data: { tokenAuth: { token: string } }) => {
+  const { mutate: logIn } = useMutation(postLogin, {
+    onSuccess: (data: { tokenAuth: { token: string } }) => {
       localStorage.setItem('auth-token', data.tokenAuth.token)
       updateToken(data.tokenAuth.token)
       navigate('/home')
@@ -37,41 +37,25 @@ export function SignUpInner() {
       })
     },
   })
-  const [createUser] = useMutation(CREATE_USER, {
-    onCompleted: (data: {
-      createUser: {
-        user: {
-          email: string
-        }
-      }
-    }) => {
+
+  const { mutate: createUser } = useMutation(postCreateUser, {
+    onSuccess: (data) => {
       logIn({
-        variables: {
-          email: data.createUser.user.email,
-          password: form.confirmPassword.value,
-        },
+        email: form.email.value ?? '',
+        password: form.confirmPassword.value ?? '',
       })
     },
     onError: (error: { message: string }) => {
-      if (error.message.includes('value too long')) {
-        //TODO: what is this?? there's no phone in this form
-        setError('phone')
-      } else {
-        console.error(error)
-      }
+      console.error(error)
     },
   })
 
   const handleSignup = () => {
     createUser({
-      variables: {
-        data: {
-          email: form.email.value,
-          password: form.password.value,
-          firstName: form.firstName.value,
-          lastName: form.lastName.value,
-        },
-      },
+      email: form.email.value ?? '',
+      password: form.password.value ?? '',
+      firstName: form.firstName.value ?? '',
+      lastName: form.lastName.value ?? '',
     })
   }
 

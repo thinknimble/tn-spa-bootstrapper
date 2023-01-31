@@ -1,17 +1,18 @@
 import { ColorModeScript } from '@chakra-ui/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
-import { App } from './app.gql'
-import { ApolloProvider } from '@apollo/client'
-import { client } from './services/apollo-client'
+import { App } from './app'
 
 const container = document.getElementById('root')
 const root = createRoot(container!)
+const qClient = new QueryClient()
+
 root.render(
   <React.StrictMode>
     <ColorModeScript />
-    <ApolloProvider client={client}>
+    <QueryClientProvider client={qClient}>
       <App />
-    </ApolloProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 )
