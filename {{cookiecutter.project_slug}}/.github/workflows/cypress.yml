@@ -1,9 +1,5 @@
 name: Cypress Tests
-on:
-  workflow_call:
-    secrets:
-      CYPRESS_TEST_USER_PASS:
-        required: true
+on: [push]
 jobs:
   Setup:
     runs-on: ubuntu-latest
@@ -12,24 +8,15 @@ jobs:
         id: findPr
       - name: Set URL for Staging
         if: github.ref_name == 'main'
-        run: echo "BASE_URL=https://{{ cookiecutter.project_slug }}-staging.herokuapp.com/" >> $GITHUB_ENV
+        run: echo "BASE_URL=https://{{ cookiecutter.project_slug|replace('_', '-') }}-staging.herokuapp.com/" >> $GITHUB_ENV
       - name: Set URL for PR
         if: success() && steps.findPr.outputs.number
-        run: echo "BASE_URL=https://{{ cookiecutter.project_slug }}-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
+        run: echo "BASE_URL=https://{{ cookiecutter.project_slug|replace('_', '-') }}-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
         env:
           PR: {{ "${{ steps.findPr.outputs.pr }}" }}
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
-      - name: Raise for maintenance mode
-        run: |
-          html_body=$(curl {{ "${{ env.BASE_URL }}" }})
-          if echo $html_body | grep -q "Offline for Maintenance";
-          then
-            exit 1
-          else
-            echo "NOT in maintenance. Likely Heroku trigger after successful deploy";
-          fi
     outputs:
       BASE_URL: {{ "${{ env.BASE_URL }}" }}
   Chrome:
