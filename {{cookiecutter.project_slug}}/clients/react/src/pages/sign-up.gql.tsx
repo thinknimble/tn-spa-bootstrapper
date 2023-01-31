@@ -14,12 +14,12 @@ import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SignupForm, TSignupForm } from 'src/forms'
 import { SignupInputs } from 'src/forms/signup'
-import { AuthContext } from '../utils/auth'
+import { useAuth } from '../utils/auth.gql'
 import { CREATE_USER, LOG_IN } from '../utils/mutations'
 
 export function SignUpInner() {
   const [error, setError] = useState('')
-  const { updateToken } = useContext(AuthContext)
+  const { updateToken } = useAuth()
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TSignupForm>()
   const navigate = useNavigate()
 

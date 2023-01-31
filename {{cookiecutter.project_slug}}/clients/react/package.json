@@ -7,8 +7,10 @@
     "@chakra-ui/react": "2.3.4",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@tanstack/react-query": "^4.24.2",
     "@thinknimble/tn-forms": "^3.0.0",
     "@thinknimble/tn-forms-react": "^1.0.0",
+    "axios": "^1.2.6",
     "cypress": "^8.6.0",
     "framer-motion": "^7.6.15",
     "graphql": "^16.0.1",
@@ -51,7 +53,11 @@
     "test:single": "vitest $0",
     "heroku-postbuild": "npm build",
     "prettier": "prettier --write ./src",
-    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx src",
+    "dev-rest": "mv src/main.rest.tsx main.tsx",
+    "dev-gql": "mv src/main.gql.tsx src/main.tsx",
+    "use-rest": "npm rm @apollo/client graphql graphql-tag;bash config-scripts/use-rest.sh",
+    "use-gql": "npm rm @tanstack/react-query axios; bash config-scripts/use-gql.sh"
   },
   "browserslist": {
     "production": [

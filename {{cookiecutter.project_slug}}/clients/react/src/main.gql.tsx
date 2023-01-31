@@ -1,9 +1,9 @@
 import { ColorModeScript } from '@chakra-ui/react'
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
-import { App } from './App'
+import { App } from './app.gql'
 import { ApolloProvider } from '@apollo/client'
-import { client } from './apolloClient'
+import { client } from './services/apollo-client'
 
 const container = document.getElementById('root')
 const root = createRoot(container!)

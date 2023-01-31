@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { createHttpLink } from '@apollo/client/link/http'
 import { setContext } from '@apollo/client/link/context'
-import getCookie from './utils/getCookie'
+import getCookie from 'src/utils/get-cookie'
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -33,9 +33,9 @@ const authLink = setContext((_, { headers }) => {
 
 const link = createHttpLink({
   uri:
-    import.meta.env.NODE_ENV === 'production'
+    process.env.NODE_ENV === 'production'
       ? '/graphql'
-      : import.meta.env.VITE_DEV_BACKEND_URL + '/graphql',
+      : process.env.REACT_APP_DEV_BACKEND_URL + '/graphql',
   credentials: 'include',
 })
 

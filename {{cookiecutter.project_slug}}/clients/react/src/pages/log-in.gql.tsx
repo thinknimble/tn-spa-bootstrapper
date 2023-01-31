@@ -16,19 +16,19 @@ import {
 } from '@chakra-ui/react'
 import { useMutation } from '@apollo/client'
 import { LOG_IN } from '../utils/mutations'
-import { AuthContext } from '../utils/auth'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Logo from 'src/assets/images/logo.svg'
 import { LoginForm, TLoginForm } from 'src/forms'
 import { LoginFormInputs } from 'src/forms/login'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
+import { useAuth } from 'src/utils/auth.gql'
 
 export function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
   const [error, setError] = useState(autoError ? true : false)
 
-  const { updateToken } = useContext(AuthContext)
+  const { updateToken } = useAuth()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
 
   const navigate = useNavigate()
