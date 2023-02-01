@@ -1,11 +1,9 @@
 name: Cypress Tests
-on:
-  workflow_call:
-    secrets:
-      CYPRESS_TEST_USER_PASS:
-        required: true
+on: [deployment_status]
+
 jobs:
   Setup:
+    if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: jwalton/gh-find-current-pr@v1
@@ -21,15 +19,6 @@ jobs:
       - name: Raise for error
         if: env.BASE_URL == ''
         run: exit 1
-      - name: Raise for maintenance mode
-        run: |
-          html_body=$(curl ${{ env.BASE_URL }})
-          if echo $html_body | grep -q "Offline for Maintenance";
-          then
-            exit 1
-          else
-            echo "NOT in maintenance. Likely Heroku trigger after successful deploy";
-          fi
       - name: Checkout
         uses: actions/checkout@v2
       - run: pipx install pipenv

@@ -1,7 +1,9 @@
 name: Cypress Tests
-on: [push]
+on: [deployment_status]
+
 jobs:
   Setup:
+    if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: jwalton/gh-find-current-pr@v1
