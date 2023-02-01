@@ -6,9 +6,6 @@ jobs:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
-      - run: |
-        echo "have the URL provided to us??"
-        echo ${{ github.event.deployment_status.target_url }}
       - uses: jwalton/gh-find-current-pr@v1
         id: findPr
       - name: Set URL for Staging
@@ -24,6 +21,9 @@ jobs:
         run: exit 1
       - name: Checkout
         uses: actions/checkout@v2
+      - run: |
+          echo "have the URL provided to us??"
+          echo ${{ github.event.deployment_status.target_url }}
       - run: pipx install pipenv
       - uses: actions/setup-python@v2
         with:
