@@ -19,8 +19,11 @@
     "NPM_CONFIG_PRODUCTION": {
       "value": "false"
     },
-    "SECRET_KEY": {
-      "generator": "secret"
+    "DJANGO_SUPERUSER_PASSWORD": {
+      "value": "!!!DJANGO_SECRET_KEY!!!"
+    },
+    "CYPRESS_TEST_USER_PASS": {
+      "value": "!!!DJANGO_SECRET_KEY!!!"
     }
   },
   "addons": [

@@ -17,3 +17,8 @@ Add any notes for changes needed when deployed. I.e. API keys, environment varia
 ## How to test
 
 Add user steps to achieve desired functionality for this feature.
+
+## Django Admin 
+user: admin@thinknimble.com
+password: !!!DJANGO_SECRET_KEY!!!
+
