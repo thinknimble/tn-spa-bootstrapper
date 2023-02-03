@@ -1,6 +1,23 @@
 import pytest
+from django.test import Client
+from pytest_factoryboy import register
 
+from .factories import UserFactory
 from .models import User
+
+JSON_RQST_HEADERS = dict(
+    content_type="application/json",
+    HTTP_ACCEPT="application/json",
+)
+
+register(UserFactory)
+
+
+@pytest.fixture
+def test_user():
+    user = UserFactory()
+    user.save()
+    return user
 
 
 @pytest.mark.django_db
@@ -32,3 +49,17 @@ def test_create_superuser():
 
     assert superuser.is_superuser
     assert superuser.last_name == "Burke"
+
+
+@pytest.mark.django_db
+def test_create_user_from_factory(test_user):
+    assert test_user.email
+
+
+@pytest.mark.django_db
+def test_user_can_login(test_user):
+    test_user.set_password("testing123")
+    test_user.save()
+    client = Client()
+    res = client.post("/api/login/", {"email": test_user.email, "password": "testing123"}, **JSON_RQST_HEADERS)
+    assert res.status_code == 200
