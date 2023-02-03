@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { getUserInfo } from 'src/services/auth'
 import { localStoreManager } from './local-store-manager'
 
