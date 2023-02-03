@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { getUserInfo } from 'src/services/auth'
 import { localStoreManager } from './local-store-manager'
 
@@ -12,17 +12,21 @@ import { localStoreManager } from './local-store-manager'
 // 2a. unset localStorage token & exp on logout
 // 2b. call client.clearStore() on logout
 
-const TOKEN_CHECK_INTERVAL_MS = 60000
-const REFRESH_THRESHOLD = 60000
+/**
+ * Read router state to determine whether a user should be redirected to a certain page after logging in.
+ * Extract a "from" property from the router state and return that or the default followup route provided (or home)
+ * @param defaultLocation Provide a fallback for the location if there was no followup route in router state. If undefined it sets home as the default location
+ */
+export const useFollowupRoute = (defaultLocation = '/') => {
+  const { state: routerState } = useLocation()
 
-const useInterval = (fn: () => void, intervalMs: number) => {
-  useEffect(() => {
-    const intervalId = setInterval(fn, intervalMs)
-
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [fn, intervalMs])
+  // need to narrow down unknown
+  return routerState &&
+    typeof routerState === 'object' &&
+    'from' in routerState &&
+    routerState?.from
+    ? routerState.from
+    : defaultLocation
 }
 
 export function logout(onLogout?: () => void) {

@@ -1,21 +1,20 @@
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { LoginForm, TLoginForm } from 'src/forms'
 import { LoginFormInputs } from 'src/forms/login'
 import { postLogin } from 'src/services/auth'
-import { useAuth } from 'src/utils/auth'
+import { useAuth, useFollowupRoute } from 'src/utils/auth'
 import { localStoreManager } from 'src/utils/local-store-manager'
 
 function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
   const [error, setError] = useState(autoError ? true : false)
-
   const { updateToken } = useAuth()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
 
@@ -39,6 +38,15 @@ function LogInInner() {
       email: form.email.value ?? '',
       password: form.password.value ?? '',
     })
+  }
+
+  const { token } = useAuth()
+  const isAuth = Boolean(token)
+  const followupRoute = useFollowupRoute()
+  //Do not even show this page if they're already logged in
+  if (isAuth) {
+    // let AppOrAuth address this
+    return <Navigate to={'/'} state={{ from: followupRoute }} />
   }
 
   return (
