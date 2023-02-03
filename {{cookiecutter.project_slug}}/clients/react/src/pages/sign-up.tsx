@@ -1,16 +1,7 @@
-import {
-  Box,
-  FormControl,
-  FormErrorMessage,
-  Heading,
-  HStack,
-  Input,
-  Link,
-  Text,
-} from '@chakra-ui/react'
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { SignupForm, TSignupForm } from 'src/forms'
 import { SignupInputs } from 'src/forms/signup'
@@ -60,64 +51,50 @@ export function SignUpInner() {
   }
 
   return (
-    <Box maxWidth={'700px'} mt={10} mx={{ base: 5, md: 80 }}>
-      <Heading>WELCOME</Heading>
-      <Text my={5}>Enter your details below to create an account</Text>
+    <div>
+      <header>WELCOME</header>
+      <p>Enter your details below to create an account</p>
       <form onSubmit={handleSignup}>
-        <HStack justify={'space-between'} mb={5}>
-          <Input
-            isRequired={true}
+        <div>
+          <input
             placeholder="First Name"
-            value={form.firstName.value ?? ''}
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.firstName)(e.target.value)
-            }}
+            value={form.firstName.value}
+            onChange={(e) => createFormFieldChangeHandler(form.firstName)(e.target.value)}
           />
-          <Input
-            isRequired={true}
+          <input
             placeholder="Last Name"
+            value={form.lastName.value}
             onChange={(e) => {
               createFormFieldChangeHandler(form.lastName)(e.target.value)
             }}
           />
-        </HStack>
-        <FormControl isInvalid={error === 'email'}>
-          <Input
-            mb={error === 'email' ? 2 : 5}
-            type="email"
-            isRequired={true}
-            placeholder="Email"
-            value={form.email.value ?? ''}
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.email)(e.target.value)
-            }}
-          />
-        </FormControl>
+        </div>
+        <input
+          type="email"
+          placeholder="Email"
+          value={form.email.value}
+          onChange={(e) => {
+            createFormFieldChangeHandler(form.email)(e.target.value)
+          }}
+        />
 
-        <FormControl isInvalid={Boolean(form.confirmPassword.errors?.length)}>
-          <Input
-            isRequired={true}
-            placeholder="Password"
-            type="password"
-            mb={5}
-            value={form.password.value ?? ''}
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.password)(e.target.value)
-              validate()
-            }}
-          />
-          <Input
-            isRequired={true}
-            id="confirmPassword"
-            placeholder="Confirm Password"
-            type="password"
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
-              validate()
-            }}
-          />
-          <FormErrorMessage>Passwords do not match</FormErrorMessage>
-        </FormControl>
+        <input
+          placeholder="Password"
+          type="password"
+          value={form.password.value}
+          onChange={(e) => {
+            createFormFieldChangeHandler(form.password)(e.target.value)
+          }}
+        />
+        <input
+          id="confirmPassword"
+          placeholder="Confirm Password"
+          type="password"
+          value={form.confirmPassword.value}
+          onChange={(e) => {
+            createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
+          }}
+        />
         <button
           style={{
             padding: '5px',
@@ -134,13 +111,10 @@ export function SignUpInner() {
         </button>
       </form>
 
-      <Text mt={10} fontSize="14px" textAlign={'center'}>
-        Already have an account?{' '}
-        <Link fontWeight="bold" textDecor={'underline'} href="/log-in">
-          Log in here
-        </Link>
-      </Text>
-    </Box>
+      <p>
+        Already have an account? <Link to="/log-in">Log in here</Link>
+      </p>
+    </div>
   )
 }
 

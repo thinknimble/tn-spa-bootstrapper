@@ -36,7 +36,7 @@ Do not commit this change.
 ### Install deps
 
 ```shell
-npm ci
+npm i
 ```
 
 ### Start client

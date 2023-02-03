@@ -25,22 +25,6 @@ const useInterval = (fn: () => void, intervalMs: number) => {
   }, [fn, intervalMs])
 }
 
-/**
- * Extract a "from" property from the router state and return that or the default followup route (tbd)
- */
-export const useFollowupRoute = () => {
-  const { state: routerState } = useLocation()
-
-  //TODO: check on which we want the default page to be
-  // need to narrow down unknown
-  return routerState &&
-    typeof routerState === 'object' &&
-    'from' in routerState &&
-    routerState?.from
-    ? routerState.from
-    : '/treks'
-}
-
 export function logout(onLogout?: () => void) {
   localStoreManager.token.remove()
   localStoreManager.expirationDate.remove()
