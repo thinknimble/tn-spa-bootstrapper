@@ -1,4 +1,3 @@
-import { objectToCamelCase, objectToSnakeCase } from '@thinknimble/tn-utils'
 import axios, { AxiosError } from 'axios'
 import { localStoreManager } from 'src/utils/local-store-manager'
 const axiosInstance = axios.create({
@@ -21,26 +20,10 @@ axiosInstance.interceptors.request.use(
         })
       }
     }
-    // make sure we send snake_case'd requests
-    const newData = objectToSnakeCase(config.data)
-    return { ...config, data: newData }
+    return { ...config }
   },
   (error: Error | AxiosError) => {
-    Promise.reject(error)
-  },
-)
-
-axiosInstance.interceptors.response.use(
-  async (response) => {
-    // parse response so that it is camelCase
-    const newData = objectToCamelCase(response.data)
-    return {
-      ...response,
-      data: newData,
-    }
-  },
-  (error: Error | AxiosError) => {
-    Promise.reject(error)
+    return Promise.reject(error)
   },
 )
 
