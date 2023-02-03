@@ -81,8 +81,8 @@ def set_flag(file_path, flag, value=None):
         f.truncate()
 
 
-def set_django_secret_key(file_path):
-    return set_flag(file_path, "!!!DJANGO_SECRET_KEY!!!")
+def set_django_secret_key(file_path, value):
+    return set_flag(file_path, "!!!DJANGO_SECRET_KEY!!!", value=value)
 
 
 def remove_graphql_files():
@@ -99,13 +99,16 @@ def remove_graphql_files():
 
 def set_keys_in_envs():
     env_file_path = join(".env.example")
+    pull_request_template_path = join(".github", "pull_request_template.md")
+    cookie_cutter_settings_path = join("app.json")
     postgres_init_file = join("scripts/init-db.sh")
-    set_django_secret_key(env_file_path)
-
+    django_secret_key = get_random_secret_key()
+    set_django_secret_key(env_file_path, django_secret_key)
+    set_django_secret_key(pull_request_template_path, django_secret_key)
+    set_django_secret_key(cookie_cutter_settings_path, django_secret_key)
     secret = get_random_secret_key()
     set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", value=secret)
     set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
-
     copy2(env_file_path, join(".env"))
 
 

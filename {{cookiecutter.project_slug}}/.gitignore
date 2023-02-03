@@ -4,7 +4,6 @@
 node_modules/
 server/static/
 server/media-files/
-package-lock.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
