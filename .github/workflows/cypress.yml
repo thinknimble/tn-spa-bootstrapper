@@ -1,42 +1,18 @@
 name: Cypress Tests
-on:
-  workflow_call:
-    secrets:
-      CYPRESS_TEST_USER_PASS:
-        required: true
+on: [deployment_status]
+
 jobs:
   Setup:
+    if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: jwalton/gh-find-current-pr@v1
-        id: findPr
-      - name: Set URL for Staging
-        if: github.ref_name == 'main'
-        run: echo "BASE_URL=https://tn-spa-bootstrapper-staging.herokuapp.com/" >> $GITHUB_ENV
-      - name: Set URL for PR
-        if: success() && steps.findPr.outputs.number
-        run: echo "BASE_URL=https://tn-spa-bootstrapper-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
-        env:
-          PR: ${{ steps.findPr.outputs.pr }}
-      - name: Raise for error
-        if: env.BASE_URL == ''
-        run: exit 1
-      - name: Raise for maintenance mode
-        run: |
-          html_body=$(curl ${{ env.BASE_URL }})
-          if echo $html_body | grep -q "Offline for Maintenance";
-          then
-            exit 1
-          else
-            echo "NOT in maintenance. Likely Heroku trigger after successful deploy";
-          fi
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - run: pipx install pipenv
       - uses: actions/setup-python@v2
         with:
           python-version: '3.10'
-          cache: 'pipenv'
+          # Can't use cache because of https://github.com/actions/cache/issues/319
+          # cache: 'pipenv'
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |
@@ -47,14 +23,11 @@ jobs:
           name: my_project
           path: my_project/
           retention-days: 1
-    outputs:
-      BASE_URL: ${{ env.BASE_URL }}
   Chrome:
     needs: Setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - uses: actions/download-artifact@v3
         with:
           name: my_project
@@ -64,7 +37,7 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./my_project/client
         run: npm install
-      - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
+      - name: Run against ${{ github.event.deployment_status.environment_url }}
         uses: cypress-io/github-action@v4
         with:
           working-directory: my_project/client
@@ -73,7 +46,7 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
           CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
-          CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
   Firefox:
     needs: Setup
     runs-on: ubuntu-latest
@@ -81,8 +54,7 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - uses: actions/download-artifact@v3
         with:
           name: my_project
@@ -92,7 +64,7 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./my_project/client
         run: npm install
-      - name: Run against ${{ needs.Setup.outputs.BASE_URL }}
+      - name: Run against ${{ github.event.deployment_status.environment_url }}
         uses: cypress-io/github-action@v4
         with:
           working-directory: my_project/client
@@ -101,4 +73,4 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
           CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
-          CYPRESS_baseUrl: ${{ needs.Setup.outputs.BASE_URL }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}

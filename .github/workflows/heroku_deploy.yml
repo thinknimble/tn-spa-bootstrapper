@@ -4,6 +4,7 @@ jobs:
   Setup:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: jwalton/gh-find-current-pr@v1
         id: findPr
       - name: Set app_name for Staging
@@ -13,46 +14,17 @@ jobs:
         run: echo "APP_NAME=tn-spa-bootstrapper-pr-${PR}" >> $GITHUB_ENV
         env:
           PR: ${{ steps.findPr.outputs.pr }}
-    outputs:
-      APP_NAME: ${{ env.APP_NAME }}
-  Maintenance-On:
-    needs: Setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Turn Maintenance Mode On for ${{ needs.Setup.outputs.APP_NAME }} 
-        run: |
-          echo "Turning on maintenance so Cypress status starts as failing until rerun happens later."
-          heroku maintenance:on --app=${{ needs.Setup.outputs.APP_NAME }}
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-  Cypress:
-    needs: Maintenance-On
-    uses: ./.github/workflows/cypress.yml
-    secrets:
-      CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
-  Maintenance-Off:
-    if: ${{ always() }}
-    needs: [Setup, Cypress]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Turn Maintenance Mode Off for ${{ needs.Setup.outputs.APP_NAME }} 
-        run: |
-          echo "Turning off maintenance so Heroku triggering rerun of Cypress will succeed";
-          heroku maintenance:off --app=${{ needs.Setup.outputs.APP_NAME }}
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       - name: Update Heroku on what type of app to build next time (Vue or React)
         run: |
           config_file=$(./scripts/vue_or_react.sh)
-          current_config=$(heroku config:get BUILDPACK_RUN --app=${{ needs.Setup.outputs.APP_NAME }})
+          current_config=$(heroku config:get BUILDPACK_RUN --app=${{ env.APP_NAME }})
           if echo "$current_config" | grep -q "config_file"; then
             echo "Keeping current config of $config_file"
           else
             echo "Switching Heroku to build with $config_file instead"
             heroku plugins:install heroku-builds
-            heroku builds:cache:purge --app=${{ needs.Setup.outputs.APP_NAME }} --confirm=${{ needs.Setup.outputs.APP_NAME }}
-            heroku config:set BUILDPACK_RUN="pipenv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ needs.Setup.outputs.APP_NAME }}
+            heroku builds:cache:purge --app=${{ env.APP_NAME }} --confirm=${{ env.APP_NAME }}
+            heroku config:set BUILDPACK_RUN="pipenv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ env.APP_NAME }}
           fi
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
