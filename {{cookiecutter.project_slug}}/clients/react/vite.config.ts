@@ -8,6 +8,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  
   return {
     plugins: [react(), tsconfigPaths()],
     test: {
@@ -15,14 +16,16 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       setupFiles: './src/setup-tests.ts',
     },
+    {% if cookiecutter.use_graphql == 'n' -%}
     server: {
       proxy: {
-        '/api': {
-          target: (env.VITE_DEV_BACKEND_URL || 'http://server:8000') + '/api',
+        [base]: {
+          target: (env.VITE_DEV_BACKEND_URL || 'http://server:8000') +base,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (path) => path.replace(regex, ''),
         },
       },
     },
+    {% endif -%}
   }
 })

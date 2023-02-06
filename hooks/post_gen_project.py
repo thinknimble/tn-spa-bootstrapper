@@ -60,7 +60,6 @@ def get_random_secret_key():
 def remove_client_files(client):
     rmtree(join("clients", client))
 
-
 def move_client_to_root(client):
     if exists("client"):
         # We must be running as an update script
@@ -96,6 +95,26 @@ def remove_graphql_files():
         if exists(file_name):
             remove(file_name)
 
+def remove_rest_react_files():
+    file_names = [
+        join("client/src/services","axios-instance.ts"),
+        join("client/src/services","auth.ts"),
+    ]
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
+def remove_gql_react_files():
+    file_names = [
+        join("client/src/utils","mutations.ts"),
+        join("client/src/utils","queries.ts"),
+        join("client/src/utils","get-cookie.js"),
+        join("client/src/services","apollo-client.js"),
+    ]
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
 
 def set_keys_in_envs():
     env_file_path = join(".env.example")
@@ -124,6 +143,10 @@ def main():
     elif "{{ cookiecutter.client_app }}".lower() == "react":
         remove_client_files("vue3")
         move_client_to_root("react")
+        if "{{ cookiecutter.use_graphql }}".lower() == "y":
+            remove_rest_react_files()
+        else:
+            remove_gql_react_files()
 
     if "{{ cookiecutter.use_graphql }}".lower() == "n":
         remove_graphql_files()

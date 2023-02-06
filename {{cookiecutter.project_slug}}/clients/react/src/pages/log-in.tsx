@@ -1,4 +1,10 @@
+{% if cookiecutter.use_graphql == 'y' -%}
+import { useMutation } from '@apollo/client'
+import { LOG_IN } from '../utils/mutations'
+{% else -%}
+import { postLogin } from 'src/services/auth'
 import { useMutation } from '@tanstack/react-query'
+{% endif -%}
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
@@ -7,7 +13,6 @@ import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { LoginForm, TLoginForm } from 'src/forms'
 import { LoginFormInputs } from 'src/forms/login'
-import { postLogin } from 'src/services/auth'
 import { useAuth, useFollowupRoute } from 'src/utils/auth'
 import { localStoreManager } from 'src/utils/local-store-manager'
 
@@ -17,11 +22,12 @@ function LogInInner() {
   const [error, setError] = useState(autoError ? true : false)
   const { updateToken } = useAuth()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
-
   const navigate = useNavigate()
-  const { mutate: logIn } = useMutation(postLogin, {
-    onSuccess: (data: { tokenAuth: { token: string } }) => {
-      localStoreManager.token.set(data.tokenAuth.token)
+
+{% if cookiecutter.use_graphql == 'y' -%}
+  const [logIn] = useMutation(LOG_IN, {
+    onCompleted: (data: { tokenAuth: { token: string } }) => {
+      localStorage.setItem('auth-token', data.tokenAuth.token)
       updateToken(data.tokenAuth.token)
 
       navigate('/home')
@@ -32,12 +38,36 @@ function LogInInner() {
       }
     },
   })
+{% else -%}
+const { mutate: logIn } = useMutation(postLogin, {
+  onSuccess: (data: { tokenAuth: { token: string } }) => {
+    localStoreManager.token.set(data.tokenAuth.token)
+    updateToken(data.tokenAuth.token)
+    navigate('/home')
+  },
+  onError: (error: { message?: string }) => {
+    if (error.message === 'Please enter valid credentials') {
+      setError(true)
+    }
+  },
+})
+{% endif -%}
 
   const handleLogin = () => {
-    logIn({
-      email: form.email.value ?? '',
-      password: form.password.value ?? '',
-    })
+{% if cookiecutter.use_graphql == 'y' -%}
+    const input = {
+      variables: {
+        email: form.email.value,
+        password: form.password.value,
+      },
+    }
+{% else -%}
+const input = {
+  email: form.email.value ?? '',
+  password: form.password.value ?? '',
+}
+{% endif -%}
+    logIn(input)
   }
 
   const { token } = useAuth()
@@ -46,7 +76,9 @@ function LogInInner() {
   //Do not even show this page if they're already logged in
   if (isAuth) {
     // let AppOrAuth address this
+    {% raw -%}
     return <Navigate to={'/'} state={{ from: followupRoute }} />
+    {% endraw -%}
   }
 
   return (
