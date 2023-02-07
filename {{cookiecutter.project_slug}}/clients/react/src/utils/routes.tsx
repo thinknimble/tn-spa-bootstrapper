@@ -9,6 +9,7 @@ const PrivateRoutes = () => {
   const isAuth = Boolean(token)
   return isAuth ? (
     <Routes>
+      <Route path="/home" element={<Home />} />
       <Route path="/private" element={<div>Hello from private</div>} />
     </Routes>
   ) : (
@@ -21,7 +22,6 @@ export const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<AppOrAuth />} />
-        <Route path="/home" element={<Home />} />
         <Route path="/log-in" element={<LogIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/*" element={<PrivateRoutes />} />

@@ -3,17 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    {% if cookiecutter.use_graphql == 'n' -%}
+    {% if cookiecutter.use_graphql == 'n' -%
+    }
     "@tanstack/react-query": "^4.24.2",
     "axios": "^1.2.6",
-    {% else -%}
+    {% else -%
+    }
     "@apollo/client": "^3.4.17",
     "graphql": "^16.0.1",
     "graphql-tag": "^2.12.6",
-    {% endif -%}
+    {% endif -%
+    }
     "@thinknimble/tn-forms": "^3.0.0",
     "@thinknimble/tn-forms-react": "^1.0.0",
-    "cypress": "^8.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^3.0.0",
@@ -30,6 +32,7 @@
     "@typescript-eslint/parser": "^5.45.0",
     "@vitejs/plugin-react": "^2.2.0",
     "autoprefixer": "^10.4.13",
+    "cypress": "^12.5.1",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -49,7 +52,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build --base=/static/",
-    "cypress": "source ../.env && npx cypress open",
+    "cypress": "cypress open --env TEST_USER_EMAIL=example@cypress.com,TEST_USER_PASS='pfi3n6iw##4%i3coruuf4*khg05a10t9j=l!&)6x37@=wj9n*o'",
     "test": "vitest run src",
     "test:watch": "vitest src",
     "test:single": "vitest $0",

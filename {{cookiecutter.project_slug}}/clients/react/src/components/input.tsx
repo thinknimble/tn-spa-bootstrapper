@@ -9,7 +9,7 @@ export const Input: FC<InputHTMLAttributes<HTMLInputElement> & { extendClassName
     <input
       className={
         className ??
-        `placeholder:text-slate-400 rounded-md p-2 bg-slate-700 text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 invalid:outline-none invalid:ring-2 invalid:ring-red-400  ${
+        `placeholder:text-slate-700 rounded-md p-2 bg-slate-400 text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 invalid:outline-none invalid:ring-2 invalid:ring-red-400  ${
           extendClassName ?? ''
         }`
       }

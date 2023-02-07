@@ -116,7 +116,7 @@ const input = {
             <ErrorsList errors={form.password.errors} />
           </div>
         </form>
-        <Button onClick={handleLogin}>Sign In</Button>
+        <Button data-cy="submit" onClick={handleLogin}>Sign In</Button>
       </section>
       <div className="flex flex-col gap-3">
         <p className="text-xl text-slate-200 font-semibold">Don&apos;t have an account?</p>
