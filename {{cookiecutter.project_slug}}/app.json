@@ -8,10 +8,10 @@
       "value": "True"
     },
     "DISABLE_COLLECTSTATIC": {
-      "value": 1
+      "value": 0
     },
     "ENVIRONMENT": {
-      "value": "development"
+      "value": "review"
     },
     "PROJECT_PATH": {
       "value": "{{ cookiecutter.project_slug }}"
