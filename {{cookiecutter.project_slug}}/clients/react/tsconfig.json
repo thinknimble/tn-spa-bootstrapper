@@ -28,7 +28,8 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "tests"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
