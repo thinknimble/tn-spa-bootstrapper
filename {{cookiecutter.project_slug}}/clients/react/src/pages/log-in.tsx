@@ -76,9 +76,9 @@ const input = {
   //Do not even show this page if they're already logged in
   if (isAuth) {
     // let AppOrAuth address this
-    {% raw -%}
-    return <Navigate to={'/'} state={{ from: followupRoute }} />
-    {% endraw -%}
+
+    return <Navigate to={'/'} state={{'{{'}} from: followupRoute {{ '}}' }} />
+
   }
 
   return (

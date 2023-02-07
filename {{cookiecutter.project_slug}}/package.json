@@ -1,7 +1,7 @@
 {
   "scripts": {
     {% if cookiecutter.client_app == 'React' %}
-    "build": "cd client && npm install && npm run build"
+    "build": "cd client && yarn install && yarn run build"
     {% else %}
     "postinstall": "cd client && npm install",
     "heroku-postbuild": "cd client && npm run heroku-postbuild"
@@ -11,10 +11,16 @@
     "node": "16.*.*",
     "npm": "7.*.*"
   },
+  {% if cookiecutter.client_app == 'Vue3' %}
   "cacheDirectories": [
     "client/node_modules",
     ".cache/Cypress"
   ],
-  "dependencies": {
-  }
+  {% endif %}
+  {%- if cookiecutter.client_app == 'React' %}
+  "workspaces": [
+    "client"
+  ],
+  {% endif %}
+  "dependencies": {}
 }

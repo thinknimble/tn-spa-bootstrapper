@@ -25,6 +25,7 @@ jobs:
       - run: pipenv run flake8 server
   ESLint_and_Prettier:
     runs-on: ubuntu-latest
+    {% if cookiecutter.client_app == "Vue3" %}
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
@@ -36,3 +37,20 @@ jobs:
       - name: Run ESLint
         working-directory: ./client
         run: npx eslint --ext .js,.vue src
+      {% endif %}
+    {% if cookiecutter.client_app == "React" %}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        uses: borales/actions-yarn@v4
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        with:
+          cmd: install
+          dir: 'client'
+      - name: Run ESLint
+        working-directory: ./client
+        run: npx eslint --ext .ts,tsx,js src
+
+      {% endif %}
+
