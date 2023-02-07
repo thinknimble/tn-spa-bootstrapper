@@ -8,7 +8,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  
+
   return {
     plugins: [react(), tsconfigPaths()],
     test: {
@@ -19,10 +19,10 @@ export default defineConfig(({ mode }) => {
     {% if cookiecutter.use_graphql == 'n' -%}
     server: {
       proxy: {
-        [base]: {
-          target: (env.VITE_DEV_BACKEND_URL || 'http://server:8000') +base,
+        '/api/': {
+          target: (env.VITE_DEV_BACKEND_URL || 'http://server:8000') + '/api',
           changeOrigin: true,
-          rewrite: (path) => path.replace(regex, ''),
+          rewrite: path => path.replace(/^\/api\//, ''),
         },
       },
     },

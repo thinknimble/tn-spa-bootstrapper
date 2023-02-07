@@ -48,7 +48,7 @@
   "proxy": "http://localhost:8000",
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --base=/static/",
     "cypress": "source ../.env && npx cypress open",
     "test": "vitest run src",
     "test:watch": "vitest src",
