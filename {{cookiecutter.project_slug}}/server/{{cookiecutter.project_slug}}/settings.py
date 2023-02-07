@@ -24,7 +24,7 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 
 if IN_DEV:
     SERVER_EMAIL = "{{ cookiecutter.project_name }} Development <noreply-dev@{{ cookiecutter.project_slug }}.com>"
-elif IN_STAGING:
+elif IN_STAGING or IN_REVIEW:
     SERVER_EMAIL = "{{ cookiecutter.project_name }} Staging <noreply-staging@{{ cookiecutter.project_slug }}.com>"
 else:
     SERVER_EMAIL = "{{ cookiecutter.project_name }} <noreply@{{ cookiecutter.project_slug }}.com>"
