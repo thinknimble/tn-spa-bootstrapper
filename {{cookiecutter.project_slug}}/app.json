@@ -8,10 +8,10 @@
       "value": "True"
     },
     "DISABLE_COLLECTSTATIC": {
-      "value": 1
+      "value": 0
     },
     "ENVIRONMENT": {
-      "value": "development"
+      "value": "review"
     },
     "PROJECT_PATH": {
       "value": "{{ cookiecutter.project_slug }}"
@@ -24,6 +24,9 @@
     },
     "CYPRESS_TEST_USER_PASS": {
       "value": "!!!DJANGO_SECRET_KEY!!!"
+    },
+    "SECRET_KEY": {
+      "generator": "secret"
     }
   },
   "addons": [
