@@ -29,7 +29,7 @@
     "@typescript-eslint/parser": "^5.45.0",
     "@vitejs/plugin-react": "^2.2.0",
     "autoprefixer": "^10.4.13",
-    "cypress": "^12.5.1",
+    "cypress": "^8.6.0",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -51,7 +51,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build --base=/static/",
-    "cypress": "cypress open --env TEST_USER_EMAIL=example@cypress.com,TEST_USER_PASS='pfi3n6iw##4%i3coruuf4*khg05a10t9j=l!&)6x37@=wj9n*o'",
+    "cypress": "source ../.env && cypress open",
     "test": "vitest run src",
     "test:watch": "vitest src",
     "test:single": "vitest $0",

@@ -129,6 +129,10 @@ def set_keys_in_envs():
     set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", value=secret)
     set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
     copy2(env_file_path, join(".env"))
+    cypress_example_file_dir = join("clients", "react")
+    cypress_example_file = join(cypress_example_file_dir, "cypress.example.env.json")
+    set_flag(cypress_example_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
+    copy2(cypress_example_file, join(cypress_example_file_dir, "cypress.env.json"))
 
 
 def main():
