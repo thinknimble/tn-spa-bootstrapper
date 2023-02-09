@@ -53,7 +53,6 @@
     "test": "vitest run src",
     "test:watch": "vitest src",
     "test:single": "vitest $0",
-    "heroku-postbuild": "npm build",
     "prettier": "prettier --write ./src",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src",
     "dev-rest": "mv src/main.rest.tsx main.tsx",
