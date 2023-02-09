@@ -97,7 +97,7 @@ const input = {
               placeholder="Email"
               onChange={(e) => createFormFieldChangeHandler(form.email)(e.target.value)}
               value={form.email.value ?? ''}
-              data-cy="email"
+              data-cy="login-email"
               id="id"
             />
             <ErrorsList errors={form.email.errors} />
@@ -110,13 +110,13 @@ const input = {
                 createFormFieldChangeHandler(form.password)(e.target.value)
               }}
               value={form.password.value ?? ''}
-              data-cy="password"
+              data-cy="login-password"
               id="password"
             />
             <ErrorsList errors={form.password.errors} />
           </div>
         </form>
-        <Button data-cy="submit" onClick={handleLogin}>Sign In</Button>
+        <Button data-cy="login-submit" onClick={handleLogin}>Login In</Button>
       </section>
       <div className="flex flex-col gap-3">
         <p className="text-xl text-slate-200 font-semibold">Don&apos;t have an account?</p>
