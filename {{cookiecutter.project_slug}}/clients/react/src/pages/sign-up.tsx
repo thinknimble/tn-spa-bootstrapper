@@ -54,12 +54,7 @@ function SignUpInner() {
       })
     },
     onError: (error: { message: string }) => {
-      if (error.message.includes('value too long')) {
-        //TODO: what is this?? there's no phone in this form
-        setError('phone')
-      } else {
         console.error(error)
-      }
     },
   })
 {% else -%}
