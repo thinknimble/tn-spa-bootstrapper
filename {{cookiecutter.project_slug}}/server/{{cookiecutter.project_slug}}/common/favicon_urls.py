@@ -8,7 +8,7 @@ urlpatterns = []
 # Only include the favicon urls if we are in a staging or production environment.
 # Favicons are not needed in development, and this also prevents errors when running
 # tests without having first built the front end app.
-if settings.IN_STAGING or settings.IN_PROD:
+if settings.IN_STAGING or settings.IN_PROD or settings.IN_REVIEW:
     urlpatterns += [
         path(
             r"favicon.ico",
