@@ -220,3 +220,5 @@ tags
 # client folders
 client/node_modules/
 client/build/
+
+.vscode/*
