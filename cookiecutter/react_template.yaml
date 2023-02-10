@@ -1,3 +1,3 @@
 default_context:
   client_app: "React"
-  use_graphql: "y"
+  use_graphql: "n"
