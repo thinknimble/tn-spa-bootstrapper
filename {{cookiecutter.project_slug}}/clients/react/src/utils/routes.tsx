@@ -1,8 +1,8 @@
-import React from "react"
-import { Route, Routes } from "react-router-dom"
-import { Home, LogIn, Layout, SignUp } from "../pages"
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
+import { Home, LogIn, Layout, SignUp } from '../pages'
 
-export const PUBLIC_ROUTES = ["/home", "/log-in", "/sign-up"]
+export const PUBLIC_ROUTES = ['/home', '/log-in', '/sign-up']
 
 export const ROUTES = (
   <Routes>
