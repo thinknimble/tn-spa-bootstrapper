@@ -16,6 +16,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 def index(request):
     return TemplateResponse(request, ["index.html", "core/index-placeholder.html"])
 {% else %}
+
 def index(request):
     try:
         return render(request, "index.html")
