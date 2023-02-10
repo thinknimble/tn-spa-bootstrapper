@@ -40,7 +40,7 @@ const useInterval = (fn: () => void, intervalMs: number) => {
  * Extract a "from" property from the router state and return that or the default followup route provided (or home)
  * @param defaultLocation Provide a fallback for the location if there was no followup route in router state. If undefined it sets home as the default location
  */
-export const useFollowupRoute = (defaultLocation = '/') => {
+export const useFollowupRoute = (defaultLocation = '/home') => {
   const { state: routerState } = useLocation()
 
   // need to narrow down unknown

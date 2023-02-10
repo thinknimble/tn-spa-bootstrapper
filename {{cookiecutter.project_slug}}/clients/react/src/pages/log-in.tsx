@@ -20,7 +20,7 @@ function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
   const [error, setError] = useState(autoError ? true : false)
-  const { updateToken } = useAuth()
+  const { updateToken, updateUserId } = useAuth()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
   const navigate = useNavigate()
 
@@ -40,9 +40,11 @@ function LogInInner() {
   })
 {% else -%}
 const { mutate: logIn } = useMutation(postLogin, {
-  onSuccess: (data: { tokenAuth: { token: string } }) => {
-    localStoreManager.token.set(data.tokenAuth.token)
-    updateToken(data.tokenAuth.token)
+  onSuccess: ({ token , id }: { token: string,id: string }) => {
+    localStoreManager.token.set(token)
+    localStoreManager.userId.set(id)
+    updateToken(token)
+    updateUserId(id)
     navigate('/home')
   },
   onError: (error: { message?: string }) => {

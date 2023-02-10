@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
         },
       },
       {% endif -%}
-      port: 8089
+      port: 8080
     },
   }
 })
