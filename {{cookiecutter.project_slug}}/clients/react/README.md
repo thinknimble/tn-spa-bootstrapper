@@ -1,4 +1,4 @@
-# TN React Bootstrapped project
+# React
 
 This project was created from [Vite](https://vitejs.dev) React's Typescript template.
 

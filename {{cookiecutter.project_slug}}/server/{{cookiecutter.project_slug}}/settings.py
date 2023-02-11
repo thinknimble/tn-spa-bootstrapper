@@ -118,11 +118,11 @@ ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "APP_DIRS": True,
         "DIRS": [
             os.path.join(BASE_DIR, "..", "client", "dist"),
             os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
         ],
+        "APP_DIRS": True,  # this setting must come after "DIRS"!
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
