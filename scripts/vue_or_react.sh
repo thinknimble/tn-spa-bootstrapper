@@ -7,6 +7,8 @@ tsx_count=$(git diff --name-only origin/main -- | grep "\.tsx$" | wc -l)
 react_count=$(($ts_count + $tsx_count))
 vue_count=$(git diff --name-only origin/main -- | grep "\.vue$" | wc -l)
 
+react_count=100
+vue_count=0
 if [ $react_count -gt $vue_count ]; then
   echo "cookiecutter/react_template.yaml"
 else
