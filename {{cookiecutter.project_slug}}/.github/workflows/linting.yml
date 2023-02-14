@@ -35,4 +35,10 @@ jobs:
           npm install
       - name: Run ESLint
         working-directory: ./client
+        {% if cookiecutter.client_app == 'Vue3' %}
         run: npx eslint --ext .js,.vue src
+        {% elif cookiecutter.client_app == 'React' %}
+        run: npx eslint --ext .ts,tsx,js src
+        {% endif %}
+
+

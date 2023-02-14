@@ -118,19 +118,11 @@ ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        {% if cookiecutter.client_app != "React" -%}
-        "APP_DIRS": True,
         "DIRS": [
-            os.path.join(BASE_DIR, "../client/dist/"),
-            os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
-        ],
-        {% else -%}
-        "DIRS": [
-            os.path.join(BASE_DIR, "..", "client", "build"),
+            os.path.join(BASE_DIR, "..", "client", "dist"),
             os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
         ],
         "APP_DIRS": True,  # this setting must come after "DIRS"!
-        {% endif -%}
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -242,13 +234,13 @@ MEDIA_URL = "/media/"
 {%- if cookiecutter.client_app == 'Vue3' %}
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "../client/dist/static"),
+    os.path.join(BASE_DIR, "..", "client", "dist", "static"),
 ]
 {% elif cookiecutter.client_app == 'React' %}
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "..", "client", "build"),
-    os.path.join(BASE_DIR, "..", "client", "build", "static"),
+    os.path.join(BASE_DIR, "..", "client", "dist"),
+    os.path.join(BASE_DIR, "..", "client", "dist", "static"),
 ]
 {% endif -%}
 {% endif -%}

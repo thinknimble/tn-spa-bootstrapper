@@ -3,42 +3,60 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    {% if cookiecutter.use_graphql == 'n' -%}
+    "@tanstack/react-query": "^4.24.2",
+    "axios": "^1.2.6",
+    {% else -%}
     "@apollo/client": "^3.4.17",
-    "@chakra-ui/react": "^1.0.0",
-    "@emotion/react": "^11.0.0",
-    "@emotion/styled": "^11.0.0",
-    "@testing-library/jest-dom": "^5.9.0",
-    "@testing-library/react": "^10.2.1",
-    "@testing-library/user-event": "^12.0.2",
-    "@types/jest": "^25.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-router-dom": "^5.3.2",
-    "cypress": "^8.6.0",
-    "framer-motion": "^4.0.0",
     "graphql": "^16.0.1",
     "graphql-tag": "^2.12.6",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-hook-form": "^7.38.0",
+    {% endif -%}
+    "@thinknimble/tn-forms": "^3.0.0",
+    "@thinknimble/tn-forms-react": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^3.0.0",
-    "react-router-dom": "^6.0.1",
-    "react-scripts": "4.0.3",
-    "typescript": "^3.9.5",
-    "web-vitals": "^0.2.2"
+    "react-router-dom": "^6.0.1"
   },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@types/react-router-dom": "^5.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vitejs/plugin-react": "^2.2.0",
+    "autoprefixer": "^10.4.13",
+    "cypress": "^8.6.0",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-prettier-config": "^1.0.1",
+    "jsdom": "^20.0.3",
+    "postcss": "^8.4.21",
+    "prettier": "^2.8.0",
+    "tailwindcss": "^3.2.4",
+    "typescript": "^4.6.4",
+    "vite": "^3.2.3",
+    "vite-tsconfig-paths": "^3.6.0",
+    "vitest": "^0.25.3"
+  },
+  {% if cookiecutter.use_graphql == 'y' -%}
   "proxy": "http://localhost:8000",
+  {% endif -%}
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "cypress": "source ../.env && npx cypress open",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "heroku-postbuild": "npm build"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "start": "vite",
+    "build": "tsc && vite build --base=/static/",
+    "cypress": "source ../.env && cypress open",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:single": "vitest $0",
+    "prettier": "prettier --write ./src",
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
   },
   "browserslist": {
     "production": [

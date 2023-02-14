@@ -1,8 +1,5 @@
-/* Create Page components in this directory and import them here as follows:*/
-
-import LogIn from './LogIn'
-import Home from './Home'
-import Layout from './Layout'
-import SignUp from './SignUp'
-
-export { LogIn, Home, Layout, SignUp }
+/* Create Page components in this directory and export them here as follows:*/
+export { Home } from './home'
+export { Layout } from './layout'
+export { LogIn } from './log-in'
+export { SignUp } from './sign-up'

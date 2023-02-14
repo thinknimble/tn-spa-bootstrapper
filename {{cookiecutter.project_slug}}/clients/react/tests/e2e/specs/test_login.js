@@ -3,11 +3,10 @@ describe('Tests login workflow', () => {
     cy.visit('/')
     cy.url().should('include', '/log-in')
   })
-
-  it('Filling in email and passwords goes to home', () => {
+  it('Filling in email and passwords goes to', () => {
     cy.get('[data-cy=email]').type(Cypress.env('TEST_USER_EMAIL'))
     cy.get('[data-cy=password]').type(Cypress.env('TEST_USER_PASS'))
-    cy.contains('[data-cy=submit]', 'Sign In').click()
+    cy.contains('[data-cy="login-btn"]', 'Login').click()
     cy.url().should('include', '/home')
   })
 })

@@ -1,11 +1,7 @@
 {
   "scripts": {
-    {% if cookiecutter.client_app == 'React' %}
-    "build": "cd client && npm install && npm run build"
-    {% else %}
     "postinstall": "cd client && npm install",
-    "heroku-postbuild": "cd client && npm run heroku-postbuild"
-    {% endif %}
+    "heroku-postbuild": "cd client && npm run build"
   },
   "engines": {
     "node": "16.*.*",
@@ -15,6 +11,5 @@
     "client/node_modules",
     ".cache/Cypress"
   ],
-  "dependencies": {
-  }
+  "dependencies": {}
 }

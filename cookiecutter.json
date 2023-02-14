@@ -10,10 +10,22 @@
   "_copy_without_render": [
     "clients/vue3/src/views/dashboard",
     "clients/vue3/src/components",
-    "clients/react/src/pages",
+    "clients/react/src/components",
+    "clients/react/src/pages/app-or-auth.tsx",
+    "clients/react/src/pages/home.tsx",
+    "clients/react/src/pages/index.ts",
+    "clients/react/src/pages/layout.tsx",
     "*/swagger-ui.html"
   ],
-  "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
+  "mail_service": [
+    "Mailgun",
+    "Amazon SES",
+    "Custom SMTP"
+  ],
   "use_graphql": "n",
-  "client_app": ["Vue3", "React", "None"]
+  "client_app": [
+    "Vue3",
+    "React",
+    "None"
+  ]
 }

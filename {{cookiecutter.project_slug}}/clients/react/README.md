@@ -1,58 +1,69 @@
 # React
 
-## Available Scripts
+This project was created from [Vite](https://vitejs.dev) React's Typescript template.
 
-In the project directory, you can run:
+## Summary
 
-### `yarn start`
+This app includes basic configurations for developers to have a starting point on new projects.
 
-Runs the app in the development mode.<br /> Open
-[http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Current stack
 
-The page will reload if you make edits.<br /> You will also see any lint errors
-in the console.
+- Typescript
+- React
+- TailwindCss
+{% if cookiecutter.use_graphql=='y' -%}
+- Apollo
+{% else -%}
+- Axios
+- Tanstack Query (server state management)
+{% endif -%}
+- React Router
+- TN Forms
+- Vitest
+- React testing library
+- Cypress
 
-### `yarn test`
+## Getting started
 
-Launches the test runner in the interactive watch mode.<br /> See the section
-about
-[running tests](https://facebook.github.io/create-react-app/docs/running-tests)
-for more information.
+### Install deps
 
-### `yarn build`
+```
+yarn
+```
 
-Builds the app for production to the `build` folder.<br /> It correctly bundles
-React in production mode and optimizes the build for the best performance.
+### Run locally
 
-The build is minified and the filenames include the hashes.<br /> Your app is
-ready to be deployed!
+First, create .env.local at the top-level of the client directory, and copy the contents of .env.local.example into it. Update the value of VITE_DEV_BACKEND_URL to point to your desired backend.
 
-See the section about
-[deployment](https://facebook.github.io/create-react-app/docs/deployment) for
-more information.
+Then run the project with:
+```
+yarn start
+```
 
-### `yarn eject`
+### Run Integration tests
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Watch your tests with:
 
-If you aren’t satisfied with the build tool and configuration choices, you can
-`eject` at any time. This command will remove the single build dependency from
-your project.
+```
+yarn test:watch
+```
 
-Instead, it will copy all the configuration files and the transitive
-dependencies (webpack, Babel, ESLint, etc) right into your project so you have
-full control over them. All of the commands except `eject` will still work, but
-they will point to the copied scripts so you can tweak them. At this point
-you’re on your own.
+Or run them only once with:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for
-small and middle deployments, and you shouldn’t feel obligated to use this
-feature. However we understand that this tool wouldn’t be useful if you couldn’t
-customize it when you are ready for it.
+```
+yarn test
+```
 
-## Learn More
+If you want to watch a single test you can specify its path as an argument to:
 
-You can learn more in the
-[Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+yarn test:single path/to/test/file
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Run e2e tests with Cypress
+
+```
+yarn cypress
+```
+
+Will open cypress wizard. Make sure you run your app locally with `yarn start` and them choose the test you want to run from the wizard.
