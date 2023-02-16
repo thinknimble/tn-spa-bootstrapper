@@ -36,7 +36,6 @@
         placeholder="Enter password..."
       />
       <button class="btn--primary" type="submit">Sign Up</button>
-      <!-- <button class="btn--primary bg-primary" type="submit">Sign Up</button> -->
       <div class="flex self-center m-4">
         <p class="mr-2">Already have an account?</p>
         <router-link to="/login" class="font-bold text-primary hover:underline">
