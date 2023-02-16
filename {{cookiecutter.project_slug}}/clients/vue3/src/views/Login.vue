@@ -20,7 +20,8 @@
         label="Password"
         placeholder="Enter password..."
       />
-      <button class="btn--primary bg-primary" data-cy="submit" type="submit">Login</button>
+      <button class="btn--primary" data-cy="submit" type="submit">Login</button>
+      <!-- <button class="btn--primary bg-primary" data-cy="submit" type="submit">Login</button> -->
       <div class="flex self-center m-4">
         <p class="mr-2">Don't have an account?</p>
         <router-link to="/signup" class="font-bold text-primary hover:underline">
