@@ -15,7 +15,10 @@ module.exports = {
   css: {
     loaderOptions: {
       css: {
-        modules: {},
+        modules: {
+          localIdentName: '[name]-[hash]',
+          exportLocalsConvention: 'camelCaseOnly',
+        },
       },
     },
   },
