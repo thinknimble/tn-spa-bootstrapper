@@ -5,8 +5,6 @@ git fetch origin main
 react_count=$(git diff --name-only origin/main -- | grep "/clients/react/" | wc -l)
 vue_count=$(git diff --name-only origin/main -- | grep "/clients/vue/" | wc -l)
 
-react_count=0
-vue_count=100
 if [ $react_count -gt $vue_count ]; then
   echo "cookiecutter/react_template.yaml"
 else
