@@ -4,7 +4,7 @@ jobs:
   Pytest_CookieCutter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: pipx install pipenv
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -30,7 +30,7 @@ jobs:
       matrix:
         fe_type: [react, vue]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: pipx install pipenv
       - uses: actions/setup-python@v2
         with:

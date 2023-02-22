@@ -6,7 +6,7 @@ jobs:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
@@ -24,7 +24,7 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
