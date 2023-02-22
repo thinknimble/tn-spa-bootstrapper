@@ -62,6 +62,9 @@ jobs:
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
