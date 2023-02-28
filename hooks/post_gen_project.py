@@ -109,7 +109,7 @@ def remove_gql_react_files():
         join("client/src/utils","mutations.ts"),
         join("client/src/utils","queries.ts"),
         join("client/src/utils","get-cookie.js"),
-        join("client/src/services","apollo-client.js"),
+        join("client/src/services","apollo-client.ts"),
     ]
     for file_name in file_names:
         if exists(file_name):

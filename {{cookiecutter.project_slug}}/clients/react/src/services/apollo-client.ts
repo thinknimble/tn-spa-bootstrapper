@@ -13,7 +13,7 @@ const authLink = setContext((_, { headers }) => {
 
   // return the headers to the context so httpLink can read them
 
-  const authHeaders = {
+  const authHeaders: { 'X-CSRFToken'?: string; Authorization?: string } = {
     'X-CSRFToken': csrfToken,
   }
 
@@ -31,11 +31,17 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
+// We should change this to follow the rest framework proxying rather than this if statement - PB
+const local_backend_uri = `${
+  import.meta.env.VITE_DEV_BACKEND_URL
+    ? import.meta.env.VITE_DEV_BACKEND_URL
+    : 'http://localhost:8000'
+}`
+
+const backend_api = import.meta.env.DEV ? local_backend_uri + '/graphql' : '/graphql'
+
 const link = createHttpLink({
-  uri:
-    import.meta.NODE_ENV === 'production'
-      ? '/graphql'
-      : import.meta.VITE_DEV_BACKEND_URL + '/graphql',
+  uri: backend_api,
   credentials: 'include',
 })
 
