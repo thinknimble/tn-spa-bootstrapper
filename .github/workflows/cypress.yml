@@ -6,7 +6,7 @@ jobs:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: pipx install pipenv
       - uses: actions/setup-python@v2
         with:
@@ -27,11 +27,14 @@ jobs:
     needs: Setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: my_project
           path: my_project/
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Install frontend dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
@@ -54,11 +57,14 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: my_project
           path: my_project/
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Install frontend dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
