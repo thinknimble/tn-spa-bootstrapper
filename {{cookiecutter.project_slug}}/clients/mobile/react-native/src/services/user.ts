@@ -1,12 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   createApi,
-  createCustomServiceCall,
   GetZodInferredTypeFromRaw,
 } from '@thinknimble/tn-models'
 import { z } from 'zod'
 import { useAuth } from '../stores/auth'
-import { DeleteAccountSurveyValues, successPerceptionEnum } from '../utils/types/enums'
 import { axiosInstance } from './axios-instance'
 
 export const fullNameZod = z.string().refine(
@@ -21,7 +19,6 @@ const userFields = {
   email: z.string().email(),
   firstName: z.string().max(255),
   lastName: z.string().max(255),
-  successPerceptionAnswer: z.nativeEnum(successPerceptionEnum),
   fullName: fullNameZod,
 }
 
