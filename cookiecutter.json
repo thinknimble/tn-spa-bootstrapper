@@ -27,5 +27,6 @@
     "Vue3",
     "React",
     "None"
-  ]
+  ],
+  "include_mobile": "n"
 }

@@ -56,20 +56,30 @@ def get_random_secret_key():
     chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
     return "".join(secrets.choice(chars) for i in range(50))
 
+web_clients_path = "clients/web"
+mobile_clients_path = "clients/mobile"
 
-def remove_client_files(client):
-    rmtree(join("clients", client))
+def remove_web_client_files(client):
+    rmtree(join(web_clients_path, client))
 
-def move_client_to_root(client):
+def move_web_client_to_root(client):
     if exists("client"):
         # We must be running as an update script
         rmtree("client")
-    move(join("clients", client), join("client"))
-    rmtree(join("clients"))
+    move(join(web_clients_path, client), join("client"))
+    rmtree(join(web_clients_path))
     env_path = join("client", ".env.local.example")
     if exists(env_path):
         rename(env_path, join("client", ".env.local"))
 
+def remove_mobile_client_files(client):
+    rmtree(join(mobile_clients_path,client))
+
+def move_mobile_client_to_root(client):
+    if exists("mobile"):
+        rmtree("mobile")
+    move(join(mobile_clients_path,client),join('mobile'))
+    rmtree(join(mobile_clients_path))
 
 def set_flag(file_path, flag, value=None):
     value = value or get_random_secret_key()
@@ -129,7 +139,7 @@ def set_keys_in_envs():
     set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", value=secret)
     set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
     copy2(env_file_path, join(".env"))
-    cypress_example_file_dir = join("clients", "react")
+    cypress_example_file_dir = join(web_clients_path, "react")
     cypress_example_file = join(cypress_example_file_dir, "cypress.example.env.json")
     set_flag(cypress_example_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
     copy2(cypress_example_file, join(cypress_example_file_dir, "cypress.env.json"))
@@ -139,19 +149,20 @@ def main():
     set_keys_in_envs()
 
     if "{{ cookiecutter.client_app }}".lower() == "none":
-        rmtree("clients")
+        rmtree(web_clients_path)
         remove(join("package.json"))
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
-        remove_client_files("react")
-        move_client_to_root("vue3")
+        remove_web_client_files("react")
+        move_web_client_to_root("vue3")
     elif "{{ cookiecutter.client_app }}".lower() == "react":
-        remove_client_files("vue3")
-        move_client_to_root("react")
+        remove_web_client_files("vue3")
+        move_web_client_to_root("react")
         if "{{ cookiecutter.use_graphql }}".lower() == "y":
             remove_rest_react_files()
         else:
             remove_gql_react_files()
-
+    if "{{ cookiecutter.include_mobile }}".lower()=="y":
+        move_mobile_client_to_root("react-native")
     if "{{ cookiecutter.use_graphql }}".lower() == "n":
         remove_graphql_files()
 
