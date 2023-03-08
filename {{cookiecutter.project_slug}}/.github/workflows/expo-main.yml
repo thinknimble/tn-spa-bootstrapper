@@ -1,0 +1,43 @@
+name: Expo Publish Main
+on:
+  push:
+    branches:
+      - main
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: yarn
+          cache-dependency-path: ./mobile/yarn.lock
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🏗 Get Hash
+        id: GIT_HASH
+        run: echo "GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+
+      - name: 📦 Install dependencies
+        run: cd mobile && yarn install
+
+      - name: 🚀 Build app
+        run: cd mobile && eas build --platform all --profile staging --non-interactive
+        env:
+          BACKEND_SERVER_URL: ""
+          ROLLBAR_ACCESS_TOKEN: "" # uses dev
+          SENTRY_PROJECT_NAME: "" # uses dev
+
+      - name: 🚀 Publish Staging Preview
+        run: cd mobile && eas update --branch=staging --non-interactive --auto
