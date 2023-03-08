@@ -4,7 +4,7 @@ import {
 } from '@react-navigation/material-top-tabs'
 import { NavigationContainer } from '@react-navigation/native'
 import { Fragment } from 'react'
-import { Text, View } from 'react-native'
+import { Text, View ,StyleSheet } from 'react-native'
 import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-area-view'
 import { Main } from '../main'
 import { Login } from './login'
@@ -47,15 +47,19 @@ const TopTab = ({ navigation, jumpTo, state }: MaterialTopTabBarProps) => {
   )
 }
 
+const styles = StyleSheet.create({
+  paddingH20: {
+    paddingHorizontal: 20
+  }
+})
+
 export const Auth = () => {
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="flex-1 flex-grow">
       <NavigationContainer independent>
         <Tab.Navigator
           tabBar={TopTab}
-          sceneContainerStyle={{
-            paddingHorizontal: 20,
-          }}
+          sceneContainerStyle={ styles.paddingH20 }
         >
           {tabs.map((t, idx) => (
             <Tab.Screen name={t.name} component={t.component} key={idx} />

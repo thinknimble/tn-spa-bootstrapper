@@ -10,9 +10,9 @@ jobs:
         if: success() && steps.findPr.outputs.number
         run: echo "BASE_URL=https://example-pr-${PR}.herokuapp.com/" >> $GITHUB_ENV
         env:
-          PR: ${{ steps.findPr.outputs.pr }}
+          PR: {{ "${{ steps.findPr.outputs.pr }}" }}
     outputs:
-      BASE_URL: ${{ env.BASE_URL }}
+      BASE_URL: {{ "${{ env.BASE_URL }}" }}
 
   publish:
     needs: Setup
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: {{ "${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}" }}
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v2
@@ -36,23 +36,16 @@ jobs:
         with:
           expo-version: latest
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          token: {{ "${{ secrets.EXPO_TOKEN }}" }}
         env:
-          BACKEND_SERVER_URL: ${{ needs.Setup.outputs.BASE_URL }}
+          BACKEND_SERVER_URL: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
 
       - name: 📦 Install dependencies
         run: cd mobile && yarn install
 
       - name: 🚀 Publish preview
-        run: cd mobile && eas update --branch=pr-${{ github.event.number }} --non-interactive --auto
+        run: {{ "cd mobile && eas update --branch=pr-${{ github.event.number }} --non-interactive --auto" }}
         env:
-          BACKEND_SERVER_URL: ${{ needs.Setup.outputs.BASE_URL }}
+          BACKEND_SERVER_URL: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
           ROLLBAR_ACCESS_TOKEN: "" # uses dev
           SENTRY_PROJECT_NAME: "" # uses dev
-
-
-      # Currently broken for EAS. See: https://github.com/expo/expo-github-action/issues/189
-      # - name: 💬 Comment preview
-      #   uses: expo/expo-github-action/preview-comment@v7
-      #   with:
-      #     channel: pr-${{ github.event.number }}

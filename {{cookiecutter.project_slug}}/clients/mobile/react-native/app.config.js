@@ -1,7 +1,7 @@
 module.exports = {
   expo: {
-    name: '{{ cookiecutter.project_name %}}',
-    slug: '{{ cookiecutter.project_name %}}',
+    name: '{{ cookiecutter.project_name }}',
+    slug: '{{ cookiecutter.project_name }}',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/logo-sq.png',

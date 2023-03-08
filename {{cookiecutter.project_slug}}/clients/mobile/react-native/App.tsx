@@ -3,7 +3,7 @@ import { setNotificationHandler } from 'expo-notifications'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import React, { useCallback, useEffect, useState } from 'react'
-import { LogBox } from 'react-native'
+import { LogBox, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { AppRoot } from './src/screens'
 import { initServices } from './src/services'
@@ -27,6 +27,12 @@ setNotificationHandler({
   }),
 })
 
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+})
+
 export default (): JSX.Element => {
   const [ready, setReady] = useState(false)
   const hasHydrated = useAuth.use.hasHydrated()
@@ -46,7 +52,7 @@ export default (): JSX.Element => {
 
   if (!ready || !hasHydrated) return <></>
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.flex}>
       <SSProvider>
         <QueryClientProvider client={client}>
           <StatusBar />

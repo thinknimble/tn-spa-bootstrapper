@@ -13,7 +13,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: {{ "${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}" }}
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v2
@@ -25,7 +25,7 @@ jobs:
         with:
           expo-version: latest
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          token: {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: 📦 Install dependencies
         run: cd mobile && yarn install
