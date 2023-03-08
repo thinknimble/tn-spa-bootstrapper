@@ -125,6 +125,19 @@ def remove_gql_react_files():
         if exists(file_name):
             remove(file_name)
 
+def remove_expo_yaml_files():
+    file_names=[
+        join(".github/workflows","expo-emergency-prod-update.yml"),
+        join(".github/workflows","expo-main.yml"),
+        join(".github/workflows","expo-pr-teardown.yml"),
+        join(".github/workflows","expo-pr"),
+        join(".github/workflows","expo-teststore-build-android.yml"),
+        join(".github/workflows","expo-teststore-build-ios.yml"),
+    ]
+    for file_name in file_names:
+        if(exists(file_name)):
+            remove(file_name)
+
 
 def set_keys_in_envs():
     env_file_path = join(".env.example")
@@ -163,6 +176,8 @@ def main():
             remove_gql_react_files()
     if "{{ cookiecutter.include_mobile }}".lower()=="y":
         move_mobile_client_to_root("react-native")
+    else:
+        remove_expo_yaml_files()
     if "{{ cookiecutter.use_graphql }}".lower() == "n":
         remove_graphql_files()
 
