@@ -1,0 +1,32 @@
+{
+  "cli": {
+    "version": ">= 2.4.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
+    },
+    "review": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "review"
+    },
+    "staging": {
+      "distribution": "internal",
+      "channel": "staging",
+      "env": {
+        "API_URL": "test_staging"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true,
+      "env": {
+        "API_URL": "test_prod"
+      }
+    }
+  }
+}
