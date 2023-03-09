@@ -1,6 +1,31 @@
 name: Linter
 on: [push]
+
 jobs:
+  Black_bootstrapper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+      - run: pipenv install --dev --deploy
+      - name: Run Black
+        run: pipenv run black --check --exclude \{\{cookiecutter .
+  flake8_bootstrapper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          cache: 'pipenv'
+      - run: pipenv install --dev --deploy
+      - name: Run flake8
+        run: pipenv run flake8 --extend-exclude server
   Black:
     strategy:
       matrix:
