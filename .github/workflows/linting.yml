@@ -22,7 +22,7 @@ jobs:
         working-directory: ./my_project/server
         run: |
           pipenv install --dev --deploy
-          pipenv run black .
+          pipenv run black --check .
   flake8:
     strategy:
       matrix:
