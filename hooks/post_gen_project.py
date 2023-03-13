@@ -129,12 +129,12 @@ def remove_gql_react_files():
 
 def remove_expo_yaml_files():
     file_names=[
-        join(".github/workflows","expo-emergency-prod-update.yml"),
-        join(".github/workflows","expo-main.yml"),
-        join(".github/workflows","expo-pr-teardown.yml"),
-        join(".github/workflows","expo-pr"),
-        join(".github/workflows","expo-teststore-build-android.yml"),
-        join(".github/workflows","expo-teststore-build-ios.yml"),
+        join(".github/workflows", "expo-emergency-prod-update.yml"),
+        join(".github/workflows", "expo-main.yml"),
+        join(".github/workflows", "expo-pr-teardown.yml"),
+        join(".github/workflows", "expo-pr"),
+        join(".github/workflows", "expo-teststore-build-android.yml"),
+        join(".github/workflows", "expo-teststore-build-ios.yml"),
     ]
     for file_name in file_names:
         if(exists(file_name)):
