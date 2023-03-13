@@ -1,5 +1,5 @@
 import Logger from './logger'
-import { BACKEND_SERVER_URL, ROLLBAR_ACCESS_TOKEN } from '@env'
+import { BACKEND_SERVER_URL, ROLLBAR_ACCESS_TOKEN, SENTRY_DSN } from '@env'
 import { Platform } from 'react-native'
 import Constants from 'expo-constants'
 
@@ -17,15 +17,29 @@ function getEnvOrDefaultURL(defaultUrl) {
    */
   return PROD_URL
 }
+// Check if this is a build defined by EAS Build
+
+const { apiUrl, buildEnv, rollbarAccessToken, sentryDSN } = Constants?.expoConfig?.extra
 
 const isAndroid = Platform.OS === 'android'
-//! we found out that adding rollbar crashes Android apps
-const rollbarToken = isAndroid ? undefined : '<rollbar-token>' //ROLLBAR_ACCESS_TOKEN
+let rollbarToken = isAndroid ? undefined : ROLLBAR_ACCESS_TOKEN
 
-const ENV = {
-  apiUrl: getEnvOrDefaultURL(STAGING_URL),
-  logger: new Logger(rollbarToken).logger,
+const ENV = () => {
+  if (buildEnv) {
+    rollbarToken = rollbarAccessToken
+    return {
+      apiUrl: apiUrl,
+      logger: new Logger(rollbarToken).logger,
+      sentryDSN: sentryDSN,
+    }
+  }
+  return {
+    apiUrl: getEnvOrDefaultURL(STAGING_URL),
+    logger: new Logger(rollbarToken).logger,
+    sentryDSN: SENTRY_DSN,
+  }
 }
-Config = { ...ENV }
-Config.logger('envvars form consts', JSON.stringify(Constants?.expoConfig?.extra))
+console.log(ENV())
+Config = { ...ENV() }
+
 export default Config
