@@ -63,10 +63,6 @@ yarn start
 - [TN Models FP](https://github.com/thinknimble/tn-models-fp) - package developed specially to work with TN python backends from a client.
 - [Tanstack Query](https://github.com/TanStack/query) - server state management
 
-#### Extra helpful libraries
-
-- [Release It](https://github.com/release-it/release-it) - automate versioning and publishing of your app.
-
 #### Useful services/methods
 
 - `navio` - a service that exposes all navigation methods of [Navio](https://github.com/kanzitelli/rn-navio) instance.
