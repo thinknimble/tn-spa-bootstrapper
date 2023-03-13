@@ -5,9 +5,7 @@ name = "pypi"
 
 [packages]
 cookiecutter = "==2.1.1"
-sh = "==1.14.2"
 binaryornot = "==0.4.4"
-jotquote = "==0.9.4"
 black = "==22.3.0"
 isort = "==5.9.3"
 flake8 = "==3.9.2"
