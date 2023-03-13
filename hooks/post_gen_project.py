@@ -73,12 +73,12 @@ def move_web_client_to_root(client):
         rename(env_path, join("client", ".env.local"))
 
 def remove_mobile_client_files(client):
-    rmtree(join(mobile_clients_path,client))
+    rmtree(join(mobile_clients_path, client))
 
 def move_mobile_client_to_root(client):
     if exists("mobile"):
         rmtree("mobile")
-    move(join(mobile_clients_path,client),join('mobile'))
+    move(join(mobile_clients_path,client), join('mobile'))
     rmtree(join(mobile_clients_path))
 
 def set_flag(file_path, flag, value=None):
