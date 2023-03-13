@@ -66,7 +66,7 @@ class User(AbstractUser, AbstractBaseModel):
             "user": self,
             "site_url": get_site_url(),
             "support_email": settings.STAFF_EMAIL,
-            "token": default_token_generator.make_token(self)
+            "token": default_token_generator.make_token(self),
         }
 
     class Meta:

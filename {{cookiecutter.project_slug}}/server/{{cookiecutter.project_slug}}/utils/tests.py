@@ -25,7 +25,7 @@ def test_get_site_url(settings, custom_settings, expected_output):
         ({"CURRENT_DOMAIN": "", "CURRENT_PORT": None, "IN_DEV": False}),
     ],
 )
-def test_get_site_url_negative(settings, custom_settings, expected_output):
+def test_get_site_url_negative(settings, custom_settings):
     for key in custom_settings:
         settings.__setattr__(key, custom_settings[key])
     with pytest.raises(Exception):
