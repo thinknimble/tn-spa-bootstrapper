@@ -21,7 +21,7 @@ def test_get_site_url(settings, custom_settings, expected_output):
 @pytest.mark.parametrize(
     "custom_settings",
     [
-        ({"CURRENT_DOMAIN": None, "CURRENT_PORT": 8080 "IN_DEV": True}),
+        ({"CURRENT_DOMAIN": None, "CURRENT_PORT": 8080, "IN_DEV": True}),
         ({"CURRENT_DOMAIN": "", "CURRENT_PORT": None, "IN_DEV": False}),
     ],
 )
