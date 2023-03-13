@@ -1,9 +1,3 @@
-<p align="center">
-  <img src="https://xxx-files.ggc.team/oss/expo-starter/cover.png" width="80%" title="Logo">
-</p>
-
-This starter is a collection of libraries and approaches needed for fast start and productive maintainance of Expo (React Native) App.
-
 ## Getting Started
 
 ## Environments
@@ -19,38 +13,21 @@ All config variables for the various environments come from .env file in mobile 
 Env variables defined in eas.json are not available to npx run start (local)
 When using environment variables that need to be initialized as part of the app.config.js you must add them to the .env file and the run command in the package.json (see sentry for an example)
 
-#### Quick start with [cli-rn](https://github.com/kanzitelli/cli-rn)
+### Running the project
 
-```bash
-npx cli-rn new app
-```
-
-In order to change app's name, please make necessary changes in `app.json`.
-
-<details>
-<summary>Manual setup</summary>
-
-1. Clone the repo
-
-```bash
-npx degit kanzitelli/expo-starter app
-```
-
-2. Install packages
+1. Install deps with `yarn`
 
 ```bash
 cd app && yarn
 ```
 
-3. Run it!
+3. Run the project and pick your platform from the console options
 
 ```bash
 yarn start
 ```
 
-</details>
-
-## What's inside
+## Tech Stack
 
 - [Expo SDK](https://github.com/expo/expo) - a set of tools and services built around React Native and native platforms.
 - [React Navigation (v6)](https://github.com/react-navigation/react-navigation) - routing and navigation for React Native apps.
