@@ -56,11 +56,14 @@ def get_random_secret_key():
     chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)"
     return "".join(secrets.choice(chars) for i in range(50))
 
+
 web_clients_path = "clients/web"
 mobile_clients_path = "clients/mobile"
 
+
 def remove_web_client_files(client):
     rmtree(join(web_clients_path, client))
+
 
 def move_web_client_to_root(client):
     if exists("client"):
@@ -72,14 +75,17 @@ def move_web_client_to_root(client):
     if exists(env_path):
         rename(env_path, join("client", ".env.local"))
 
+
 def remove_mobile_client_files(client):
     rmtree(join(mobile_clients_path, client))
+
 
 def move_mobile_client_to_root(client):
     if exists("mobile"):
         rmtree("mobile")
-    move(join(mobile_clients_path,client), join('mobile'))
+    move(join(mobile_clients_path, client), join("mobile"))
     rmtree(join(mobile_clients_path))
+
 
 def set_flag(file_path, flag, value=None):
     value = value or get_random_secret_key()
@@ -127,8 +133,9 @@ def remove_gql_react_files():
         if exists(file_name):
             remove(file_name)
 
+
 def remove_expo_yaml_files():
-    file_names=[
+    file_names = [
         join(".github/workflows", "expo-emergency-prod-update.yml"),
         join(".github/workflows", "expo-main.yml"),
         join(".github/workflows", "expo-pr-teardown.yml"),
@@ -137,7 +144,7 @@ def remove_expo_yaml_files():
         join(".github/workflows", "expo-teststore-build-ios.yml"),
     ]
     for file_name in file_names:
-        if(exists(file_name)):
+        if exists(file_name):
             remove(file_name)
 
 
@@ -176,7 +183,7 @@ def main():
             remove_rest_react_files()
         else:
             remove_gql_react_files()
-    if "{{ cookiecutter.include_mobile }}".lower()=="y":
+    if "{{ cookiecutter.include_mobile }}".lower() == "y":
         move_mobile_client_to_root("react-native")
     else:
         remove_expo_yaml_files()
