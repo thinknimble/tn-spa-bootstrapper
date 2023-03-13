@@ -18,14 +18,22 @@
       "distribution": "internal",
       "channel": "staging",
       "env": {
-        "API_URL": "test_staging"
+        "API_URL": "",
+        "BUILD_ENV": "staging",
+        "ROLLBAR_ACCESS_TOKEN": "",
+        "SENTRY_PROJECT_NAME": "",
+        "SENTRY_DSN": ""
       }
     },
     "production": {
       "channel": "production",
       "autoIncrement": true,
       "env": {
-        "API_URL": "test_prod"
+        "API_URL": "",
+        "BUILD_ENV": "production",
+        "ROLLBAR_ACCESS_TOKEN": "",
+        "SENTRY_PROJECT_NAME": "",
+        "SENTRY_DSN": ""
       }
     }
   }

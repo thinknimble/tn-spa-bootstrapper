@@ -6,21 +6,6 @@ This starter is a collection of libraries and approaches needed for fast start a
 
 ## Getting Started
 
-## ios local build 
-npx expo install expo-modules-core@0.9.0
-
-unset LDFLAGS && \                      
-unset NVM_CD_FLAGS && \
-unset CPPFLAGS && \
-unset DEBUG_FORTRANFLAGS && \
-unset CXXFLAGS && \
-unset DEBUG_CXXFLAGS && \
-unset DEBUG_FFLAGS && \
-unset FORTRANFLAGS && \
-unset CFLAGS && \
-unset DEBUG_CFLAGS && \
-unset LDFLAGS && \
-unset FFLAGS
 
 ## Environments 
 
@@ -33,7 +18,7 @@ When a version is published or updated NODE_ENV='production'
 
 All config variables for the various environments come from .env file in mobile directory
 Env variables defined in eas.json are not available to npx run start (local)
-Instead the variables are declared in package.json
+When using environment variables that need to be initialized as part of the app.config.js you must add them to the .env file and the run command in the package.json (see sentry for an example)
 
 #### Quick start with [cli-rn](https://github.com/kanzitelli/cli-rn)
 

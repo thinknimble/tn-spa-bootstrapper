@@ -13,17 +13,20 @@ module.exports = {
     },
     assetBundlePatterns: ['**/*'],
     plugins: [
-      'sentry-expo',
-
-      [
-        'expo-build-properties',
-        {
-          ios: {
-            deploymentTarget: '13.0',
+      'sentry-expo'
+    ],
+    hooks: {
+      postPublish: [
+        { // this set up assumes you are using one application with multiple projects in sentry
+          file: 'sentry-expo/upload-sourcemaps',
+          config: {
+            organization: '',
+            project: process.env.SENTRY_PROJECT_NAME, // see readme for this variables
+            authToken: '',
           },
         },
       ],
-    ],
+    },
     ios: {
       supportsTablet: true,
     },
@@ -38,6 +41,10 @@ module.exports = {
     },
     extra: {
       apiUrl: process.env.API_URL,
+      isBuild: process.env.IS_BUILD,
+      buildEnv: process.env.BUILD_ENV,
+      rollbarAccessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+      sentryDSN: process.env.SENTRY_DSN,
     },
     runtimeVersion: {
       policy: 'sdkVersion',

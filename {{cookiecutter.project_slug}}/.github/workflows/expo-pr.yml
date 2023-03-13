@@ -49,3 +49,4 @@ jobs:
           BACKEND_SERVER_URL: {{ "${{ needs.Setup.outputs.BASE_URL }}" }}
           ROLLBAR_ACCESS_TOKEN: "" # uses dev
           SENTRY_PROJECT_NAME: "" # uses dev
+          SENTRY_DSN: ""
