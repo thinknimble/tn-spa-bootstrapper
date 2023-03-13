@@ -1,8 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import {
-  createApi,
-  GetZodInferredTypeFromRaw,
-} from '@thinknimble/tn-models'
+import { createApi, GetZodInferredTypeFromRaw } from '@thinknimble/tn-models-fp'
 import { z } from 'zod'
 import { useAuth } from '../stores/auth'
 import { axiosInstance } from './axios-instance'
