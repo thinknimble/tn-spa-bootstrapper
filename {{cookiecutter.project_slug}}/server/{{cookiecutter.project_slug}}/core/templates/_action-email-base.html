@@ -1,3 +1,4 @@
+{%- raw -%}
 {% load static %}
 
 {% comment %}
@@ -31,7 +32,7 @@ xmlns:o="urn:schemas-microsoft-com:office:office">
 <o:PixelsPerInch>96</o:PixelsPerInch>
 </o:OfficeDocumentSettings>
 </xml><![endif]-->
-<title>{{ cookiecutter.project_name }}</title>
+<title>{% endraw -%}{{ cookiecutter.project_name }}{%- raw %}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0 " />
@@ -126,7 +127,7 @@ u + .em_body .em_full_wrap { width:100% !important; width:100vw !important;}
               <tr>
                 <td align="center" valign="top">
                     <a href="{{ site_url }}" target="_blank" style="text-decoration:none;">
-                        <img src="{{ site_url }}{% static 'images/logo.png' %}" alt="{{ cookiecutter.project_name }}" border="0" style="display:block; font-family:Arial, sans-serif; font-size:18px; line-height:25px; text-align:center; color:#1d4685; font-weight:bold; max-width:208px;" class="em_w150" />
+                        <img src="{{ site_url }}{% static 'images/logo.png' %}" alt="{% endraw -%}{{ cookiecutter.project_name }}{%- raw %}" border="0" style="display:block; font-family:Arial, sans-serif; font-size:18px; line-height:25px; text-align:center; color:#1d4685; font-weight:bold; max-width:208px;" class="em_w150" />
                     </a>
                 </td>
               </tr>
@@ -230,7 +231,7 @@ u + .em_body .em_full_wrap { width:100% !important; width:100vw !important;}
               <tr>
                 <td align="center" valign="top"><table border="0" cellspacing="0" cellpadding="0" align="left" class="em_wrapper">
                   <tr>
-                    <td class="em_grey" align="center" valign="middle" style="font-family: Arial, sans-serif; font-size: 11px; line-height: 16px; color:#434343;">&copy; {{ cookiecutter.project_name }} {% now 'Y' %}  &nbsp;</td>
+                    <td class="em_grey" align="center" valign="middle" style="font-family: Arial, sans-serif; font-size: 11px; line-height: 16px; color:#434343;">&copy; {% endraw -%}{{ cookiecutter.project_name }}{%- raw %} {% now 'Y' %}  &nbsp;</td>
                   </tr>
                 </table>
                 </td>
@@ -247,3 +248,4 @@ u + .em_body .em_full_wrap { width:100% !important; width:100vw !important;}
 </table>
 </body>
 </html>
+{%- endraw -%}
