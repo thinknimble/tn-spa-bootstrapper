@@ -7,6 +7,7 @@ from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
     "custom_settings,expected_output",
     [
         ({"CURRENT_DOMAIN": "localhost", "CURRENT_PORT": 8080, "HEROKU_APP_NAME": None, "IN_DEV": True}, "http://localhost:8080"),
+        ({"CURRENT_DOMAIN": "localhost.com", "CURRENT_PORT": None, "HEROKU_APP_NAME": None, "IN_DEV": True}, "http://localhost.com"),
         ({"CURRENT_DOMAIN": "http://localhost/", "CURRENT_PORT": None, "HEROKU_APP_NAME": "", "IN_DEV": False}, "https://localhost"),
         ({"CURRENT_DOMAIN": "", "CURRENT_PORT": None, "HEROKU_APP_NAME": "example", "IN_DEV": False}, "https://example.herokuapp.com"),
     ],

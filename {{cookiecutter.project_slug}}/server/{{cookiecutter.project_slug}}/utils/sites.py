@@ -10,6 +10,6 @@ def get_site_url():
     scheme = "http://" if settings.IN_DEV else "https://"
     site_url = urlparse(f"{scheme}{domain}")
     if settings.CURRENT_PORT:
-        netloc = site_url.netloc + f":{settings.CURRENT_PORT}"
+        netloc = f"{site_url.netloc}:{settings.CURRENT_PORT}"
         site_url = site_url._replace(netloc=netloc)
     return site_url.geturl()
