@@ -63,7 +63,7 @@
     "react-native-tab-view": "^3.3.4",
     "react-native-web": "~0.18.11",
     "rn-bounceable": "^1.2.0",
-    "rn-navio": "^0.0.1",
+    "rn-navio": "0.0.6",
     "rollbar-react-native": "^0.9.3",
     "sentry-expo": "~6.1.0",
     "zod": "^3.20.6",

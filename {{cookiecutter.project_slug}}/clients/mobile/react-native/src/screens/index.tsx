@@ -33,14 +33,14 @@ export const navio = Navio.build({
     MainStack: ['Main'],
   },
   root: 'AuthStack',
-  options: {
-    stack: screenDefaultOptions,
-    tab: tabDefaultOptions,
+  defaultOptions: {
+    stacks: { screen: screenDefaultOptions },
+    tabs: { screen: tabDefaultOptions },
   },
 })
 
 export const getNavio = () => navio
-export const AppRoot = navio.Root
+export const AppRoot = navio.App
 
 export type AppScreens = Parameters<typeof navio['push']>[0]
-export type AppStacks = Parameters<typeof navio['pushStack']>[0]
+export type AppStacks = Parameters<typeof navio['stacks']['push']>[0]
