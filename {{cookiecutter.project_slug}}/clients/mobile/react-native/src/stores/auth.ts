@@ -7,7 +7,7 @@ import { createSelectors } from './utils'
 
 type AuthState = {
   token: string
-  hasHydrated: boolean
+  hasHydrated: Promise<boolean>
   userId: string
   expoToken: string
   /**
@@ -27,9 +27,14 @@ type AuthState = {
   }
 }
 
+let resolveHydrationValue: (value: boolean) => void
+const hasHydrated = new Promise<boolean>((res) => {
+  resolveHydrationValue = res
+})
+
 const defaultState: Omit<AuthState, 'actions'> = {
   expoToken: '',
-  hasHydrated: false,
+  hasHydrated,
   token: '',
   userId: '',
   user: null,
@@ -48,7 +53,7 @@ export const useAuth = createSelectors(
             set({ userId: id })
           },
           hydrate() {
-            set({ hasHydrated: true })
+            resolveHydrationValue(true)
           },
           clearAuth() {
             set({
@@ -76,6 +81,7 @@ export const useAuth = createSelectors(
         },
         storage: createJSONStorage(() => AsyncStorage),
         partialize(state) {
+          // ignore actions since functions are not serializable for localStorage
           const { actions, ...rest } = state
           return rest
         },

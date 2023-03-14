@@ -12,6 +12,7 @@ import { SSProvider } from './src/utils/providers'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAuth } from './src/stores/auth'
 import { initSentry } from './src/utils/sentry'
+import { flushSync } from 'react-dom'
 
 LogBox.ignoreLogs(['Require'])
 
@@ -35,22 +36,26 @@ const styles = StyleSheet.create({
 
 export default (): JSX.Element => {
   const [ready, setReady] = useState(false)
-  const hasHydrated = useAuth.use.hasHydrated()
+  const hasLocalStorageHydratedState = useAuth.use.hasHydrated()
 
   const start = useCallback(async () => {
     await SplashScreen.preventAutoHideAsync()
 
     await initServices()
-
-    setReady(true)
+    await hasLocalStorageHydratedState
     await SplashScreen.hideAsync()
+    console.log('splash hidden')
+    flushSync(() => {
+      setReady(true)
+    })
   }, [])
 
   useEffect(() => {
     start()
   }, [start])
 
-  if (!ready || !hasHydrated) return <></>
+  //TODO: to avoid a screen flash, return here your loading screen or something similar to your splash screen
+  if (!ready) return <></>
   return (
     <GestureHandlerRootView style={styles.flex}>
       <SSProvider>
