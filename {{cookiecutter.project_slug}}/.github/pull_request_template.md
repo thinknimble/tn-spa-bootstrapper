@@ -2,7 +2,7 @@
 
 Add a description of what feature/page this PR intends to add or change. Don't forget to start the PR title with the Jira ticket number.
 
-- [Jira ticket](Paste Jira link here) 
+- [ticket title](URL to story/issue/ticket goes here) 
 
 ## Checklist
 - [ ] Todo 1
