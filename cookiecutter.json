@@ -8,13 +8,13 @@
     "cookiecutter.extensions.RandomStringExtension"
   ],
   "_copy_without_render": [
-    "clients/vue3/src/views/dashboard",
-    "clients/vue3/src/components",
-    "clients/react/src/components",
-    "clients/react/src/pages/app-or-auth.tsx",
-    "clients/react/src/pages/home.tsx",
-    "clients/react/src/pages/index.ts",
-    "clients/react/src/pages/layout.tsx",
+    "clients/web/vue3/src/views/dashboard",
+    "clients/web/vue3/src/components",
+    "clients/web/react/src/components",
+    "clients/web/react/src/pages/app-or-auth.tsx",
+    "clients/web/react/src/pages/home.tsx",
+    "clients/web/react/src/pages/index.ts",
+    "clients/web/react/src/pages/layout.tsx",
     "*/swagger-ui.html"
   ],
   "mail_service": [

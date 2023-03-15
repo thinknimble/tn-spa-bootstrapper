@@ -57,15 +57,17 @@ def get_random_secret_key():
     return "".join(secrets.choice(chars) for i in range(50))
 
 
-def remove_client_files(client):
-    rmtree(join("clients", client))
+def remove_web_client_files(client):
+    rmtree(join(web_clients_path, client))
 
-def move_client_to_root(client):
+web_clients_path = "clients/web"
+
+def move_web_client_to_root(client):
     if exists("client"):
         # We must be running as an update script
         rmtree("client")
-    move(join("clients", client), join("client"))
-    rmtree(join("clients"))
+    move(join(web_clients_path, client), join("client"))
+    rmtree(join(web_clients_path))
     env_path = join("client", ".env.local.example")
     if exists(env_path):
         rename(env_path, join("client", ".env.local"))
@@ -95,21 +97,23 @@ def remove_graphql_files():
         if exists(file_name):
             remove(file_name)
 
+
 def remove_rest_react_files():
     file_names = [
-        join("client/src/services","axios-instance.ts"),
-        join("client/src/services","auth.ts"),
+        join("client/src/services", "axios-instance.ts"),
+        join("client/src/services", "auth.ts"),
     ]
     for file_name in file_names:
         if exists(file_name):
             remove(file_name)
 
+
 def remove_gql_react_files():
     file_names = [
-        join("client/src/utils","mutations.ts"),
-        join("client/src/utils","queries.ts"),
-        join("client/src/utils","get-cookie.js"),
-        join("client/src/services","apollo-client.ts"),
+        join("client/src/utils", "mutations.ts"),
+        join("client/src/utils", "queries.ts"),
+        join("client/src/utils", "get-cookie.js"),
+        join("client/src/services", "apollo-client.ts"),
     ]
     for file_name in file_names:
         if exists(file_name):
@@ -129,7 +133,7 @@ def set_keys_in_envs():
     set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", value=secret)
     set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
     copy2(env_file_path, join(".env"))
-    cypress_example_file_dir = join("clients", "react")
+    cypress_example_file_dir = join(web_clients_path, "react")
     cypress_example_file = join(cypress_example_file_dir, "cypress.example.env.json")
     set_flag(cypress_example_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
     copy2(cypress_example_file, join(cypress_example_file_dir, "cypress.env.json"))
@@ -142,11 +146,11 @@ def main():
         rmtree("clients")
         remove(join("package.json"))
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
-        remove_client_files("react")
-        move_client_to_root("vue3")
+        remove_web_client_files("react")
+        move_web_client_to_root("vue3")
     elif "{{ cookiecutter.client_app }}".lower() == "react":
-        remove_client_files("vue3")
-        move_client_to_root("react")
+        remove_web_client_files("vue3")
+        move_web_client_to_root("react")
         if "{{ cookiecutter.use_graphql }}".lower() == "y":
             remove_rest_react_files()
         else:
