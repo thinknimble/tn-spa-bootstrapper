@@ -44,6 +44,7 @@ export default {
   setup() {
     const form = ref(new PasswordResetForm())
     let matchingPasswordsError = ref(false)
+    const store = useStore()
     const route = useRoute()
     const router = useRouter()
 
