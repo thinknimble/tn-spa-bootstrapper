@@ -9,16 +9,30 @@
         label="New Password:"
         placeholder="New password"
       />
+      <InputField
+        v-model:value="form.passwordConfirmation.value"
+        :errors="form.passwordConfirmation.errors"
+        @blur="form.passwordConfirmation.validate()"
+        type="password"
+        label="New Password:"
+        placeholder="New password"
+      />
+      <p class="text-accent" v-if="matchingPasswordsError">{{ matchingPasswordsError }}</p>
 
-      <button type="submit">Reset Password</button>
+      <button
+        :class="{ 'btn--disabled': !form.isValid || matchingPasswordsError }"
+        :disabled="!form.isValid || matchingPasswordsError"
+        type="submit">
+        Reset Password
+      </button>
     </form>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import User, { PasswordResetForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 
@@ -29,11 +43,26 @@ export default {
   },
   setup() {
     const form = ref(new PasswordResetForm())
+    let matchingPasswordsError = ref(false)
     const route = useRoute()
+    const router = useRouter()
+
+    watch(
+      () => [form.value.password.value, form.value.passwordConfirmation.value],
+      () => {
+        if (form.value.password.value && form.value.passwordConfirmation.value
+            && form.value.password.value !== form.value.passwordConfirmation.value){
+          matchingPasswordsError.value = 'Passwords must match'
+        }else{
+          matchingPasswordsError.value = false
+        }
+      }
+    )
 
     function handleResetSuccess(data) {
-      alert('Succesfully reset password, see console for data.')
-      console.log('success', data)
+      alert('Succesfully reset password')
+      store.dispatch('setUser', data)
+      router.push({ name: 'Dashboard' })
     }
 
     function handleResetFailure(error) {
@@ -61,6 +90,7 @@ export default {
     return {
       form,
       attemptPasswordReset,
+      matchingPasswordsError,
     }
   },
 }

@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from rest_framework import generics, mixins, permissions, status, viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -81,7 +81,8 @@ class UserViewSet(
 
 
 @api_view(["post"])
-@permission_classes([permissions.AllowAny])
+@permission_classes([])
+@authentication_classes([])
 def request_reset_link(request, *args, **kwargs):
     email = request.data.get("email")
     user = User.objects.filter(email=email).first()
@@ -110,9 +111,9 @@ def request_reset_link(request, *args, **kwargs):
 @permission_classes([permissions.AllowAny])
 def reset_password(request, *args, **kwargs):
     logger.info(f"Password reset requested with {kwargs}")
-    id = kwargs.get("id")
+    user_id = kwargs.get("uid")
     token = kwargs.get("token")
-    user = User.objects.filter(id=id).first()
+    user = User.objects.filter(id=user_id).first()
     logger.info(f"Resetting password for {user} with {id} and {token}")
     if not user or not token:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
@@ -121,5 +122,5 @@ def reset_password(request, *args, **kwargs):
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
     user.set_password(request.data.get("password"))
     user.save()
-    u = UserLoginSerializer.login(user, request)
-    return Response(status=status.HTTP_200_OK, data=u)
+    response_data = UserLoginSerializer.login(user, request)
+    return Response(response_data, status=status.HTTP_200_OK)

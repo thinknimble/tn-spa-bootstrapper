@@ -33,4 +33,10 @@ export class PasswordResetForm extends Form {
       new MinLengthValidator({ minLength: 8, message: 'Minimum Length of 8 required' }),
     ],
   })
+  static passwordConfirmation = new FormField({
+    validators: [
+      new RequiredValidator(),
+      new MinLengthValidator({ minLength: 8, message: 'Minimum Length of 8 required' }),
+    ],
+  })
 }
