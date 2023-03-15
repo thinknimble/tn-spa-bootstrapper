@@ -72,6 +72,9 @@ client-shell:
 server-shell:
 	docker compose run server bash
 
+create-test-data:
+	docker compose run server python server/manage.py create_test_data
+
 logs:
 	docker compose logs -f
 
