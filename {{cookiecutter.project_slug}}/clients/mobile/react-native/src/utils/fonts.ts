@@ -19,7 +19,7 @@ export const customFonts = {
 
 type FontFamily = keyof typeof customFonts
 
-export type FontWeightsStyle =
+export type FontWeightStyle =
   | 'light'
   | 'italic-light'
   | 'regular'
@@ -31,7 +31,7 @@ export type FontWeightsStyle =
   | 'bold'
   | 'italic-bold'
 
-export const fontFamilyWeightMap: Record<FontWeightsStyle, FontFamily> = {
+export const fontFamilyWeightMap: Record<FontWeightStyle, FontFamily> = {
   light: `${baseFamily}-Light`,
   'italic-light': `${baseFamily}-LightItalic`,
   regular: `${baseFamily}-Regular`,
