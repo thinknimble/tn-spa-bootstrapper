@@ -22,7 +22,7 @@ export const Main = () => {
         <Image source={logo} style={styles.logo} />
       </View>
       <View className="items-center pt-4">
-        <Text className="text-center text-xl">Welcome to my project</Text>
+        <Text className="text-center text-xl font-variant-bold-italic">Welcome to my project</Text>
       </View>
     </View>
   )
