@@ -17,7 +17,7 @@
         label="New Password:"
         placeholder="New password"
       />
-      <p class="text-accent" v-if="matchingPasswordsError">{{ matchingPasswordsError }}</p>
+      <p class="text-accent" v-if="matchingPasswordsError">{{ "{{ matchingPasswordsError }}" }}</p>
 
       <button
         :class="{ 'btn--disabled': !form.isValid || matchingPasswordsError }"
