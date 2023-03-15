@@ -6,14 +6,14 @@ module.exports = {
     extend: {
       fontFamily: {
         'variant-black': ['Montserrat-BlackItalic'],
-        'variant-black-italic': ['Montserrat-Black'],
+        'variant-italic-black': ['Montserrat-Black'],
         'variant-bold': ['Montserrat-Bold'],
-        'variant-bold-italic': ['Montserrat-BoldItalic'],
+        'variant-italic-bold': ['Montserrat-BoldItalic'],
         'variant-italic': ['Montserrat-Italic'],
         'variant-light': ['Montserrat-Light'],
-        'variant-light-italic': ['Montserrat-LightItalic'],
+        'variant-italic-light': ['Montserrat-LightItalic'],
         'variant-medium': ['Montserrat-Medium'],
-        'variant-medium-italic': ['Montserrat-MediumItalic'],
+        'variant-italic-medium': ['Montserrat-MediumItalic'],
         'variant-regular': ['Montserrat-Regular'],
       },
       colors: {

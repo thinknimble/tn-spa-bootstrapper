@@ -1,5 +1,4 @@
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
-import { MultiPlatformSafeAreaView } from '../components/multi-platform-safe-area-view'
 import logo from '../../assets/tn-logo.png'
 
 const { height } = Dimensions.get('screen')
@@ -22,7 +21,7 @@ export const Main = () => {
         <Image source={logo} style={styles.logo} />
       </View>
       <View className="items-center pt-4">
-        <Text className="text-center text-xl font-variant-bold-italic">Welcome to my project</Text>
+        <Text className="text-center text-xl font-variant-italic-bold">Welcome to my project</Text>
       </View>
     </View>
   )
