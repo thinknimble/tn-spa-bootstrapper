@@ -13,13 +13,12 @@ import { initServices } from './src/services'
 import { useAuth } from './src/stores/auth'
 import { customFonts } from './src/utils/fonts'
 import { SSProvider } from './src/utils/providers'
+import { queryClient } from './src/utils/query-client'
 import { initSentry } from './src/utils/sentry'
 
 LogBox.ignoreLogs(['Require'])
 
 initSentry()
-
-export const client = new QueryClient()
 
 setNotificationHandler({
   handleNotification: async () => ({
@@ -35,13 +34,13 @@ const styles = StyleSheet.create({
   },
 })
 
+SplashScreen.preventAutoHideAsync()
+
 export default (): JSX.Element => {
   const [ready, setReady] = useState(false)
   const hasLocalStorageHydratedState = useAuth.use.hasHydrated()
 
   const start = useCallback(async () => {
-    await SplashScreen.preventAutoHideAsync()
-    console.log('Loading fonts')
     await loadAsync(customFonts)
     await initServices()
     await hasLocalStorageHydratedState
@@ -59,7 +58,7 @@ export default (): JSX.Element => {
   return (
     <GestureHandlerRootView style={styles.flex}>
       <SSProvider>
-        <QueryClientProvider client={client}>
+        <QueryClientProvider client={queryClient}>
           <StatusBar />
           <AppRoot />
         </QueryClientProvider>

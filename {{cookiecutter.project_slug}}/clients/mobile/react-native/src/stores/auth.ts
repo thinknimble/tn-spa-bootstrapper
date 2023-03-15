@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { client } from '../../App'
 import { User } from '../services/user'
+import { queryClient } from '../utils/query-client'
 import { createSelectors } from './utils'
 
 type AuthState = {
@@ -92,5 +92,5 @@ export const useAuth = createSelectors(
 
 export const logout = () => {
   useAuth.getState().actions.clearAuth()
-  client.invalidateQueries(['user'])
+  queryClient.invalidateQueries(['user'])
 }
