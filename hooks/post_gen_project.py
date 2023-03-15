@@ -60,7 +60,9 @@ def get_random_secret_key():
 def remove_web_client_files(client):
     rmtree(join(web_clients_path, client))
 
+
 web_clients_path = "clients/web"
+
 
 def move_web_client_to_root(client):
     if exists("client"):
