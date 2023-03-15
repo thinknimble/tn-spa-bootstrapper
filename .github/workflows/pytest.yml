@@ -1,19 +1,20 @@
 name: Unit Tests
 on: [push]
+
 jobs:
-  Pytest_CookieCutter:
+  Pytest_bootstrapper:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - run: pipx install pipenv
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: '3.10'
+          cache: 'pipenv'
       - run: pipenv install --dev --deploy
       - name: Test with pytest
         run: pipenv run pytest
-  Pytest_Generated_Project:
+  Pytest:
     runs-on: ubuntu-latest
     services:
       postgres:

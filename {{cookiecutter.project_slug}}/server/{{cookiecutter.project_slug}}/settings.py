@@ -70,9 +70,9 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "django_extensions",
-    {% if cookiecutter.use_graphql == 'y' -%}
+{% if cookiecutter.use_graphql == 'y' -%}
     "graphene_django",
-    {% endif -%}
+{% endif -%}
 ]
 {% if cookiecutter.use_graphql == 'y' -%}
 GRAPHENE = {

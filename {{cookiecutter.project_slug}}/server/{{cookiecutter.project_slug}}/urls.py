@@ -1,6 +1,6 @@
 {%- if cookiecutter.use_graphql == 'y' -%}
 from django.conf import settings
-{%- endif %}
+{%- endif -%}
 from django.contrib import admin
 from django.urls import include, path
 {% if cookiecutter.use_graphql == 'y' -%}

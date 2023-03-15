@@ -2,7 +2,6 @@ import os
 import re
 
 import pytest
-import sh
 from binaryornot.check import is_binary
 from cookiecutter.exceptions import FailedHookException
 
