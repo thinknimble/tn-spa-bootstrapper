@@ -254,8 +254,10 @@ STATICFILES_FINDERS = [
 # Anymail
 # ------------------------------------------------------------------------------
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+ENABLE_EMAILS = config("ENABLE_EMAILS", cast=bool, default=False)
+
 INSTALLED_APPS += ["anymail"]  # noqa F405
-if not IN_DEV:
+if ENABLE_EMAILS:
     {%- if cookiecutter.mail_service == 'Mailgun' %}
     # https://anymail.readthedocs.io/en/stable/esps/mailgun/
 
@@ -282,9 +284,9 @@ if not IN_DEV:
     EMAIL_HOST_PASSWORD = config("SMTP_PASSWORD")
     EMAIL_ALLOWED_DOMAINS = config("SMTP_VALID_TESTING_DOMAINS")
     EMAIL_USE_TLS = True
+    {% endif %}
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    {% endif %}
 
 # STORAGES
 # ----------------------------------------------------------------------------

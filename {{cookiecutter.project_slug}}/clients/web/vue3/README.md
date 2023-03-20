@@ -11,6 +11,12 @@ Download the ZIP file of icons that the site generates for you and paste them in
 
 When we run collectstatic the public folder is copied as is and enables serving of the favicons
 
+## Logo Setup
+
+Swap out the logo files in these locations:
+`client/src/assets/logo.png` (Used by the webapp)
+`server/{{ cookiecutter.project_slug }}/core/static/images/logo.png` (Used by HTML emails)
+
 ## Initial Setup for non-Docker local
 
 First, create `.env.local` at the top-level of the **client** directory, and copy the contents of `.env.local.example` into it.
