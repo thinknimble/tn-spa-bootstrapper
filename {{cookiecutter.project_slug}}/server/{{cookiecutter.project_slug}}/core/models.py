@@ -1,5 +1,4 @@
-import uuid  # noqa
-
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
@@ -8,7 +7,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
-from {{ cookiecutter.project_slug }}.utils import sites as site_utils
+from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
 
 
 class UserManager(BaseUserManager):
@@ -63,12 +62,12 @@ class User(AbstractUser, AbstractBaseModel):
         return f"{self.full_name} <{self.email}>"
 
     def reset_password_context(self):
-        return dict(
-            domain=site_utils.get_site_url(),
-            uid=str(self.id),
-            token=default_token_generator.make_token(self),
-            user=self,
-        )
+        return {
+            "user": self,
+            "site_url": get_site_url(),
+            "support_email": settings.STAFF_EMAIL,
+            "token": default_token_generator.make_token(self),
+        }
 
     class Meta:
         ordering = ["email"]
