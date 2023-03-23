@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { createApi, GetZodInferredTypeFromRaw } from '@thinknimble/tn-models-fp'
+import { createApi, createApiUtils, GetInferredFromRaw } from '@thinknimble/tn-models-fp'
 import { z } from 'zod'
 import { useAuth } from '../stores/auth'
 import { axiosInstance } from './axios-instance'
@@ -24,7 +24,7 @@ const createUserShape = {
   firstName: userFields.firstName,
   lastName: userFields.lastName,
 }
-export type UserCreate = GetZodInferredTypeFromRaw<typeof createUserShape>
+export type UserCreate = GetInferredFromRaw<typeof createUserShape>
 
 export const userShape = {
   id: userFields.id,
@@ -32,16 +32,36 @@ export const userShape = {
   ...createUserShape,
 }
 
-export type User = GetZodInferredTypeFromRaw<typeof userShape>
+export type User = GetInferredFromRaw<typeof userShape>
 
 export const userApi = createApi({
   client: axiosInstance,
-  endpoint: 'api/users',
+  baseUri: 'api/users',
   models: {
     create: createUserShape,
     entity: userShape,
   },
 })
+
+const loginShape = {
+  email: z.string().email(),
+  password: z.string(),
+}
+
+type LoginInput = GetInferredFromRaw<typeof loginShape>
+
+export const login = async (input: LoginInput) => {
+  const {
+    utils: { fromApi, toApi },
+  } = createApiUtils({
+    inputShape: loginShape,
+    name: login.name,
+    outputShape: userShape,
+  })
+  const res = await axiosInstance.post('login/', toApi(input))
+
+  return fromApi(res.data)
+}
 
 export const useUser = () => {
   const userId = useAuth.use.userId()
