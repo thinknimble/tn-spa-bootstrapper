@@ -25,6 +25,23 @@ This app includes basic configurations for developers to have a starting point o
 
 ## Getting started
 
+### Favicon Setup
+
+The Django app is already configured to serve favorite icons for all browsers and platforms (include, for example, apple-icons and android-icons at various sizes). By default, this icon is the TN logo.
+
+**_Note your image must be a square otherwise a white bg will appear because the file is cropped if it is not a square go to [iloveimg.com](https://www.iloveimg.com/resize-image) and resize it._**
+Visit [favicon-generator.org](https://www.favicon-generator.org/) and upload a high resolution, square version of the image you would like to use as the favicon for this app.
+
+Download the ZIP file of icons that the site generates for you and paste them in the `client/public/static/favicons/` directory.
+
+When we run collectstatic the public folder is copied as is and enables serving of the favicons
+
+### Logo Setup
+
+Swap out the logo files in these locations:
+`client/src/assets/logo.png` (Used by the webapp)
+`server/{{ cookiecutter.project_slug }}/core/static/images/logo.png` (Used by HTML emails)
+
 ### Install deps
 
 ```

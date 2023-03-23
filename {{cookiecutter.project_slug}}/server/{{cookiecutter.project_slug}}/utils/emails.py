@@ -5,6 +5,7 @@ from io import StringIO
 from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from premailer import transform
 
 
 def send_html_email(subject, template, send_from, send_to, context={}, bcc_emails=[], files=[]):
@@ -45,7 +46,7 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     subject = "".join(subject.splitlines())
 
     # Render HTML and use premailer transform to force inline CSS
-    html_body = render_to_string(template, context)
+    html_body = transform(render_to_string(template, context))
 
     # TODO: Generate plaintext version of the HTML email
     plaintext_body = (

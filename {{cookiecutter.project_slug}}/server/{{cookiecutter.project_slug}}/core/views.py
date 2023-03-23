@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
-from django.template.loader import render_to_string
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
@@ -86,11 +85,9 @@ def request_reset_link(request, *args, **kwargs):
         return Response(status=status.HTTP_204_NO_CONTENT)
     reset_context = user.reset_password_context()
 
-    # send email
-    subject = render_to_string("registration/forgot_password_subject.txt")
     send_html_email(
-        subject,
-        "registration/forgot_password_email.html",
+        "Password reset for {{ cookiecutter.project_name }}",
+        "registration/password_reset.html",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
         context=reset_context,
