@@ -94,12 +94,6 @@ def request_reset_link(request, *args, **kwargs):
         return Response(status=status.HTTP_204_NO_CONTENT)
     reset_context = user.reset_password_context()
 
-    logger.info(f"Password reset for user: {email}")
-    logger.info(reset_context)
-    domain = reset_context["site_url"]
-    user = reset_context["user"]
-    token = reset_context["token"]
-    logger.info(f"URL will be {domain}/password/reset/confirm/{user.id}/{token}")
     send_html_email(
         "Password reset for {{ cookiecutter.project_name }}",
         "registration/password_reset.html",
