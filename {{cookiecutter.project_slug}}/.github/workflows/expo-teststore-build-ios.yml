@@ -30,8 +30,4 @@ jobs:
         run: cd mobile && yarn install
 
       - name: 🚀 Build app
-        run: cd mobile && eas build --platform ios --profile production --non-interactive #--auto-submit
-        env:
-          BACKEND_SERVER_URL: "<prod-api-url>"
-          ROLLBAR_ACCESS_TOKEN: "" # uses dev
-          SENTRY_PROJECT_NAME: "" # uses dev
+        run: cd mobile && eas build --platform ios --profile production --non-interactive --auto-submit

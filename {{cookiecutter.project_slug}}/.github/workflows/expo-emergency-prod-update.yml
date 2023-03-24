@@ -32,7 +32,4 @@ jobs:
 
       - name: 🚀 Publish preview
         run: cd mobile && eas update --branch=production --non-interactive --auto
-        env:
-          BACKEND_SERVER_URL: ""
-          ROLLBAR_ACCESS_TOKEN: ""
-          SENTRY_PROJECT_NAME: ""
+

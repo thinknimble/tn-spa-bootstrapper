@@ -40,7 +40,8 @@ module.exports = {
       favicon: './assets/logo-sq.png',
     },
     extra: {
-      apiUrl: process.env.BACKEND_SERVER_URL,
+      // these values are hardcoded and provided in eas.json
+      apiUrl: process.env.API_URL,
       isBuild: process.env.IS_BUILD,
       buildEnv: process.env.BUILD_ENV,
       rollbarAccessToken: process.env.ROLLBAR_ACCESS_TOKEN,
