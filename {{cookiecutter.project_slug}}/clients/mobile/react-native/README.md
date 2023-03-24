@@ -59,7 +59,7 @@ Use `tailwind.config.js` to define the styles you're going to use in the app.
 #### Process Testing & Development
 
 - Each PR will create a new *review* app both in **expo** & **heroku**
-- Mobile *review* app will automatically have the backend url set to its own backend-url in the form of `https://app-name{#}.herokuapp.com`
+- Mobile *review* app will automatically have the backend url set to its own backend-url in the form of `https://app-name-prnumber.herokuapp.com`
 - Each merge into main will trigger a release in the staging channel of expo & automatically deploy a new staging backend to heroku. 
 
 #### Installing the staging build 
