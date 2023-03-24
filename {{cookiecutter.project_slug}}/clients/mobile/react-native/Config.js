@@ -10,13 +10,6 @@ const [PROD_URL, STAGING_URL, DEV_URL] = [
 ]
 const [PROD, STAGING, DEV, REVIEW] = ['production', 'staging', 'development', 'review']
 
-function getEnvOrDefaultURL(defaultUrl) {
-  /**
-   * TEMP set prod url and vars
-   * return BACKEND_SERVER_URL || defaultUrl
-   */
-  return PROD_URL
-}
 // Check if this is a build defined by EAS Build
 
 const { apiUrl, buildEnv, rollbarAccessToken, sentryDSN } = Constants?.expoConfig?.extra
@@ -34,12 +27,12 @@ const ENV = () => {
     }
   }
   return {
-    apiUrl: getEnvOrDefaultURL(STAGING_URL),
+    apiUrl: BACKEND_SERVER_URL,
     logger: new Logger(rollbarToken).logger,
     sentryDSN: SENTRY_DSN,
   }
 }
-console.log(ENV())
+
 Config = { ...ENV() }
 
 export default Config
