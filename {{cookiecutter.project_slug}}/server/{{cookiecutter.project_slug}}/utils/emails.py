@@ -53,7 +53,7 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     subject = "".join(subject.splitlines())
 
     # TODO: Generate plaintext version of the HTML email
-    plaintext_body = (f"This is an HTML email. If you can read this, then your email client does not support HTML emails. Please contact us at {settings.STAFF_EMAIL} to report the problem.")  # noqa
+    plaintext_body = f"This is an HTML email. If you can read this, then your email client does not support HTML emails. Please contact us at {settings.STAFF_EMAIL} to report the problem."  # noqa
 
     email = EmailMultiAlternatives(subject, plaintext_body, send_from, send_to, bcc_emails)
     email.attach_alternative(get_html_body(template, context), "text/html")
