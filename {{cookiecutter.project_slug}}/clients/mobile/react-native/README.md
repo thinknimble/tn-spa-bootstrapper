@@ -136,3 +136,39 @@ export const Screen = () => {
   )
 }
 ```
+#### Important info & resources
+- iOS Appstore connect api key, signing cert and provisioning profiles are managed via expo (with fastlane)
+- Android store certificates are managed via expo (with fastlane) the service json file is in the shared googledrive folder
+
+#### Process Testing & Development
+
+- Each PR will create a new *review* app both in **expo** & **heroku**
+  - Please not that email mobile *review* app will automatically have the backend url set to its own backend-url in the form of `https://app-name{#}.herokuapp.com`
+- Each merge into main will trigger a release in the staging channel of expo & automatically deploy a new staging backend to heroku. 
+
+#### Installing the staging build 
+
+Each merge to main builds a new staging app that you may install, to do so you must make sure all testing devices are registerted
+
+`eas device:create` 
+
+will create a new link to register a device
+
+#### Appstores
+
+At the moment we only have one application in the future we will add a separate staging application
+
+- To deploy to each store you have to manually run the GH release action (for each platform)
+  - You will need to select an input *staging* or *production* 
+  - Note that you will still have to submit your test app for review with the app store
+- Each deploy to test flight and android test store will auto increment the version (patch version for iOS) we can decide how that will work later. 
+
+Run these workflow's manually to deploy and submit the app to the appstore
+
+*expo-teststore-build-android.yml*
+*expo-teststore-build-ios.yml*
+
+Run this workflow to deploy an emergency code related bugfix
+
+expo-emergency-prod-update.yml
+
