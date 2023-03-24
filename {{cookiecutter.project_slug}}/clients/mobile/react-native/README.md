@@ -51,91 +51,7 @@ yarn start
 
 Use `tailwind.config.js` to define the styles you're going to use in the app.
 
-## Advantages
 
-#### Describe app layout in one place (w/ [Navio](https://github.com/kanzitelli/rn-navio))
-
-All setup for your screens, tabs and modals take place in one file `src/screens/index.ts`.
-
-```tsx
-import { Navio } from 'rn-navio'
-
-// importing screen components
-import { Main } from './main'
-import { Playground } from './playground'
-import { Settings } from './settings'
-import { Example } from './_screen-sample'
-
-// building layout
-export const navio = Navio.build({
-  screens: {
-    Main,
-    Settings,
-    Example,
-    Playground: {
-      component: Playground,
-      options: () => ({
-        title: 'Playground',
-      }),
-    },
-  },
-  stacks: {
-    MainStack: ['Main', 'Example'],
-    ExampleStack: ['Example'],
-  },
-  tabs: {
-    MainTab: {
-      stack: 'MainStack',
-      options: {
-        title: 'Home',
-      },
-    },
-    PlaygroundTab: {
-      stack: ['Playground'],
-      options: () => ({
-        title: 'Playground',
-      }),
-    },
-    SettingsTab: {
-      stack: ['Settings'],
-      options: () => ({
-        title: 'Settings',
-      }),
-    },
-  },
-  modals: {
-    ExampleModal: 'ExampleStack',
-  },
-  root: 'Tabs',
-  hooks: [useAppearance],
-  options: {
-    stack: screenDefaultOptions,
-    tab: tabDefaultOptions,
-  },
-})
-
-export const AppRoot = navio.Root
-```
-
-#### Navigate with predictability
-
-```tsx
-export const Screen = () => {
-  const { navio } = useServices()
-
-  return (
-    <View>
-      <Button
-        label="Push Settings"
-        onPress={() => {
-          // Typescript and IDE will help with autocompletion
-          navio.push('Settings')
-        }}
-      />
-    </View>
-  )
-}
-```
 #### Important info & resources
 - iOS Appstore connect api key, signing cert and provisioning profiles are managed via expo (with fastlane)
 - Android store certificates are managed via expo (with fastlane) the service json file is in the shared googledrive folder
@@ -159,8 +75,6 @@ will create a new link to register a device
 At the moment we only have one application in the future we will add a separate staging application
 
 - To deploy to each store you have to manually run the GH release action (for each platform)
-  - You will need to select an input *staging* or *production* 
-  - Note that you will still have to submit your test app for review with the app store
 - Each deploy to test flight and android test store will auto increment the version (patch version for iOS) we can decide how that will work later. 
 
 Run these workflow's manually to deploy and submit the app to the appstore
