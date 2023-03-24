@@ -5,7 +5,14 @@ from io import StringIO
 from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from premailer import transform
+from premailer import transform as inline_css
+
+
+def get_html_body(template, context):
+    # two steps:
+    # Render the django jinja template to string with passed context
+    # Use premailer to inline CSS styles for weird email clients
+    return inline_css(render_to_string(template, context))
 
 
 def send_html_email(subject, template, send_from, send_to, context={}, bcc_emails=[], files=[]):
@@ -37,34 +44,19 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     #         if domain not in valid_domains:
     #             return
 
-    assert isinstance(send_to, (list, tuple, str)), "send_to must be an instance of list, tuple, or str"
+    if not isinstance(send_to, (list, tuple, str)):
+        raise Exception("send_to must be an instance of list, tuple, or str")
 
     if isinstance(send_to, str):
         send_to = [send_to]
 
-    # Email subject *must not* contain newlines
     subject = "".join(subject.splitlines())
 
-    # Render HTML and use premailer transform to force inline CSS
-    html_body = transform(render_to_string(template, context))
-
     # TODO: Generate plaintext version of the HTML email
-    plaintext_body = (
-        "This is an HTML email. If you can read this, then "
-        "your email client does not support HTML emails. "
-        "Please contact us at {0} to report the problem.".format(settings.STAFF_EMAIL)
-    )
-    # END TODO
+    plaintext_body = (f"This is an HTML email. If you can read this, then your email client does not support HTML emails. Please contact us at {settings.STAFF_EMAIL} to report the problem.")  # noqa
 
-    email = EmailMultiAlternatives(
-        subject,
-        plaintext_body,
-        send_from,
-        send_to,
-        bcc_emails,
-    )
-
-    email.attach_alternative(html_body, "text/html")
+    email = EmailMultiAlternatives(subject, plaintext_body, send_from, send_to, bcc_emails)
+    email.attach_alternative(get_html_body(template, context), "text/html")
 
     # Handle file attachments
     for f in files or []:
