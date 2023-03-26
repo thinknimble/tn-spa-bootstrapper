@@ -9,11 +9,6 @@
       "distribution": "internal",
       "channel": "development"
     },
-    "review": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "channel": "review"
-    },
     "staging": {
       "distribution": "internal",
       "channel": "staging",
@@ -34,6 +29,16 @@
         "ROLLBAR_ACCESS_TOKEN": "",
         "SENTRY_PROJECT_NAME": "",
         "SENTRY_DSN": ""
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appName": "<MATCH APP STORE CONNECT>",
+        "appleId": "<EMAIL THAT WILL BE USED TO SIGN CERTS>",
+        "appleTeamId": "<APPLE TEAM ID>",
+        "ascAppId": "<APP STORE CONNECT ID - random id you set in the ASC>"
       }
     }
   }

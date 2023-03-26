@@ -1,7 +1,8 @@
 module.exports = {
   expo: {
-    name: '{{ cookiecutter.project_name }}',
-    slug: '{{ cookiecutter.project_name }}',
+    name: '{{ cookiecutter.project_name }}', // THIS SHOULD MATCH EXPO APP NAME
+    slug: '{{ cookiecutter.project_name }}', // THIS SHOULD MATCH EXPO APP SLUG
+    owner: '<ORG NAME IN EXPO>', // THIS SHOULD MATCH EXPO APP OWNER ORG
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/logo-sq.png',
@@ -12,6 +13,10 @@ module.exports = {
       backgroundColor: '#000000',
     },
     assetBundlePatterns: ['**/*'],
+    updates: {
+      fallbackToCacheTimeout: 0,
+      url: 'https://u.expo.dev/<APP_ID>', // uuid of app
+    },
     plugins: [
       'sentry-expo'
     ],
@@ -22,19 +27,24 @@ module.exports = {
           config: {
             organization: '',
             project: process.env.SENTRY_PROJECT_NAME, // see readme for this variables
-            authToken: '',
+            authToken: process.env.SENTRY_AUTH_TOKEN, // defined in expo secrets
           },
         },
       ],
     },
     ios: {
       supportsTablet: true,
+      bundleIdentifier: '<IOS APP BUNDLE ID>', // CHANGE TO BUNDLE ID
+      config: {
+        usesNonExemptEncryption: false,
+      },
     },
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/logo-sq.png',
         backgroundColor: '#FFFFFF',
       },
+      package: '<ANDROID PACKAGE ID>', // CHANGE TO PACKAGE ID
     },
     web: {
       favicon: './assets/logo-sq.png',

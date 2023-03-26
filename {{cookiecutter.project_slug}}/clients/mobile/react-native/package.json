@@ -5,7 +5,7 @@
   "author": "Thinknmimble",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} npx expo start",
+    "start": "source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} npx expo start",
     "start:clear": "source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} npx expo start --clear",
     "start:prod": "source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} npx expo start --no-dev --minify",
     "start:android": "source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} npx expo start --android",
