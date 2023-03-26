@@ -34,10 +34,6 @@ jobs:
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform all --profile staging --non-interactive
-        env:
-          BACKEND_SERVER_URL: ""
-          ROLLBAR_ACCESS_TOKEN: "" # uses dev
-          SENTRY_PROJECT_NAME: "" # uses dev
 
       - name: 🚀 Publish Staging Preview
         run: cd mobile && eas update --branch=staging --non-interactive --auto
