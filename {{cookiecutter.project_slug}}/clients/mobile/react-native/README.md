@@ -34,7 +34,7 @@ For builds set env variables in eas.json
 
 ### Eas Project Configuration
 
-in [eas.json](./eas.json) set the confiuration variables 
+in [app.config.js](./app.config.js) set the confiuration variables 
 - owner: this should match the organization in expo 
 - slug: this should match the slug in expo 
 - updates: the url should contain the id of the expo app
