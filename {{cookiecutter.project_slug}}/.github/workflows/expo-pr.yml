@@ -1,11 +1,9 @@
-name: Expo bugfix update - used to quickly push a fix to prod without a full rebuild
-on:
-  workflow_dispatch:
-
+name: Expo Publish PR
+on: [pull_request]
 jobs:
   publish:
+    # if: github.event.deployment_status.state == 'success' # enable this to make sure this PR waits for the backend first
     runs-on: ubuntu-latest
-
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v2
@@ -31,5 +29,9 @@ jobs:
         run: cd mobile && yarn install
 
       - name: 🚀 Publish preview
-        run: cd mobile && eas update --branch=production --non-interactive --auto
-
+        run: cd mobile && eas update --branch=pr-${{ github.event.number }} --non-interactive --auto
+        env:
+          BACKEND_SERVER_URL:  ${{ github.event.deployment_status.environment_url }}
+          ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
