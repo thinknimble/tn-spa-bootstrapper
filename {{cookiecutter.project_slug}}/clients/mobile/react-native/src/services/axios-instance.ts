@@ -2,13 +2,13 @@ import axios, { AxiosError } from 'axios'
 import Config from '../../Config'
 import { useAuth } from '../stores/auth'
 
-let config = Config as any
+const appConfig = Config as any
 export const axiosInstance = axios.create({
-  baseURL: config?.apiUrl,
+  baseURL: appConfig?.backendServerUrl,
 })
 
 axiosInstance.interceptors.request.use(
-  async (config) => {
+  async (config: any) => {
     const { token } = useAuth.getState()
     if (token) {
       const authHeader = `Token ${token}`
