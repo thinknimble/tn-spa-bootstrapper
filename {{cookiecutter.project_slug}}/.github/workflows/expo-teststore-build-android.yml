@@ -31,7 +31,3 @@ jobs:
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform android --profile production  --non-interactive --auto-submit
-        env:
-          BACKEND_SERVER_URL: "<prod-api-url>"
-          ROLLBAR_ACCESS_TOKEN: ""
-          SENTRY_PROJECT_NAME: ""
