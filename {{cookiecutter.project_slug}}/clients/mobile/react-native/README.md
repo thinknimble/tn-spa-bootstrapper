@@ -37,9 +37,11 @@ For builds set env variables in eas.json
 in [app.config.js](./app.config.js) set the confiuration variables 
 - owner: this should match the organization in expo 
 - slug: this should match the slug in expo 
+- add expo id to the extras obj 
 - updates: the url should contain the id of the expo app
 - ios: bundleIdentifier: this should be created in the apple developer account
 - android: package: this should be created in the google play developer console 
+
 
 To configure automatic submissions for each platform first run eas credentials. This will prompt you for the credentials we recommend allowing expo to create and manage all provising profiles and certs.
 
