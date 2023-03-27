@@ -2,7 +2,7 @@ name: Expo Publish PR
 on: [pull_request]
 jobs:
   publish:
-    if: github.event.deployment_status.state == 'success' # this will make sure this PR waits for the backend first
+    # if: github.event.deployment_status.state == 'success' # enable this to make sure this PR waits for the backend first
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo
@@ -32,6 +32,6 @@ jobs:
         run: cd mobile && eas update --branch=pr-${{ github.event.number }} --non-interactive --auto
         env:
           BACKEND_SERVER_URL:  ${{ github.event.deployment_status.environment_url }}
-          ROLLBAR_ACCESS_TOKEN: "102ccb6828ad4e2fa95a442626ec58fb"
-          SENTRY_PROJECT_NAME: "tn-all"
-          SENTRY_DSN: "https://c3cd958b03ed4b47bdd9ebed34adf9e4@o4504899535962112.ingest.sentry.io/4504899548807168"
+          ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
