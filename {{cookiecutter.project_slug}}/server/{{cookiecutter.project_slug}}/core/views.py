@@ -108,16 +108,15 @@ def request_reset_link(request, *args, **kwargs):
 @api_view(["post"])
 @permission_classes([permissions.AllowAny])
 def reset_password(request, *args, **kwargs):
-    logger.info(f"Password reset requested with {kwargs}")
     user_id = kwargs.get("uid")
     token = kwargs.get("token")
     user = User.objects.filter(id=user_id).first()
-    logger.info(f"Resetting password for {user} with {id} and {token}")
     if not user or not token:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
     is_valid = default_token_generator.check_token(user, token)
     if not is_valid:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
+    logger.info(f"Resetting password for user {user_id}")
     user.set_password(request.data.get("password"))
     user.save()
     response_data = UserLoginSerializer.login(user, request)
