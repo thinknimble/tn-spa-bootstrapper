@@ -11,7 +11,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: {{ "${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}" }}
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v2
@@ -29,9 +29,9 @@ jobs:
         run: cd mobile && yarn install
 
       - name: 🚀 Publish preview
-        run: cd mobile && eas update --branch=pr-${{ github.event.number }} --non-interactive --auto
+        run: cd mobile && eas update --branch=pr-{{ "${{ github.event.number }}" }} --non-interactive --auto
         env:
-          BACKEND_SERVER_URL:  ${{ github.event.deployment_status.environment_url }}
+          BACKEND_SERVER_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
           ROLLBAR_ACCESS_TOKEN: ""
           SENTRY_PROJECT_NAME: ""
           SENTRY_DSN: ""

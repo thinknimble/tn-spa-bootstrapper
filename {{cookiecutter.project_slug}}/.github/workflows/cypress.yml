@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run against ${{ github.event.deployment_status.environment_url }}
+      - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
           working-directory: client
@@ -15,8 +15,8 @@ jobs:
         env:
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
-          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
-          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+          CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
+          CYPRESS_baseUrl: {{ "${{ github.event.deployment_status.environment_url }}" }}
   Firefox:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
@@ -25,7 +25,7 @@ jobs:
       options: --user 1001
     steps:
       - uses: actions/checkout@v3
-      - name: Run against ${{ github.event.deployment_status.environment_url }}
+      - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
           working-directory: client
@@ -33,5 +33,5 @@ jobs:
         env:
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
-          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
-          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+          CYPRESS_TEST_USER_PASS: {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}
+          CYPRESS_baseUrl: {{ "${{ github.event.deployment_status.environment_url }}" }}
