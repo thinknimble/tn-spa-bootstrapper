@@ -51,7 +51,7 @@ module.exports = {
     },
     extra: {
       // these values are hardcoded and provided in eas.json
-      apiUrl: process.env.API_URL,
+      backendServerUrl: process.env.BACKEND_SERVER_URL,
       isBuild: process.env.IS_BUILD,
       buildEnv: process.env.BUILD_ENV,
       rollbarAccessToken: process.env.ROLLBAR_ACCESS_TOKEN,

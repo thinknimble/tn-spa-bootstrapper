@@ -23,4 +23,26 @@ jobs:
           cache: 'pipenv'
       - run: pipenv install --dev --deploy
       - run: pipenv run flake8 server
+  {% if cookiecutter.cleint_app == 'Vue3' || cookiecutter.cleint_app == 'React' }
+  ESLint_and_Prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        working-directory: ./client
+        run: |
+          npm install
+      - name: Run ESLint
+        working-directory: ./client
+        {% if cookiecutter.client_app == 'Vue3' %}
+        run: npx eslint --ext .js,.vue src
+        {% elif cookiecutter.client_app == 'React' %}
+        run: npx eslint --ext .ts,tsx,js src
+        {% endif %}
+  {% endif %}
 

@@ -12,7 +12,7 @@ const [PROD, STAGING, DEV, REVIEW] = ['production', 'staging', 'development', 'r
 
 // Check if this is a build defined by EAS Build
 
-const { apiUrl, buildEnv, rollbarAccessToken, sentryDSN } = Constants?.expoConfig?.extra
+const { backendServerUrl, buildEnv, rollbarAccessToken, sentryDSN } = Constants?.expoConfig?.extra
 
 const isAndroid = Platform.OS === 'android'
 let rollbarToken = isAndroid ? undefined : ROLLBAR_ACCESS_TOKEN
@@ -21,13 +21,13 @@ const ENV = () => {
   if (buildEnv) {
     rollbarToken = rollbarAccessToken
     return {
-      apiUrl: apiUrl,
+      backendServerUrl: backendServerUrl,
       logger: new Logger(rollbarToken).logger,
       sentryDSN: sentryDSN,
     }
   }
   return {
-    apiUrl: BACKEND_SERVER_URL,
+    backendServerUrl: BACKEND_SERVER_URL,
     logger: new Logger(rollbarToken).logger,
     sentryDSN: SENTRY_DSN,
   }
