@@ -55,6 +55,7 @@ For internal builds to pass you must first register at least one testing device 
 
 Select the option for URL and send the URL to each user who wants to test a staging build. Because the UUID is stored in the staging build the user must register before the build, otherwise you will have to rebuild the staging env.
 
+You must run a first time production build to set up appstore connect keys to be managed by Expo
 
 **Google**
 There is no required configuration for google in the eas.json however you must build and upload the apk for the first time before being able to automate. 
