@@ -8,7 +8,7 @@ export const axiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use(
-  async (config: any) => {
+  async (config) => {
     const { token } = useAuth.getState()
     if (token) {
       const authHeader = `Token ${token}`
