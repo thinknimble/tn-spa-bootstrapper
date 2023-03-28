@@ -13,7 +13,7 @@
       "distribution": "internal",
       "channel": "staging",
       "env": {
-        "API_URL": "",
+        "BACKEND_SERVER_URL": "",
         "BUILD_ENV": "staging",
         "ROLLBAR_ACCESS_TOKEN": "",
         "SENTRY_PROJECT_NAME": "",
@@ -24,7 +24,7 @@
       "channel": "production",
       "autoIncrement": true,
       "env": {
-        "API_URL": "",
+        "BACKEND_SERVER_URL": "",
         "BUILD_ENV": "production",
         "ROLLBAR_ACCESS_TOKEN": "",
         "SENTRY_PROJECT_NAME": "",

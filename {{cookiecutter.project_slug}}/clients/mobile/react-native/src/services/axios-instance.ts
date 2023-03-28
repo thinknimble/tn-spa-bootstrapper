@@ -28,10 +28,10 @@ axiosInstance.interceptors.request.use(
 )
 
 axiosInstance.interceptors.response.use(
-  async (config) => {
+  async (config:any) => {
     return config
   },
-  (err) => {
+  (err:any) => {
     if (
       err instanceof AxiosError &&
       err.response &&
