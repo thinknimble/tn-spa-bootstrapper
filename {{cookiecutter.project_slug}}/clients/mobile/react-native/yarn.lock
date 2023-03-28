@@ -3252,12 +3252,35 @@
     "@tanstack/query-core" "4.24.4"
     use-sync-external-store "^1.2.0"
 
+"@thinknimble/tn-forms-react@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@thinknimble/tn-forms-react/-/tn-forms-react-1.0.3.tgz#811d1f8a3718a4b55886e6fb8a81dc3c4bfa4ef8"
+  integrity sha512-/kQhQLgH69oc1KElKD9oldIyHr+YL1VoDd7d186+7lQF8xJBkbCisdGiS5kIJTZfHYhFv95uGbiSgiZYMiR0Aw==
+
+"@thinknimble/tn-forms@^3.1.3":
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/@thinknimble/tn-forms/-/tn-forms-3.1.3.tgz#c335529713d1db8f1a35f8380c7027679116a905"
+  integrity sha512-16be9gTL3qGfgx3EjylCgBoxq/fjsPEQCeJKNHg8Lxma5PX/7KdLgT0HKj37XRVmRo7SUI7cecg4URXWTrz/jw==
+  dependencies:
+    "@thinknimble/tn-utils" "^1.4.0"
+    "@types/luxon" "^3.0.0"
+    babel-loader "^8.2.2"
+    email-validator "^2.0.4"
+    install "^0.13.0"
+    luxon "^2.4.0"
+    react-native-uuid "^2.0.1"
+
 "@thinknimble/tn-models-fp@2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@thinknimble/tn-models-fp/-/tn-models-fp-2.1.0.tgz#bb1da77451de25fe5162e6164a9f660cd3a0f3a9"
   integrity sha512-vxGlkThGqi1BT9GDLoXQaaICqHpXeiVf/3tYY4Mz7/okiotJi5EqiIIcTablmtZkWFB6md7KL7vJJWevw7NZMA==
   dependencies:
     "@thinknimble/tn-utils" "^2.0.1"
+
+"@thinknimble/tn-utils@^1.4.0":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@thinknimble/tn-utils/-/tn-utils-1.6.1.tgz#7c87ed15457680ccb5189382d5311c4832dcea6b"
+  integrity sha512-hUFjK2gPTL4csHPHAyX5636PEaRb7E/61iwKPaZRACeGSeOSPA7dRltq+zgbf0OLPcSEoq7RyTXJHSpK7CBPXQ==
 
 "@thinknimble/tn-utils@^2.0.1":
   version "2.0.1"
@@ -3414,6 +3437,11 @@
   version "4.14.185"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.185.tgz"
   integrity sha512-evMDG1bC4rgQg4ku9tKpuMh5iBNEwNa3tf9zRHdP1qlv+1WUg44xat4IxCE14gIpZRGUUWAx2VhItCZc25NfMA==
+
+"@types/luxon@^3.0.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.2.0.tgz#99901b4ab29a5fdffc88fff59b3b47fbfbe0557b"
+  integrity sha512-lGmaGFoaXHuOLXFvuju2bfvZRqxAqkHPx9Y9IQdQABrinJJshJwfNCKV+u7rR3kJbiqfTF/NhOkcxxAFrObyaA==
 
 "@types/mime@*":
   version "3.0.1"
@@ -4275,7 +4303,7 @@ babel-eslint@^10.1.0:
     eslint-visitor-keys "^1.0.0"
     resolve "^1.12.0"
 
-babel-loader@^8.2.3:
+babel-loader@^8.2.2, babel-loader@^8.2.3:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-8.3.0.tgz#124936e841ba4fe8176786d6ff28add1f134d6a8"
   integrity sha512-H8SvsMF+m9t15HNLMipppzkC+Y2Yq+v3SonZyU70RBL/h1gxPkH08Ot8pEE9Z4Kd+czyWJClmFS8qzIP9OZ04Q==
@@ -5825,6 +5853,11 @@ electron-to-chromium@^1.4.284:
   version "1.4.315"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.315.tgz#b60a6676b3a1db332cfc8919118344aa06b9ac99"
   integrity sha512-ndBQYz3Eyy3rASjjQ9poMJGoAlsZ/aZnq6GBsGL4w/4sWIAwiUHVSsMuADbxa8WJw7pZ0oxLpGbtoDt4vRTdCg==
+
+email-validator@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/email-validator/-/email-validator-2.0.4.tgz#b8dfaa5d0dae28f1b03c95881d904d4e40bfe7ed"
+  integrity sha512-gYCwo7kh5S3IDyZPLZf6hSS0MnZT8QmJFqYvbqlDZSbwdZlY6QZWxJ4i/6UhITOJ4XzyI647Bm2MXKCLqnJ4nQ==
 
 emoji-regex@^7.0.1:
   version "7.0.3"
@@ -7624,6 +7657,11 @@ inquirer@^6.2.0:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
+install@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/install/-/install-0.13.0.tgz#6af6e9da9dd0987de2ab420f78e60d9c17260776"
+  integrity sha512-zDml/jzr2PKU9I8J/xyZBQn8rPCAY//UOYNmR01XwNwyfhEWObo2SWfSl1+0tm1u6PhxLwDnfsT/6jB7OUxqFA==
+
 internal-ip@4.3.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/internal-ip/-/internal-ip-4.3.0.tgz"
@@ -8536,6 +8574,11 @@ lru-cache@~2.2.1:
   version "2.2.4"
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-2.2.4.tgz"
   integrity sha512-Q5pAgXs+WEAfoEdw2qKQhNFFhMoFMTYqRVKKUMnzuiR7oKFHS7fWo848cPcTKw+4j/IdN17NyzdhVKgabFV0EA==
+
+luxon@^2.4.0:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.5.2.tgz#17ed497f0277e72d58a4756d6a9abee4681457b6"
+  integrity sha512-Yg7/RDp4nedqmLgyH0LwgGRvMEKVzKbUdkBYyCosbHgJ+kaOUx0qzSiSatVc3DFygnirTPYnMM2P5dg2uH1WvA==
 
 make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
@@ -10715,6 +10758,11 @@ react-native-tab-view@^3.3.4:
   integrity sha512-rceAYWpHa6knA7tsTnnjlcOxlCErR4F+yXQPpNm125IvYFyv09YRhE5uMU2IzyPIQ1CJvADCHurF3KySzVI+4Q==
   dependencies:
     use-latest-callback "^0.1.5"
+
+react-native-uuid@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-uuid/-/react-native-uuid-2.0.1.tgz#ed4e2dfb1683eddb66967eb5dca140dfe1abddb9"
+  integrity sha512-cptnoIbL53GTCrWlb/+jrDC6tvb7ypIyzbXNJcpR3Vab0mkeaaVd5qnB3f0whXYzS+SMoSQLcUUB0gEWqkPC0g==
 
 react-native-web@~0.18.11:
   version "0.18.12"

@@ -33,6 +33,8 @@
     "@sentry/react-native": "4.13.0",
     "@shopify/flash-list": "1.4.0",
     "@tanstack/react-query": "^4.24.4",
+    "@thinknimble/tn-forms": "^3.1.3",
+    "@thinknimble/tn-forms-react": "^1.0.3",
     "@thinknimble/tn-models-fp": "2.1.0",
     "axios": "^1.3.2",
     "date-fns": "^2.29.3",

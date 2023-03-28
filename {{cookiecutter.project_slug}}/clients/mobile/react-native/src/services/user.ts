@@ -23,6 +23,7 @@ const createUserShape = {
   email: userFields.email,
   firstName: userFields.firstName,
   lastName: userFields.lastName,
+  password: z.string(),
 }
 export type UserCreate = GetInferredFromRaw<typeof createUserShape>
 
@@ -50,12 +51,12 @@ const loginShape = {
 
 type LoginInput = GetInferredFromRaw<typeof loginShape>
 
-export const login = async (input: LoginInput) => {
+export const postLogin = async (input: LoginInput) => {
   const {
     utils: { fromApi, toApi },
   } = createApiUtils({
     inputShape: loginShape,
-    name: login.name,
+    name: postLogin.name,
     outputShape: userShape,
   })
   const res = await axiosInstance.post('login/', toApi(input))
