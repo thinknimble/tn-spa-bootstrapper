@@ -1,9 +1,14 @@
 import axios, { AxiosError } from 'axios'
 import { localStoreManager } from 'src/utils/local-store-manager'
+// ToDo 1: test @ review app
+// ToDo 2: remove .js version of get-cookie and rename
+import getCookieTS from 'src/utils/get-cookie-ts'
+const csrfToken = getCookieTS('csrftoken')
 const axiosInstance = axios.create({
   //baseUrl will be determined by the server proxy in vite.config.js
   headers: {
     'Content-Type': 'application/json',
+    'X-CSRFToken': csrfToken,
   },
 })
 
