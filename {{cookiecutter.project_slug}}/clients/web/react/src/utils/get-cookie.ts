@@ -6,7 +6,7 @@
  * Usage:
  *   const csrfToken = getCookie("csrftoken");
  */
-export default function getCookie(cname: string): string {
+export const getCookie = (cname: string): string => {
   const name = cname + '='
   const decodedCookie = decodeURIComponent(document.cookie)
   const ca = decodedCookie.split(';')

@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { localStoreManager } from 'src/utils/local-store-manager'
-import getCookie from 'src/utils/get-cookie'
+import { getCookie } from 'src/utils/get-cookie'
 const axiosInstance = axios.create({
   //baseUrl will be determined by the server proxy in vite.config.js
   headers: {
