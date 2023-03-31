@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { createHttpLink } from '@apollo/client/link/http'
 import { setContext } from '@apollo/client/link/context'
-import getCookie from 'src/utils/get-cookie'
+import { getCookie } from 'src/utils/get-cookie'
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
