@@ -1,8 +1,8 @@
 name: Expo Publish PR
-on: [pull_request]
+on: [deployment_status]
 jobs:
   publish:
-    # if: github.event.deployment_status.state == 'success' # enable this to make sure this PR waits for the backend first
+    if: github.event.deployment_status.state == 'success' # guarantee backend deployment first
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo

@@ -20,7 +20,7 @@ jobs:
           token: {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: Delete Channel
-        run: cd mobile && eas channel:delete {{ "${{ github.head_ref }}" }} --non-interactive
+        run: cd mobile && eas channel:delete {{ "${{ github.event.number }}" }} --non-interactive
 
       - name: Delete Branch
-        run: cd mobile && eas branch:delete {{ "${{ github.head_ref }}" }} --non-interactive
+        run: cd mobile && eas branch:delete {{ "${{ github.event.number }}" }} --non-interactive

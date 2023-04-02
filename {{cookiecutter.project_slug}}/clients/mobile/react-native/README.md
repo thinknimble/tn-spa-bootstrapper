@@ -8,6 +8,14 @@ This app is bootstrapped with the TN-Bootsrapper, it uses Expo as a wrapper fram
 
 After running the bootsrapper a mobile directory is created the following steps are needed to run and deploy the app 
 
+## Running the app 
+
+User `npm run start` to run the app and source the env variables 
+
+alternatively if you want to use expo run command 
+
+`source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} npx expo start`
+
 ### Set up external dependencies 
 
 #### Expo 
