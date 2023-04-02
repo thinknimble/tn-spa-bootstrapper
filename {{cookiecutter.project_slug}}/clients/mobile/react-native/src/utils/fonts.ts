@@ -1,5 +1,3 @@
-import { FontSource } from 'expo-font'
-
 //TODO: change this to your family, we're using monserrat as base. You could also add more family weights!
 const baseFamily = 'Montserrat' as const
 const fontFormat = 'ttf'

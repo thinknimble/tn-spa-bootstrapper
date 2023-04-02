@@ -57,8 +57,13 @@ def get_random_secret_key():
     return "".join(secrets.choice(chars) for i in range(50))
 
 
-web_clients_path = "clients/web"
-mobile_clients_path = "clients/mobile"
+clients_path = "clients"
+web_clients_path = f"{clients_path}/web"
+mobile_clients_path = f"{clients_path}/mobile"
+
+
+def clean_up_clients_folder():
+    rmtree(clients_path)
 
 
 def remove_web_client_files(client):
@@ -189,6 +194,8 @@ def main():
         remove_expo_yaml_files()
     if "{{ cookiecutter.use_graphql }}".lower() == "n":
         remove_graphql_files()
+
+    clean_up_clients_folder()
 
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")
