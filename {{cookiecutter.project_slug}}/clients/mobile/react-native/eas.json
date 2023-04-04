@@ -1,0 +1,45 @@
+{
+  "cli": {
+    "version": ">= 2.4.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
+    },
+    "staging": {
+      "distribution": "internal",
+      "channel": "staging",
+      "env": {
+        "BACKEND_SERVER_URL": "",
+        "BUILD_ENV": "staging",
+        "ROLLBAR_ACCESS_TOKEN": "",
+        "SENTRY_PROJECT_NAME": "",
+        "SENTRY_DSN": ""
+      }
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true,
+      "env": {
+        "BACKEND_SERVER_URL": "",
+        "BUILD_ENV": "production",
+        "ROLLBAR_ACCESS_TOKEN": "",
+        "SENTRY_PROJECT_NAME": "",
+        "SENTRY_DSN": ""
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appName": "<MATCH APP STORE CONNECT>",
+        "appleId": "<EMAIL THAT WILL BE USED TO SIGN CERTS>",
+        "appleTeamId": "<APPLE TEAM ID>",
+        "ascAppId": "<APP STORE CONNECT ID - random id you set in the ASC>"
+      }
+    }
+  }
+}

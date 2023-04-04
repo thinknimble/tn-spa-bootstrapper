@@ -31,7 +31,7 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
-// We should change this to follow the rest framework proxying rather than this if statement - PB
+// We should change this to follow the rest framework proxying rather than this if statement so it is consistent - PB
 const local_backend_uri = `${
   import.meta.env.VITE_DEV_BACKEND_URL
     ? import.meta.env.VITE_DEV_BACKEND_URL
