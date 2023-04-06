@@ -7,7 +7,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-        BUILD_MOBILE_APP: ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}
+        BUILD_MOBILE_APP:{{ ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }} }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -15,7 +15,7 @@ jobs:
         name: check diff
       - id: checkdiff
         run: |
-          echo "BUILD_MOBILE_APP=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs | grep mobile/ | wc -l)" >> $GITHUB_OUTPUT
+          echo "BUILD_MOBILE_APP=$(git diff-tree --no-commit-id --name-only -r {{ ${{ github.sha }} }} | xargs | grep mobile/ | wc -l)" >> $GITHUB_OUTPUT
 
   printouts:
     runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Echo files
         run: |
-          echo "${{ needs.setup.outputs.BUILD_MOBILE_APP}}"
+          echo "{{ ${{ needs.setup.outputs.BUILD_MOBILE_APP}} }}"
           echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP > 0 ]] && echo 'No changes in mobile app detected... will not deploy to expo' || 'No changes in mobile app detected... will not deploy to expo')"
   publish:
     runs-on: ubuntu-latest

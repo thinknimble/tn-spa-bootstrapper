@@ -8,7 +8,7 @@ jobs:
         id: findPr
       - name: Set name for PR
         if: success() && steps.findPr.outputs.number
-        run: echo "PR=pr-${PR}" >> $GITHUB_ENV
+        run: echo "PR=pr-{{ ${PR} }} >> $GITHUB_ENV
         env:
           PR: ${{ steps.findPr.outputs.pr }}
     outputs:
@@ -44,8 +44,8 @@ jobs:
 
       - name: 🚀 Publish preview
         run: |
-          cd mobile && eas update --branch=${{ needs.setup.outputs.PR }} --non-interactive --auto
-          echo "${{ env.BACKEND_SERVER_URL }} and ${{ needs.setup.outputs.PR }}"
+          cd mobile && eas update --branch={{ ${{ needs.setup.outputs.PR }} }} --non-interactive --auto
+          echo "{{ ${{ env.BACKEND_SERVER_URL }} }} and {{ ${{ needs.setup.outputs.PR }} }}"
         env:
           BACKEND_SERVER_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
           ROLLBAR_ACCESS_TOKEN: ""
