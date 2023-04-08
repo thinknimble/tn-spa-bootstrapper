@@ -10,9 +10,9 @@ jobs:
         if: success() && steps.findPr.outputs.number
         run: echo "PR=pr-{{ ${PR} }} >> $GITHUB_ENV
         env:
-          PR: ${{ steps.findPr.outputs.pr }}
+          PR: {{ ${{ steps.findPr.outputs.pr }} }}
     outputs:
-      PR: ${{ env.PR }}
+      PR: {{ ${{ env.PR }} }}
 
   publish:
     if: github.event.deployment_status.state == 'success' # guarantee backend deployment first
