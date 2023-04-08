@@ -8,7 +8,7 @@ jobs:
         id: findPr
       - name: Set name for PR
         if: success() && steps.findPr.outputs.number
-        run: echo "PR=pr-{{ ${PR} }} >> $GITHUB_ENV
+        run: echo "PR=pr-${PR}" >> $GITHUB_ENV
         env:
           PR: {{ ${{ steps.findPr.outputs.pr }} }}
     outputs:
