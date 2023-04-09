@@ -44,7 +44,7 @@ jobs:
 
       - name: 🚀 Publish preview
         run: |
-          cd mobile && eas update --branch={{ ${{ needs.setup.outputs.PR }} }} --non-interactive --auto
+          cd mobile && eas update --branch={{ "${{ needs.setup.outputs.PR }}" }} --non-interactive --auto
           echo "{{ "${{ env.BACKEND_SERVER_URL }}" }} and {{ "${{ needs.setup.outputs.PR }}" }}"
         env:
           BACKEND_SERVER_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
