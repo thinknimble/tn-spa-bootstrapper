@@ -1,6 +1,7 @@
 import Form, {
   FormField,
   MinLengthValidator,
+  MustMatchValidator,
   RequiredValidator,
   EmailValidator,
 } from '@thinknimble/tn-forms'
