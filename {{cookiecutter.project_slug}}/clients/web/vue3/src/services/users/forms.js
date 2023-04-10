@@ -39,5 +39,4 @@ export class PasswordResetForm extends Form {
       new MustMatchValidator({ message: 'Passwords must match!', matcher: 'password' }),
     ],
   })
-  }
 }
