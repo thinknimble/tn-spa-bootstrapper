@@ -17,14 +17,8 @@
         label="New Password:"
         placeholder="New password"
       />
-      <p class="text-accent" v-if="matchingPasswordsError">{{ "{{ matchingPasswordsError }}" }}</p>
 
-      <button
-        :class="{ 'btn--disabled': !form.isValid || matchingPasswordsError }"
-        :disabled="!form.isValid || matchingPasswordsError"
-        type="submit">
-        Reset Password
-      </button>
+      <button type="submit">Reset Password</button>
     </form>
   </div>
 </template>
@@ -43,25 +37,11 @@ export default {
   },
   setup() {
     const form = ref(new PasswordResetForm())
-    let matchingPasswordsError = ref(false)
     const store = useStore()
     const route = useRoute()
     const router = useRouter()
 
-    watch(
-      () => [form.value.password.value, form.value.passwordConfirmation.value],
-      () => {
-        if (form.value.password.value && form.value.passwordConfirmation.value
-            && form.value.password.value !== form.value.passwordConfirmation.value){
-          matchingPasswordsError.value = 'Passwords must match'
-        }else{
-          matchingPasswordsError.value = false
-        }
-      }
-    )
-
     function handleResetSuccess(data) {
-      alert('Succesfully reset password')
       store.dispatch('setUser', data)
       router.push({ name: 'Dashboard' })
     }
@@ -91,7 +71,6 @@ export default {
     return {
       form,
       attemptPasswordReset,
-      matchingPasswordsError,
     }
   },
 }

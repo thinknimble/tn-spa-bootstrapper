@@ -36,7 +36,8 @@ export class PasswordResetForm extends Form {
   static passwordConfirmation = new FormField({
     validators: [
       new RequiredValidator(),
-      new MinLengthValidator({ minLength: 8, message: 'Minimum Length of 8 required' }),
+      new MustMatchValidator({ message: 'Passwords must match!', matcher: 'password' }),
     ],
   })
+  }
 }
