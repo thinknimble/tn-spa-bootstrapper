@@ -36,7 +36,6 @@ export class PasswordResetForm extends Form {
   })
   static passwordConfirmation = new FormField({
     validators: [
-      new RequiredValidator(),
       new MustMatchValidator({ message: 'Passwords must match!', matcher: 'password' }),
     ],
   })
