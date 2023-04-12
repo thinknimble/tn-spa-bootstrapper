@@ -24,10 +24,11 @@ jobs:
       - name: Echo files
         run: |
           echo "{{ "${{ needs.setup.outputs.BUILD_MOBILE_APP}}" }}"
-          echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP > 0 ]] && echo 'No changes in mobile app detected... will not deploy to expo' || 'No changes in mobile app detected... will not deploy to expo')"
+          echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP -gt 0 ]] && echo 'Changes detected in mobile dir..' || 'No changes in mobile app detected... will not deploy to expo')"
   publish:
+    needs: setup
     runs-on: ubuntu-latest
-
+    if: needs.setup.outputs.BUILD_MOBILE_APP != 0
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v2
