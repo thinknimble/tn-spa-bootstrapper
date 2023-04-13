@@ -1,8 +1,8 @@
 module.exports = {
   expo: {
-    name: '{{ cookiecutter.project_name }}', // THIS SHOULD MATCH EXPO APP NAME
-    slug: '{{ cookiecutter.project_name }}', // THIS SHOULD MATCH EXPO APP SLUG
-    owner: '<ORG NAME IN EXPO>', // THIS SHOULD MATCH EXPO APP OWNER ORG
+    name: '<REPLACE_WITH_EXPO_APP_NAME>',
+    slug: '<REPLACE_WITH_EXPO_APP_SLUG>',
+    owner: '<REPLACE_WITH_EXPO_OWNER>',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/logo-sq.png',
@@ -15,7 +15,7 @@ module.exports = {
     assetBundlePatterns: ['**/*'],
     updates: {
       fallbackToCacheTimeout: 0,
-      url: 'https://u.expo.dev/<APP_ID>', // uuid of app
+      url: 'https://u.expo.dev/<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
     },
     plugins: [
       'sentry-expo'
@@ -25,7 +25,7 @@ module.exports = {
         { // this set up assumes you are using one application with multiple projects in sentry
           file: 'sentry-expo/upload-sourcemaps',
           config: {
-            organization: '',
+            organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
             project: process.env.SENTRY_PROJECT_NAME, // see readme for this variables
             authToken: process.env.SENTRY_AUTH_TOKEN, // defined in expo secrets
           },
@@ -34,7 +34,7 @@ module.exports = {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: '<IOS APP BUNDLE ID>', // CHANGE TO BUNDLE ID
+      bundleIdentifier: '<REPLACE_WITH_IOS_BUNDLE_ID>', // CHANGE TO BUNDLE ID
       config: {
         usesNonExemptEncryption: false,
       },
@@ -44,7 +44,7 @@ module.exports = {
         foregroundImage: './assets/logo-sq.png',
         backgroundColor: '#FFFFFF',
       },
-      package: '<ANDROID PACKAGE ID>', // CHANGE TO PACKAGE ID
+      package: '<REPLACE_WITH_ANDROID_PACKAGE_ID>', // CHANGE TO PACKAGE ID
     },
     web: {
       favicon: './assets/logo-sq.png',
@@ -52,7 +52,7 @@ module.exports = {
     extra: {
 
       eas: {
-        projectId: '<APP-PROJECT-ID>', // uuid of app
+        projectId: '<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
       },
       // these values are hardcoded and provided in eas.json
       backendServerUrl: process.env.BACKEND_SERVER_URL,

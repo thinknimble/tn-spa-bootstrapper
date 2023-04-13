@@ -25,7 +25,6 @@ alternatively if you want to use expo run command
 5. append your new subdomain to the `.env` in ROOT DIR to ALLOW_HOSTS e.g `ALLOW_HOSTS=[localhost:8080,<yourname>-thinknimble.ngrok.io]`
  
 
-### Set up external dependencies 
 ### Set up external dependencies
 
 #### Expo
