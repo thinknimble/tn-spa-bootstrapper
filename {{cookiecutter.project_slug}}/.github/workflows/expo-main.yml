@@ -60,8 +60,8 @@ jobs:
       - name: 🚀 Publish Staging Preview
         run: cd mobile && eas update --branch=staging --non-interactive --auto
         env:
-          BACKEND_SERVER_URL: https://worthy2-staging.herokuapp.com
-          ROLLBAR_ACCESS_TOKEN: 7dd08bcdb9b848d99e0ef5deb46a8a7a # uses dev
-          SENTRY_PROJECT_NAME: worthy2-staging # uses dev
-          SENTRY_DSN: "https://d7a2776f8b2645a39d9d554a3015037c@o4504792099192832.ingest.sentry.io/4504792134582272"
+          BACKEND_SERVER_URL: ""
+          ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
         
