@@ -2,6 +2,7 @@ name: Expo Publish PR
 on: [deployment_status]
 jobs:
   setup:
+    if: github.event.deployment_status.state == 'success' # guarantee backend deployment first
     runs-on: ubuntu-latest
     steps:
       - uses: jwalton/gh-find-current-pr@v1
@@ -15,7 +16,6 @@ jobs:
       PR: {{ "${{ env.PR }}" }}
 
   publish:
-    if: github.event.deployment_status.state == 'success' # guarantee backend deployment first
     runs-on: ubuntu-latest
     needs: setup
     steps:
