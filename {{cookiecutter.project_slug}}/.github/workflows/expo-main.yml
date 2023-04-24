@@ -4,9 +4,31 @@ on:
     branches:
       - main
 jobs:
-  publish:
+  setup:
     runs-on: ubuntu-latest
+    outputs:
+        BUILD_MOBILE_APP:{{ "${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}" }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+        name: check diff
+      - id: checkdiff
+        run: |
+          echo "BUILD_MOBILE_APP=$(git diff-tree --no-commit-id --name-only -r {{ "${{ github.sha }}" }} | xargs | grep mobile/ | wc -l)" >> $GITHUB_OUTPUT
 
+  printouts:
+    runs-on: ubuntu-latest
+    needs:  setup
+    steps:
+      - name: Echo files
+        run: |
+          echo "{{ "${{ needs.setup.outputs.BUILD_MOBILE_APP}}" }}"
+          echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP != 0 ]] && echo 'Changes detected in mobile dir..' || 'No changes in mobile app detected... will not deploy to expo')"
+  publish:
+    needs: setup
+    runs-on: ubuntu-latest
+    if: needs.setup.outputs.BUILD_MOBILE_APP != 0
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v2
@@ -37,3 +59,10 @@ jobs:
 
       - name: 🚀 Publish Staging Preview
         run: cd mobile && eas update --branch=staging --non-interactive --auto
+        env:
+          BACKEND_SERVER_URL: ""
+          ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
+          SENTRY_AUTH_TOKEN: ""
+        
