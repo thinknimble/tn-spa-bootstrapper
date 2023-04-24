@@ -8,13 +8,22 @@ This app is bootstrapped with the TN-Bootsrapper, it uses Expo as a wrapper fram
 
 After running the bootsrapper a mobile directory is created the following steps are needed to run and deploy the app
 
-## Running the app 
+## Running the app locally
 
 User `npm run start` to run the app and source the env variables 
 
 alternatively if you want to use expo run command 
 
 `source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} npx expo start`
+
+**When running the app locally and working against a local backend you will need to use a proxy**
+
+1. Download and install ngrok 
+2. Set up ngrok auth token (request an account from William Huster)
+3. run ngrok `~/.ngrok http 8000 --subdomain <yourname>-thinknimble` PLEASE NOTICE THE DASH APPENDED NAME `--subdomain <yourname>-thinknimble` DO NOT USE `--subdomain thinknimble`
+4. add your new subomain to the `.env` IN MOBILE DIR as BACKEND_DEV_SERVER 
+5. append your new subdomain to the `.env` in ROOT DIR to ALLOW_HOSTS e.g `ALLOW_HOSTS=[localhost:8080,<yourname>-thinknimble.ngrok.io]`
+ 
 
 ### Set up external dependencies 
 ### Set up external dependencies

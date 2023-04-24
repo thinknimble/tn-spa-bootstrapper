@@ -3270,10 +3270,10 @@
     luxon "^2.4.0"
     react-native-uuid "^2.0.1"
 
-"@thinknimble/tn-models-fp@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@thinknimble/tn-models-fp/-/tn-models-fp-2.1.0.tgz#bb1da77451de25fe5162e6164a9f660cd3a0f3a9"
-  integrity sha512-vxGlkThGqi1BT9GDLoXQaaICqHpXeiVf/3tYY4Mz7/okiotJi5EqiIIcTablmtZkWFB6md7KL7vJJWevw7NZMA==
+"@thinknimble/tn-models-fp@2.5.3":
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/@thinknimble/tn-models-fp/-/tn-models-fp-2.5.3.tgz#a95aa0346e3166ef26b2e26210138f6e93c95625"
+  integrity sha512-KkaJFGck4XGx9XOEqU7V7JPgG/ciZJ7T5EAyA51Ee29JnMBbiXdkusAEuBIsd/tZpg02Hh5CuajFS9Q2we/Rzg==
   dependencies:
     "@thinknimble/tn-utils" "^2.0.1"
 
