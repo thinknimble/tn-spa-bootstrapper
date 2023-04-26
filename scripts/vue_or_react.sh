@@ -12,8 +12,9 @@ if [ $react_count -gt $vue_count ]; then
 else
   config_file_path="cookiecutter/vue_template.yaml"
 fi
-ls -a cookiecutter/
+
 if [ "$rn_count" != 0 ]; then 
   sed -i.bak 's/include_mobile: "n"/include_mobile: "y"/' $config_file_path
 fi
+
 echo $config_file_path
