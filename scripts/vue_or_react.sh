@@ -13,7 +13,7 @@ else
   $config_file_path="cookiecutter/vue_template.yaml"
 fi
 
-if [$mobile_count -gt 0 ]; then 
+if [$mobile_count != 0 ]; then 
   sed -i.bak 's/include_mobile: "n"/include_mobile: "y"/' $config_file_path
 fi
 echo $config_file_path
