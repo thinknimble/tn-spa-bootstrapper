@@ -80,3 +80,75 @@ jobs:
           CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
           CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
           CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+
+  configuremobile:
+    needs: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      BUILD_MOBILE_APP: ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+        name: check diff
+      - id: checkdiff
+        run: |
+          echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
+
+  getprnumber:
+    runs-on: ubuntu-latest
+    needs: configuremobile
+    if: needs.setup.outputs.BUILD_MOBILE_APP != 0
+    steps:
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+      - name: Set name for PR
+        if: success() && steps.findPr.outputs.number
+        run: echo "PR=pr-${PR}" >> $GITHUB_ENV
+        env:
+          PR: ${{ steps.findPr.outputs.pr }}
+    outputs:
+      PR: ${{ env.PR }}
+  
+  publish:
+    runs-on: ubuntu-latest
+    needs: getprnumber
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - name: Copy Config files 
+        run: |
+          cp my_project/resources/app-bs.config.hs my_project/mobile/app.config.js
+          cp my_project/resources/eas-bs.json my_project/mobile/eas.json
+
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: cd mobile && yarn install
+
+      - name: 🚀 Publish preview
+        run: |
+          cd mobile && eas update --branch="${{ needs.setup.outputs.PR }}" --non-interactive --auto
+          echo "${{ env.BACKEND_SERVER_URL }} and ${{ needs.setup.outputs.PR }}"
+        env:
+          BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
+          ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
+          SENTRY_PROJECT_NAME: "tn-staging"
+          SENTRY_DSN: "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
+          SENTRY_AUTH_TOKEN: "${{ secrets.SENTRY_AUTH_TOKEN }}"
