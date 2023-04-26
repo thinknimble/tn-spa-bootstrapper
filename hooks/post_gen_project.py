@@ -57,11 +57,17 @@ def get_random_secret_key():
     return "".join(secrets.choice(chars) for i in range(50))
 
 
+clients_path = "clients"
+web_clients_path = f"{clients_path}/web"
+mobile_clients_path = f"{clients_path}/mobile"
+
+
+def clean_up_clients_folder():
+    rmtree(clients_path)
+
+
 def remove_web_client_files(client):
     rmtree(join(web_clients_path, client))
-
-
-web_clients_path = "clients/web"
 
 
 def move_web_client_to_root(client):
@@ -73,6 +79,17 @@ def move_web_client_to_root(client):
     env_path = join("client", ".env.local.example")
     if exists(env_path):
         rename(env_path, join("client", ".env.local"))
+
+
+def remove_mobile_client_files(client):
+    rmtree(join(mobile_clients_path, client))
+
+
+def move_mobile_client_to_root(client):
+    if exists("mobile"):
+        rmtree("mobile")
+    move(join(mobile_clients_path, client), join("mobile"))
+    rmtree(join(mobile_clients_path))
 
 
 def set_flag(file_path, flag, value=None):
@@ -114,8 +131,21 @@ def remove_gql_react_files():
     file_names = [
         join("client/src/utils", "mutations.ts"),
         join("client/src/utils", "queries.ts"),
-        join("client/src/utils", "get-cookie.js"),
         join("client/src/services", "apollo-client.ts"),
+    ]
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
+
+def remove_expo_yaml_files():
+    file_names = [
+        join(".github/workflows", "expo-emergency-prod-update.yml"),
+        join(".github/workflows", "expo-main.yml"),
+        join(".github/workflows", "expo-pr-teardown.yml"),
+        join(".github/workflows", "expo-pr"),
+        join(".github/workflows", "expo-teststore-build-android.yml"),
+        join(".github/workflows", "expo-teststore-build-ios.yml"),
     ]
     for file_name in file_names:
         if exists(file_name):
@@ -145,7 +175,7 @@ def main():
     set_keys_in_envs()
 
     if "{{ cookiecutter.client_app }}".lower() == "none":
-        rmtree("clients")
+        rmtree(web_clients_path)
         remove(join("package.json"))
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
         remove_web_client_files("react")
@@ -157,9 +187,14 @@ def main():
             remove_rest_react_files()
         else:
             remove_gql_react_files()
-
+    if "{{ cookiecutter.include_mobile }}".lower() == "y":
+        move_mobile_client_to_root("react-native")
+    else:
+        remove_expo_yaml_files()
     if "{{ cookiecutter.use_graphql }}".lower() == "n":
         remove_graphql_files()
+
+    clean_up_clients_folder()
 
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")

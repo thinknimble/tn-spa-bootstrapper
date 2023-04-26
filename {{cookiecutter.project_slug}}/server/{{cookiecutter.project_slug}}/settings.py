@@ -22,12 +22,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-if IN_DEV:
-    SERVER_EMAIL = "{{ cookiecutter.project_name }} Development <noreply-dev@{{ cookiecutter.project_slug }}.com>"
-elif IN_STAGING or IN_REVIEW:
-    SERVER_EMAIL = "{{ cookiecutter.project_name }} Staging <noreply-staging@{{ cookiecutter.project_slug }}.com>"
-else:
-    SERVER_EMAIL = "{{ cookiecutter.project_name }} <noreply@{{ cookiecutter.project_slug }}.com>"
+SERVER_EMAIL = config("DEFAULT_FROM_EMAIL", default="{{ cookiecutter.project_name }} <noreply@{{ cookiecutter.project_slug }}.com>")
 
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 

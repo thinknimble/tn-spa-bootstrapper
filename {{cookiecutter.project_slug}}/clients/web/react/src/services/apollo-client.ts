@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { createHttpLink } from '@apollo/client/link/http'
 import { setContext } from '@apollo/client/link/context'
-import getCookie from 'src/utils/get-cookie'
+import { getCookie } from 'src/utils/get-cookie'
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -31,7 +31,7 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
-// We should change this to follow the rest framework proxying rather than this if statement - PB
+// We should change this to follow the rest framework proxying rather than this if statement so it is consistent - PB
 const local_backend_uri = `${
   import.meta.env.VITE_DEV_BACKEND_URL
     ? import.meta.env.VITE_DEV_BACKEND_URL
