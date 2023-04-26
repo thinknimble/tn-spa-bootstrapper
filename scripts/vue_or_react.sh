@@ -8,9 +8,9 @@ rn_count=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-nat
 config_file_path=""
 
 if [ $react_count -gt $vue_count ]; then
-  $config_file_path="cookiecutter/react_template.yaml"
+  config_file_path="cookiecutter/react_template.yaml"
 else
-  $config_file_path="cookiecutter/vue_template.yaml"
+  config_file_path="cookiecutter/vue_template.yaml"
 fi
 ls -a cookiecutter/
 if [ "$rn_count" != 0 ]; then 
