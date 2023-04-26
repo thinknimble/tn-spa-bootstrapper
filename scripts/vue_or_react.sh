@@ -15,5 +15,5 @@ fi
 
 if [$mobile_count -gt 0 ]; then 
   sed -i.bak 's/include_mobile: "n"/include_mobile: "y"/' $config_file_path
-
-  echo $config_file_path
+fi
+echo $config_file_path
