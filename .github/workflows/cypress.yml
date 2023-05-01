@@ -88,8 +88,8 @@ jobs:
       BUILD_MOBILE_APP: ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
+        # with:
+        #   fetch-depth: 1
         name: check diff
       - id: checkdiff
         run: |
