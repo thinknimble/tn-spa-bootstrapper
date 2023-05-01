@@ -7,7 +7,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-        BUILD_MOBILE_APP:{{ "${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}" }}
+        BUILD_MOBILE_APP: {{ "${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}" }}
     steps:
       - uses: actions/checkout@v3
         with:

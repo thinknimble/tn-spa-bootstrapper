@@ -87,10 +87,11 @@ jobs:
     outputs:
       BUILD_MOBILE_APP: ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}
     steps:
-      - id: checkdiff
-        name: check diff
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 5
+        name: check diff
+      - id: checkdiff
         run: |
           echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
 
