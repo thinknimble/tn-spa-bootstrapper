@@ -117,14 +117,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: getprnumber
     steps:
-      - name: 🏗 Setup repo
-        uses: actions/checkout@v2
-
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: my_project
+          path: my_project/
       - uses: actions/cache@v2
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
       - name: 🏗 Setup Node
         uses: actions/setup-node@v2
         with:
