@@ -145,13 +145,14 @@ jobs:
       - name: Copy Config files 
         run: |
           ls 
-          cp my_project/resources/app-bs.config.js my_project/mobile/app.config.js
-          cp my_project/resources/eas-bs.json my_project/mobile/eas.json
+          cp resources/app-bs.config.js my_project/mobile/app.config.js
+          cp resources/eas-bs.json my_project/mobile/eas.json
 
       - name: 🚀 Publish preview
+        working-directory: ./my_project/mobile
         run: |
-          cd mobile && eas update --branch="${{ needs.setup.outputs.PR }}" --non-interactive --auto
-          echo "${{ env.BACKEND_SERVER_URL }} and ${{ needs.setup.outputs.PR }}"
+          eas update --branch="${{ needs.getprnumber.outputs.PR }}" --non-interactive --auto
+          echo "${{ env.BACKEND_SERVER_URL }} and ${{ needs.getprnumber.outputs.PR }}"
         env:
           BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
           ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
