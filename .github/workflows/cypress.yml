@@ -88,11 +88,12 @@ jobs:
       BUILD_MOBILE_APP: ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}
     steps:
       - uses: actions/checkout@v3
-        # with:
-        #   fetch-depth: 1
+        with:
+          fetch-depth: 5
         name: check diff
       - id: checkdiff
         run: |
+          git fetch origin main
           echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
 
   getprnumber:
