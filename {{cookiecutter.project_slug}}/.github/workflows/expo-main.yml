@@ -24,7 +24,7 @@ jobs:
       - name: Echo files
         run: |
           echo "{{ "${{ needs.setup.outputs.BUILD_MOBILE_APP}}" }}"
-          echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP -gt 0 ]] && echo 'Changes detected in mobile dir..' || 'No changes in mobile app detected... will not deploy to expo')"
+          echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP != 0 ]] && echo 'Changes detected in mobile dir..' || 'No changes in mobile app detected... will not deploy to expo')"
   publish:
     needs: setup
     runs-on: ubuntu-latest
@@ -59,3 +59,10 @@ jobs:
 
       - name: 🚀 Publish Staging Preview
         run: cd mobile && eas update --branch=staging --non-interactive --auto
+        env:
+          BACKEND_SERVER_URL: ""
+          ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
+          SENTRY_AUTH_TOKEN: ""
+        
