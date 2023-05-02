@@ -140,7 +140,7 @@ jobs:
 
       - name: 📦 Install dependencies
         working-directory: ./my_project/mobile
-        run: npm install
+        run: yarn install
   
       - name: Copy Config files 
         run: |
