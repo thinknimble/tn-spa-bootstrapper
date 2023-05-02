@@ -144,7 +144,8 @@ jobs:
   
       - name: Copy Config files 
         run: |
-          cp my_project/resources/app-bs.config.hs my_project/mobile/app.config.js
+          ls 
+          cp my_project/resources/app-bs.config.js my_project/mobile/app.config.js
           cp my_project/resources/eas-bs.json my_project/mobile/eas.json
 
       - name: 🚀 Publish preview
