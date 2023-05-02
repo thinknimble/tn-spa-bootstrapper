@@ -100,7 +100,7 @@ jobs:
   getprnumber:
     runs-on: ubuntu-latest
     needs: configuremobile
-    if: needs.setup.outputs.BUILD_MOBILE_APP != 0
+    if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
     steps:
       - uses: jwalton/gh-find-current-pr@v1
         id: findPr
