@@ -94,6 +94,7 @@ jobs:
       - id: checkdiff
         run: |
           git fetch origin main
+          echo $(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)
           echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
 
   getprnumber:
