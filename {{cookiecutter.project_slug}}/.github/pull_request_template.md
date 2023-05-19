@@ -19,6 +19,8 @@ Add any notes for changes needed when deployed. I.e. API keys, environment varia
 Add user steps to achieve desired functionality for this feature.
 
 ## Django Admin 
-user: admin@thinknimble.com
-password: !!!DJANGO_SECRET_KEY!!!
+| user | password | has admin | notes |
+| --- | --- | --- | --- |
+| `admin@thinknimble.com` | !!!DJANGO_SECRET_KEY!!! | :white_check_mark: | |
+| `cypress@example.com` | !!!DJANGO_SECRET_KEY!!! | :x: | Only use for automated E2E testing |
 
