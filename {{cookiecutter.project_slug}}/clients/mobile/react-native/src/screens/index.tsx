@@ -6,7 +6,7 @@ import { Login, SignUp } from './auth'
 import { Main } from './main'
 import { Auth } from './auth/auth'
 
-// Default options
+// Default options - forcing a mobile trigger
 export const screenDefaultOptions = (): NativeStackNavigationOptions => ({
   headerShadowVisible: false,
   headerShown: false,
