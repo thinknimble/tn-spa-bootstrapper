@@ -14,8 +14,8 @@
         :errors="form.passwordConfirmation.errors"
         @blur="form.passwordConfirmation.validate()"
         type="password"
-        label="New Password:"
-        placeholder="New password"
+        label="Confirm Password:"
+        placeholder="Confirm Password"
       />
 
       <button type="submit">Reset Password</button>
