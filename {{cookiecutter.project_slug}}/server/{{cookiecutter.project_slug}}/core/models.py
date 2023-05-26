@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
@@ -8,6 +10,8 @@ from rest_framework.authtoken.models import Token
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
+
+logger = logging.getLogger(__name__)
 
 
 class UserManager(BaseUserManager):
@@ -29,12 +33,14 @@ class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         """Create and save a regular User with the given email and password."""
+        logger.info(f"New user: {email}")
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
         """Create a superuser with the given email and password."""
+        logger.warning(f"Creating superuser: {email}")
         extra_fields["is_staff"] = True
         extra_fields["is_superuser"] = True
         extra_fields["has_reset_password"] = True
