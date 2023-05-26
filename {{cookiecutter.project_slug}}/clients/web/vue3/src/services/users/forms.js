@@ -17,10 +17,13 @@ export class SignupForm extends Form {
   static email = new FormField({ validators: [new RequiredValidator(), new EmailValidator()] })
   static password = new FormField({
     validators: [
-      new RequiredValidator(),
       new MinLengthValidator({ minLength: 8, message: 'Minimum Length of 8 required' }),
     ],
   })
+    // add cross field validators to the dynamicFormValidators object
+  static dynamicFormValidators = {
+      confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
+    }
 }
 
 export class RequestPasswordResetForm extends Form {
