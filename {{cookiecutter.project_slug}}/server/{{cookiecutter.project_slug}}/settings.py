@@ -293,7 +293,7 @@ if config("USE_AWS_STORAGE", cast=bool, default=False) and not IS_REVIEW_APP:
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
     AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
-    AWS_LOCATION = config("AWS_LOCATION", default="")  # production, staging, etc
+    AWS_LOCATION = config("AWS_LOCATION")  # production, staging, etc
     AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
 
     aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
