@@ -5,8 +5,8 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rest_framework import status
 {% endif -%}
+from rest_framework import status
 
 
 {% if cookiecutter.use_graphql == 'y' %}
