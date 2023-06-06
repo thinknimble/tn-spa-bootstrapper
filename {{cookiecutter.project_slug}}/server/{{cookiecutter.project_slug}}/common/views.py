@@ -1,12 +1,12 @@
 {% if cookiecutter.use_graphql == "n" -%}
 from django.shortcuts import render
 from django.template.exceptions import TemplateDoesNotExist
+from rest_framework import status
 {% else -%}
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 {% endif -%}
-from rest_framework import status
 
 
 {% if cookiecutter.use_graphql == 'y' %}
