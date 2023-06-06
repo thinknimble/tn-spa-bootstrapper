@@ -5,6 +5,7 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework import status
 {% endif -%}
 
 
@@ -18,7 +19,7 @@ def index(request):
 
 def index(request):
     try:
-        return render(request, "index.html")
+        return render(request, "index.html", status=status.HTTP_404_NOT_FOUND)
     except TemplateDoesNotExist:
-        return render(request, "core/index-placeholder.html")
+        return render(request, "core/index-placeholder.html", status=status.HTTP_404_NOT_FOUND)
 {% endif -%}
