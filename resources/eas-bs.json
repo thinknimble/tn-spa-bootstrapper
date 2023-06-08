@@ -1,0 +1,45 @@
+{
+    "cli": {
+      "version": ">= 2.4.1",
+      "appVersionSource": "remote"
+    },
+    "build": {
+      "development": {
+        "developmentClient": true,
+        "distribution": "internal",
+        "channel": "development"
+      },
+      "staging": {
+        "distribution": "internal",
+        "channel": "staging",
+        "env": {
+          "BACKEND_SERVER_URL": "https://tn-spa-bootstrapper-production.herokuapp.com/",
+          "BUILD_ENV": "staging",
+          "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
+          "SENTRY_PROJECT_NAME": "tn-staging",
+          "SENTRY_DSN": "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
+        }
+      },
+      "production": {
+        "channel": "production",
+        "autoIncrement": true,
+        "env": {
+          "BACKEND_SERVER_URL": "https://tn-spa-bootstrapper-staging.herokuapp.com/",
+          "BUILD_ENV": "production",
+          "ROLLBAR_ACCESS_TOKEN": "e6246274f1f2411990f0cd1c7b99b072",
+          "SENTRY_PROJECT_NAME": "tn-prod",
+          "SENTRY_DSN": "https://df747bb2e58d4f178f433f322bd41026@o4504899535962112.ingest.sentry.io/4504906701733888"
+        }
+      }
+    },
+    "submit": {
+      "production": {
+        "ios": {
+          "appName": "TN Bootsrapper RN",
+          "appleId": "pari@thinknimble.com",
+          "appleTeamId": "6BNA6HFF6B",
+          "ascAppId": "12023"
+        }
+      }
+    }
+  }

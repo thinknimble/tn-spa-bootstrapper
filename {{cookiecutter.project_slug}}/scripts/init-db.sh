@@ -55,11 +55,21 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 echo "##### postresql is installed"
+
+echo "##### Dropping the DB if it already exists"
+dropdb $db_name
+DROPDB_SUCCESS=$?
+
 echo "##### Creating database: $db_name"
 sudo -u $sudo_p_user createdb $db_name
-echo "##### Creating user: $db_user"
-sudo -u $sudo_p_user psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
+
+if [ $DROPDB_SUCCESS != 0 ] ; then
+    # db didn't exist. Assume users and permissions are missing
+    echo "##### Creating user: $db_user"
+    sudo -u $sudo_p_user psql -c "CREATE USER $db_user WITH PASSWORD '$db_pass';"
+    echo "##### Giving user permission to create the test db"
+    sudo -u $sudo_p_user psql -c "ALTER USER $db_user CREATEDB;"
+fi
+
 echo "##### Giving user permission to the database"
 sudo -u $sudo_p_user psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
-echo "##### Giving user permission to create the test db"
-sudo -u $sudo_p_user psql -c "ALTER USER $db_user CREATEDB;"
