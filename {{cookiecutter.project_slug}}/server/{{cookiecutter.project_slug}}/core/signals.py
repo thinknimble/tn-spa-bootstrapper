@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 
 from {{ cookiecutter.project_slug }}.core.models import User
 
+
 @receiver(post_save, sender=User)
 def create_auth_token_add_permissions(sender, instance, created, **kwargs):
     if created:
