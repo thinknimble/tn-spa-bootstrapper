@@ -3,11 +3,10 @@ import logging
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from rest_framework.authtoken.models import Token
 
-from {{ cookiecutter.project_slug }}.core.models import User
 from {{ cookiecutter.project_slug }}.core.dispatch import new_reset_password_code_created_ds
+from {{ cookiecutter.project_slug }}.core.models import User
 from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 logger = logging.getLogger(__name__)

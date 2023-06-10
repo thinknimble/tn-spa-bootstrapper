@@ -1,13 +1,13 @@
 import logging
 
-from django.contrib.auth.hashers import make_password
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
 
-from {{ cookiecutter.project_slug }}.core.dispatch import new_reset_password_code_created_ds
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
+from {{ cookiecutter.project_slug }}.core.dispatch import new_reset_password_code_created_ds
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
 
 logger = logging.getLogger(__name__)
@@ -78,8 +78,8 @@ class User(AbstractUser, AbstractBaseModel):
         ordering = ["email"]
 
 
-class UserResetPasswordCodeMessagesQuerySet(models.QuerySet):
-    def for_user(self, user) -> "models.QuerySet[UserResetPasswordCodeMessages]":
+class UserResetPasswordCodeQuerySet(models.QuerySet):
+    def for_user(self, user) -> "models.QuerySet[UserResetPasswordCode]":
         if not user or user.is_anonymous:
             return self.none()
         elif user.is_staff or user.is_superuser:
@@ -91,8 +91,8 @@ class UserResetPasswordCodeMessagesQuerySet(models.QuerySet):
 class UserResetPasswordCodeManager(models.Manager):
     use_in_migrations = True
 
-    def get_queryset(self) -> "models.QuerySet[UserResetPasswordCodeMessages]":
-        return UserResetPasswordCodeMessagesQuerySet(self.model, using=self.db)
+    def get_queryset(self) -> "models.QuerySet[UserResetPasswordCode]":
+        return UserResetPasswordCodeQuerySet(self.model, using=self.db)
 
     def for_user(self, user):
         return self.get_queryset().for_user(user)

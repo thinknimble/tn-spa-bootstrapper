@@ -18,7 +18,7 @@ from {{cookiecutter.project_slug}}.utils.misc import random_pin_generator
 
 from .models import User, UserResetPasswordCode
 from .permissions import CreateOnlyPermissions
-from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer, CodeResetPasswordSerializer
+from .serializers import CodeResetPasswordSerializer, UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +123,7 @@ def reset_password(request, *args, **kwargs):
     response_data = UserLoginSerializer.login(user, request)
     return Response(response_data, status=status.HTTP_200_OK)
 
+
 @api_view(["get"])
 @permission_classes([permissions.AllowAny])
 def request_reset_code(request, *args, **kwargs):
@@ -153,4 +154,3 @@ def reset_password_with_code(request, *args, **kwargs):
 
     u = UserLoginSerializer.login(user, request)
     return Response(status=status.HTTP_200_OK, data=u)
-
