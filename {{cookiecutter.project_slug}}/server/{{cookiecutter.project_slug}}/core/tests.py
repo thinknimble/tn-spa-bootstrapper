@@ -103,12 +103,12 @@ def test_user_can_change_password_with_code(test_user):
     res = client.post("/api/login/", {"email": test_user.email, "password": "testing123"}, **JSON_RQST_HEADERS)
     assert res.status_code == 200
     assert res.json()
-    res = client.get(f"/api/password/reset/{test_user.email}/", **JSON_RQST_HEADERS)
+    res = client.get(f"/api/password/reset/code/{test_user.email}/", **JSON_RQST_HEADERS)
     assert res.status_code == 204
     assert UserResetPasswordCode.objects.count()
     code = 12345
     UserResetPasswordCode.objects.create_code(user=test_user, code=12345)
-    res = client.post(f"/api/password/reset/confirm/{test_user.email}/", {"code": code, "password": "testing12345"}, **JSON_RQST_HEADERS)
+    res = client.post(f"/api/password/reset/code/confirm/{test_user.email}/", {"code": code, "password": "testing12345"}, **JSON_RQST_HEADERS)
     assert res.status_code == 200
     assert res.json()
     res = client.post("/api/login/", {"email": test_user.email, "password": "testing12345"}, **JSON_RQST_HEADERS)
