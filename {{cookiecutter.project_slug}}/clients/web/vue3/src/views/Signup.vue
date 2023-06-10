@@ -35,6 +35,15 @@
         label="Password"
         placeholder="Enter password..."
       />
+
+      <InputField
+        v-model:value="form.passwordConfirmation.value"
+        :errors="form.passwordConfirmation.errors"
+        @blur="form.passwordConfirmation.validate()"
+        type="password"
+        label="Confirm Password:"
+        placeholder="Confirm Password"
+      />
       <button class="btn--primary bg-primary" type="submit">Sign Up</button>
       <div class="flex self-center m-4">
         <p class="mr-2">Already have an account?</p>

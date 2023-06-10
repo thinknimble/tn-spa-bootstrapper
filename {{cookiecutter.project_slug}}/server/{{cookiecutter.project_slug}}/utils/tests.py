@@ -1,5 +1,6 @@
 import pytest
 
+from {{ cookiecutter.project_slug }}.utils.emails import get_html_body
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
 
 
@@ -30,3 +31,9 @@ def test_get_site_url_negative(settings, custom_settings):
         settings.__setattr__(key, custom_settings[key])
     with pytest.raises(Exception):
         get_site_url()
+
+
+def test_password_reset_email_link(user):
+    context = user.reset_password_context()
+    html_body = get_html_body("registration/password_reset.html", context)
+    assert f"{ context['site_url'] }/password/reset/confirm/{ context['user'].id }/{ context['token'] }" in html_body

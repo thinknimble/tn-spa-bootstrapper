@@ -1,9 +1,15 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from rest_framework import generics, mixins, permissions, status, viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -12,6 +18,8 @@ from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 from .models import User
 from .permissions import CreateOnlyPermissions
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class UserLoginView(generics.GenericAPIView):
@@ -76,10 +84,11 @@ class UserViewSet(
         return Response(user, status=status.HTTP_200_OK)
 
 
-@api_view(["get"])
-@permission_classes([permissions.AllowAny])
+@api_view(["post"])
+@permission_classes([])
+@authentication_classes([])
 def request_reset_link(request, *args, **kwargs):
-    email = kwargs.get("email")
+    email = request.data.get("email")
     user = User.objects.filter(email=email).first()
     if not user:
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -99,14 +108,16 @@ def request_reset_link(request, *args, **kwargs):
 @api_view(["post"])
 @permission_classes([permissions.AllowAny])
 def reset_password(request, *args, **kwargs):
-    id = kwargs.get("id")
+    user_id = kwargs.get("uid")
     token = kwargs.get("token")
-    user = User.objects.filter(id=id).first()
+    user = User.objects.filter(id=user_id).first()
     if not user or not token:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
     is_valid = default_token_generator.check_token(user, token)
     if not is_valid:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
+    logger.info(f"Resetting password for user {user_id}")
     user.set_password(request.data.get("password"))
-    u = UserLoginSerializer.login(user, request)
-    return Response(status=status.HTTP_200_OK, data=u)
+    user.save()
+    response_data = UserLoginSerializer.login(user, request)
+    return Response(response_data, status=status.HTTP_200_OK)

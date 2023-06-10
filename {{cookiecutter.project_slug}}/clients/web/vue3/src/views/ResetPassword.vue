@@ -9,6 +9,14 @@
         label="New Password:"
         placeholder="New password"
       />
+      <InputField
+        v-model:value="form.passwordConfirmation.value"
+        :errors="form.passwordConfirmation.errors"
+        @blur="form.passwordConfirmation.validate()"
+        type="password"
+        label="Confirm Password:"
+        placeholder="Confirm Password"
+      />
 
       <button type="submit">Reset Password</button>
     </form>
@@ -16,9 +24,9 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import User, { PasswordResetForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 
@@ -29,11 +37,13 @@ export default {
   },
   setup() {
     const form = ref(new PasswordResetForm())
+    const store = useStore()
     const route = useRoute()
+    const router = useRouter()
 
     function handleResetSuccess(data) {
-      alert('Succesfully reset password, see console for data.')
-      console.log('success', data)
+      store.dispatch('setUser', data)
+      router.push({ name: 'Dashboard' })
     }
 
     function handleResetFailure(error) {
