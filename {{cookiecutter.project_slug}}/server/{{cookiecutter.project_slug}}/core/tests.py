@@ -81,6 +81,7 @@ def test_password_reset(test_user, client):
     serializer.is_valid()
     assert authenticate(**serializer.validated_data)
 
+
 @pytest.mark.django_db
 def test_user_token_gets_created_from_signal(test_user):
     assert test_user.auth_token
