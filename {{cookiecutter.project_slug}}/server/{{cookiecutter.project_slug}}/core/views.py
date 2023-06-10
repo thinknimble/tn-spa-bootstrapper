@@ -14,10 +14,11 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
+from {{cookiecutter.project_slug}}.utils.misc import random_pin_generator
 
-from .models import User
+from .models import User, UserResetPasswordCode
 from .permissions import CreateOnlyPermissions
-from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer, CodeResetPasswordSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -121,3 +122,35 @@ def reset_password(request, *args, **kwargs):
     user.save()
     response_data = UserLoginSerializer.login(user, request)
     return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(["get"])
+@permission_classes([permissions.AllowAny])
+def request_reset_code(request, *args, **kwargs):
+    email = kwargs.get("email")
+    user = User.objects.filter(email=email).first()
+    if not user:
+        raise ValidationError(detail={"non_field_errors": ["User not found with that email"]})
+    UserResetPasswordCode.objects.create_code(user=user, code=random_pin_generator(count=5))
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["post"])
+@permission_classes([permissions.AllowAny])
+def reset_password_with_code(request, *args, **kwargs):
+    email = kwargs.get("email")
+    user = User.objects.filter(email=email).first()
+    if not user:
+        raise ValidationError(detail={"non_field_errors": ["User not found with that email"]})
+    serializer = CodeResetPasswordSerializer(data=request.data, context={"user": user})
+    serializer.is_valid(raise_exception=True)
+
+    code_from_db = serializer.context.get("code_from_db")
+    code_from_db.is_used = True
+    code_from_db.save()
+
+    user.set_password(request.data.get("password"))
+    user.save()
+
+    u = UserLoginSerializer.login(user, request)
+    return Response(status=status.HTTP_200_OK, data=u)
+

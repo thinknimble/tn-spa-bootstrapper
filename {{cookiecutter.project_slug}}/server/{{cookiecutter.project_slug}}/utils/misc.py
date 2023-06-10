@@ -1,3 +1,5 @@
+import random
+
 from django.utils import timezone
 
 
@@ -23,3 +25,11 @@ def as_choices(iterable):
     [A, B ...] is mapped to [(A, A), (B, B) ...]
     """
     return tuple((elem, elem) for elem in iterable)
+
+
+def random_pin_generator(count=4):
+    num = ""
+    for _ in range(1, count + 1):
+        n = random.randint(0, 9)
+        num += str(n)
+    return num

@@ -3,6 +3,7 @@
 import uuid
 
 import django.utils.timezone
+from django.conf import settings
 import {{ cookiecutter.project_slug }}.core.models
 from django.db import migrations, models
 
@@ -79,6 +80,24 @@ class Migration(migrations.Migration):
             },
             managers=[
                 ("objects", {{ cookiecutter.project_slug }}.core.models.UserManager()),
+            ],
+        ),
+        migrations.CreateModel(
+            name='UserResetPasswordCode',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('datetime_created', models.DateTimeField(auto_now_add=True)),
+                ('last_edited', models.DateTimeField(auto_now=True)),
+                ('code', models.CharField(max_length=255)),
+                ('is_used', models.BooleanField(default=False)),
+                ('is_deactivated', models.BooleanField(default=False)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reset_password_codes', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'ordering': ('-datetime_created',),
+            },
+            managers=[
+                ('objects', {{cookiecutter.project_slug}}.core.models.UserResetPasswordCodeManager()),
             ],
         ),
     ]

@@ -4,7 +4,7 @@ from django.test import Client
 from pytest_factoryboy import register
 
 from .factories import UserFactory
-from .models import User
+from .models import User, UserResetPasswordCode
 from .serializers import UserLoginSerializer
 
 JSON_RQST_HEADERS = dict(
@@ -18,6 +18,8 @@ register(UserFactory)
 @pytest.fixture
 def test_user():
     user = UserFactory()
+    user.save()
+    user.set_password("testing123")
     user.save()
     return user
 
@@ -85,3 +87,30 @@ def test_password_reset(test_user, client):
 @pytest.mark.django_db
 def test_user_token_gets_created_from_signal(test_user):
     assert test_user.auth_token
+
+
+@pytest.mark.django_db
+def test_user_password_reset_request(test_user):
+    client = Client()
+    res = client.get(f"/api/password/reset/{test_user.email}/", **JSON_RQST_HEADERS)
+    assert res.status_code == 204
+    assert UserResetPasswordCode.objects.count()
+
+
+@pytest.mark.django_db
+def test_user_can_change_password_with_code(test_user):
+    client = Client()
+    res = client.post("/api/login/", {"email": test_user.email, "password": "testing123"}, **JSON_RQST_HEADERS)
+    assert res.status_code == 200
+    assert res.json()
+    res = client.get(f"/api/password/reset/{test_user.email}/", **JSON_RQST_HEADERS)
+    assert res.status_code == 204
+    assert UserResetPasswordCode.objects.count()
+    code = 12345
+    UserResetPasswordCode.objects.create_code(user=test_user, code=12345)
+    res = client.post(f"/api/password/reset/confirm/{test_user.email}/", {"code": code, "password": "testing12345"}, **JSON_RQST_HEADERS)
+    assert res.status_code == 200
+    assert res.json()
+    res = client.post("/api/login/", {"email": test_user.email, "password": "testing12345"}, **JSON_RQST_HEADERS)
+    assert res.status_code == 200
+    assert res.json()
