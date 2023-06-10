@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.template.loader import render_to_string
+
 from rest_framework.authtoken.models import Token
 
 from {{ cookiecutter.project_slug }}.core.models import User
@@ -24,10 +24,10 @@ def generate_reset_password_code(sender, code=None, instance=None, created=None,
     if created:
         try:
             reset_context = {"code": code, "user": instance.user}
-            subject = render_to_string("registration/password_reset_subject.txt")
+            subject = "Password reset for {{ cookiecutter.project_name }}",
             send_html_email(
                 subject,
-                "registration/password_reset_email.html",
+                "registration/password_reset_email_code.html",
                 settings.DEFAULT_FROM_EMAIL,
                 [instance.user.email],
                 context=reset_context,
