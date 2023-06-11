@@ -92,7 +92,7 @@ def test_user_token_gets_created_from_signal(test_user):
 @pytest.mark.django_db
 def test_user_password_reset_request(test_user):
     client = Client()
-    res = client.get(f"/api/password/reset/{test_user.email}/", **JSON_RQST_HEADERS)
+    res = client.get(f"/api/password/reset/code/{test_user.email}/", **JSON_RQST_HEADERS)
     assert res.status_code == 204
     assert UserResetPasswordCode.objects.count()
 
