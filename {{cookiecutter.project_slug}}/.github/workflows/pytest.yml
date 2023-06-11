@@ -29,5 +29,7 @@ jobs:
           touch .env
           cat .env.example > .env
           cat .env
+      - run: mkdir -p client/dist/static
+      - run: pipenv run python server/manage.py collectstatic
       - run: pipenv run pytest --mccabe --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
       - run: pipenv run coverage report --fail-under=20

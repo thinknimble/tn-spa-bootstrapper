@@ -1,9 +1,11 @@
 import pytest
+from django.contrib.auth import authenticate
 from django.test import Client
 from pytest_factoryboy import register
 
 from .factories import UserFactory
 from .models import User
+from .serializers import UserLoginSerializer
 
 JSON_RQST_HEADERS = dict(
     content_type="application/json",
@@ -63,3 +65,18 @@ def test_user_can_login(test_user):
     client = Client()
     res = client.post("/api/login/", {"email": test_user.email, "password": "testing123"}, **JSON_RQST_HEADERS)
     assert res.status_code == 200
+
+
+@pytest.mark.django_db
+def test_password_reset(test_user, client):
+    test_user.set_password("testing123")
+    test_user.save()
+    context = test_user.reset_password_context()
+    password_reset_url = f"/api/password/reset/confirm/{ context['user'].id }/{ context['token'] }/"
+    response = client.post(password_reset_url, data={"password": "new_password"}, format="json")
+    assert response.status_code == 200
+
+    # New Password should now work for authentication
+    serializer = UserLoginSerializer(data={"email": test_user.email, "password": "new_password"})
+    serializer.is_valid()
+    assert authenticate(**serializer.validated_data)

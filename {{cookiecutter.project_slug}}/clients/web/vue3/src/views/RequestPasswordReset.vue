@@ -1,19 +1,42 @@
 <template>
-  <div class="request-password-reset">
-    <form @submit.prevent="attemptResetRequest()">
-      <InputField
-        v-model:value="form.email.value"
-        :errors="form.email.errors"
-        @blur="form.email.validate()"
-        type="email"
-        label="Email:"
-        placeholder="Email"
-      />
+  <template v-if="!resetLinkSent">
+    <div class="request-password-reset">
+      <form @submit.prevent="attemptResetRequest()">
+        <InputField
+          v-model:value="form.email.value"
+          :errors="form.email.errors"
+          @blur="form.email.validate()"
+          type="email"
+          label="Email:"
+          placeholder="Email"
+        />
 
-      <button type="submit">Request Password Reset</button>
-    </form>
-  </div>
+        <button
+          :class="{ 'btn--disabled': !form.isValid }"
+          :disabled="!form.isValid"
+          type="submit">
+          Request Password Reset
+        </button>
+      </form>
+    </div>
+  </template>
+  <template v-else>
+    <p class="">
+      Your request has been submitted. If there is an account associated with the email provided, you should receive an email momentarily with instructions to reset your password.
+    </p>
+    <p class="">
+      If you do not see the email in your main folder soon, please make sure to check your spam folder.
+    </p>
+    <div class="">
+      <button type="button" class="btn--primary">
+        <router-link :to="{ name: 'Login' }" class="" id="login-link">
+          Return to Log in
+        </router-link>
+      </button>
+    </div>
+  </template>
 </template>
+
 
 <script>
 import { ref } from 'vue'
@@ -27,9 +50,10 @@ export default {
   },
   setup() {
     const form = ref(new RequestPasswordResetForm())
+    const resetLinkSent = ref(false)
 
     function handleResetRequestSuccess(data) {
-      alert('Succesful request, see console for data.')
+      resetLinkSent.value = true
       console.log('success', data)
     }
 
@@ -52,6 +76,7 @@ export default {
     return {
       form,
       attemptResetRequest,
+      resetLinkSent,
     }
   },
 }
