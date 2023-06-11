@@ -23,10 +23,10 @@ def generate_reset_password_code(sender, code=None, instance=None, created=None,
     if created:
         try:
             reset_context = {"code": code, "user": instance.user}
-            subject = "Password reset for {{ cookiecutter.project_name }}",
+            subject = ("Password reset for test_proj",)
             send_html_email(
                 subject,
-                "registration/password_reset_email_code.html",
+                "Password reset for {{ cookiecutter.project_name }}",
                 settings.DEFAULT_FROM_EMAIL,
                 [instance.user.email],
                 context=reset_context,
