@@ -18,7 +18,7 @@ from {{cookiecutter.project_slug}}.utils.misc import random_pin_generator
 
 from .models import User, UserResetPasswordCode
 from .permissions import CreateOnlyPermissions
-from .serializers import CodeResetPasswordSerializer, UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer, CodeResetPasswordSerializer
 
 logger = logging.getLogger(__name__)
 
