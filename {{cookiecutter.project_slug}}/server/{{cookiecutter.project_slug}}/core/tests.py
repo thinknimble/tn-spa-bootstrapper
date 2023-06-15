@@ -86,6 +86,10 @@ def test_password_reset(test_user, client):
     assert authenticate(**serializer.validated_data)
 
 
+def test_user_token_gets_created_from_signal(test_user):
+    assert test_user.auth_token
+
+
 @pytest.mark.django_db
 class TestPreviewTemplateView:
     url = "/api/template_preview/"
