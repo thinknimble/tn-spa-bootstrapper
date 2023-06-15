@@ -8,6 +8,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import render
+from django.template import TemplateDoesNotExist
 from rest_framework import generics, mixins, permissions, status, views, viewsets
 from rest_framework.decorators import (
     api_view,
@@ -139,8 +140,11 @@ class PreviewTemplateView(views.APIView):
         context = {}
         self.fill_context_from_params(context, request.query_params)
         self.fill_context_from_params(context, request.data)
-        template_name = context.pop("template")
-        return render(request, template_name, context=context)
+        template_name = context.pop("template", None)
+        try:
+            return render(request, template_name, context=context)
+        except (TypeError, TemplateDoesNotExist):
+            raise ValidationError(detail=f"Invalid template name: {template_name}")
 
     def fill_context_from_params(self, context: dict, args: dict):
         """
