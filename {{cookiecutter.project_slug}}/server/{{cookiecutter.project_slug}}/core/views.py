@@ -1,10 +1,14 @@
 import logging
+from typing import Any
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
-from rest_framework import generics, mixins, permissions, status, viewsets
+from django.http import Http404
+from django.shortcuts import render
+from rest_framework import generics, mixins, permissions, status, views, viewsets
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
@@ -12,7 +16,6 @@ from rest_framework.decorators import (
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 
 from .models import User
@@ -121,3 +124,52 @@ def reset_password(request, *args, **kwargs):
     user.save()
     response_data = UserLoginSerializer.login(user, request)
     return Response(response_data, status=status.HTTP_200_OK)
+
+
+class PreviewTemplateView(views.APIView):
+    def get(self, request):
+        return self.preview_template_view(request)
+
+    def post(self, request):
+        return self.preview_template_view(request)
+
+    def preview_template_view(self, request):
+        if not settings.DEBUG:
+            raise Http404
+        context = {}
+        self.fill_context_from_params(context, request.query_params)
+        self.fill_context_from_params(context, request.data)
+        template_name = context.pop("template")
+        return render(request, template_name, context=context)
+
+    def fill_context_from_params(self, context: dict, args: dict):
+        """
+        Provide support for nested dicts using Django's __ notation and also to parse models from IDs.
+        i.e.:
+            - ?param=val&parent__child=5 -> {"param": "val", "parent": {'child': 5}}
+            - JSON Body: {"param": val, "parent__child": 5} -> {"param": val, "parent": {"child": 5}}
+            - ?user:from_model=core.User:USER_ID -> {"user": User.objects.get(pk=USER_ID)}
+        """
+        for argument, value in args.items():
+            obj_to_fill = context
+            nested_keys = argument.split("__")
+            last_key = nested_keys.pop()
+            for subkey in nested_keys:
+                # This loop is the magic to support nested keys.
+                # It makes each key a dict inside its parent (starting from context's root)
+                obj_to_fill[subkey] = obj_to_fill.get(subkey, {})
+                obj_to_fill = obj_to_fill[subkey]
+            key, actual_value = self.parse_value(last_key, value)
+            obj_to_fill[key] = actual_value
+
+    @staticmethod
+    def parse_value(key: str, value: Any) -> Any:
+        """
+        Provides support for model fields.
+        Model fields should be provided as: app_label.model_name:instance_pk
+        """
+        if key.endswith(":from_model"):
+            key = key.split(":")[0]
+            model, pk = value.split(":")
+            value = apps.get_model(model).objects.get(pk=pk)
+        return key, value
