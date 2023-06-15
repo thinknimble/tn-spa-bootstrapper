@@ -133,8 +133,7 @@ class TestPreviewTemplateView:
     def test_fill_context_from_params(self):
         context = {}
         PreviewTemplateView().fill_context_from_params(
-            context,
-            {"key": 0, "parent__child": 1, "parent__other_child": 2, "parent__multi_nested__child": 3, "parent_field": 4}
+            context, {"key": 0, "parent__child": 1, "parent__other_child": 2, "parent__multi_nested__child": 3, "parent_field": 4}
         )
         assert context["key"] == 0
         assert context["parent"] == {"child": 1, "other_child": 2, "multi_nested": {"child": 3}}
