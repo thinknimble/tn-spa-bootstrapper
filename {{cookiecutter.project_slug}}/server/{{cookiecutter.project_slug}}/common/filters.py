@@ -60,6 +60,7 @@ class AutocompleteAdminMedia:
     This list is based on Django's own autocomplete widget and reuses the files bundled with the framework.
     https://github.com/django/django/blob/stable/3.2.x/django/contrib/admin/widgets.py#L450
     """
+
     i18n_name = SELECT2_TRANSLATIONS.get(get_language())
     i18n_file = ("admin/js/vendor/select2/i18n/%s.js" % i18n_name,) if i18n_name else ()
     extra = "" if settings.DEBUG else ".min"
