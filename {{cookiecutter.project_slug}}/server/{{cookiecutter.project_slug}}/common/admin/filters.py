@@ -75,7 +75,7 @@ class AutocompleteAdminMedia:
             "admin/js/jquery.init.js",
             "admin/js/autocomplete.js",
             # Unlike all previous entries, this is a custom JS file from this project rather than a Django one!
-            "common/autocompleteFilter.js",
+            "common/admin/autocompleteFilter.js",
         )
     )
     css = {
