@@ -24,6 +24,7 @@ class AutocompleteFilter(RelatedFieldListFilter):
         self.admin_site = model_admin.admin_site
         self.value = params.pop(self.parameter_name, None)
         self.value_title = field.related_model.objects.get(pk=self.value) if self.value else None
+        # Based on Django's own AutocompleteMixin: https://github.com/django/django/blob/stable/3.2.x/django/contrib/admin/widgets.py#L405
         self.autocomplete_configuration = {
             "data-ajax--cache": "true",
             "data-ajax--delay": 250,
@@ -54,6 +55,11 @@ class AutocompleteFilter(RelatedFieldListFilter):
 
 
 class AutocompleteAdminMedia:
+    """
+    A list of javascript and css files which are needed to render a select2 autocomplete widget.
+    This list is based on Django's own autocomplete widget and reuses the files bundled with the framework.
+    https://github.com/django/django/blob/stable/3.2.x/django/contrib/admin/widgets.py#L450
+    """
     i18n_name = SELECT2_TRANSLATIONS.get(get_language())
     i18n_file = ("admin/js/vendor/select2/i18n/%s.js" % i18n_name,) if i18n_name else ()
     extra = "" if settings.DEBUG else ".min"
@@ -68,7 +74,7 @@ class AutocompleteAdminMedia:
             "admin/js/jquery.init.js",
             "admin/js/autocomplete.js",
             # Unlike all previous entries, this is a custom JS file from this project rather than a Django one!
-            "common/autocompleteFilter.js"
+            "common/autocompleteFilter.js",
         )
     )
     css = {
