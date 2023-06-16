@@ -12,7 +12,7 @@ from django.urls import reverse
 
 
 class AutocompleteFilter(RelatedFieldListFilter):
-    template = "common/autocomplete_filter.html"
+    template = "common/admin/autocomplete_filter.html"
     url_name = "%s:autocomplete"
     parameter_name = None
 
