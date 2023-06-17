@@ -28,5 +28,6 @@ export default defineConfig(({ mode }) => {
       {% endif -%}
       port: 8080
     },
+    cacheDir: process.env.VITE_CACHE_DIR || "node_modules/.vite",
   }
 })

@@ -45,9 +45,13 @@ services:
       dockerfile: ./compose/client/Dockerfile
     volumes:
       - ".:/app"
-      - "/app/node_modules"
+      # This line avoids copying local node_modules folder to the Docker container, and uses the ones installed during build
+      - "/app/client/node_modules"
     ports:
       - "8080:8080"
       #- "49153:49153"
     environment:
-        - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      {% if cookiecutter.client_app == 'React' %}
+      - VITE_CACHE_DIR=./vite
+      {% endif %}
