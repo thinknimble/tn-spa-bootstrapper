@@ -182,13 +182,14 @@ function SignUpInner() {
 }
 
 export const SignUp = () => {
+  const confirmPasswordValidator = {
+    confirmPassword: new MustMatchValidator({
+      message: 'passwordsMustMatch',
+      matcher: 'password',
+    }),
+  }
   return (
-    <FormProvider<SignupInputs> formClass={SignupForm} formLevelValidators={{
-      confirmPassword: new MustMatchValidator({
-        message: 'passwordsMustMatch',
-        matcher: 'password',
-      }),
-    }}>
+    <FormProvider<SignupInputs> formClass={SignupForm} formLevelValidators={confirmPasswordValidator}>
       <SignUpInner />
     </FormProvider>
   )
