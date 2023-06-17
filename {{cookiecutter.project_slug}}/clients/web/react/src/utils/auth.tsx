@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import {client} from 'src/services/apollo-client'
 import { REFRESH_TOKEN, VERIFY_TOKEN } from './mutations'
 {% else -%}
-import { getUserInfo } from 'src/services/auth'
+import { userApi } from '../services/user/index'
 {% endif -%}
 import { localStoreManager } from './local-store-manager'
 
@@ -92,7 +92,7 @@ export const useUser = () => {
   return useQuery(['user', userId], {
     queryFn: () => {
       if (!userId) return
-      return getUserInfo(userId)
+      return userApi.retrieve(userId)
     },
     onError: (err) => {
       if (err instanceof AxiosError && err.status === 401) {

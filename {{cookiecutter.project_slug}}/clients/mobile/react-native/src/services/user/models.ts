@@ -7,7 +7,7 @@
 
 import { GetInferredFromRaw } from '@thinknimble/tn-models-fp'
 import { z } from 'zod'
-import { baseModelShape } from '../baseModel'
+import { baseModelShape } from '../base-model'
 
 export const userShape = {
   ...baseModelShape,

@@ -1,79 +1,110 @@
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { styled } from 'nativewind'
-import { Button, View } from 'react-native'
-import { Bounceable } from 'rn-bounceable'
-import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-area-view'
-import { Text } from '../../components/text'
-import { LoginForm, LoginFormInputs, TLoginForm } from '../../services/user/index'
-import { userApi } from '../../services/user/index'
-import { TextFormField } from '../../components/text-form-field'
-import { ScrollViewWind } from '../../components/styled'
-import { useServices } from '../../services'
-import { useAuth } from '../../stores/auth'
+import { useState } from 'react'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Button } from 'src/components/button'
+import { ErrorsList } from 'src/components/errors'
+import { Input } from 'src/components/input'
+import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/user/index'
 
-const ButtonWind = styled(Button)
+import { useAuth, useFollowupRoute } from 'src/utils/auth'
+import { localStoreManager } from 'src/utils/local-store-manager'
 
-const BounceableWind = styled(Bounceable, {
-  props: {
-    contentContainerStyle: true,
-  },
-})
+function LogInInner() {
+  const params = useLocation()
+  const autoError = params.state?.autoError
+  const [error, setError] = useState(autoError ? true : false)
+  const { updateToken, updateUserId } = useAuth()
+  const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
+  const navigate = useNavigate()
 
-const LoginInner = () => {
-  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TLoginForm>()
-  const navio = useServices().navio
-  const { mutate: signup } = useMutation({
-    mutationFn: userApi.create,
-  })
-  const { changeToken, changeUserId } = useAuth.use.actions()
-  const handleSubmit = async () => {
-    //TODO:
-    if (!form.isValid) {
-      const newForm = form.replicate()
-      form.validate()
-    } else {
-      try {
-        // HACK FOR TN-Forms
-        const res = await userApi.csc.login(form.value as any)
-        changeUserId(res.id)
-        changeToken(res.token!)
-        navio.stacks.push('MainStack')
-      } catch (e) {
-        console.log(e)
+  const { mutate: login, isLoading } = useMutation({
+    mutationFn: userApi.csc.login,
+    onSuccess: (data) => {
+      localStoreManager.token.set(data.token!)
+      localStoreManager.userId.set(data.id!)
+      updateToken(data.token)
+      updateUserId(data.id)
+      navigate('/home')
+    },
+    onError(e: any) {
+      if (e?.message === 'Please enter valid credentials') {
+        setError(true)
       }
+    },
+  })
+
+  const handleLogin = () => {
+    const input = {
+      email: form.email.value ?? '',
+      password: form.password.value ?? '',
     }
+    login(input)
   }
+
+  const { token } = useAuth()
+  const isAuth = Boolean(token)
+  const followupRoute = useFollowupRoute()
+  //Do not even show this page if they're already logged in
+  if (isAuth) {
+    // let AppOrAuth address this
+
+    return <Navigate to={'/'} state={{ from: followupRoute }} />
+  }
+
   return (
-    <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
-      <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">
-        <Text textClassName="text-black text-3xl" variant="bold">
-          Log in
-        </Text>
-        <ScrollViewWind className="w-full" contentContainerStyle="self-start w-full">
-          <TextFormField field={form.email} />
-          <TextFormField field={form.password} secureTextEntry containerClassName="pt-4" />
-        </ScrollViewWind>
-        <BounceableWind
-          contentContainerStyle="w-full pt-5"
-          onPress={handleSubmit}
-          disabled={!form.isValid}
+    <main className="bg-slate-800 h-screen flex flex-col justify-center items-center gap-3">
+      <header className="text-2xl text-white">Login</header>
+      <section className="flex flex-col justify-center items-center gap-3">
+        <p className="text-slate-200 text-xl">Enter your login credentials below</p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+          }}
+          className="flex flex-col gap-3"
         >
-          <View className="rounded-lg bg-[#042642] w-full items-center py-2">
-            <Text textClassName="text-white text-lg" variant="bold">
-              Log In
-            </Text>
-          </View>
-        </BounceableWind>
-      </View>
-    </MultiPlatformSafeAreaView>
+          <div>
+            <Input
+              placeholder="Email"
+              onChange={(e) => createFormFieldChangeHandler(form.email)(e.target.value)}
+              value={form.email.value ?? ''}
+              data-cy="email"
+              id="id"
+            />
+            <ErrorsList errors={form.email.errors} />
+          </div>
+          <div>
+            <Input
+              placeholder="Password"
+              type="password"
+              onChange={(e) => {
+                createFormFieldChangeHandler(form.password)(e.target.value)
+              }}
+              value={form.password.value ?? ''}
+              data-cy="password"
+              id="password"
+            />
+            <ErrorsList errors={form.password.errors} />
+          </div>
+        </form>
+        <Button data-cy="login-btn" onClick={handleLogin}>
+          Login
+        </Button>
+      </section>
+      <div className="flex flex-col gap-3">
+        <p className="text-xl text-slate-200 font-semibold">Don&apos;t have an account?</p>
+        <Link className="text-xl text-teal-600 font-semibold text-center" to="/sign-up">
+          Register here
+        </Link>
+      </div>
+    </main>
   )
 }
 
-export const Login = () => {
+export const LogIn = () => {
   return (
     <FormProvider<LoginFormInputs> formClass={LoginForm}>
-      <LoginInner />
+      <LogInInner />
     </FormProvider>
   )
 }
