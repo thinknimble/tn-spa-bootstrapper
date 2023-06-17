@@ -7,9 +7,9 @@ import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-
 import { ScrollViewWind } from '../../components/styled'
 import { Text } from '../../components/text'
 import { TextFormField } from '../../components/text-form-field'
-import { SignupForm, SignupInputs, TSignupForm } from '../../forms/signup'
-import { userApi } from '../../services/user'
-
+import { AccountForm, TAccountForm } from '../../services/user/forms'
+import { userApi } from '../../services/user/index'
+import { MustMatchValidator } from '@thinknimble/tn-forms'
 const ButtonWind = styled(Button)
 
 const BounceableWind = styled(Bounceable, {
@@ -18,9 +18,9 @@ const BounceableWind = styled(Bounceable, {
   },
 })
 
-const SignUpInner = () => {
+const InnerForm = () => {
   //TODO: match bootstrapper style for signup and hit backend
-  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TSignupForm>()
+  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TAccountForm>()
   const { mutate: signup } = useMutation({
     mutationFn: userApi.create,
   })
@@ -41,14 +41,10 @@ const SignUpInner = () => {
           <TextFormField field={form.firstName} />
           <TextFormField field={form.lastName} containerClassName="pt-4" />
           <TextFormField field={form.email} containerClassName="pt-4" />
-          <TextFormField field={form.password} secureTextEntry containerClassName="pt-4" />
-          <TextFormField field={form.confirmPassword} secureTextEntry containerClassName="pt-4" />
+          <TextFormField field={form.password} containerClassName="pt-4" />
+          <TextFormField field={form.confirmPassword} containerClassName="pt-4" />
         </ScrollViewWind>
-        <BounceableWind
-          contentContainerStyle="w-full pt-5"
-          onPress={handleSubmit}
-          disabled={!form.isValid}
-        >
+        <BounceableWind contentContainerStyle="w-full pt-5" onPress={handleSubmit}>
           <View className="rounded-lg bg-[#042642] w-full items-center py-2">
             <Text textClassName="text-white text-lg" variant="bold">
               Sign Up
@@ -62,8 +58,16 @@ const SignUpInner = () => {
 
 export const SignUp = () => {
   return (
-    <FormProvider<SignupInputs> formClass={SignupForm}>
-      <SignUpInner />
+    <FormProvider
+      formClass={AccountForm}
+      formLevelValidators={{
+        confirmPassword: new MustMatchValidator({
+          message: 'passwordsMustMatch',
+          matcher: 'password',
+        }),
+      }}
+    >
+      <InnerForm />
     </FormProvider>
   )
 }

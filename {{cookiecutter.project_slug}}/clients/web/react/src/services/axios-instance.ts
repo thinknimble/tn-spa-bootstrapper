@@ -1,8 +1,11 @@
 import axios, { AxiosError } from 'axios'
 import { localStoreManager } from 'src/utils/local-store-manager'
 import { getCookie } from 'src/utils/get-cookie'
-const axiosInstance = axios.create({
-  //baseUrl will be determined by the server proxy in vite.config.js
+
+const baseURL = `${window.location.protocol}//${window.location.host}/api`
+
+export const axiosInstance = axios.create({
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -30,5 +33,3 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error)
   },
 )
-
-export { axiosInstance as axios }

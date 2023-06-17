@@ -5,11 +5,12 @@ import { Button, View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
 import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-area-view'
 import { Text } from '../../components/text'
-import { LoginForm, LoginFormInputs, TLoginForm } from '../../forms/login'
-import { TSignupForm } from '../../forms/signup'
-import { userApi } from '../../services/user'
+import { LoginForm, LoginFormInputs, TLoginForm } from '../../services/user/index'
+import { userApi } from '../../services/user/index'
 import { TextFormField } from '../../components/text-form-field'
 import { ScrollViewWind } from '../../components/styled'
+import { useServices } from '../../services'
+import { useAuth } from '../../stores/auth'
 
 const ButtonWind = styled(Button)
 
@@ -21,14 +22,26 @@ const BounceableWind = styled(Bounceable, {
 
 const LoginInner = () => {
   const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TLoginForm>()
+  const navio = useServices().navio
   const { mutate: signup } = useMutation({
     mutationFn: userApi.create,
   })
-  const handleSubmit = () => {
+  const { changeToken, changeUserId } = useAuth.use.actions()
+  const handleSubmit = async () => {
     //TODO:
     if (!form.isValid) {
       const newForm = form.replicate()
       form.validate()
+    } else {
+      try {
+        // HACK FOR TN-Forms
+        const res = await userApi.csc.login(form.value as any)
+        changeUserId(res.id)
+        changeToken(res.token!)
+        navio.stacks.push('MainStack')
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
   return (
