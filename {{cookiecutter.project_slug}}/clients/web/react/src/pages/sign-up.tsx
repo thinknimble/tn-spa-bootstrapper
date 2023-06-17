@@ -6,6 +6,7 @@ import { postCreateUser, postLogin } from 'src/services/auth'
 import { useMutation } from '@tanstack/react-query'
 {% endif -%}
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
+import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
@@ -182,7 +183,12 @@ function SignUpInner() {
 
 export const SignUp = () => {
   return (
-    <FormProvider<SignupInputs> formClass={SignupForm}>
+    <FormProvider<SignupInputs> formClass={SignupForm} formLevelValidators={{
+      confirmPassword: new MustMatchValidator({
+        message: 'passwordsMustMatch',
+        matcher: 'password',
+      }),
+    }}>
       <SignUpInner />
     </FormProvider>
   )

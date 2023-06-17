@@ -1,41 +1,41 @@
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
-import { Button } from 'src/components/button'
-import { ErrorsList } from 'src/components/errors'
-import { Input } from 'src/components/input'
-import {
-  AccountForm,
-  TAccountForm,
-  AccountFormInputs,
-  AccountFormValues,
-} from 'src/services/user/forms'
-
-import { localStoreManager } from 'src/utils/local-store-manager'
-import { useAuth } from '../utils/auth'
-import { userApi } from 'src/services/user'
+import { styled } from 'nativewind'
+import { Button, View } from 'react-native'
+import { Bounceable } from 'rn-bounceable'
+import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-area-view'
+import { ScrollViewWind } from '../../components/styled'
+import { Text } from '../../components/text'
+import { TextFormField } from '../../components/text-form-field'
+import { AccountForm, TAccountForm } from '../../services/user/forms'
+import { userApi } from '../../services/user/index'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
+import { useAuth } from '../../stores/auth'
+import { useServices } from '../../services'
 
-function SignUpInner() {
-  const [error, setError] = useState(false)
-  const { updateToken, updateUserId } = useAuth()
-  const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
-  const navigate = useNavigate()
+const ButtonWind = styled(Button)
 
+const BounceableWind = styled(Bounceable, {
+  props: {
+    contentContainerStyle: true,
+  },
+})
+
+const InnerForm = () => {
+  //TODO: match bootstrapper style for signup and hit backend
+  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TAccountForm>()
+  const { changeToken, changeUserId } = useAuth.use.actions()
+  const navio = useServices().navio
   const { mutate: createUser, isLoading } = useMutation({
     mutationFn: userApi.create,
     onSuccess: (data) => {
-      localStoreManager.token.set(data.token!)
-      localStoreManager.userId.set(data.id!)
-      updateToken(data.token)
-      updateUserId(data.id)
-      navigate('/home')
+      changeToken(data.token!)
+      changeUserId(data.id)
+      navio.stacks.push('MainStack')
     },
     onError(e: any) {
       if (e?.message === 'Please enter valid credentials') {
-        setError(true)
+        console.log('invalid credentials')
       }
     },
   })
@@ -51,79 +51,33 @@ function SignUpInner() {
   }
 
   return (
-    <main className="bg-slate-800 h-screen flex flex-col justify-center items-center gap-3">
-      <header className="text-white text-xl">WELCOME</header>
-      <p className="text-white text-md">Enter your details below to create an account</p>
-      <form onSubmit={onSubmit} className="flex flex-col gap-3">
-        <div className="flex flex-col gap-3">
-          <div>
-            <Input
-              placeholder="First Name"
-              onChange={(e) => {
-                createFormFieldChangeHandler(form.firstName)(e.target.value)
-              }}
-            />
-            <ErrorsList errors={form.firstName.errors} />
-          </div>
-          <div>
-            <Input
-              placeholder="Last Name"
-              onChange={(e) => {
-                createFormFieldChangeHandler(form.lastName)(e.target.value)
-              }}
-            />
-
-            <ErrorsList errors={form.lastName.errors} />
-          </div>
-        </div>
-        <div>
-          <Input
-            type="email"
-            placeholder="Email"
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.email)(e.target.value)
-            }}
-          />
-          <ErrorsList errors={form.email.errors} />
-        </div>
-
-        <div>
-          <Input
-            placeholder="Password"
-            type="password"
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.password)(e.target.value)
-            }}
-          />
-          <ErrorsList errors={form.password.errors} />
-        </div>
-        <div>
-          <Input
-            id="confirmPassword"
-            placeholder="Confirm Password"
-            type="password"
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
-            }}
-          />
-          <ErrorsList errors={form.confirmPassword.errors} />
-        </div>
-        <Button type="submit">Sign Up</Button>
-      </form>
-
-      <div className="flex flex-col gap-3">
-        <p className="text-xl text-slate-200 font-semibold">Already have an account?</p>
-        <Link to="/log-in" className="text-xl text-teal-600 font-semibold text-center">
-          Log in here
-        </Link>
-      </div>
-    </main>
+    <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
+      <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">
+        <Text textClassName="text-black text-3xl" variant="bold">
+          Sign up
+        </Text>
+        <ScrollViewWind className="w-full" contentContainerStyle="self-start w-full">
+          <TextFormField field={form.firstName} />
+          <TextFormField field={form.lastName} containerClassName="pt-4" />
+          <TextFormField field={form.email} containerClassName="pt-4" />
+          <TextFormField field={form.password} containerClassName="pt-4" />
+          <TextFormField field={form.confirmPassword} containerClassName="pt-4" />
+        </ScrollViewWind>
+        <BounceableWind contentContainerStyle="w-full pt-5" onPress={onSubmit}>
+          <View className="rounded-lg bg-[#042642] w-full items-center py-2">
+            <Text textClassName="text-white text-lg" variant="bold">
+              Sign Up
+            </Text>
+          </View>
+        </BounceableWind>
+      </View>
+    </MultiPlatformSafeAreaView>
   )
 }
 
 export const SignUp = () => {
   return (
-    <FormProvider<AccountFormInputs>
+    <FormProvider
       formClass={AccountForm}
       formLevelValidators={{
         confirmPassword: new MustMatchValidator({
@@ -132,7 +86,7 @@ export const SignUp = () => {
         }),
       }}
     >
-      <SignUpInner />
+      <InnerForm />
     </FormProvider>
   )
 }
