@@ -4,13 +4,13 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "development_hmr": {
+    "development_sim": {
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
       "env": {
         "BACKEND_SERVER_URL": "<REPLACE_WITH_BACKEND_SERVER_URL>",
-        "BUILD_ENV": "staging",
+        "BUILD_ENV": "development",
         "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_LOCAL_ROLLBAR_TOKEN>",
         "SENTRY_PROJECT_NAME": "<REPLACE_WITH_LOCAL_SENTRY_PROJECT_NAME>",
         "SENTRY_DSN": "<REPLACE_WITH_LOCAL_SENTRY_DSN>"
@@ -22,10 +22,13 @@
       "channel": "development",
       "env": {
         "BACKEND_SERVER_URL": "<REPLACE_WITH_BACKEND_SERVER_URL>",
-        "BUILD_ENV": "staging",
+        "BUILD_ENV": "development",
         "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_LOCAL_ROLLBAR_TOKEN>",
         "SENTRY_PROJECT_NAME": "<REPLACE_WITH_LOCAL_SENTRY_PROJECT_NAME>",
-        "SENTRY_DSN": "<REPLACE_WITH_LOCAL_SENTRY_DSN>"
+        "SENTRY_DSN": "<REPLACE_WITH_LOCAL_SENTRY_DSN>",  
+      },
+      "ios": {
+        "simulator": true
       }
     },
     "development": {
