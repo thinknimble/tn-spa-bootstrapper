@@ -2,7 +2,6 @@
 import { useMutation } from '@apollo/client'
 import { CREATE_USER, LOG_IN } from '../utils/mutations'
 {% else -%}
-import { postCreateUser, postLogin } from 'src/services/auth'
 import { useMutation } from '@tanstack/react-query'
 {% endif -%}
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
@@ -13,15 +12,18 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { SignupForm, TSignupForm } from 'src/forms'
-import { SignupInputs } from 'src/forms/signup'
+import {
+  AccountForm,
+  TAccountForm,
+  AccountFormInputs,
+} from 'src/services/user/forms'
 import { localStoreManager } from 'src/utils/local-store-manager'
 import { useAuth } from '../utils/auth'
 
 function SignUpInner() {
   const [error, setError] = useState('')
   const { updateToken } = useAuth()
-  const { form, createFormFieldChangeHandler, validate } = useTnForm<TSignupForm>()
+  const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
 {% if cookiecutter.use_graphql == 'y' -%}
@@ -59,52 +61,39 @@ function SignUpInner() {
     },
   })
 {% else -%}
-  const { mutate: logIn } = useMutation(postLogin, {
-    onSuccess: (data: { tokenAuth: { token: string } }) => {
-      localStoreManager.token.set(data.tokenAuth.token)
-      updateToken(data.tokenAuth.token)
-      navigate('/home')
-    },
-    onError: () => {
-      navigate('/log-in', {
-        state: {
-          autoError: 'There was a problem logging you in. Please try again.',
-        },
-      })
-    },
-  })
-
-  const { mutate: createUser } = useMutation(postCreateUser, {
-    onSuccess: (data) => {
-      logIn({
-        email: form.email.value ?? '',
-        password: form.confirmPassword.value ?? '',
-      })
-    },
-    onError: (error: { message: string }) => {
-      console.error(error)
-    },
-  })
+const { mutate: createUser, isLoading } = useMutation({
+  mutationFn: userApi.create,
+  onSuccess: (data) => {
+    localStoreManager.token.set(data.token!)
+    localStoreManager.userId.set(data.id!)
+    updateToken(data.token)
+    updateUserId(data.id)
+    navigate('/home')
+  },
+  onError(e: any) {
+    if (e?.message === 'Please enter valid credentials') {
+      setError(true)
+    }
+  },
+})
 {% endif -%}
 
   const onSubmit = () => {
+    const data = {
+      email: form.email.value,
+      password: form.password.value,
+      firstName: form.firstName.value,
+      lastName: form.lastName.value,
+    }
 {% if cookiecutter.use_graphql == 'y' -%}
     const input ={
       variables: {
-        data: {
-          email: form.email.value,
-          password: form.password.value,
-          firstName: form.firstName.value,
-          lastName: form.lastName.value,
-        },
+        data
       },
     } 
 {% else -%}
     const input = {
-      email: form.email.value ?? '',
-      password: form.password.value ?? '',
-      firstName: form.firstName.value ?? '',
-      lastName: form.lastName.value ?? '',
+      ...data
     }
 {% endif -%}
     createUser(input)
@@ -189,7 +178,7 @@ export const SignUp = () => {
     }),
   }
   return (
-    <FormProvider<SignupInputs> formClass={SignupForm} formLevelValidators={confirmPasswordValidator}>
+    <FormProvider<AccountFormInputs> formClass={AccountForm} formLevelValidators={confirmPasswordValidator}>
       <SignUpInner />
     </FormProvider>
   )
