@@ -4,8 +4,8 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { useAuth } from '../stores/auth'
-import { userApi } from './user/index'
+import { useAuth } from '../../stores/auth'
+import { userApi } from './index'
 
 export const useUser = () => {
   const userId = useAuth.use.userId()
