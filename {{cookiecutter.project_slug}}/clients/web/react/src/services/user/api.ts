@@ -18,7 +18,7 @@ const requestPasswordResetCode = createCustomServiceCall(
   {
     inputShape: forgotPasswordShape,
   },
-  async ({ client, input, utils }) => {
+  async ({ client, input }) => {
     await client.get(`api/password/reset/code/${input.email}/`)
   },
 )

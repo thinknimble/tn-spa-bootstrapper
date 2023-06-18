@@ -17,12 +17,13 @@ import {
   TAccountForm,
   AccountFormInputs,
 } from 'src/services/user/forms'
+import { UserShape, userApi } from 'src/services/user/index'
 import { localStoreManager } from 'src/utils/local-store-manager'
 import { useAuth } from '../utils/auth'
 
 function SignUpInner() {
   const [error, setError] = useState('')
-  const { updateToken } = useAuth()
+  const { updateToken, updateUserId } = useAuth()
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
@@ -63,7 +64,7 @@ function SignUpInner() {
 {% else -%}
 const { mutate: createUser, isLoading } = useMutation({
   mutationFn: userApi.create,
-  onSuccess: (data) => {
+  onSuccess: (data:UserShape) => {
     localStoreManager.token.set(data.token!)
     localStoreManager.userId.set(data.id!)
     updateToken(data.token)
@@ -72,7 +73,7 @@ const { mutate: createUser, isLoading } = useMutation({
   },
   onError(e: any) {
     if (e?.message === 'Please enter valid credentials') {
-      setError(true)
+     console.log(e)
     }
   },
 })
@@ -96,7 +97,7 @@ const { mutate: createUser, isLoading } = useMutation({
       ...data
     }
 {% endif -%}
-    createUser(input)
+    createUser(input as any)
   }
 
   return (
