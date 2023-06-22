@@ -15,5 +15,4 @@ export const AppOrAuth = () => {
     return <Navigate to={followupRoute} />
   }
   return <Navigate to="/log-in" state={{ from: followupRoute }} />
-  return isAuth ? <Navigate to="/home" /> : <Navigate to="/log-in" />
 }

@@ -5,6 +5,7 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
 import { Login, SignUp } from './auth'
 import { Main } from './main'
 import { Auth } from './auth/auth'
+import { DashboardScreen } from './DashboardScreen'
 
 // Default options - forcing a mobile trigger
 export const screenDefaultOptions = (): NativeStackNavigationOptions => ({
@@ -27,10 +28,10 @@ export const tabDefaultOptions = (): BottomTabNavigationOptions => ({
 })
 // NAVIO
 export const navio = Navio.build({
-  screens: { Auth, Login, SignUp, Main },
+  screens: { Auth, Login, SignUp, Main, DashboardScreen },
   stacks: {
     AuthStack: ['Auth'],
-    MainStack: ['Main'],
+    MainStack: ['DashboardScreen'],
   },
   root: 'AuthStack',
   defaultOptions: {

@@ -19,7 +19,7 @@ export const ErrorsList: FC<{ errors: IFormFieldError[]; containerClassName?: st
   return (
     <View className={`${containerClassName}`}>
       {errors.map((e, idx) => (
-        <View key={e.code} className={idx !== 0 ? 'pt-2' : ''}>
+        <View key={e.code + idx} className={idx !== 0 ? 'pt-2' : ''}>
           <ErrorMessage>{e.message}</ErrorMessage>
         </View>
       ))}
