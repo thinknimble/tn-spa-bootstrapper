@@ -50,7 +50,7 @@
   "proxy": "http://localhost:8000",
   {% endif -%}
   "scripts": {
-    "start": "vite",
+    "serve": "vite --host 0.0.0.0",
     "build": "tsc && vite build --base=/static/",
     "cypress": "source ../.env && cypress open",
     "test": "vitest run src",
