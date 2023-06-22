@@ -75,14 +75,14 @@ const InnerForm = () => {
   )
 }
 
-export const SignUp = () => {
-  const confirmPasswordValidator = {
-    confirmPassword: new MustMatchValidator({
-      message: 'passwordsMustMatch',
-      matcher: 'password',
-    }),
-  }
+const confirmPasswordValidator = {
+  confirmPassword: new MustMatchValidator({
+    message: 'passwordsMustMatch',
+    matcher: 'password',
+  }),
+}
 
+export const SignUp = () => {
   return (
     <FormProvider
       formClass={AccountForm}

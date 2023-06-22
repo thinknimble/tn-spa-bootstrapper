@@ -170,14 +170,14 @@ const { mutate: createUser, isLoading } = useMutation({
     </main>
   )
 }
+const confirmPasswordValidator = {
+  confirmPassword: new MustMatchValidator({
+    message: 'passwordsMustMatch',
+    matcher: 'password',
+  }),
+}
 
 export const SignUp = () => {
-  const confirmPasswordValidator = {
-    confirmPassword: new MustMatchValidator({
-      message: 'passwordsMustMatch',
-      matcher: 'password',
-    }),
-  }
   return (
     <FormProvider<AccountFormInputs> formClass={AccountForm} formLevelValidators={confirmPasswordValidator}>
       <SignUpInner />
