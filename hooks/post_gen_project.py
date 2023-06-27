@@ -167,8 +167,8 @@ def set_keys_in_envs(django_secret, postgres_secret):
 
 def get_secrets():
     """
-        If updating an existing project, fetch the previously set secrets so there is no change
-        Otherwise, generate new random values
+    If updating an existing project, fetch the previously set secrets so there is no change
+    Otherwise, generate new random values
     """
     django_secret = get_random_secret_key()
     postgres_secret = get_random_secret_key()
