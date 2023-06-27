@@ -177,12 +177,11 @@ def get_secrets():
         # Hacky...but users won't have to pip install a library for this to work on their machine
         with open(".env.example.bak") as f:
             for line in f:
-                if "=" in line:
-                    k, v = line.strip().split("=", 1)
-                    if "SECRET_KEY" in k:
-                        django_secret = v.strip().strip("'")
-                    elif "DB_PASS" in k:
-                        postgres_secret = v.strip().strip("'")
+                line = line.strip()
+                if line.startswith("SECRET_KEY="):
+                    django_secret = line.removeprefix("SECRET_KEY=").strip().strip("'")
+                elif line.startswith("DB_PASS="):
+                    postgres_secret = line.removeprefix("DB_PASS=").strip().strip("'")
         remove(".env.example.bak")
     return django_secret, postgres_secret
 
