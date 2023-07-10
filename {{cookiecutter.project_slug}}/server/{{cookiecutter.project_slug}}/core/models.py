@@ -74,7 +74,7 @@ class User(AbstractUser, AbstractBaseModel):
             "token": default_token_generator.make_token(self),
         }
 
-    def reset_password_code_context(self):
+    def reset_password_code_context(self, code):
         """ Retrieve a 5 digit reset password code """
         return {
             "user": self,
