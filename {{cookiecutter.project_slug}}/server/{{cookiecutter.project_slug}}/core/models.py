@@ -74,6 +74,14 @@ class User(AbstractUser, AbstractBaseModel):
             "token": default_token_generator.make_token(self),
         }
 
+    def reset_password_code_context(self):
+        """ Retrieve a 5 digit reset password code """
+        return {
+            "user": self,
+            "code": code,
+            "support_email": settings.STAFF_EMAIL,
+        }
+
     class Meta:
         ordering = ["email"]
 

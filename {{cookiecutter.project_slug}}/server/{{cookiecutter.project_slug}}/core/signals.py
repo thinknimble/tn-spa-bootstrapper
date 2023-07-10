@@ -22,11 +22,10 @@ def create_auth_token_add_permissions(sender, instance, created, **kwargs):
 def generate_reset_password_code(sender, code=None, instance=None, created=None, **kwargs):
     if created:
         try:
-            reset_context = {"code": code, "user": instance.user}
-            subject = ("Password reset for test_proj",)
+            reset_context = instance.user.reset_password_context(code)
             send_html_email(
-                subject,
                 "Password reset for {{ cookiecutter.project_name }}",
+                "registration/password_reset_code.html",
                 settings.DEFAULT_FROM_EMAIL,
                 [instance.user.email],
                 context=reset_context,
