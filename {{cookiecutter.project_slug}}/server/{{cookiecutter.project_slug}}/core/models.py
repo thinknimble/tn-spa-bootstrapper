@@ -75,8 +75,6 @@ class User(AbstractUser, AbstractBaseModel):
         }
 
     def reset_password_code_context(self, code):
-        """ Retrieve a 5 digit reset password code """
-        
         return {
             "user": self,
             "code": code,
