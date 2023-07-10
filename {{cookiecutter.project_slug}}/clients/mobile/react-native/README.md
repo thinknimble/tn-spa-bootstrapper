@@ -93,8 +93,12 @@ There is no required configuration for google in the eas.json however you must b
 
 **Local**
 
+*expo go*
 To set env variables locally you may use the .env file and import the variables using `@env` eg in [Config.js](./Config.js), these variables are sourced in the npm run script
 If you need to use environment variables in the app.config.js you must declare the variables in the npm run script as well as the expo run occurs in a separate process
+
+*development build*
+the variables for this environment are set up in the eas.json under the development profile 
 
 **Staging**
 
@@ -121,7 +125,16 @@ This is only temporary and should be resolved as soon as possible, the update is
 
 #### Native Builds VS Expo Runs
 
-When developing locally we use Expo to run the app, when our review app is built expo releases a version of the using expo updates, this is ran inside the expo environment. When mergning into main we deploy a new staging version that can be run in expo we also build a staging version of the app as a stand-alone native build that can be ran on a device. Staging versions will point to he staging backend defined in the [eas.json](./eas.json)
+##### Expo Runs #####
+
+There are two types of expo runs, the first is during local development, when we start our app with `npm run start` this will run the app in expo go, the second is when we release an update with `eas update`.
+
+We currently use `expo update` when building our staging app to get a quick and easy to use link for testing *review apps*
+
+There are certain situations when this may not be possible for example we are installing a package that does not currently have an expo extension (revenue cat for in-app purchases) or we are using a native package that expo does not have access to (face id)
+
+
+When mergning into main we deploy a new staging version that can be run in expo we also build a staging version of the app as a stand-alone native build that can be ran on a device. Staging versions will point to he staging backend defined in the [eas.json](./eas.json)
 
 Most internal testing should be sufficient on the expo staging build however you can also provide the link for testing with the native build. When installed this build will replace the version on your device.
 
@@ -133,6 +146,8 @@ Expo makes it easy to register UUID's by following this step:
 `eas device:create`
 
 Select the option for URL and send the URL to each user who wants to test a staging build. Because the UUID is stored in the staging build the user must register before the build, otherwise you will have to rebuild the staging env.
+
+Lastly you can test any of the internal distribution builds (in other words development, staging) directly on browserstack
 
 #### Useful services/methods
 

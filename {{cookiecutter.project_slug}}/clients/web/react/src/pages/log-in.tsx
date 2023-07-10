@@ -2,7 +2,6 @@
 import { useMutation } from '@apollo/client'
 import { LOG_IN } from '../utils/mutations'
 {% else -%}
-import { postLogin } from 'src/services/auth'
 import { useMutation } from '@tanstack/react-query'
 {% endif -%}
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
@@ -11,10 +10,11 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { LoginForm, TLoginForm } from 'src/forms'
-import { LoginFormInputs } from 'src/forms/login'
+import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/user/index'
+
 import { useAuth, useFollowupRoute } from 'src/utils/auth'
 import { localStoreManager } from 'src/utils/local-store-manager'
+
 
 function LogInInner() {
   const params = useLocation()
@@ -39,16 +39,17 @@ function LogInInner() {
     },
   })
 {% else -%}
-const { mutate: logIn } = useMutation(postLogin, {
-  onSuccess: ({ token , id }: { token: string,id: string }) => {
-    localStoreManager.token.set(token)
-    localStoreManager.userId.set(id)
-    updateToken(token)
-    updateUserId(id)
+const { mutate: logIn, isLoading } = useMutation({
+  mutationFn: userApi.csc.login,
+  onSuccess: (data) => {
+    localStoreManager.token.set(data.token!)
+    localStoreManager.userId.set(data.id!)
+    updateToken(data.token)
+    updateUserId(data.id)
     navigate('/home')
   },
-  onError: (error: { message?: string }) => {
-    if (error.message === 'Please enter valid credentials') {
+  onError(e: any) {
+    if (e?.message === 'Please enter valid credentials') {
       setError(true)
     }
   },

@@ -25,4 +25,5 @@ urlpatterns = [
     ),
     path(r"api/password/reset/code/<str:email>/", core_views.request_reset_code),
     path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
+    path(r"api/template_preview/", core_views.PreviewTemplateView.as_view()),
 ]

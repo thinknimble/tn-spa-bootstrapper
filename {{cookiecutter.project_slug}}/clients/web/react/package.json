@@ -6,7 +6,7 @@
     {% if cookiecutter.use_graphql == 'n' -%}
     "@tanstack/react-query": "^4.24.2",
     "axios": "^1.2.6",
-    "@thinknimble/tn-models-fp": "2.5.3",
+    "@thinknimble/tn-models-fp": "^2.11.4",
     {% else -%}
     "@apollo/client": "^3.4.17",
     "graphql": "^16.0.1",
@@ -50,7 +50,7 @@
   "proxy": "http://localhost:8000",
   {% endif -%}
   "scripts": {
-    "start": "vite",
+    "serve": "vite --host 0.0.0.0",
     "build": "tsc && vite build --base=/static/",
     "cypress": "source ../.env && cypress open",
     "test": "vitest run src",

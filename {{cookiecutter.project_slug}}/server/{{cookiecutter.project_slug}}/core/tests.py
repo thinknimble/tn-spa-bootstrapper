@@ -1,11 +1,15 @@
+from unittest import mock
+
 import pytest
 from django.contrib.auth import authenticate
-from django.test import Client
+from django.test import Client, override_settings
 from pytest_factoryboy import register
+from rest_framework.response import Response
 
 from .factories import UserFactory
 from .models import User, UserResetPasswordCode
 from .serializers import UserLoginSerializer
+from .views import PreviewTemplateView
 
 JSON_RQST_HEADERS = dict(
     content_type="application/json",
@@ -116,3 +120,52 @@ def test_user_can_change_password_with_code(test_user):
     res = client.post("/api/login/", {"email": test_user.email, "password": "testing12345"}, **JSON_RQST_HEADERS)
     assert res.status_code == 200
     assert res.json()
+
+    
+class TestPreviewTemplateView:
+    url = "/api/template_preview/"
+
+    @override_settings(DEBUG=False)
+    def test_disabled_if_not_debug(self, client):
+        response = client.post(self.url)
+        assert response.status_code == 404
+
+    @override_settings(DEBUG=True)
+    def test_enabled_if_debug(self, client):
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
+            client.post(f"{self.url}?template=core/index-placeholder.html")
+        assert mocked_render.call_count == 1
+
+    @override_settings(DEBUG=True)
+    def test_no_template_provided(self, client):
+        response = client.post(self.url)
+        assert response.status_code == 400
+        assert any("Invalid template name" in e for e in response.json())
+
+    @override_settings(DEBUG=True)
+    def test_invalid_template_provided(self, client):
+        response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST")
+        assert response.status_code == 400
+        assert any("Invalid template name" in e for e in response.json())
+
+    def test_parse_value_without_model(self):
+        assert PreviewTemplateView.parse_value("some_key", "value") == ("some_key", "value")
+        # This is expected behaviour since the nested keys are handled previously by the fill_context_from_params method
+        assert PreviewTemplateView.parse_value("some__key", "value") == ("some__key", "value")
+
+    def test_parse_value_with_model(self):
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.apps") as mock_apps:
+            PreviewTemplateView.parse_value("some_key:from_model", "core.User:PK")
+            assert mock_apps.get_model.call_count == 1
+            assert mock_apps.get_model.call_args[0][0] == "core.User"
+            assert mock_apps.get_model().objects.get.call_count == 1
+            assert mock_apps.get_model().objects.get.call_args.kwargs["pk"] == "PK"
+
+    def test_fill_context_from_params(self):
+        context = {}
+        PreviewTemplateView().fill_context_from_params(
+            context, {"key": 0, "parent__child": 1, "parent__other_child": 2, "parent__multi_nested__child": 3, "parent_field": 4}
+        )
+        assert context["key"] == 0
+        assert context["parent"] == {"child": 1, "other_child": 2, "multi_nested": {"child": 3}}
+        assert context["parent_field"] == 4

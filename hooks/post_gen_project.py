@@ -143,7 +143,7 @@ def remove_expo_yaml_files():
         join(".github/workflows", "expo-emergency-prod-update.yml"),
         join(".github/workflows", "expo-main.yml"),
         join(".github/workflows", "expo-pr-teardown.yml"),
-        join(".github/workflows", "expo-pr"),
+        join(".github/workflows", "expo-pr.yml"),
         join(".github/workflows", "expo-teststore-build-android.yml"),
         join(".github/workflows", "expo-teststore-build-ios.yml"),
     ]

@@ -7,8 +7,11 @@ import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-
 import { ScrollViewWind } from '../../components/styled'
 import { Text } from '../../components/text'
 import { TextFormField } from '../../components/text-form-field'
-import { SignupForm, SignupInputs, TSignupForm } from '../../forms/signup'
-import { userApi } from '../../services/user'
+import { AccountForm, TAccountForm } from '../../services/user/forms'
+import { userApi } from '../../services/user/index'
+import { MustMatchValidator } from '@thinknimble/tn-forms'
+import { useAuth } from '../../stores/auth'
+import { useServices } from '../../services'
 
 const ButtonWind = styled(Button)
 
@@ -18,19 +21,35 @@ const BounceableWind = styled(Bounceable, {
   },
 })
 
-const SignUpInner = () => {
+const InnerForm = () => {
   //TODO: match bootstrapper style for signup and hit backend
-  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TSignupForm>()
-  const { mutate: signup } = useMutation({
+  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TAccountForm>()
+  const { changeToken, changeUserId } = useAuth.use.actions()
+  const navio = useServices().navio
+  const { mutate: createUser, isLoading } = useMutation({
     mutationFn: userApi.create,
+    onSuccess: (data) => {
+      changeToken(data.token!)
+      changeUserId(data.id)
+      navio.stacks.push('MainStack')
+    },
+    onError(e: any) {
+      if (e?.message === 'Please enter valid credentials') {
+        console.log('invalid credentials')
+      }
+    },
   })
-  const handleSubmit = () => {
-    //TODO:
-    if (!form.isValid) {
-      const newForm = form.replicate()
-      form.validate()
+
+  const onSubmit = () => {
+    const input = {
+      email: form.email.value ?? '',
+      password: form.password.value ?? '',
+      firstName: form.firstName.value ?? '',
+      lastName: form.lastName.value ?? '',
     }
+    createUser(input as any)
   }
+
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
       <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">
@@ -41,14 +60,10 @@ const SignUpInner = () => {
           <TextFormField field={form.firstName} />
           <TextFormField field={form.lastName} containerClassName="pt-4" />
           <TextFormField field={form.email} containerClassName="pt-4" />
-          <TextFormField field={form.password} secureTextEntry containerClassName="pt-4" />
-          <TextFormField field={form.confirmPassword} secureTextEntry containerClassName="pt-4" />
+          <TextFormField field={form.password} containerClassName="pt-4" />
+          <TextFormField field={form.confirmPassword} containerClassName="pt-4" />
         </ScrollViewWind>
-        <BounceableWind
-          contentContainerStyle="w-full pt-5"
-          onPress={handleSubmit}
-          disabled={!form.isValid}
-        >
+        <BounceableWind contentContainerStyle="w-full pt-5" onPress={onSubmit}>
           <View className="rounded-lg bg-[#042642] w-full items-center py-2">
             <Text textClassName="text-white text-lg" variant="bold">
               Sign Up
@@ -60,10 +75,20 @@ const SignUpInner = () => {
   )
 }
 
+const confirmPasswordValidator = {
+  confirmPassword: new MustMatchValidator({
+    message: 'passwordsMustMatch',
+    matcher: 'password',
+  }),
+}
+
 export const SignUp = () => {
   return (
-    <FormProvider<SignupInputs> formClass={SignupForm}>
-      <SignUpInner />
+    <FormProvider
+      formClass={AccountForm}
+      formLevelValidators={confirmPasswordValidator}
+    >
+      <InnerForm />
     </FormProvider>
   )
 }

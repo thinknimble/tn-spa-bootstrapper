@@ -27,7 +27,7 @@ module.exports = {
           config: {
             organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
             project: process.env.SENTRY_PROJECT_NAME, // see readme for this variables
-            authToken: process.env.SENTRY_AUTH_TOKEN, // defined in expo secrets
+            authToken: process.env.SENTRY_AUTH_TOKEN, // defined in GH Secrets
           },
         },
       ],
@@ -56,7 +56,6 @@ module.exports = {
       },
       // these values are hardcoded and provided in eas.json
       backendServerUrl: process.env.BACKEND_SERVER_URL,
-      isBuild: process.env.IS_BUILD,
       buildEnv: process.env.BUILD_ENV,
       rollbarAccessToken: process.env.ROLLBAR_ACCESS_TOKEN,
       sentryDSN: process.env.SENTRY_DSN,
