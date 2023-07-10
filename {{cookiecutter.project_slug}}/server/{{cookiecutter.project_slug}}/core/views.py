@@ -165,7 +165,7 @@ def reset_password_with_code(request, *args, **kwargs):
     u = UserLoginSerializer.login(user, request)
     return Response(status=status.HTTP_200_OK, data=u)
 
-    
+
 class PreviewTemplateView(views.APIView):
     def get(self, request):
         return self.preview_template_view(request)

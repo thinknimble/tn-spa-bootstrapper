@@ -121,7 +121,7 @@ def test_user_can_change_password_with_code(test_user):
     assert res.status_code == 200
     assert res.json()
 
-    
+
 class TestPreviewTemplateView:
     url = "/api/template_preview/"
 
