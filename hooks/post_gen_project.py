@@ -101,10 +101,6 @@ def set_flag(file_path, flag, value=None):
         f.truncate()
 
 
-def set_django_secret_key(file_path, value):
-    return set_flag(file_path, "!!!DJANGO_SECRET_KEY!!!", value=value)
-
-
 def remove_graphql_files():
     file_names = [
         join("server/{{ cookiecutter.project_slug }}/core", "schema.py"),
@@ -152,27 +148,47 @@ def remove_expo_yaml_files():
             remove(file_name)
 
 
-def set_keys_in_envs():
+def set_keys_in_envs(django_secret, postgres_secret):
     env_file_path = join(".env.example")
     pull_request_template_path = join(".github", "pull_request_template.md")
     cookie_cutter_settings_path = join("app.json")
     postgres_init_file = join("scripts/init-db.sh")
-    django_secret_key = get_random_secret_key()
-    set_django_secret_key(env_file_path, django_secret_key)
-    set_django_secret_key(pull_request_template_path, django_secret_key)
-    set_django_secret_key(cookie_cutter_settings_path, django_secret_key)
-    secret = get_random_secret_key()
-    set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", value=secret)
-    set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
+    set_flag(env_file_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
+    set_flag(pull_request_template_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
+    set_flag(cookie_cutter_settings_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
+    set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
+    set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
     copy2(env_file_path, join(".env"))
     cypress_example_file_dir = join(web_clients_path, "react")
     cypress_example_file = join(cypress_example_file_dir, "cypress.example.env.json")
-    set_flag(cypress_example_file, "!!!POSTGRES_PASSWORD!!!", value=secret)
+    set_flag(cypress_example_file, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
     copy2(cypress_example_file, join(cypress_example_file_dir, "cypress.env.json"))
 
 
+def get_secrets():
+    """
+    If updating an existing project, fetch the previously set secrets so there is no change
+    Otherwise, generate new random values
+    """
+    django_secret = get_random_secret_key()
+    postgres_secret = get_random_secret_key()
+    if exists(".env.example.bak"):
+        # Logic inferred from python-decouple library
+        # Hacky...but users won't have to pip install a library for this to work on their machine
+        with open(".env.example.bak") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("SECRET_KEY="):
+                    django_secret = line.removeprefix("SECRET_KEY=").strip().strip("'")
+                elif line.startswith("DB_PASS="):
+                    postgres_secret = line.removeprefix("DB_PASS=").strip().strip("'")
+        remove(".env.example.bak")
+    return django_secret, postgres_secret
+
+
 def main():
-    set_keys_in_envs()
+    django_secret, postgres_secret = get_secrets()
+    set_keys_in_envs(django_secret, postgres_secret)
 
     if "{{ cookiecutter.client_app }}".lower() == "none":
         rmtree(web_clients_path)
