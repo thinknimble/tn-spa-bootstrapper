@@ -6,4 +6,5 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:@tanstack/eslint-plugin-query/recommended',
   ],
+  plugins:['@tanstack/query']
 }
