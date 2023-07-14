@@ -3,7 +3,7 @@ import createPersistedState from 'vuex-persistedstate'
 import { SET_USER } from './mutation-types'
 
 const STORAGE_HASH = 'Ax4XDbqIDE'
-export const STORAGE_KEY = `{{ cookiecutter.project_name }}-${STORAGE_HASH}`
+export const STORAGE_KEY = `{{ cookiecutter.project_slug }}-${STORAGE_HASH}`
 
 const state = {
   user: null,
