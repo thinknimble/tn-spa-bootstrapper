@@ -27,7 +27,7 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import User, { PasswordResetForm } from '@/services/users/'
+import  { userApi, PasswordResetForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 
 export default {
@@ -58,7 +58,7 @@ export default {
 
       const { uid, token } = route.params
 
-      User.api
+      userApi.csc
         .resetPassword({
           uid,
           token,

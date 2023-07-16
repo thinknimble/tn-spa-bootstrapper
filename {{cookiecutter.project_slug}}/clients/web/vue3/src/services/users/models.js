@@ -1,14 +1,35 @@
-import Model, { fields } from '@thinknimble/tn-models'
+/**
+ *
+ * Define shapes for the api to consume
+ * You can also use GetInferredFromRaw to get the TS type from the shape
+ *
+ */
 
-import UserAPI from './api'
 
-export default class User extends Model {
-  static api = UserAPI.create(User)
+import { z } from 'zod'
+import { baseModelShape } from '../base-model'
 
-  static id = new fields.CharField({ readOnly: true })
-  static firstName = new fields.CharField()
-  static lastName = new fields.CharField()
-  static email = new fields.CharField()
-  static fullName = new fields.CharField({ readOnly: true })
-  static token = new fields.CharField()
+export const userShape = {
+  ...baseModelShape,
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  token: z.string().nullable(),
 }
+
+export const userCreateShape = {
+  ...userShape,
+  password: z.string(),
+  confirmPassword: z.string(),
+}
+
+export const forgotPasswordShape = {
+  email: z.string().email(),
+}
+
+
+export const loginShape = {
+  email: z.string().email(),
+  password: z.string(),
+}
+

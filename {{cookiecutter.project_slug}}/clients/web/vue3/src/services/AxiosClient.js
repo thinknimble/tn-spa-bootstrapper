@@ -18,7 +18,7 @@ class ApiService {
   static session
   static init
   constructor() {
-    let baseURL = `${window.location.protocol}//${window.location.host}/api`
+    let baseURL = `${window.location.protocol}//${window.location.host}/`
 
     console.debug(`API Service for ${baseURL}`)
 
