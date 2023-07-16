@@ -1,11 +1,3 @@
-/**
- *
- * Define shapes for the api to consume
- * You can also use GetInferredFromRaw to get the TS type from the shape
- *
- */
-
-
 import { z } from 'zod'
 import { baseModelShape } from '../base-model'
 
