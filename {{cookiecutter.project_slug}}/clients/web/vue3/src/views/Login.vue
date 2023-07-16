@@ -74,7 +74,7 @@ export default {
       const unwrappedForm = form.value
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
-      console.log('check user api',userApi)
+      console.log('check user api is imported',userApi)
 
       userApi.csc
         .login({ email: unwrappedForm.email.value, password: unwrappedForm.password.value })
