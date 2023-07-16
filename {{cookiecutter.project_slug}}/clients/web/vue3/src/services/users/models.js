@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { baseModelShape, readonly } from '../base-model'
+import { readonly } from '@thinknimble/tn-models-fp'
+import { baseModelShape,  } from '../base-model'
 
 export const userShape = {
   ...baseModelShape,
