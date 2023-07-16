@@ -22,6 +22,7 @@ const requestPasswordResetCode = createCustomServiceCall(
     await client.get(`api/password/reset/code/${input.email}/`)
   },
 )
+
 const resetPassword = createCustomServiceCall(
   {
     inputShape: { email: z.string().email(), code: z.string(), password: z.string() },
@@ -37,7 +38,7 @@ const resetPassword = createCustomServiceCall(
 export const userApi = createApi(
   {
     client: axiosInstance,
-    baseUri: '/api/users/',
+    baseUri: 'api/users/',
     models: {
       create: userCreateShape,
       entity: userShape,

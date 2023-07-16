@@ -14,12 +14,12 @@ const login = createCustomServiceCall(
   },
 )
 
-const requestPasswordResetCode = createCustomServiceCall(
+const requestPasswordReset= createCustomServiceCall(
   {
     inputShape: forgotPasswordShape,
   },
   async ({ client, input }) => {
-    await client.get(`api/password/reset/code/${input.email}/`)
+    await client.get(`api/password/reset/${input.email}/`)
   },
 )
 const resetPassword = createCustomServiceCall(
@@ -43,5 +43,5 @@ export const userApi = createApi(
       entity: userShape,
     },
   },
-  { login, requestPasswordResetCode, resetPassword },
+  { login, requestPasswordReset, resetPassword },
 )
