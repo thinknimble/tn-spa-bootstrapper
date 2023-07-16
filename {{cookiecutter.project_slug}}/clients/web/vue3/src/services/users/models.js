@@ -1,12 +1,12 @@
 import { z } from 'zod'
-import { baseModelShape } from '../base-model'
+import { baseModelShape, readonly } from '../base-model'
 
 export const userShape = {
   ...baseModelShape,
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  token: z.string().nullable(),
+  token: readonly(z.string().nullable().optional()),
 }
 
 export const userCreateShape = {
