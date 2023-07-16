@@ -93,8 +93,7 @@ export default {
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
 
-      userApi.csc
-        .create({
+      userApi.create({
           firstName: unwrappedForm.firstName.value,
           lastName: unwrappedForm.lastName.value,
           email: unwrappedForm.email.value,
