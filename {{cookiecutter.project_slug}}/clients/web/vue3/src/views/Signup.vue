@@ -59,8 +59,9 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import User, { SignupForm } from '@/services/users/'
+import { userApi, SignupForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
+
 
 export default {
   name: 'Signup',
@@ -92,8 +93,8 @@ export default {
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
 
-      User.api
-        .registerUser({
+      userApi.csc
+        .create({
           firstName: unwrappedForm.firstName.value,
           lastName: unwrappedForm.lastName.value,
           email: unwrappedForm.email.value,
