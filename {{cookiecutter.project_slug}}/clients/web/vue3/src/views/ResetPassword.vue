@@ -10,9 +10,9 @@
         placeholder="New password"
       />
       <InputField
-        v-model:value="form.passwordConfirmation.value"
-        :errors="form.passwordConfirmation.errors"
-        @blur="form.passwordConfirmation.validate()"
+        v-model:value="form.confirmPassword.value"
+        :errors="form.confirmPassword.errors"
+        @blur="form.confirmPassword.validate()"
         type="password"
         label="Confirm Password:"
         placeholder="Confirm Password"

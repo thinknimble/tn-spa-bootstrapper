@@ -13,7 +13,6 @@ export const userShape = {
 export const userCreateShape = {
   ...userShape,
   password: z.string(),
-  confirmPassword: z.string(),
 }
 
 export const forgotPasswordShape = {
