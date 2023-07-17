@@ -2,6 +2,7 @@
 
 A production-ready Django SPA app on Heroku in 20-min or less!
 
+
 [Example deployment (main branch)]
 
 ## Quick Start
