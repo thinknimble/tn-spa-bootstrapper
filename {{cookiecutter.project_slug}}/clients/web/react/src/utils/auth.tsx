@@ -89,7 +89,8 @@ export const useAuth = () => {
 export const useUser = () => {
   const { userId, updateToken, updateUserId } = useAuth()
   const navigate = useNavigate()
-  return useQuery(['user', userId], {
+  return useQuery({
+    queryKey: ['user', userId],
     queryFn: () => {
       if (!userId) return
       return userApi.retrieve(userId)
