@@ -3272,7 +3272,7 @@
 
 "@thinknimble/tn-models-fp@2.5.3":
   version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@thinknimble/tn-models-fp/-/tn-models-fp-2.5.3.tgz#a95aa0346e3166ef26b2e26210138f6e93c95625"
+  resolved "https://registry.yarnpkg.com/@thinknimble/tn-models-fp/-/ac-2.5.3.tgz#a95aa0346e3166ef26b2e26210138f6e93c95625"
   integrity sha512-KkaJFGck4XGx9XOEqU7V7JPgG/ciZJ7T5EAyA51Ee29JnMBbiXdkusAEuBIsd/tZpg02Hh5CuajFS9Q2we/Rzg==
   dependencies:
     "@thinknimble/tn-utils" "^2.0.1"

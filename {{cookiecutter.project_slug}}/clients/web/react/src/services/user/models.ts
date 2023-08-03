@@ -15,15 +15,15 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  token: readonly(z.string().nullable().optional()),
+  token: readonly(z.string().nullable()),
 }
-export type UserShape = GetInferredFromRaw<typeof userShape>
 
 export const userCreateShape = {
-  ...userShape,
+  email: userShape.email, 
+  firstName: userShape.firstName, 
+  lastName:userShape.lastName,
   password: z.string(),
 }
-
 export const forgotPasswordShape = {
   email: z.string().email(),
 }

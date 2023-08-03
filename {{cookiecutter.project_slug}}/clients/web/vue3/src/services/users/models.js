@@ -7,11 +7,13 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  token: readonly(z.string().nullable().optional()),
+  token: readonly(z.string().nullable()),
 }
 
 export const userCreateShape = {
-  ...userShape,
+  email: userShape.email, 
+  firstName: userShape.firstName, 
+  lastName:userShape.lastName,
   password: z.string(),
 }
 
