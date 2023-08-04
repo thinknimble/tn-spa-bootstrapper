@@ -30,7 +30,7 @@
     <div class="">
       <button type="button" class="btn--primary">
         <router-link :to="{ name: 'Login' }" class="" id="login-link">
-          Return to Log in
+          Return to Login
         </router-link>
       </button>
     </div>

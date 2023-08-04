@@ -1,10 +1,15 @@
 /* Buttons */
 
 .btn {
-  @apply w-full p-1.5 my-5 rounded;
+  @apply ml-6 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryLight border;
 }
 
 .btn--primary {
   @apply btn;
-  @apply text-white font-bold py-2 px-4;
+  @apply bg-primary text-white hover:bg-primaryLight border-primary;
+}
+
+.btn--secondary {
+  @apply btn;
+  @apply hover:bg-gray-50;
 }
