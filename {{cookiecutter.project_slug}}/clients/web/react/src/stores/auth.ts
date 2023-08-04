@@ -1,8 +1,18 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+{% if cookiecutter.use_graphql=='n' -%}
 import { queryClient } from '../utils/query-client'
 import { User } from '../services/user'
+{% endif -%}
 import { createSelectors } from './utils'
+{% if cookiecutter.use_graphql == 'y' -%}
+import {client} from 'src/services/apollo-client'
+{% endif -%}
+
+{% if cookiecutter.use_graphql == 'y' -%}
+//TODO: need a user model for gql
+type User = unknown
+{% endif -%}
 
 type AuthState = {
   token: string
@@ -12,7 +22,8 @@ type AuthState = {
    * @deprecated This is a copy of the user model, we keep this in local storage to have it readily available on app load. We will update it accordingly in time if the server user has changed. Do not use this as source of truth, use `useUser` from `src/services/user` instead
    */
   user: User | null
-  isClearingAuth: boolean
+  isClearingAuth: boolean,
+  tokenExpirationDate : null | string,
   actions: {
     hydrate: () => void
     changeToken: (t: string) => void
@@ -22,7 +33,8 @@ type AuthState = {
      * Use only if you're syncing this state with the server
      * @deprecated
      */
-    writeUserInStorage: (user: User) => void
+    writeUserInStorage: (user: User) => void,
+    changeTokenExpirationDate: (tokenExpirationDate: string) => void
   }
 }
 let resolveHydrationValue: (value: boolean) => void
@@ -35,6 +47,7 @@ const defaultValues: Omit<AuthState, 'actions' | 'hasHydrated'> = {
   userId: '',
   user: null,
   isClearingAuth: false,
+  tokenExpirationDate:null
 }
 
 export const useAuth = createSelectors(
@@ -60,6 +73,9 @@ export const useAuth = createSelectors(
           writeUserInStorage(user) {
             set({ user })
           },
+          changeTokenExpirationDate(tokenExpirationDate) {
+            set({ tokenExpirationDate })
+          },
         },
       }),
       {
@@ -82,5 +98,9 @@ export const useAuth = createSelectors(
 
 export const logout = () => {
   useAuth.getState().actions.clearAuth()
-  queryClient.invalidateQueries(['user'])
+{% if cookiecutter.use_graphql == 'y' -%}
+  client.clearStore()
+{% else -%}
+queryClient.invalidateQueries(['user'])
+{% endif -%}
 }

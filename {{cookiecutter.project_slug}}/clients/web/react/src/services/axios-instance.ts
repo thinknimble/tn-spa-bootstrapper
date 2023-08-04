@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios'
-import { localStoreManager } from 'src/utils/local-store-manager'
+import { useAuth } from 'src/stores/auth'
 import { getCookie } from 'src/utils/get-cookie'
 
 const baseURL = `${window.location.protocol}//${window.location.host}`
@@ -13,7 +13,7 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = localStoreManager.token.get()
+    const { token } = useAuth.getState()
     if (token) {
       const authHeader = `Token ${token}`
       const csrfToken = getCookie('csrftoken')

@@ -10,26 +10,28 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/user/index'
+import { LoginForm, TLoginForm, LoginFormInputs,
+  {% if cookiecutter.use_graphql == 'n' -%}
+  userApi 
+  {% endif -%}
+} from 'src/services/user'
 
-import { useAuth, useFollowupRoute } from 'src/utils/auth'
-import { localStoreManager } from 'src/utils/local-store-manager'
+import { useFollowupRoute } from 'src/utils/auth'
+import { useAuth } from 'src/stores/auth'
 
 
 function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
   const [error, setError] = useState(autoError ? true : false)
-  const { updateToken, updateUserId } = useAuth()
+  const { changeToken, changeUserId } = useAuth.use.actions()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
   const navigate = useNavigate()
 
 {% if cookiecutter.use_graphql == 'y' -%}
   const [logIn] = useMutation(LOG_IN, {
     onCompleted: (data: { tokenAuth: { token: string } }) => {
-      localStorage.setItem('auth-token', data.tokenAuth.token)
-      updateToken(data.tokenAuth.token)
-
+      changeToken(data.tokenAuth.token)
       navigate('/home')
     },
     onError: (error: { message?: string }) => {
@@ -42,10 +44,8 @@ function LogInInner() {
   const { mutate: logIn } = useMutation({
     mutationFn: userApi.csc.login,
     onSuccess: (data) => {
-      localStoreManager.token.set(data.token!)
-      localStoreManager.userId.set(data.id!)
-      updateToken(data.token)
-      updateUserId(data.id)
+      changeToken(data.token)
+      changeUserId(data.id)
       navigate('/home')
     },
     onError(e: any) {
@@ -73,7 +73,7 @@ const input = {
     logIn(input)
   }
 
-  const { token } = useAuth()
+  const token = useAuth.use.token()
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
   //Do not even show this page if they're already logged in

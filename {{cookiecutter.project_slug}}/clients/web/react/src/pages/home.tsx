@@ -1,6 +1,7 @@
 import React from 'react'
-import { logout } from '../utils/auth'
 import { useNavigate } from 'react-router-dom'
+import { logout } from 'src/stores/auth'
+
 export const Home = () => {
   const navigate = useNavigate()
   const logOutUser = () => {

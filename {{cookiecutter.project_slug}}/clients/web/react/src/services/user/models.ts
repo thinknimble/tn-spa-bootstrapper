@@ -5,7 +5,7 @@
  *
  */
 
-import { GetInferredFromRaw } from '@thinknimble/tn-models-fp'
+import { GetInferredFromRaw, readonly } from '@thinknimble/tn-models-fp'
 import { z } from 'zod'
 import { baseModelShape } from '../base-model'
 
@@ -14,9 +14,9 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  token: z.string().nullable(),
+  token: readonly( z.string().nullable().optional() ),
 }
-export type UserShape = GetInferredFromRaw<typeof userShape>
+export type User = GetInferredFromRaw<typeof userShape>
 
 export const userCreateShape = {
   ...userShape,

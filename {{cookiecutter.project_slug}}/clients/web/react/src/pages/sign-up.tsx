@@ -17,21 +17,21 @@ import {
   TAccountForm,
   AccountFormInputs,
 } from 'src/services/user/forms'
-import { UserShape, userApi } from 'src/services/user/index'
-import { localStoreManager } from 'src/utils/local-store-manager'
-import { useAuth } from '../utils/auth'
+{% if cookiecutter.use_graphql=='n' -%}
+import { User, userApi } from 'src/services/user/index'
+{% endif -%}
+import { useAuth } from 'src/stores/auth'
 
 function SignUpInner() {
   const [error, setError] = useState('')
-  const { updateToken, updateUserId } = useAuth()
+  const { changeToken, changeUserId } = useAuth.use.actions()
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
 {% if cookiecutter.use_graphql == 'y' -%}
   const [logIn] = useMutation(LOG_IN, {
     onCompleted: (data: { tokenAuth: { token: string } }) => {
-      localStoreManager.token.set(data.tokenAuth.token)
-      updateToken(data.tokenAuth.token)
+      changeToken(data.tokenAuth.token)
       navigate('/home')
     },
     onError: () => {
@@ -64,11 +64,10 @@ function SignUpInner() {
 {% else -%}
 const { mutate: createUser, isLoading } = useMutation({
   mutationFn: userApi.create,
-  onSuccess: (data:UserShape) => {
-    localStoreManager.token.set(data.token!)
-    localStoreManager.userId.set(data.id!)
-    updateToken(data.token)
-    updateUserId(data.id)
+  onSuccess: (data) => {
+    if(!data.token) throw new Error('Token should be returned on user creation')
+    changeToken(data.token)
+    changeUserId(data.id)
     navigate('/home')
   },
   onError(e: any) {

@@ -1,11 +1,12 @@
 import { Navigate } from 'react-router-dom'
-import { useAuth, useFollowupRoute } from 'src/utils/auth'
+import { useFollowupRoute } from 'src/utils/auth'
+import { useAuth } from 'src/stores/auth'
 
 /**
  * Determines what should it render on hitting `/`. Based on whether the user is logged in or not. You can still add public routes on /*
  */
 export const AppOrAuth = () => {
-  const { token } = useAuth()
+  const token = useAuth.use.token()
 
   const followupRoute = useFollowupRoute()
 
