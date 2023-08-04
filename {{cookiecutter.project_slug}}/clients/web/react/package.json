@@ -18,7 +18,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^3.0.0",
     "react-router-dom": "^6.0.1",
-    "zod": "3.21.4"
+    "zod": "3.21.4",
+    "zustand": "^4.4.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.29.9",
