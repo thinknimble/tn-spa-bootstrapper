@@ -2,6 +2,17 @@
   "name": "{{ cookiecutter.project_slug }}",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "serve": "vite --host 0.0.0.0",
+    "build": "vite build --base=/static/",
+    "cypress": "source ../.env && cypress open",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:single": "vitest $0",
+    "prettier": "prettier --write ./src",
+    "tslint":"tsc",
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
+  },
   "dependencies": {
     {% if cookiecutter.use_graphql == 'n' -%}
     "@tanstack/react-query": "^4.24.2",
@@ -53,16 +64,6 @@
   {% if cookiecutter.use_graphql == 'y' -%}
   "proxy": "http://localhost:8000",
   {% endif -%}
-  "scripts": {
-    "serve": "vite --host 0.0.0.0",
-    "build": "tsc && vite build --base=/static/",
-    "cypress": "source ../.env && cypress open",
-    "test": "vitest run src",
-    "test:watch": "vitest src",
-    "test:single": "vitest $0",
-    "prettier": "prettier --write ./src",
-    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
