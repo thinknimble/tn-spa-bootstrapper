@@ -21,7 +21,7 @@
         </div>
         <div class="hidden sm:ml-6 sm:flex sm:items-center">
           <template v-if="!isLoggedIn">
-            <router-link :to="{ name: 'Login' }" class="btn--primary">Login</router-link>
+            <router-link :to="{ name: 'Login' }" class="btn--primary" data-cy="login">Login</router-link>
             <router-link :to="{ name: 'Signup' }" class="btn--secondary">Signup</router-link>
           </template>
           <!-- Profile dropdown -->
