@@ -106,7 +106,7 @@
             <router-link :to="{ name: 'Signup' }" active-class="active--mobile" class="mobile-link">
               Signup
             </router-link>
-            <router-link data-cy="login" :to="{ name: 'Login' }" active-class="active--mobile" class="mobile-link">
+            <router-link :to="{ name: 'Login' }" data-cy="login" active-class="active--mobile" class="mobile-link">
               Login
             </router-link>
           </template>
