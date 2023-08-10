@@ -3,9 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    {% if cookiecutter.use_graphql == 'n' -%}
     "@tanstack/react-query": "^4.24.2",
     "axios": "^1.2.6",
     "@thinknimble/tn-models-fp": "^2.13.0",
+    {% else -%}
+    "@apollo/client": "^3.4.17",
+    "graphql": "^16.0.1",
+    "graphql-tag": "^2.12.6",
+    {% endif -%}
     "@thinknimble/tn-forms": "^3.0.0",
     "@thinknimble/tn-forms-react": "^1.0.0",
     "react": "^18.2.0",
@@ -43,6 +49,9 @@
     "vite-tsconfig-paths": "^3.6.0",
     "vitest": "^0.25.3"
   },
+  {% if cookiecutter.use_graphql == 'y' -%}
+  "proxy": "http://localhost:8000",
+  {% endif -%}
   "scripts": {
     "serve": "vite --host 0.0.0.0",
     "build": "tsc && vite build --base=/static/",
