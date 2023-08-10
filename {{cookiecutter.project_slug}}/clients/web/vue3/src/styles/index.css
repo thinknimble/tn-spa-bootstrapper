@@ -4,18 +4,22 @@
 
 /* Router Active Link Styling */
 .router {
-  @apply text-primary font-bold px-3;
+  @apply inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent;
 }
 
 .router:hover {
   @apply cursor-pointer;
 }
 
-.exact-active-link {
-  @apply text-accent;
+.active {
+  @apply border-accent;
+}
+
+.active--mobile {
+  @apply border-l-4 border-accent text-accent;
 }
 
 /* Containers */
 .form-container {
-  @apply container w-full sm:max-w-prose content-center mx-auto py-5 bg-slate-200 rounded-lg;
+  @apply container mx-auto w-full content-center rounded-lg bg-slate-200 py-5 sm:max-w-prose;
 }
