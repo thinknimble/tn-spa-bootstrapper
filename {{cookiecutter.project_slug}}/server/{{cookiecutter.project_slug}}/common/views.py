@@ -1,14 +1,15 @@
-{% if cookiecutter.use_graphql == "n" -%}
-from django.shortcuts import render
-from django.template.exceptions import TemplateDoesNotExist
-{% else -%}
+{% if cookiecutter.use_graphql == "y" -%}
 from django.template.response import TemplateResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
+{% else -%}
+from django.shortcuts import render
+from django.template.exceptions import TemplateDoesNotExist
+from rest_framework import status
 {% endif -%}
 
 
-{% if cookiecutter.use_graphql == 'y' %}
+{% if cookiecutter.use_graphql == "y" %}
 
 @ensure_csrf_cookie
 @never_cache
@@ -18,7 +19,7 @@ def index(request):
 
 def index(request):
     try:
-        return render(request, "index.html")
+        return render(request, "index.html", status=status.HTTP_404_NOT_FOUND)
     except TemplateDoesNotExist:
-        return render(request, "core/index-placeholder.html")
+        return render(request, "core/index-placeholder.html", status=status.HTTP_404_NOT_FOUND)
 {% endif -%}
