@@ -54,7 +54,7 @@ First, create .env.local at the top-level of the client directory, and copy the 
 
 Then run the project with:
 ```
-yarn start
+yarn run serve
 ```
 
 ### Run Integration tests
