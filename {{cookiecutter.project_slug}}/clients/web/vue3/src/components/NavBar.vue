@@ -21,11 +21,11 @@
         </div>
         <div class="hidden sm:ml-6 sm:flex sm:items-center">
           <template v-if="!isLoggedIn">
-            <router-link :to="{ name: 'Login' }" class="btn--primary" data-cy="login">Login</router-link>
-            <router-link :to="{ name: 'Signup' }" class="btn--secondary">Signup</router-link>
+            <router-link :to="{ name: 'Login' }" class="btn--primary">Login</router-link>
+            <router-link :to="{ name: 'Signup' }" class="btn--secondary ml-6">Signup</router-link>
           </template>
           <!-- Profile dropdown -->
-          <div class="relative ml-3" v-if="isLoggedIn">
+          <div class="relative ml-3 focus:ring-2" v-if="isLoggedIn">
             <img
               @click="profileMenuOpen = !profileMenuOpen"
               class="h-8 w-8 cursor-pointer rounded-full"
@@ -103,10 +103,20 @@
         </div>
         <div class="mt-3 space-y-1">
           <template v-if="!isLoggedIn">
-            <router-link :to="{ name: 'Signup' }" active-class="active--mobile" class="mobile-link">
+            <router-link
+              @click="mobileMenuOpen = false"
+              :to="{ name: 'Signup' }"
+              active-class="active--mobile"
+              class="mobile-link"
+            >
               Signup
             </router-link>
-            <router-link :to="{ name: 'Login' }" data-cy="login" active-class="active--mobile" class="mobile-link">
+            <router-link
+              @click="mobileMenuOpen = false"
+              :to="{ name: 'Login' }"
+              active-class="active--mobile"
+              class="mobile-link"
+            >
               Login
             </router-link>
           </template>
