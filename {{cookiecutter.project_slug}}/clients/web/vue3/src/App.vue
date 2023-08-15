@@ -8,7 +8,6 @@
 <script>
 import NavBar from '@/components/NavBar'
 export default {
-  // foo
   name: 'App',
   components: {
     NavBar,
