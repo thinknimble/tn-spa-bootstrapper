@@ -14,7 +14,7 @@ When we run collectstatic the public folder is copied as is and enables serving 
 ## Logo Setup
 
 Swap out the logo files in these locations:
-`client/src/assets/logo.png` (Used by the webapp)
+`client/src/assets/icons/glyph.svg` (Used by the webapp)
 `server/{{ cookiecutter.project_slug }}/core/static/images/logo.png` (Used by HTML emails)
 
 ## Initial Setup for non-Docker local
