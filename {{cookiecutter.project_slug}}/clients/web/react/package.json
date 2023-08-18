@@ -21,7 +21,7 @@
     "zod": "3.21.4",
     {% else -%}
     "@apollo/client": "^3.4.17",
-    "graphql": "^16.0.1",
+    "graphql": "16.6.0",
     "graphql-tag": "^2.12.6",
     {% endif -%}
     "@thinknimble/tn-forms": "^3.0.0",
