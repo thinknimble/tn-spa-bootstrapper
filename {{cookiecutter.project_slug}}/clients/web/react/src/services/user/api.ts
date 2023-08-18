@@ -9,7 +9,7 @@ const login = createCustomServiceCall(
     outputShape: userShape,
   },
   async ({ client, input, utils }) => {
-    const res = await client.post('api/login/', utils.toApi(input))
+    const res = await client.post('/login/', utils.toApi(input))
     return utils.fromApi(res.data)
   },
 )
@@ -19,7 +19,7 @@ const requestPasswordReset= createCustomServiceCall(
     inputShape: forgotPasswordShape,
   },
   async ({ client, input }) => {
-    await client.get(`api/password/reset/${input.email}/`)
+    await client.get(`/password/reset/${input.email}/`)
   },
 )
 const resetPassword = createCustomServiceCall(
@@ -29,7 +29,7 @@ const resetPassword = createCustomServiceCall(
   },
   async ({ client, input, utils }) => {
     const { email, ...rest } = utils.toApi(input)
-    const res = await client.post(`api/password/reset/code/confirm/${input.email}/`, rest)
+    const res = await client.post(`/password/reset/code/confirm/${input.email}/`, rest)
     return utils.fromApi(res.data)
   },
 )
@@ -37,7 +37,7 @@ const resetPassword = createCustomServiceCall(
 export const userApi = createApi(
   {
     client: axiosInstance,
-    baseUri: 'api/users/',
+    baseUri: '/users/',
     models: {
       create: userCreateShape,
       entity: userShape,

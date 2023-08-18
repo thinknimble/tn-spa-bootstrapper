@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { localStoreManager } from 'src/utils/local-store-manager'
 import { getCookie } from 'src/utils/get-cookie'
 
-const baseURL = `${window.location.protocol}//${window.location.host}`
+const baseURL = `${window.location.protocol}//${window.location.host}/api`
 
 export const axiosInstance = axios.create({
   baseURL,
