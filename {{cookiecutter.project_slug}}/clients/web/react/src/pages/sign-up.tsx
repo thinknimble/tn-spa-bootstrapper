@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query'
 {% endif -%}
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
-import { useState } from 'react'
+import { FormEvent ,useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
@@ -78,7 +78,8 @@ const { mutate: createUser, isLoading } = useMutation({
 })
 {% endif -%}
 
-  const onSubmit = () => {
+  const onSubmit = (e:FormEvent) => {
+    e.preventDefault()
     const data = {
       email: form.email.value,
       password: form.password.value,
