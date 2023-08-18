@@ -39,21 +39,21 @@ function LogInInner() {
     },
   })
 {% else -%}
-const { mutate: logIn, isLoading } = useMutation({
-  mutationFn: userApi.csc.login,
-  onSuccess: (data) => {
-    localStoreManager.token.set(data.token!)
-    localStoreManager.userId.set(data.id!)
-    updateToken(data.token)
-    updateUserId(data.id)
-    navigate('/home')
-  },
-  onError(e: any) {
-    if (e?.message === 'Please enter valid credentials') {
-      setError(true)
-    }
-  },
-})
+  const { mutate: logIn } = useMutation({
+    mutationFn: userApi.csc.login,
+    onSuccess: (data) => {
+      localStoreManager.token.set(data.token!)
+      localStoreManager.userId.set(data.id!)
+      updateToken(data.token)
+      updateUserId(data.id)
+      navigate('/home')
+    },
+    onError(e: any) {
+      if (e?.message === 'Please enter valid credentials') {
+        setError(true)
+      }
+    },
+  })
 {% endif -%}
 
   const handleLogin = () => {
@@ -119,7 +119,9 @@ const input = {
             <ErrorsList errors={form.password.errors} />
           </div>
         </form>
-        <Button data-cy="login-btn" onClick={handleLogin}>Login</Button>
+        <Button data-cy="login-btn" onClick={handleLogin}>
+          Login
+        </Button>
       </section>
       <div className="flex flex-col gap-3">
         <p className="text-xl text-slate-200 font-semibold">Don&apos;t have an account?</p>

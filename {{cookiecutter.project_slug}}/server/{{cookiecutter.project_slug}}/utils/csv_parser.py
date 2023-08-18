@@ -95,7 +95,7 @@ class CSVParser:
         Load csv file (from disk or memory) into a list of rows.
         """
         # Handle files in memory
-        if type(self.file) == InMemoryUploadedFile:
+        if isinstance(self.file, InMemoryUploadedFile):
             # Start at the beginning of the file
             self.file.seek(0)
             # Read the file as a list of strings, and iterate through it
@@ -108,7 +108,7 @@ class CSVParser:
             self._rows = list(csv_reader)
 
         # Handle filenames from disk
-        elif type(self.file) == str:
+        elif isinstance(self.file, str):
             with open(self.file, "r") as opened_file:
                 csv_reader = csv.reader(opened_file, delimiter=",")
                 # Pull data out of reader by wrapping it in a list

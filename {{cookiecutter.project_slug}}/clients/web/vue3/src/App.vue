@@ -1,46 +1,19 @@
 <template>
-  <div class="font-avenir antialiased text-center">
-    <nav class="flex justify-center p-7">
-      <router-link to="/" class="router">Home</router-link>
-      <template v-if="isLoggedIn">
-        |
-        <router-link to="/dashboard" class="router">Dashboard</router-link>
-        |
-        <span id="logout" class="router underline" @click="logout()">Logout</span>
-      </template>
-      <template v-else>
-        |
-        <router-link to="/login" data-cy="login" class="router">Login</router-link>
-        |
-        <router-link to="/signup" class="router">Signup</router-link>
-      </template>
-    </nav>
-    <main>
-      <router-view />
-    </main>
+  <div class="flex min-h-screen flex-col text-center font-avenir text-primary antialiased pt-16">
+    <NavBar />
+    <router-view />
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-
+import NavBar from '@/components/NavBar'
 export default {
   name: 'App',
+  components: {
+    NavBar,
+  },
   setup() {
-    const store = useStore()
-    const router = useRouter()
-
-    async function logout() {
-      await store.dispatch('setUser', null)
-      router.push({ name: 'Home' })
-    }
-
-    return {
-      logout,
-      isLoggedIn: computed(() => store.getters.isLoggedIn),
-    }
+    return {}
   },
 }
 </script>
