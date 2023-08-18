@@ -19,7 +19,7 @@ def index(request):
 
 def index(request):
     try:
-        return render(request, "index.html", status=status.HTTP_404_NOT_FOUND)
+        return render(request, "index.html")
     except TemplateDoesNotExist:
         return render(request, "core/index-placeholder.html", status=status.HTTP_404_NOT_FOUND)
 {% endif -%}

@@ -1,40 +1,57 @@
 <template>
-  <div class="form-container">
-    <h1 class="heading font-bold">Log In.</h1>
-    <form class="flex flex-col items-center" @submit.prevent="attemptLogin()">
-      <InputField
-        v-model:value="form.email.value"
-        :errors="form.email.errors"
-        @blur="form.email.validate()"
-        type="email"
-        data-cy="email"
-        label="Email"
-        placeholder="Enter email..."
-      />
-      <InputField
-        v-model:value="form.password.value"
-        :errors="form.password.errors"
-        @blur="form.password.validate()"
-        type="password"
-        data-cy="password"
-        label="Password"
-        placeholder="Enter password..."
-      />
-      <button class="btn--primary bg-primary" data-cy="submit" type="submit">Login</button>
-      <div class="flex self-center m-4">
-        <p class="mr-2">Don't have an account?</p>
-        <router-link to="/signup" class="font-bold text-primary hover:underline">
-          Sign up.
-        </router-link>
-      </div>
+  <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+      <img class="mx-auto h-12 w-auto" src="@/assets/icons/glyph.svg" alt="ThinkNimble" />
+      <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
+        Log in
+      </h2>
+    </div>
 
-      <router-link
-        :to="{ name: 'RequestPasswordReset' }"
-        tag="button"
-      >
-        Forgot Password?
+    <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+      <form @submit.prevent="attemptLogin()">
+        <InputField
+          v-model:value="form.email.value"
+          :errors="form.email.errors"
+          @blur="form.email.validate()"
+          type="email"
+          data-cy="email"
+          label="Email address"
+          placeholder="Enter email..."
+        />
+        <div>
+          <div class="flex items-center justify-between">
+            <label for="password" class="block text-sm font-medium leading-6 text-primary"
+              >Password</label
+            >
+            <div class="text-sm hover:underline">
+              <router-link :to="{ name: 'RequestPasswordReset' }" class="font-semibold text-accent"
+                >Forgot password?</router-link
+              >
+            </div>
+          </div>
+          <div class="mt-2">
+            <InputField
+              v-model:value="form.password.value"
+              :errors="form.password.errors"
+              @blur="form.password.validate()"
+              type="password"
+              data-cy="password"
+              placeholder="Enter password..."
+            />
+          </div>
+        </div>
+
+        <div>
+          <button type="submit" data-cy="submit" class="btn--primary bg-primary">Log in</button>
+        </div>
+      </form>
+    </div>
+    <div class="m-4 flex self-center text-sm">
+      <p class="mr-2">Don't have an account?</p>
+      <router-link :to="{ name: 'Signup' }" class="font-bold text-primary hover:underline">
+        Sign up.
       </router-link>
-    </form>
+    </div>
   </div>
 </template>
 
