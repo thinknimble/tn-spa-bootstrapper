@@ -412,11 +412,8 @@ TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
 CORS_ALLOWED_ORIGINS = ["https://{{ cookiecutter.project_slug|replace('_', '-') }}-staging.herokuapp.com", "https://{{ cookiecutter.project_slug|replace('_', '-') }}.herokuapp.com"]
 {% if cookiecutter.client_app.lower() != 'none' -%}
-CORS_ALLOWED_ORIGINS.append("http://localhost:8089")
+CORS_ALLOWED_ORIGINS.append("http://localhost:8080")
 {% endif -%}
-{% if cookiecutter.use_graphql == 'y' -%}
-CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
-{%- endif -%}
 
 {% if cookiecutter.use_graphql == 'y' %}
 CORS_ALLOW_CREDENTIALS = True
