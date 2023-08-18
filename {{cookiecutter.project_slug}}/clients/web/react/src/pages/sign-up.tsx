@@ -17,7 +17,7 @@ import {
   TAccountForm,
   AccountFormInputs,
 } from 'src/services/user/forms'
-{% if cookiecutter.use_graphql=='n' -%}
+{% if cookiecutter.use_graphql == 'n' -%}
 import { User, userApi } from 'src/services/user'
 {% endif -%}
 import { useAuth } from 'src/stores/auth'

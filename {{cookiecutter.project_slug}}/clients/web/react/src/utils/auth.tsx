@@ -16,7 +16,7 @@ import { useAuth, logout } from 'src/stores/auth'
 // 2a. unset localStorage token & exp on logout
 // 2b. call client.clearStore() on logout
 
-{% if cookiecutter.use_graphql=='y' -%}
+{% if cookiecutter.use_graphql == 'y' -%}
 const TOKEN_CHECK_INTERVAL_MS = 60000
 const REFRESH_THRESHOLD = 60000
 const useInterval = (fn: () => void, intervalMs: number) => {

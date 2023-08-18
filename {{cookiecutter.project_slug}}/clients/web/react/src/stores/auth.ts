@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-{% if cookiecutter.use_graphql=='n' -%}
+{% if cookiecutter.use_graphql == 'n' -%}
 import { queryClient } from '../utils/query-client'
 import { User } from '../services/user'
 {% endif -%}
