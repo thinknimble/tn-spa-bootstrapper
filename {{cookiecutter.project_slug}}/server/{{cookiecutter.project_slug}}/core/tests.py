@@ -7,7 +7,8 @@ from pytest_factoryboy import register
 from rest_framework.response import Response
 
 from .factories import UserFactory
-from .models import User, UserResetPasswordCode
+
+from .models import User {% if cookiecutter.include_mobile == 'y' %}, UserResetPasswordCode {% endif %}
 from .serializers import UserLoginSerializer
 from .views import PreviewTemplateView
 
@@ -92,7 +93,7 @@ def test_password_reset(test_user, client):
 def test_user_token_gets_created_from_signal(test_user):
     assert test_user.auth_token
 
-
+{%- if cookiecutter.include_mobile == 'y' %}
 @pytest.mark.django_db
 def test_user_password_reset_request(test_user):
     client = Client()
@@ -120,6 +121,7 @@ def test_user_can_change_password_with_code(test_user):
     res = client.post("/api/login/", {"email": test_user.email, "password": "testing12345"}, **JSON_RQST_HEADERS)
     assert res.status_code == 200
     assert res.json()
+{%- endif %}
 
 
 class TestPreviewTemplateView:

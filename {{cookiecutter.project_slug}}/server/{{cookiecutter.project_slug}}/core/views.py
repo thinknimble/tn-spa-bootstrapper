@@ -21,10 +21,13 @@ from rest_framework.response import Response
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 from {{cookiecutter.project_slug}}.utils.misc import random_pin_generator
 
-from .models import User, UserResetPasswordCode
+from .models import User{% if cookiecutter.include_mobile == 'y' %}, UserResetPasswordCode {% endif %}
 from .permissions import CreateOnlyPermissions
+
 from .serializers import (
+    {%- if cookiecutter.include_mobile == 'y' %} 
     CodeResetPasswordSerializer,
+    {%- endif %}
     UserLoginSerializer,
     UserRegistrationSerializer,
     UserSerializer,
@@ -134,6 +137,7 @@ def reset_password(request, *args, **kwargs):
     return Response(response_data, status=status.HTTP_200_OK)
 
 
+{%- if cookiecutter.include_mobile == 'y' %}
 @api_view(["get"])
 @permission_classes([permissions.AllowAny])
 def request_reset_code(request, *args, **kwargs):
@@ -164,6 +168,7 @@ def reset_password_with_code(request, *args, **kwargs):
 
     u = UserLoginSerializer.login(user, request)
     return Response(status=status.HTTP_200_OK, data=u)
+{%- endif %}
 
 
 class PreviewTemplateView(views.APIView):

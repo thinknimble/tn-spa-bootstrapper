@@ -1,7 +1,9 @@
 import logging
 
 from django.conf import settings
+{%- if cookiecutter.include_mobile == 'y' %}
 from django.contrib.auth.hashers import make_password
+{%- endif %}
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
@@ -73,18 +75,19 @@ class User(AbstractUser, AbstractBaseModel):
             "support_email": settings.STAFF_EMAIL,
             "token": default_token_generator.make_token(self),
         }
-
+{%- if cookiecutter.include_mobile == 'y' %}
     def reset_password_code_context(self, code):
         return {
             "user": self,
             "code": code,
             "support_email": settings.STAFF_EMAIL,
         }
+{%- endif %}
 
     class Meta:
         ordering = ["email"]
 
-
+{%- if cookiecutter.include_mobile == 'y' %}
 class UserResetPasswordCodeQuerySet(models.QuerySet):
     def for_user(self, user) -> "models.QuerySet[UserResetPasswordCode]":
         if not user or user.is_anonymous:
@@ -129,3 +132,4 @@ class UserResetPasswordCode(AbstractBaseModel):
 
     class Meta:
         ordering = ("-datetime_created",)
+{%- endif %}

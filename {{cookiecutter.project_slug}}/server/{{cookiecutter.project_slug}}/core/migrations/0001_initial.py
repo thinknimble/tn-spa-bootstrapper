@@ -3,7 +3,9 @@
 import uuid
 
 import django.utils.timezone
+{%- if cookiecutter.include_mobile == 'y' %}
 from django.conf import settings
+{%- endf }
 import {{ cookiecutter.project_slug }}.core.models
 from django.db import migrations, models
 
@@ -82,6 +84,7 @@ class Migration(migrations.Migration):
                 ("objects", {{ cookiecutter.project_slug }}.core.models.UserManager()),
             ],
         ),
+        {%- if cookiecutter.include_mobile == 'y' %}
         migrations.CreateModel(
             name='UserResetPasswordCode',
             fields=[
@@ -100,4 +103,5 @@ class Migration(migrations.Migration):
                 ('objects', {{cookiecutter.project_slug}}.core.models.UserResetPasswordCodeManager()),
             ],
         ),
+        {%- endif %}
     ]

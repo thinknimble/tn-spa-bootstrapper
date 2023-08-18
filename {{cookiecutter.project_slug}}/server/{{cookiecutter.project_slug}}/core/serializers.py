@@ -1,9 +1,13 @@
 from django.contrib.auth import login
+{%- if cookiecutter.include_mobile == 'y' %}
 from django.contrib.auth.hashers import check_password
+{%- endif %}
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+{%- if cookiecutter.include_mobile == 'y' %}
 from rest_framework.validators import ValidationError
+{%- endif %}
 
 from .models import User
 
@@ -71,7 +75,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
-
+{%- if cookiecutter.include_mobile == 'y' %}
 class CodeResetPasswordSerializer(serializers.Serializer):
     code = serializers.CharField(allow_blank=False, required=True)
     password = serializers.CharField(allow_blank=False, required=True)
@@ -87,3 +91,4 @@ class CodeResetPasswordSerializer(serializers.Serializer):
         password = data.get("password")
         validate_password(password)
         return data
+{%- endif %}
