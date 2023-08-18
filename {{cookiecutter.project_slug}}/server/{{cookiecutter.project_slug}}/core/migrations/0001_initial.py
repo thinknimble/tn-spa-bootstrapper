@@ -5,7 +5,7 @@ import uuid
 import django.utils.timezone
 {%- if cookiecutter.include_mobile == 'y' %}
 from django.conf import settings
-{%- endf }
+{%- endif }
 import {{ cookiecutter.project_slug }}.core.models
 from django.db import migrations, models
 
