@@ -18,9 +18,9 @@ urlpatterns = [*core_urls.urlpatterns]
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="{{cookiecutter.project_slug}} API",
+        title="{{cookiecutter.project_name}} API",
         default_version="1.0",
-        description="{{cookiecutter.project_slug}} Docs",
+        description="{{cookiecutter.project_name}} Docs",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="support@thinknimble.com"),
         license=openapi.License(name="BSD License"),

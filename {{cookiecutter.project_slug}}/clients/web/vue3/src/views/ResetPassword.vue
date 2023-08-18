@@ -1,25 +1,34 @@
 <template>
-  <div class="reset-password">
-    <form @submit.prevent="attemptPasswordReset()">
-      <InputField
-        v-model:value="form.password.value"
-        :errors="form.password.errors"
-        @blur="form.password.validate()"
-        type="password"
-        label="New Password:"
-        placeholder="New password"
-      />
-      <InputField
-        v-model:value="form.passwordConfirmation.value"
-        :errors="form.passwordConfirmation.errors"
-        @blur="form.passwordConfirmation.validate()"
-        type="password"
-        label="Confirm Password:"
-        placeholder="Confirm Password"
-      />
+  <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+      <img class="mx-auto h-12 w-auto" src="@/assets/icons/glyph.svg" alt="ThinkNimble" />
+      <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
+        Password Reset
+      </h2>
+    </div>
+    <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+      <form @submit.prevent="attemptPasswordReset()">
+        <InputField
+          v-model:value="form.password.value"
+          :errors="form.password.errors"
+          @blur="form.password.validate()"
+          type="password"
+          label="New Password"
+          placeholder="New password"
+        />
 
-      <button type="submit">Reset Password</button>
-    </form>
+        <InputField
+          v-model:value="form.passwordConfirmation.value"
+          :errors="form.passwordConfirmation.errors"
+          @blur="form.passwordConfirmation.validate()"
+          type="password"
+          label="Confirm Password"
+          placeholder="Confirm Password"
+        />
+
+        <button class="btn--primary bg-primary" type="submit">Reset Password</button>
+      </form>
+    </div>
   </div>
 </template>
 
