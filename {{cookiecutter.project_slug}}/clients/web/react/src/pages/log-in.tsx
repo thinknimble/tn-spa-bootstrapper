@@ -76,7 +76,6 @@ const input = {
   const { token } = useAuth()
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
-  //Do not even show this page if they're already logged in
   if (isAuth) {
     // let AppOrAuth address this
 
