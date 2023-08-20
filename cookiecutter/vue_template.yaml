@@ -1,4 +1,4 @@
 default_context:
-  client_app: "React"
+  client_app: "Vue3"
   use_graphql: "n"
   include_mobile: "n"
