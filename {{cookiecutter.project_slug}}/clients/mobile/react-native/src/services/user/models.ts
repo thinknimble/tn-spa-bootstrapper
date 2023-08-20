@@ -20,7 +20,9 @@ export const userShape = {
 export type UserShape = GetInferredFromRaw<typeof userShape>
 
 export const userCreateShape = {
-  ...userShape,
+  email: userShape.email,
+  firstName: userShape.firstName,
+  lastName:userShape.lastName,
   password: z.string(),
 }
 
