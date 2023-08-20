@@ -79,7 +79,8 @@ const { mutate: createUser, isLoading } = useMutation({
 })
 {% endif -%}
 
-  const onSubmit = () => {
+const onSubmit = (e: any) => {
+  e.preventDefault()
     const data = {
       email: form.email.value,
       password: form.password.value,
@@ -91,7 +92,7 @@ const { mutate: createUser, isLoading } = useMutation({
       variables: {
         data
       },
-    } 
+    }
 {% else -%}
     const input = {
       ...data
