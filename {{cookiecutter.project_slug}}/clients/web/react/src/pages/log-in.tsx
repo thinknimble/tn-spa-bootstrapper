@@ -77,10 +77,7 @@ const input = {
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
   if (isAuth) {
-    // let AppOrAuth address this
-
     return <Navigate to={'/'} state={{'{{'}} from: followupRoute {{ '}}' }} />
-
   }
 
   return (
