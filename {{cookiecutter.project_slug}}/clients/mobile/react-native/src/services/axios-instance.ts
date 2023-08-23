@@ -4,7 +4,7 @@ import { useAuth } from '../stores/auth'
 
 const appConfig = Config as any
 export const axiosInstance = axios.create({
-  baseURL: appConfig?.backendServerUrl,
+  baseURL: `${appConfig?.backendServerUrl}/api`,
 })
 
 axiosInstance.interceptors.request.use(

@@ -20,10 +20,10 @@ export class SignupForm extends Form {
       new MinLengthValidator({ minLength: 8, message: 'Minimum Length of 8 required' }),
     ],
   })
-  static passwordConfirmation = new FormField({})
+  static confirmPassword = new FormField({})
     // add cross field validators to the dynamicFormValidators object
   static dynamicFormValidators = {
-      passwordConfirmation: [new MustMatchValidator({ matcher: 'password' })],
+      confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
     }
 }
 
@@ -38,8 +38,8 @@ export class PasswordResetForm extends Form {
       new MinLengthValidator({ minLength: 8, message: 'Minimum Length of 8 required' }),
     ],
   })
-  static passwordConfirmation = new FormField({})
+  static confirmPassword = new FormField({})
   static dynamicFormValidators = {
-    passwordConfirmation: [new MustMatchValidator({ matcher: 'password' })],
+    confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
   }
 }

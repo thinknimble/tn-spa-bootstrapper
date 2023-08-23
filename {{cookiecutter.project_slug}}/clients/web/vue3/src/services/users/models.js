@@ -1,14 +1,29 @@
-import Model, { fields } from '@thinknimble/tn-models'
+import { z } from 'zod'
+import { readonly } from '@thinknimble/tn-models-fp'
+import { baseModelShape,  } from '../base-model'
 
-import UserAPI from './api'
-
-export default class User extends Model {
-  static api = UserAPI.create(User)
-
-  static id = new fields.CharField({ readOnly: true })
-  static firstName = new fields.CharField()
-  static lastName = new fields.CharField()
-  static email = new fields.CharField()
-  static fullName = new fields.CharField({ readOnly: true })
-  static token = new fields.CharField()
+export const userShape = {
+  ...baseModelShape,
+  email: z.string().email(),
+  firstName: z.string(),
+  lastName: z.string(),
+  token: readonly(z.string().nullable()),
 }
+
+export const userCreateShape = {
+  email: userShape.email, 
+  firstName: userShape.firstName, 
+  lastName:userShape.lastName,
+  password: z.string(),
+}
+
+export const forgotPasswordShape = {
+  email: z.string().email(),
+}
+
+
+export const loginShape = {
+  email: z.string().email(),
+  password: z.string(),
+}
+

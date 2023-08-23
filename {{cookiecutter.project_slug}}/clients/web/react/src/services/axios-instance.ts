@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { useAuth } from 'src/stores/auth'
 import { getCookie } from 'src/utils/get-cookie'
 
-const baseURL = `${window.location.protocol}//${window.location.host}`
+const baseURL = `${window.location.protocol}//${window.location.host}/api`
 
 export const axiosInstance = axios.create({
   baseURL,

@@ -18,8 +18,9 @@
     "@thinknimble/tn-forms": "^2.0.9",
     "@thinknimble/tn-models": "1.2.1",
     "@thinknimble/tn-utils": "1.6.0",
+    "@thinknimble/tn-models-fp": "^2.13.0",
     "autoprefixer": "^10.0.2",
-    "axios": "^0.22.0",
+    "axios": "^1.4.0",
     "core-js": "^3.6.5",
     "js-cookie": "^3.0.1",
     "postcss": "^8.1.0",
@@ -27,7 +28,8 @@
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0",
-    "vuex-persistedstate": "^4.1.0"
+    "vuex-persistedstate": "^4.1.0",
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

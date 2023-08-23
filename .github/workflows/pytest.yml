@@ -45,7 +45,7 @@ jobs:
       - name: Pytest, McCabe, and Coverage
         run: |
           cd my_project
-          pipenv install --dev --deploy --skip-lock
+          pipenv install --dev --deploy
           mkdir -p client/dist/static
           pipenv run python server/manage.py collectstatic
           pipenv run pytest --mccabe --cov=my_project -vv server/my_project

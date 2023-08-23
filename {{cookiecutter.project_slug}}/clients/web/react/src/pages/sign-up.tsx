@@ -91,7 +91,7 @@ const { mutate: createUser, isLoading } = useMutation({
       variables: {
         data
       },
-    } 
+    }
 {% else -%}
     const input = {
       ...data
