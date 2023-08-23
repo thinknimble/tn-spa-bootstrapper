@@ -20,9 +20,9 @@ alternatively if you want to use expo run command
 
 1. Download and install ngrok 
 2. Set up ngrok auth token (request an account from William Huster)
-3. run ngrok `~/.ngrok http 8000 --subdomain <yourname>-thinknimble` PLEASE NOTICE THE DASH APPENDED NAME `--subdomain <yourname>-thinknimble` DO NOT USE `--subdomain thinknimble`
+3. run ngrok `~/.ngrok http 8000 --subdomain <a domain>`
 4. add your new subomain to the `.env` IN MOBILE DIR as BACKEND_DEV_SERVER 
-5. append your new subdomain to the `.env` in ROOT DIR to ALLOW_HOSTS e.g `ALLOW_HOSTS=[localhost:8080,<yourname>-thinknimble.ngrok.io]`
+5. append your new subdomain to the `.env` in ROOT DIR to ALLOW_HOSTS e.g `ALLOW_HOSTS=[localhost:8080,<your domain>.ngrok.io]`
  
 
 
@@ -229,3 +229,24 @@ _expo-teststore-build-ios.yml_
 Run this workflow to deploy an emergency code related bugfix
 
 expo-emergency-prod-update.yml
+
+
+#### Important note about custom native modules and expo eject
+
+We can easily use our own native or non supported RN pacakges by checking if we are running an expo build or not, these will only work in expo builds not expo go. 
+When building for local testing/development we use the alternative builds in our eas.json
+Recently Expo has changed the `expo eject` command for `expo pre-build` this will create the iOS and Android folders and allow you to run your project in xcode or android studio as well you will need to activate your .env file since some vars are supplied from there. 
+
+You can accomplish this with `npm run prebuild:local` this will ensure that your `.env` file is sourced!
+
+Expo will automatically change your package.json and add/remove/change the following
+
+- `"main"` entry will be removed 
+- `"start"`: `"expo start --dev-client"` will change to this <----
+
+therefore when running prebuild ensure not to commit these changes!
+
+
+
+
+

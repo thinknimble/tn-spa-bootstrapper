@@ -59,7 +59,7 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import User, { LoginForm } from '@/services/users/'
+import  { LoginForm, userApi } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 
 export default {
@@ -91,8 +91,7 @@ export default {
       const unwrappedForm = form.value
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
-
-      User.api
+      userApi.csc
         .login({ email: unwrappedForm.email.value, password: unwrappedForm.password.value })
         .then(handleLoginSuccess)
         .catch(handleLoginFailure)
