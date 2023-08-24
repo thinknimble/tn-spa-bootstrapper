@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod'
-import { GetInferredFromRaw, readonly } from '@thinknimble/tn-models-fp'
+import { GetInferredFromRaw, readonly } from '@thinknimble/tn-models'
 import { baseModelShape } from '../base-model'
 
 

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { readonly } from '@thinknimble/tn-models-fp'
+import { readonly } from '@thinknimble/tn-models'
 
 export const baseModelShape = {
   id: z.string().uuid(),
