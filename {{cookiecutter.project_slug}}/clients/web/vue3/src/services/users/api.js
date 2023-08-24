@@ -1,4 +1,4 @@
-import { createApi, createCustomServiceCall } from '@thinknimble/tn-models-fp'
+import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
 import { z } from 'zod'
 import axiosInstance from '../AxiosClient'
 import { userShape, forgotPasswordShape, userCreateShape, loginShape } from './models'
