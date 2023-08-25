@@ -14,7 +14,7 @@ User `npm run start` to run the app and source the env variables
 
 alternatively if you want to use expo run command 
 
-`source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} npx expo start`
+`source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME} npx expo start`
 
 **When running the app locally and working against a local backend you will need to use a proxy**
 
