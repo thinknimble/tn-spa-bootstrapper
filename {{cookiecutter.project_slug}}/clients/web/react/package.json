@@ -17,7 +17,7 @@
     {% if cookiecutter.use_graphql == 'n' -%}
     "@tanstack/react-query": "^4.24.2",
     "axios": "^1.2.6",
-    "@thinknimble/tn-models-fp": "^2.13.0",
+    "@thinknimble/tn-models": "^2.0.0",
     {% else -%}
     "@apollo/client": "^3.4.17",
     "graphql": "16.6.0",

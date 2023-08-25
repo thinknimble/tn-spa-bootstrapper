@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { readonly } from '@thinknimble/tn-models-fp'
-import { baseModelShape,  } from '../base-model'
+import { readonly } from '@thinknimble/tn-models'
+import { baseModelShape } from '../base-model'
 
 export const userShape = {
   ...baseModelShape,
@@ -11,9 +11,9 @@ export const userShape = {
 }
 
 export const userCreateShape = {
-  email: userShape.email, 
-  firstName: userShape.firstName, 
-  lastName:userShape.lastName,
+  email: userShape.email,
+  firstName: userShape.firstName,
+  lastName: userShape.lastName,
   password: z.string(),
 }
 
@@ -21,9 +21,7 @@ export const forgotPasswordShape = {
   email: z.string().email(),
 }
 
-
 export const loginShape = {
   email: z.string().email(),
   password: z.string(),
 }
-
