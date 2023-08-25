@@ -63,9 +63,9 @@
             >Confirm Password</label
           >
           <InputField
-            v-model:value="form.passwordConfirmation.value"
-            :errors="form.passwordConfirmation.errors"
-            @blur="form.passwordConfirmation.validate()"
+            v-model:value="form.confirmPassword.value"
+            :errors="form.confirmPassword.errors"
+            @blur="form.confirmPassword.validate()"
             type="password"
             placeholder="Confirm Password"
           />
@@ -88,8 +88,9 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import User, { SignupForm } from '@/services/users/'
+import { userApi, SignupForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
+
 
 export default {
   name: 'Signup',
@@ -121,8 +122,7 @@ export default {
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
 
-      User.api
-        .registerUser({
+      userApi.create({
           firstName: unwrappedForm.firstName.value,
           lastName: unwrappedForm.lastName.value,
           email: unwrappedForm.email.value,

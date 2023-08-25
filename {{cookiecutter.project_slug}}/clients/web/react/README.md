@@ -11,7 +11,7 @@ This app includes basic configurations for developers to have a starting point o
 - Typescript
 - React
 - TailwindCss
-{% if cookiecutter.use_graphql=='y' -%}
+{% if cookiecutter.use_graphql == 'y' -%}
 - Apollo
 {% else -%}
 - Axios
@@ -54,7 +54,7 @@ First, create .env.local at the top-level of the client directory, and copy the 
 
 Then run the project with:
 ```
-yarn start
+yarn run serve
 ```
 
 ### Run Integration tests
