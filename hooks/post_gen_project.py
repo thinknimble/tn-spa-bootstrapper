@@ -148,6 +148,12 @@ def remove_expo_yaml_files():
             remove(file_name)
 
 
+def remove_mobile_reset_password_code_email_template():
+    template_filename = "server/{{ cookiecutter.project_slug }}/core/templates/registration/password_reset_code.html"
+    if exists(template_filename):
+        remove(template_filename)
+
+
 def set_keys_in_envs(django_secret, postgres_secret):
     env_file_path = join(".env.example")
     pull_request_template_path = join(".github", "pull_request_template.md")
@@ -207,6 +213,7 @@ def main():
         move_mobile_client_to_root("react-native")
     else:
         remove_expo_yaml_files()
+        remove_mobile_reset_password_code_email_template()
     if "{{ cookiecutter.use_graphql }}".lower() == "n":
         remove_graphql_files()
 
