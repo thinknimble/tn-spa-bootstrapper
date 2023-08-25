@@ -15,8 +15,9 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  token: readonly(z.string().nullable()),
+  token: readonly( z.string().nullable().optional() ),
 }
+export type User = GetInferredFromRaw<typeof userShape>
 
 export const userCreateShape = {
   email: userShape.email, 
