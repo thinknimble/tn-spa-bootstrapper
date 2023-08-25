@@ -11,7 +11,7 @@ This app includes basic configurations for developers to have a starting point o
 - Typescript
 - React
 - TailwindCss
-{% if cookiecutter.use_graphql=='y' -%}
+{% if cookiecutter.use_graphql == 'y' -%}
 - Apollo
 {% else -%}
 - Axios

@@ -2,6 +2,17 @@
   "name": "{{ cookiecutter.project_slug }}",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "serve": "vite --host 0.0.0.0",
+    "build": "vite build --base=/static/",
+    "cypress": "source ../.env && cypress open",
+    "test": "vitest run src",
+    "test:watch": "vitest src",
+    "test:single": "vitest $0",
+    "prettier": "prettier --write ./src",
+    "tslint":"tsc",
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
+  },
   "dependencies": {
     {% if cookiecutter.use_graphql == 'n' -%}
     "@tanstack/react-query": "^4.24.2",
@@ -9,7 +20,7 @@
     "@thinknimble/tn-models-fp": "^2.13.0",
     {% else -%}
     "@apollo/client": "^3.4.17",
-    "graphql": "^16.0.1",
+    "graphql": "16.6.0",
     "graphql-tag": "^2.12.6",
     {% endif -%}
     "@thinknimble/tn-forms": "^3.0.0",
@@ -18,7 +29,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^3.0.0",
     "react-router-dom": "^6.0.1",
-    "zod": "3.21.4"
+    "zustand": "^4.4.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.29.9",
@@ -52,16 +63,6 @@
   {% if cookiecutter.use_graphql == 'y' -%}
   "proxy": "http://localhost:8000",
   {% endif -%}
-  "scripts": {
-    "serve": "vite --host 0.0.0.0",
-    "build": "tsc && vite build --base=/static/",
-    "cypress": "source ../.env && cypress open",
-    "test": "vitest run src",
-    "test:watch": "vitest src",
-    "test:single": "vitest $0",
-    "prettier": "prettier --write ./src",
-    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
-  },
   "browserslist": {
     "production": [
       ">0.2%",

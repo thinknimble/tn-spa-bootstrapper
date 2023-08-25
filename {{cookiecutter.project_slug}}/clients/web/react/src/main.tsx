@@ -2,19 +2,19 @@
 import { ApolloProvider } from '@apollo/client'
 import { client } from './services/apollo-client'
 {% else -%}
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 {% endif -%}
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './app'
 import './index.css'
+{% if cookiecutter.use_graphql == 'n' -%}
+import { queryClient } from './utils/query-client'
+{% endif -%}
 
 const container = document.getElementById('root')
 const root = createRoot(container!)
 
-{% if cookiecutter.use_graphql == 'n' -%}
-const qClient = new QueryClient()
-{% endif -%}
 
 root.render(
   <React.StrictMode>
@@ -23,7 +23,7 @@ root.render(
       <App />
     </ApolloProvider>
 {% else -%}
-    <QueryClientProvider client={qClient}>
+    <QueryClientProvider client={queryClient}>
       <App />
     </QueryClientProvider>
 {% endif -%}

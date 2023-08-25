@@ -12,7 +12,7 @@
     "start:ios": "source .env && npx expo start --ios",
     "start:web": "source .env && npx expo start --web",
     "prebuild": "npx expo prebuild",
-    "prebuild:local" : "source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} expo prebuild",
+    "prebuild:local": "source .env && SENTRY_PROJECT_NAME=${SENTRY_PROJECT_NAME} SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} expo prebuild",
     "run:android": "source .env && npx expo run:android --clear",
     "run:android:release": "npx expo run:android --variant release",
     "run:ios": "source .env && npx expo run:ios --clear",
