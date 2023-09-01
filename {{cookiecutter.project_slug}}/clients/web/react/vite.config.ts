@@ -19,10 +19,10 @@ export default defineConfig(({ mode }) => {
     server: {
       {% if cookiecutter.use_graphql == 'n' -%}
       proxy: {
-        '/api/': {
+        '/api': {
           target: (env.VITE_DEV_BACKEND_URL || 'http://server:8000') + '/api',
           changeOrigin: true,
-          rewrite: path => path.replace(/^\/api\//, ''),
+          rewrite: path => path.replace(/^\/api/, ''),
         },
       },
       {% endif -%}
