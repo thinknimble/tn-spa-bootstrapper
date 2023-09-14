@@ -6,6 +6,7 @@ import { AppRoutes } from './utils/routes'
 
 // comment to trigger the right build
 // foobar
+// foobar
 export const AppRoot = () => {
   return (
     <Router>
