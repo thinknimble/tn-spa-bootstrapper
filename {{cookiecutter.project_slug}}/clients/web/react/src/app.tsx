@@ -5,7 +5,7 @@ import { AuthProvider } from './utils/auth'
 import { AppRoutes } from './utils/routes'
 
 // comment to trigger the right build
-// foo
+// foobar
 export const AppRoot = () => {
   return (
     <Router>
