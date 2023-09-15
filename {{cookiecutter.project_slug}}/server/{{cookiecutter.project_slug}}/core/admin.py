@@ -1,9 +1,10 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import Group, Permission
 
-from {{cookiecutter.project_slug}}.common.admin.filters import AutocompleteFilter, AutocompleteAdminMedia
+from my_project.common.admin.filters import AutocompleteAdminMedia, AutocompleteFilter
+
 from .models import User
 
 
@@ -59,7 +60,7 @@ class CustomUserAdmin(UserAdmin):
 
 
 class CustomGroupAdmin(GroupAdmin):
-    list_filter = (("permissions", AutocompleteFilter), )
+    list_filter = (("permissions", AutocompleteFilter),)
 
     class Media(AutocompleteAdminMedia):
         pass
