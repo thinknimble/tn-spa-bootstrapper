@@ -8,11 +8,7 @@
       the first thing that users will see on the home page.
     </p>
     <div class="mt-10 flex items-center justify-center gap-x-6">
-      <router-link
-        :to="{ name: 'Dashboard' }"
-        class="btn--accent"
-        >Get started</router-link
-      >
+      <router-link :to="{ name: 'Dashboard' }" class="btn--accent">Get started</router-link>
     </div>
   </div>
 </template>
