@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Text as TextRN, TextProps } from 'react-native'
-import { fontFamilyWeightMap, FontWeightStyle } from '../utils/fonts'
+import { fontFamilyWeightMap, FontWeightStyle } from '@utils/fonts'
 
 export const Text: FC<
   Omit<TextProps, 'className'> & { variant?: FontWeightStyle; textClassName?: string }

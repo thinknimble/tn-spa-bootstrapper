@@ -5,10 +5,10 @@ import {
 import { NavigationContainer } from '@react-navigation/native'
 import { Fragment } from 'react'
 import { Text, View ,StyleSheet } from 'react-native'
-import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-area-view'
-import { Main } from '../main'
-import { Login } from './login'
-import { SignUp } from './sign-up'
+import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
+import { Main } from '@screens/main'
+import { Login } from '@screens/auth/login'
+import { SignUp } from '@screens/auth/sign-up'
 import { Bounceable } from 'rn-bounceable'
 
 const Tab = createMaterialTopTabNavigator()
