@@ -117,6 +117,11 @@ def remove_rest_react_files():
     file_names = [
         join("client/src/services", "axios-instance.ts"),
         join("client/src/services", "auth.ts"),
+        join("client/src/services", "base-model.ts"),
+        join("client/src/services/user", "api.ts"),
+        join("client/src/services/user", "hooks.ts"),
+        join("client/src/services/user", "models.ts"),
+        join("client/src/utils", "query-client.ts"),
     ]
     for file_name in file_names:
         if exists(file_name):

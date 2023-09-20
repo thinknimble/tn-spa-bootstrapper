@@ -2,10 +2,10 @@ import React from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Home, Layout, LogIn, SignUp } from 'src/pages'
 import { AppOrAuth } from 'src/pages/app-or-auth'
-import { useAuth } from './auth'
+import { useAuth } from 'src/stores/auth'
 
 const PrivateRoutes = () => {
-  const { token } = useAuth()
+  const token = useAuth.use.token()
   const isAuth = Boolean(token)
   return isAuth ? (
     <Routes>

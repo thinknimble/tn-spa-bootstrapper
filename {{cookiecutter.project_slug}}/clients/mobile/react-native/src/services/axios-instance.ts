@@ -1,10 +1,10 @@
 import axios, { AxiosError } from 'axios'
 import Config from '../../Config'
-import { useAuth } from '../stores/auth'
+import { useAuth } from '@stores/auth'
 
 const appConfig = Config as any
 export const axiosInstance = axios.create({
-  baseURL: appConfig?.backendServerUrl,
+  baseURL: `${appConfig?.backendServerUrl}/api`,
 })
 
 axiosInstance.interceptors.request.use(

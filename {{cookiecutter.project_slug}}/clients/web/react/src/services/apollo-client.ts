@@ -2,14 +2,12 @@ import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { createHttpLink } from '@apollo/client/link/http'
 import { setContext } from '@apollo/client/link/context'
 import { getCookie } from 'src/utils/get-cookie'
+import {useAuth} from 'src/stores/auth'
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const csrfToken = getCookie('csrftoken')
-  let authToken = localStorage.getItem('auth-token')
-  if (authToken === 'null') {
-    authToken = null
-  }
+  const authToken = useAuth.getState().token
 
   // return the headers to the context so httpLink can read them
 

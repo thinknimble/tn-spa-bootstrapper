@@ -11,7 +11,7 @@ This app includes basic configurations for developers to have a starting point o
 - Typescript
 - React
 - TailwindCss
-{% if cookiecutter.use_graphql=='y' -%}
+{% if cookiecutter.use_graphql == 'y' -%}
 - Apollo
 {% else -%}
 - Axios
@@ -45,7 +45,7 @@ Swap out the logo files in these locations:
 ### Install deps
 
 ```
-yarn
+npm i
 ```
 
 ### Run locally
@@ -54,7 +54,7 @@ First, create .env.local at the top-level of the client directory, and copy the 
 
 Then run the project with:
 ```
-yarn start
+npm run serve
 ```
 
 ### Run Integration tests
@@ -62,25 +62,25 @@ yarn start
 Watch your tests with:
 
 ```
-yarn test:watch
+npm run test:watch
 ```
 
 Or run them only once with:
 
 ```
-yarn test
+npm run test
 ```
 
 If you want to watch a single test you can specify its path as an argument to:
 
 ```
-yarn test:single path/to/test/file
+npm run test:single path/to/test/file
 ```
 
 ### Run e2e tests with Cypress
 
 ```
-yarn cypress
+npm run cypress
 ```
 
-Will open cypress wizard. Make sure you run your app locally with `yarn start` and them choose the test you want to run from the wizard.
+Will open cypress wizard. Make sure you run your app locally with `npm run start` and them choose the test you want to run from the wizard.

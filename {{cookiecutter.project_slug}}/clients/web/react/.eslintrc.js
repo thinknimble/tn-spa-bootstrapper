@@ -24,5 +24,7 @@ module.exports = {
     'prettier/prettier': 'off',
     'react/react-in-jsx-scope': 'off',
     'react-hooks/exhaustive-deps': 'error',
+    "@typescript-eslint/no-unused-vars": 'off',
+    "@typescript-eslint/no-explicit-any": 'off'
   },
 }

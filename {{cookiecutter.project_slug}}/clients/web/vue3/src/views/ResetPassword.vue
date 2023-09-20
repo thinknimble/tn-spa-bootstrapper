@@ -18,9 +18,9 @@
         />
 
         <InputField
-          v-model:value="form.passwordConfirmation.value"
-          :errors="form.passwordConfirmation.errors"
-          @blur="form.passwordConfirmation.validate()"
+          v-model:value="form.confirmPassword.value"
+          :errors="form.confirmPassword.errors"
+          @blur="form.confirmPassword.validate()"
           type="password"
           label="Confirm Password"
           placeholder="Confirm Password"
@@ -36,7 +36,7 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import User, { PasswordResetForm } from '@/services/users/'
+import  { userApi, PasswordResetForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 
 export default {
@@ -67,7 +67,7 @@ export default {
 
       const { uid, token } = route.params
 
-      User.api
+      userApi.csc
         .resetPassword({
           uid,
           token,

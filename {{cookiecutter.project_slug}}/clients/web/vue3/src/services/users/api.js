@@ -1,81 +1,47 @@
-import { ModelAPI, objectToCamelCase } from '@thinknimble/tn-models'
+import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
+import { z } from 'zod'
+import axiosInstance from '../AxiosClient'
+import { userShape, forgotPasswordShape, userCreateShape, loginShape } from './models'
 
-import AxiosClient from '../AxiosClient'
-import { apiErrorHandler } from '../api'
+const login = createCustomServiceCall(
+  {
+    inputShape: loginShape,
+    outputShape: userShape,
+  },
+  async ({ client, input, utils }) => {
+    const res = await client.post('/login/', utils.toApi(input))
+    return utils.fromApi(res.data)
+  },
+)
 
-// NOTE: The AxiosClient is congfigured to include '/api' in the baseUrl
-const LOGIN_ENDPOINT = '/login/'
-const PASSWORD_RESET_EMAIL_ENDPOINT = '/password/reset/'
-const PASSWORD_RESET_ENDPOINT = '/password/reset/confirm/'
-const REGISTRATION_ENDPOINT = '/users/'
-const USERS_ENDPOINT = '/users/'
+const requestPasswordReset = createCustomServiceCall(
+  {
+    inputShape: forgotPasswordShape,
+  },
+  async ({ client, input }) => {
+    await client.get(`/password/reset/${input.email}/`)
+  },
+)
+const resetPassword = createCustomServiceCall(
+  {
+    inputShape: { uid: z.string().email(), token: z.string(), password: z.string() },
+    outputShape: userShape,
+  },
+  async ({ client, input, utils }) => {
+    const { email, ...rest } = utils.toApi(input)
+    const res = await client.post(`/password/reset/code/confirm/${input.email}/`, rest)
+    return utils.fromApi(res.data)
+  },
+)
 
-export default class UserAPI extends ModelAPI {
-  /**
-   * ModelAPI contains methods for list and create (overridden here) and the FILTERS_MAP
-   * You may override any of these methods by statically defining them here
-   * e.g static FILTERS_MAP={...UserAPI.FILTERS_MAP, <FITERS>}
-   *      list({ filters = {}, pagination = {} }){
-   *
-   * }
-   */
-
-  get client() {
-    return AxiosClient
-  }
-
-  static ENDPOINT = USERS_ENDPOINT
-
-  login(d) {
-    const data = { email: d.email.toLowerCase(), password: d.password }
-    return this.client
-      .post(LOGIN_ENDPOINT, data)
-      .then((response) => this.cls.fromAPI(response.data))
-      .catch(
-        apiErrorHandler({
-          apiName: 'UserAPI.login',
-          enable400Alert: false,
-          enable500Alert: false
-        }),
-    )
-  }
-
-  registerUser(d) {
-    const data = {
-      firstName: d.firstName,
-      lastName: d.lastName,
-      email: d.email.toLowerCase(),
-      password: d.password,
-    }
-    return this.client
-      .post(REGISTRATION_ENDPOINT, this.cls.toAPI(data))
-      .then((response) => this.cls.fromAPI(response.data))
-      .catch(
-        apiErrorHandler({
-          apiName: 'UserAPI.registerUser',
-          enable400Alert: false,
-          enable500Alert: false,
-        }),
-      )
-  }
-
-  requestPasswordReset(email) {
-    const data = { email: email }
-    return this.client
-      .post(PASSWORD_RESET_EMAIL_ENDPOINT, data)
-      .catch(
-      apiErrorHandler({
-        apiName: 'UserAPI.requestPasswordReset',
-      }),
-    )
-  }
-
-  resetPassword({ uid, token, password }) {
-    const url = `${PASSWORD_RESET_ENDPOINT}${uid}/${token}/`
-    const data = { password }
-    return this.client
-      .post(url, data)
-      .then((response) => this.cls.fromAPI(response.data))
-      .catch(apiErrorHandler({ apiName: 'UserAPI.resetPassword' }))
-  }
-}
+export const userApi = createApi(
+  {
+    client: axiosInstance,
+    baseUri: '/users/',
+    models: {
+      create: userCreateShape,
+      entity: userShape,
+    },
+  },
+  { login, requestPasswordReset, resetPassword },
+)

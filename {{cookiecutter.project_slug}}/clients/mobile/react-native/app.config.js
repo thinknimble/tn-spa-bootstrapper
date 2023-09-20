@@ -61,5 +61,6 @@ module.exports = {
     runtimeVersion: {
       policy: 'sdkVersion',
     },
+    experiments: { tsconfigPaths: true },
   },
 }
