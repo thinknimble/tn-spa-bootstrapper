@@ -4,8 +4,9 @@ import { TextInput, TextInputProps, View } from 'react-native'
 import { Text } from '@components/text'
 import twColors from 'tailwindcss/colors'
 import { ErrorsList } from '@components/errors'
+import { FormFieldsRecord } from '@thinknimble/tn-forms/lib/cjs/types/interfaces'
 
-export const TextFormField = <T extends IFormField<string>, TForm extends Form<any>>({
+export const TextFormField = <T extends IFormField<string>, TForm extends Form<FormFieldsRecord>>({
   field,
   containerClassName,
   ...textInputProps

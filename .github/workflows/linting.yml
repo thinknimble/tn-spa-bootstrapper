@@ -70,7 +70,7 @@ jobs:
         run: |
           pipenv install --dev --deploy
           pipenv run flake8
-  ESLint_and_Prettier:
+  Lint_Web:
     strategy:
       matrix:
         fe_type: [react, vue]
@@ -89,7 +89,7 @@ jobs:
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
@@ -98,3 +98,21 @@ jobs:
       - name: Run ESLint
         working-directory: ./my_project/client
         run: npx eslint --ext .js,.ts,.vue,.jsx,.tsx src
+  Lint_Mobile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+      - name: 📦 Install dependencies
+        working-directory: ./my_project/mobile
+        run: yarn install
+      - name: 🆎 TypeCheck
+        working-directory: ./mobile
+        run: yarn run tslint
+      - name: 🚧 ESLint
+        working-directory: ./mobile
+        run: yarn run eslint
