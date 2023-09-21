@@ -108,7 +108,7 @@ jobs:
         with:
           node-version: 18.x
       - name: 📦 Install dependencies
-        working-directory: ./my_project/mobile
+        working-directory: ./mobile
         run: yarn install
       - name: 🆎 TypeCheck
         working-directory: ./mobile
