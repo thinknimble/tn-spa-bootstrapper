@@ -108,11 +108,11 @@ jobs:
         with:
           node-version: 18.x
       - name: 📦 Install dependencies
-        working-directory: ./mobile
+        working-directory: my_project/mobile
         run: yarn install
       - name: 🆎 TypeCheck
-        working-directory: ./mobile
+        working-directory: my_project/mobile
         run: yarn run tslint
       - name: 🚧 ESLint
-        working-directory: ./mobile
+        working-directory: my_project/mobile
         run: yarn run eslint
