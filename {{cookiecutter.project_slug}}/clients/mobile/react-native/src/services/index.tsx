@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { OnStartService } from './onStart'
-import { TranslateService } from './translate'
-import { getNavio } from '../screens'
+import { OnStartService } from '@services/onStart'
+import { TranslateService } from '@services/translate'
+import { getNavio } from '@screens/index'
 
 class Services {
   t = new TranslateService()
