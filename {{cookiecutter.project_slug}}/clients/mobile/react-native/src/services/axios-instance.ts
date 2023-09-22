@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import Config from '../../Config'
-import { useAuth } from '../stores/auth'
+import { useAuth } from '@stores/auth'
 
 const appConfig = Config as any
 export const axiosInstance = axios.create({

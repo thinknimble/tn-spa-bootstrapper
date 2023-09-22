@@ -2,10 +2,10 @@ import { Platform } from 'react-native'
 import { Navio } from 'rn-navio'
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
-import { Login, SignUp } from './auth'
-import { Main } from './main'
-import { Auth } from './auth/auth'
-import { DashboardScreen } from './DashboardScreen'
+import { Login, SignUp } from '@screens/auth'
+import { Main } from '@screens/main'
+import { Auth } from '@screens/auth/auth'
+import { DashboardScreen } from '@screens/DashboardScreen'
 
 // Default options - forcing a mobile trigger
 export const screenDefaultOptions = (): NativeStackNavigationOptions => ({

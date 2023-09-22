@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { createSelectors } from './utils'
+import { createSelectors } from '@stores/utils'
 
 type ErrorState = {
   errorMessage: string | null

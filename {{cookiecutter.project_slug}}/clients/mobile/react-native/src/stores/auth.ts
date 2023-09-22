@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { UserShape as User } from '../services/user/'
-import { queryClient } from '../utils/query-client'
-import { createSelectors } from './utils'
+import { UserShape as User } from '@services/user/'
+import { queryClient } from '@utils/query-client'
+import { createSelectors } from '@stores/utils'
 
 type AuthState = {
   token: string

@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 import { Config } from '../../Config'
-import { useErrorStore } from '../stores/error'
+import { useErrorStore } from '@stores/error'
 
 /**
  * Set error message for modal message
