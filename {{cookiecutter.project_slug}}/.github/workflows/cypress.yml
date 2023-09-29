@@ -5,6 +5,9 @@ jobs:
   Chrome:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
+      options: --user 1001
     steps:
       - uses: actions/setup-node@v3
         with:
