@@ -1,6 +1,7 @@
 {
-  "name": "lala",
-  "version": "1.0.0",
+  "name": "{{ cookiecutter.project_slug }}",
+  "version": "0.1.0",
+  "private": true,
   "description": "App",
   "author": "Thinknmimble",
   "main": "node_modules/expo/AppEntry.js",
@@ -66,6 +67,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-tab-view": "^3.3.4",
     "react-native-web": "~0.19.6",
+    "rn-bounceable": "^1.2.0",
     "rn-navio": "0.0.6",
     "rollbar-react-native": "^0.9.3",
     "sentry-expo": "~7.0.0",
