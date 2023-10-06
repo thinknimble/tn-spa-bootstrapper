@@ -4,7 +4,7 @@ import {
 } from '@react-navigation/material-top-tabs'
 import { NavigationContainer } from '@react-navigation/native'
 import { Fragment } from 'react'
-import { Text, View ,StyleSheet } from 'react-native'
+import { Text, View, StyleSheet } from 'react-native'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { Main } from '@screens/main'
 import { Login } from '@screens/auth/login'
@@ -19,7 +19,7 @@ const tabs = [
   { name: 'signup', label: 'Signup', component: SignUp },
 ]
 
-const TopTab = ({ navigation, jumpTo, state }: MaterialTopTabBarProps) => {
+const TopTab = ({ navigation, state }: MaterialTopTabBarProps) => {
   return (
     <View className="flex-row justify-around px-3 py-4">
       {tabs.map((t, idx) => {
@@ -49,18 +49,15 @@ const TopTab = ({ navigation, jumpTo, state }: MaterialTopTabBarProps) => {
 
 const styles = StyleSheet.create({
   paddingH20: {
-    paddingHorizontal: 20
-  }
+    paddingHorizontal: 20,
+  },
 })
 
 export const Auth = () => {
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="flex-1 flex-grow">
       <NavigationContainer independent>
-        <Tab.Navigator
-          tabBar={TopTab}
-          sceneContainerStyle={ styles.paddingH20 }
-        >
+        <Tab.Navigator tabBar={TopTab} sceneContainerStyle={styles.paddingH20}>
           {tabs.map((t, idx) => (
             <Tab.Screen name={t.name} component={t.component} key={idx} />
           ))}

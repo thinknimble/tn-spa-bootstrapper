@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import { Config } from '../../Config'
+import Config from '../../Config'
 import { useErrorStore } from '@stores/error'
 
 /**

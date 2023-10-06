@@ -1,7 +1,7 @@
 import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
 import { z } from 'zod'
 import { axiosInstance } from '../axios-instance'
-import { userShape, forgotPasswordShape, userCreateShape, loginShape } from './models'
+import { forgotPasswordShape, loginShape, userCreateShape, userShape } from './models'
 
 const login = createCustomServiceCall(
   {
@@ -18,7 +18,7 @@ const requestPasswordResetCode = createCustomServiceCall(
   {
     inputShape: forgotPasswordShape,
   },
-  async ({ client, input, utils }) => {
+  async ({ client, input }) => {
     await client.get(`/password/reset/code/${input.email}/`)
   },
 )
@@ -29,6 +29,7 @@ const resetPassword = createCustomServiceCall(
     outputShape: userShape,
   },
   async ({ client, input, utils }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { email, ...rest } = utils.toApi(input)
     const res = await client.post(`/password/reset/code/confirm/${input.email}/`, rest)
     return utils.fromApi(res.data)

@@ -13,7 +13,7 @@ const defaultState: Omit<ErrorState, 'actions'> = {
 }
 
 export const useErrorStore = createSelectors(
-  create<ErrorState>()((set, get) => ({
+  create<ErrorState>()((set) => ({
     ...defaultState,
     actions: {
       changeErrorMessage(errorMessage) {
