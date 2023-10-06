@@ -111,9 +111,5 @@
     "expo-starter",
     "expo-template"
   ],
-  "license": "MIT",
-  "engines": {
-    "node": "^18",
-    "npm": "^9"
-  }
+  "license": "MIT"
 }
