@@ -129,13 +129,15 @@ def reset_password(request, *args, **kwargs):
 
 
 class PreviewTemplateView(views.APIView):
+    EMAIL_SEND_TO_PARAMETER_NAME = "_send_to"
+
     def get(self, request):
         return self.preview_template_view(request)
 
     def post(self, request):
-        return self.preview_template_view(request)
+        return self.preview_template_view(request, send_email=True)
 
-    def preview_template_view(self, request):
+    def preview_template_view(self, request, send_email: bool = False):
         if not settings.DEBUG:
             raise Http404
         context = {}
@@ -143,9 +145,22 @@ class PreviewTemplateView(views.APIView):
         self.fill_context_from_params(context, request.data)
         template_name = context.pop("template", None)
         try:
+            if send_email:
+                send_html_email(
+                    "Template Preview",
+                    template_name,
+                    settings.DEFAULT_FROM_EMAIL,
+                    context.pop(self.EMAIL_SEND_TO_PARAMETER_NAME),
+                    context=context
+                )
+                return Response(status=204)
             return render(request, template_name, context=context)
         except (TypeError, TemplateDoesNotExist):
             raise ValidationError(detail=f"Invalid template name: {template_name}")
+        except KeyError as ex:
+            if ex.args[0] != self.EMAIL_SEND_TO_PARAMETER_NAME:
+                raise
+            raise ValidationError(detail="_send_to parameter is mandatory for emailing this preview.")
 
     def fill_context_from_params(self, context: dict, args: dict):
         """
