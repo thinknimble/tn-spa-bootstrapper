@@ -22,7 +22,6 @@
     "Amazon SES",
     "Custom SMTP"
   ],
-  "use_graphql": "n",
   "client_app": [
     "Vue3",
     "React",

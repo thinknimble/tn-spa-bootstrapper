@@ -31,10 +31,6 @@ drf-nested-routers = "==0.93.3"
 django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
 rollbar = "==0.16.2"
 premailer = "*"
-{%- if cookiecutter.use_graphql == "y" %}
-graphene_django = "*"
-django-graphql-jwt = "*"
-{%- endif %}
 
 [requires]
 python_version = "3.10"
