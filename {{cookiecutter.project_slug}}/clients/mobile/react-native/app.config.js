@@ -17,12 +17,11 @@ module.exports = {
       fallbackToCacheTimeout: 0,
       url: 'https://u.expo.dev/<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
     },
-    plugins: [
-      'sentry-expo'
-    ],
+    plugins: ['sentry-expo', 'expo-build-properties', 'expo-localization'],
     hooks: {
       postPublish: [
-        { // this set up assumes you are using one application with multiple projects in sentry
+        {
+          // this set up assumes you are using one application with multiple projects in sentry
           file: 'sentry-expo/upload-sourcemaps',
           config: {
             organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
@@ -50,7 +49,6 @@ module.exports = {
       favicon: './assets/logo-sq.png',
     },
     extra: {
-
       eas: {
         projectId: '<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
       },
