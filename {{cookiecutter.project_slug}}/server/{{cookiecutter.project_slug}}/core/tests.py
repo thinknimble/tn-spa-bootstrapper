@@ -41,7 +41,7 @@ def test_create_user():
 
     # AbstractBaseModel
     assert user.id
-    assert user.datetime_created
+    assert user.created
     assert user.last_edited
 
     # PermissionsMixin
