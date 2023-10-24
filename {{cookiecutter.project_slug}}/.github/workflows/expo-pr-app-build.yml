@@ -1,0 +1,58 @@
+name: Expo Publish for test branch
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+      - name: Set name for PR
+        if: success() && steps.findPr.outputs.number
+        run: echo "PR=pr-${PR}" >> $GITHUB_ENV
+        env:
+          PR: {{ "${{ steps.findPr.outputs.pr }}" }}
+    outputs:
+      PR: {{ "${{ env.PR }}" }}
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: yarn
+          cache-dependency-path: ./mobile/yarn.lock
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v7
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🏗 Get Hash
+        id: GIT_HASH
+        run: echo "GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+
+      - name: 📦 Install dependencies
+        run: cd mobile && yarn install
+
+      - name: 🚀 Build app
+        run: cd mobile && eas build --platform all --profile staging --non-interactive
+
+      - name: 🚀 Publish PR Preview
+        run: cd mobile && eas update --branch={{ "${{ needs.setup.outputs.PR }}" }} --non-interactive --auto
+        env:
+          BACKEND_SERVER_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
+          ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
+          SENTRY_AUTH_TOKEN: ""
+        
