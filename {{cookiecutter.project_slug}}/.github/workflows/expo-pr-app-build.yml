@@ -1,6 +1,17 @@
 name: Expo Publish for test branch
 on:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: "IOS or Android"
+        required: true
+        default: "ios"
+        type: choice
+        options:
+          - ios
+          - android
+          - all
+
 
 jobs:
   setup:
@@ -45,7 +56,7 @@ jobs:
         run: cd mobile && yarn install
 
       - name: 🚀 Build app
-        run: cd mobile && eas build --platform all --profile staging --non-interactive
+        run: cd mobile && eas build --platform {{ "${{ inputs.platform }}" }} --profile development --non-interactive
 
       - name: 🚀 Publish PR Preview
         run: cd mobile && eas update --branch={{ "${{ needs.setup.outputs.PR }}" }} --non-interactive --auto

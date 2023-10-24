@@ -105,7 +105,7 @@ the variables for this environment are set up in the eas.json under the developm
 To set env variables you should use the [eas.json](./eas.json) and [app.config.js](./app.config.js) although it is possible to define variables in a .env (eg in the CI yaml files) due to inconsistencies while testing I consider this to be the best approach.
 Staging builds are created automatically when merging into the main branch you can also build manually
 
-`eas build --platform all --profile stagign --non-interactive`
+`eas build --platform all --profile staging --non-interactive`
 
 **Prod**
 
