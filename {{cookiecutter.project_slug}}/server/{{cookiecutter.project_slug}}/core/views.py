@@ -17,9 +17,9 @@ from rest_framework.decorators import (
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+
 from {{cookiecutter.project_slug}}.core.forms import PreviewTemplateForm
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
-
 from .models import User
 from .permissions import CreateOnlyPermissions
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer

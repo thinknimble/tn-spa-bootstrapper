@@ -1,4 +1,5 @@
 from decouple import config
+
 from {{cookiecutter.project_slug}}.settings import *  # noqa
 
 MEDIA_URL = "/media/"
