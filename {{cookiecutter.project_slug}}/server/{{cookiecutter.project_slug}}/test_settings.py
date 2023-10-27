@@ -1,6 +1,5 @@
 from decouple import config
-
-from {{ cookiecutter.project_slug }}.settings import *  # noqa
+from {{cookiecutter.project_slug}}.settings import *  # noqa
 
 MEDIA_URL = "/media/"
 DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"

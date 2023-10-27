@@ -2,8 +2,7 @@ from dj_rest_auth import views as rest_auth_views
 from django.conf import settings
 from django.urls import include, path
 from rest_framework_nested import routers
-
-from {{ cookiecutter.project_slug }}.core import views as core_views
+from {{cookiecutter.project_slug}}.core import views as core_views
 
 router = routers.SimpleRouter()
 if settings.DEBUG:

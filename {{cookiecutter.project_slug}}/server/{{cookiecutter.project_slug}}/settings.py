@@ -1,6 +1,8 @@
 import os
+
 {%- if cookiecutter.use_graphql == 'y' %}
 from datetime import timedelta
+
 {%- endif %}
 
 import dj_database_url

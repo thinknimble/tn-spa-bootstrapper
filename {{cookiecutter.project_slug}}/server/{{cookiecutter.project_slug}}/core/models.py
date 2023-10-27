@@ -4,9 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
-
-from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
-from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
+from {{cookiecutter.project_slug}}.common.models import AbstractBaseModel
+from {{cookiecutter.project_slug}}.utils.sites import get_site_url
 
 logger = logging.getLogger(__name__)
 
