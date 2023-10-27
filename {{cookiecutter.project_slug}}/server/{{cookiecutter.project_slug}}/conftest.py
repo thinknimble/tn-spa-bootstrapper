@@ -1,6 +1,6 @@
 import pytest
 
-from {{cookiecutter.project_slug}}.core.models import User
+from {{ cookiecutter.project_slug }}.core.models import User
 
 
 @pytest.fixture

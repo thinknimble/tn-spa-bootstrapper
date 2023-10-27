@@ -101,7 +101,7 @@ def request_reset_link(request, *args, **kwargs):
     reset_context = user.reset_password_context()
 
     send_html_email(
-        "Password reset for My Project",
+        "Password reset for {{ cookiecutter.project_name }}",
         "registration/password_reset.html",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
