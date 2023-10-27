@@ -20,6 +20,7 @@ from rest_framework.response import Response
 
 from {{cookiecutter.project_slug}}.core.forms import PreviewTemplateForm
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
+
 from .models import User
 from .permissions import CreateOnlyPermissions
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
@@ -100,7 +101,7 @@ def request_reset_link(request, *args, **kwargs):
     reset_context = user.reset_password_context()
 
     send_html_email(
-        "Password reset for {{ cookiecutter.project_name }}",
+        "Password reset for My Project",
         "registration/password_reset.html",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
@@ -146,17 +147,16 @@ class PreviewTemplateView(views.APIView):
                 if not form.is_valid():
                     raise ValidationError(form.errors)
                 send_html_email(
-                    "Template Preview",
-                    context["template"],
-                    settings.DEFAULT_FROM_EMAIL,
-                    form.cleaned_data["_send_to"],
-                    context=context
+                    "Template Preview", context["template"], settings.DEFAULT_FROM_EMAIL, form.cleaned_data["_send_to"], context=context
                 )
                 return Response(status=204)
             context["email_form"] = form
             return render(request, "core/preview.html", context=context)
         except (TypeError, TemplateDoesNotExist):
             raise ValidationError(detail=f"Invalid template name: {context['template']}")
+        except KeyError as ex:
+            if "template" in ex.args:
+                raise ValidationError(detail="You must provide a template name.")
 
     def fill_context_from_params(self, context: dict, args: dict):
         """
