@@ -1,0 +1,40 @@
+.send_to_bar {
+    background-color: #fff;
+    padding: 20px;
+    font-size: 1.15rem;
+    font-family: Arial, sans-serif !important;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.send_to_bar input[type="email"], .send_to_bar input[type="submit"] {
+    border-radius: 5px;
+    border: 0px;
+    padding: 10px;
+    margin-right: 5px;
+}
+
+.send_to_bar input[type="email"] {
+    font-size: 1.10rem;
+    background-color: #efefef;
+}
+
+.send_to_bar input[type="email"]:focus, .send_to_bar input[type="email"]:focus-visible, .send_to_bar input[type="email"]:focus-within {
+    outline: 3px solid #6bafb2;
+}
+
+.send_to_bar input[type="submit"] {
+    background-color: #6bafb2;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.5s ease all;
+}
+
+.send_to_bar input[type="submit"]:hover {
+    background-color: #78c2c5;
+    transition: 0.5s ease all;
+}

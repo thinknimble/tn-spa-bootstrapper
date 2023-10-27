@@ -1,0 +1,14 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'core/preview.css' %}">
+
+<header class="send_to_bar">
+    <form method="POST">
+        <div class="flex-container">
+            {{ email_form.as_p }}
+            <input type="submit" value="Send">
+        </div>
+    </form>
+</header>
+
+{% include template %}
