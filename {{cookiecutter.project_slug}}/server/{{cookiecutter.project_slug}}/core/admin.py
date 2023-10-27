@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import Group, Permission
-from my_project.common.admin.filters import AutocompleteAdminMedia, AutocompleteFilter
+
+from {{ cookiecutter.project_slug }}.common.admin.filters import AutocompleteAdminMedia, AutocompleteFilter
 
 from .models import User
 

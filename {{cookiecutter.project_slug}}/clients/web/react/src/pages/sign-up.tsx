@@ -1,9 +1,4 @@
-{% if cookiecutter.use_graphql == 'y' -%}
-import { useMutation } from '@apollo/client'
-import { CREATE_USER, LOG_IN } from '../utils/mutations'
-{% else -%}
 import { useMutation } from '@tanstack/react-query'
-{% endif -%}
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormEvent ,useState } from 'react'
@@ -17,9 +12,7 @@ import {
   TAccountForm,
   AccountFormInputs,
 } from 'src/services/user/forms'
-{% if cookiecutter.use_graphql == 'n' -%}
 import { User, userApi } from 'src/services/user'
-{% endif -%}
 import { useAuth } from 'src/stores/auth'
 
 function SignUpInner() {
@@ -28,40 +21,6 @@ function SignUpInner() {
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
-{% if cookiecutter.use_graphql == 'y' -%}
-  const [logIn] = useMutation(LOG_IN, {
-    onCompleted: (data: { tokenAuth: { token: string } }) => {
-      changeToken(data.tokenAuth.token)
-      navigate('/home')
-    },
-    onError: () => {
-      navigate('/log-in', {
-        state: {
-          autoError: 'There was a problem logging you in. Please try again.',
-        },
-      })
-    },
-  })
-  const [createUser] = useMutation(CREATE_USER, {
-    onCompleted: (data: {
-      createUser: {
-        user: {
-          email: string
-        }
-      }
-    }) => {
-      logIn({
-        variables: {
-          email: data.createUser.user.email,
-          password: form.confirmPassword.value,
-        },
-      })
-    },
-    onError: (error: { message: string }) => {
-        console.error(error)
-    },
-  })
-{% else -%}
 const { mutate: createUser, isLoading } = useMutation({
   mutationFn: userApi.create,
   onSuccess: (data) => {
@@ -76,7 +35,6 @@ const { mutate: createUser, isLoading } = useMutation({
     }
   },
 })
-{% endif -%}
 
   const onSubmit = (e:FormEvent) => {
     e.preventDefault()
@@ -86,17 +44,9 @@ const { mutate: createUser, isLoading } = useMutation({
       firstName: form.firstName.value,
       lastName: form.lastName.value,
     }
-{% if cookiecutter.use_graphql == 'y' -%}
-    const input ={
-      variables: {
-        data
-      },
-    }
-{% else -%}
     const input = {
       ...data
     }
-{% endif -%}
     createUser(input as any)
   }
 

@@ -1,9 +1,4 @@
-{% if cookiecutter.use_graphql == 'y' -%}
-import { useMutation } from '@apollo/client'
-import { LOG_IN } from '../utils/mutations'
-{% else -%}
 import { useMutation } from '@tanstack/react-query'
-{% endif -%}
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
@@ -11,9 +6,7 @@ import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { LoginForm, TLoginForm, LoginFormInputs,
-  {% if cookiecutter.use_graphql == 'n' -%}
   userApi 
-  {% endif -%}
 } from 'src/services/user'
 
 import { useFollowupRoute } from 'src/utils/auth'
@@ -28,19 +21,6 @@ function LogInInner() {
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
   const navigate = useNavigate()
 
-{% if cookiecutter.use_graphql == 'y' -%}
-  const [logIn] = useMutation(LOG_IN, {
-    onCompleted: (data: { tokenAuth: { token: string } }) => {
-      changeToken(data.tokenAuth.token)
-      navigate('/home')
-    },
-    onError: (error: { message?: string }) => {
-      if (error.message === 'Please enter valid credentials') {
-        setError(true)
-      }
-    },
-  })
-{% else -%}
   const { mutate: logIn } = useMutation({
     mutationFn: userApi.csc.login,
     onSuccess: (data) => {
@@ -54,22 +34,12 @@ function LogInInner() {
       }
     },
   })
-{% endif -%}
 
   const handleLogin = () => {
-{% if cookiecutter.use_graphql == 'y' -%}
-    const input = {
-      variables: {
-        email: form.email.value,
-        password: form.password.value,
-      },
-    }
-{% else -%}
 const input = {
   email: form.email.value ?? '',
   password: form.password.value ?? '',
 }
-{% endif -%}
     logIn(input)
   }
 

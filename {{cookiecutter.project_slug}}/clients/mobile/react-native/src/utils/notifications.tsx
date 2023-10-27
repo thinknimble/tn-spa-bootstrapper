@@ -5,12 +5,11 @@ import {
   AndroidImportance,
   getExpoPushTokenAsync,
   getPermissionsAsync,
-  Notification,
   removeNotificationSubscription,
   requestPermissionsAsync,
   setNotificationChannelAsync,
 } from 'expo-notifications'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Alert, Platform } from 'react-native'
 
 export const useListenLogNotification = () => {
