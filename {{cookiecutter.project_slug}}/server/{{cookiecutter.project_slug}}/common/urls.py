@@ -6,8 +6,8 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework_nested import routers
 
-from {{cookiecutter.project_slug}}.common import views as common_views
-from {{cookiecutter.project_slug}}.core import urls as core_urls
+from {{ cookiecutter.project_slug }}.common import views as common_views
+from {{ cookiecutter.project_slug }}.core import urls as core_urls
 
 router = routers.SimpleRouter()
 if settings.DEBUG:
