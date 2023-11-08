@@ -19,16 +19,6 @@
           placeholder="Enter email..."
         />
         <div>
-          <div class="flex items-center justify-between">
-            <label for="password" class="block text-sm font-medium leading-6 text-primary"
-              >Password</label
-            >
-            <div class="text-sm hover:underline">
-              <router-link :to="{ name: 'RequestPasswordReset' }" class="font-semibold text-accent"
-                >Forgot password?</router-link
-              >
-            </div>
-          </div>
           <div class="mt-2">
             <InputField
               v-model:value="form.password.value"
@@ -37,12 +27,36 @@
               type="password"
               data-cy="password"
               placeholder="Enter password..."
-            />
+              label="Password"
+              autocomplete="current-password"
+            >
+              <template v-slot:input-label>
+                <div class="flex items-center justify-between w-full">
+                  <label
+                    for="Password-field"
+                    class="block text-sm font-medium leading-6 text-primary"
+                  >
+                    Password
+                  </label>
+
+                  <div class="text-sm hover:underline">
+                    <router-link
+                      :to="{ name: 'RequestPasswordReset' }"
+                      class="font-semibold text-accent"
+                      >Forgot password?</router-link
+                    >
+                  </div>
+                </div>
+              </template>
+            </InputField>
           </div>
         </div>
 
-        <div>
+        <div v-if="!loggingIn">
           <button type="submit" data-cy="submit" class="btn--primary bg-primary">Log in</button>
+        </div>
+        <div v-else>
+          <LoadingSpinner />
         </div>
       </form>
     </div>
@@ -59,18 +73,21 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import  { LoginForm, userApi } from '@/services/users/'
+import { LoginForm, userApi } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 export default {
   name: 'Login',
   components: {
     InputField,
+    LoadingSpinner,
   },
   setup() {
     const store = useStore()
     const router = useRouter()
     const form = ref(new LoginForm())
+    const loggingIn = ref(false)
 
     async function handleLoginSuccess(user) {
       await store.dispatch('setUser', user)
@@ -91,15 +108,18 @@ export default {
       const unwrappedForm = form.value
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
+      loggingIn.value = true
       userApi.csc
         .login({ email: unwrappedForm.email.value, password: unwrappedForm.password.value })
         .then(handleLoginSuccess)
         .catch(handleLoginFailure)
+        .finally(() => (loggingIn.value = false))
     }
 
     return {
       form,
       attemptLogin,
+      loggingIn,
     }
   },
 }
