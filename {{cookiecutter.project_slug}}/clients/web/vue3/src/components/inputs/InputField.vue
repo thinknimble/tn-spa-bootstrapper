@@ -1,11 +1,13 @@
 <template>
   <div class="mb-2 flex w-full flex-col items-start">
-    <label
-      v-if="label"
-      :for="`${label}-field`"
-      v-text="label"
-      class="input--label block text-sm font-medium text-primary"
-    />
+    <slot name="input-label">
+      <label
+        v-if="label"
+        :for="`${label}-field`"
+        v-text="label"
+        class="input--label block text-sm font-medium text-primary"
+      />
+    </slot>
     <input
       :id="`${label}-field`"
       :type="type"
