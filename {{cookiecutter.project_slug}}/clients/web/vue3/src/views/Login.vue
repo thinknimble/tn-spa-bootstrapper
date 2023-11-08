@@ -19,13 +19,6 @@
           placeholder="Enter email..."
         />
         <div>
-          <div class="flex items-center justify-between">
-            <div class="text-sm hover:underline">
-              <router-link :to="{ name: 'RequestPasswordReset' }" class="font-semibold text-accent"
-                >Forgot password?</router-link
-              >
-            </div>
-          </div>
           <div class="mt-2">
             <InputField
               v-model:value="form.password.value"
@@ -36,7 +29,26 @@
               placeholder="Enter password..."
               label="Password"
               autocomplete="current-password"
-            />
+            >
+              <template v-slot:input-label>
+                <div class="flex items-center justify-between w-full">
+                  <label
+                    for="Password-field"
+                    class="block text-sm font-medium leading-6 text-primary"
+                  >
+                    Password
+                  </label>
+
+                  <div class="text-sm hover:underline">
+                    <router-link
+                      :to="{ name: 'RequestPasswordReset' }"
+                      class="font-semibold text-accent"
+                      >Forgot password?</router-link
+                    >
+                  </div>
+                </div>
+              </template>
+            </InputField>
           </div>
         </div>
 
