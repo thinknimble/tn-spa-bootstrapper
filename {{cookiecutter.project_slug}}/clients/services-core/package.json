@@ -1,0 +1,40 @@
+{
+  "name": "services-core",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsup",
+    "lint": "tsc",
+    "eslint": "eslint --ext .js,.ts src",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "dev:watch": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "prettier": "prettier --write ./src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.2",
+    "@typescript-eslint/eslint-plugin": "6.7.4",
+    "@typescript-eslint/parser": "6.7.4",
+    "eslint": "8.50.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-prettier": "5.0.0",
+    "prettier": "3.0.3",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.4"
+  },
+  "dependencies": {
+    "@thinknimble/tn-forms": "3.1.8",
+    "@thinknimble/tn-models": "2.2.0",
+    "date-fns": "2.30.0",
+    "zod": "3.21.4"
+  }
+}
