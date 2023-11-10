@@ -27,5 +27,16 @@
     "React",
     "None"
   ],
-  "include_mobile": "n"
+  "include_mobile": "n",
+  "include_services_core": "n",
+  "__prompts__": {
+    "project_name": "Project name:",
+    "author_name": "Author:",
+    "email": "Email:",
+    "project_slug": "The project slug",
+    "mail_service": "Choose an email service to use",
+    "client_app": "Choose a web frontend client",
+    "include_mobile": "Want to add a mobile project? (y/n)",
+    "include_services_core": "Want to make this a JS monorepo and share code across clients? (requires both web and mobile clients) (y/n)"
+  }
 }
