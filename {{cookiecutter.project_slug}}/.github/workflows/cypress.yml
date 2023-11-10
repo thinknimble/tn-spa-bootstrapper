@@ -9,14 +9,25 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/setup-node@v3
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - uses: actions/checkout@v3
-      - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
+          node-version: 18.x
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+      - name: 📦 Install dependencies
+        run: npm install --workspace=client
+        {%- endif %}
+      - name: 🧪 Run against ${{ github.event.deployment_status.environment_url }}
         uses: cypress-io/github-action@v4
         with:
-          working-directory: client
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          install: false
+          {%- endif %}
+          project: ./client
           browser: chrome
         env:
           NPM_CONFIG_PRODUCTION: false
@@ -30,11 +41,25 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/checkout@v3
-      - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+      - name: 📦 Install dependencies
+        run: npm install --workspace=client
+        {%- endif %}
+      - name: 🧪 Run against ${{ github.event.deployment_status.environment_url }}
         uses: cypress-io/github-action@v4
         with:
-          working-directory: client
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          install: false
+          {%- endif %}
+          project: ./client
           browser: firefox
         env:
           NPM_CONFIG_PRODUCTION: false

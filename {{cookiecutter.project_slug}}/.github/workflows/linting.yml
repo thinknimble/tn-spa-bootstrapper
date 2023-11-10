@@ -27,23 +27,43 @@ jobs:
   Lint_Web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+      - name: 🏗 Setup Node
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - name: Install dependencies
+          node-version: 18.x
+          cache: npm
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          cache-dependency-path: ./package-lock.json
+          {%- else %}
+          cache-dependency-path: ./client/package-lock.json
+          {%- endif %}
+      - name: 📦 Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
+        run: npm install
+        {%- if cookiecutter.include_services_core == 'n' or cookiecutter.include_mobile == 'n' or cookiecutter.client == 'None' %}
         working-directory: ./client
-        run: |
-          npm install
-      - name: Run ESLint
+        {%- else %}
+      - name: 📦 Build services core
+        run: npm run build:services
+        {%- endif %}
+      - name: 🚧 ESLint
+      - name: 🆎 TypeCheck
+        {%- if cookiecutter.include_services_core == 'n' or cookiecutter.include_mobile == 'n' or cookiecutter.client == 'None' %}
         working-directory: ./client
-        {% if cookiecutter.client_app == 'Vue3' -%}
-        run: npx eslint --ext .js,.vue src
-        {% elif cookiecutter.client_app == 'React' -%}
-        run: npx eslint --ext .ts,tsx,js src
-        {% endif -%}
+        run: npm run tslint
+        {%- else %}
+        run: npm run tslint:web
+        {%- endif %}
+      - name: 🚧 ESLint
+        {%- if cookiecutter.include_services_core == 'n' or cookiecutter.include_mobile == 'n' or cookiecutter.client == 'None' %}
+        working-directory: ./client
+        run: npm run eslint
+        {%- else %}
+        run: npm run eslint:web
+        {%- endif %}
 {%- endif %}
 {%- if cookiecutter.include_mobile == 'y' %}
   Lint_Mobile:
@@ -55,13 +75,31 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
+          cache: npm
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          cache-dependency-path: ./package-lock.json
+          {%- else %}
+          cache-dependency-path: ./mobile/package-lock.json
+          {%- endif %}
       - name: 📦 Install dependencies
+        {%- if cookiecutter.include_services_core == 'n' or cookiecutter.include_mobile == 'n' or cookiecutter.client == 'None' %}
         working-directory: ./mobile
-        run: yarn install
+        run: npm install
+        {%- else %}
+        run: npm install --workspace=mobile
+        {%- endif %}
       - name: 🆎 TypeCheck
+        {%- if cookiecutter.include_services_core == 'n' or cookiecutter.include_mobile == 'n' or cookiecutter.client == 'None' %}
         working-directory: ./mobile
-        run: yarn run tslint
+        run: npm run tslint
+        {%- else %}
+        run: npm run tslint:mobile
+        {%- endif %}
       - name: 🚧 ESLint
+        {%- if cookiecutter.include_services_core == 'n' or cookiecutter.include_mobile == 'n' or cookiecutter.client == 'None' %}
         working-directory: ./mobile
-        run: yarn run eslint
+        run: npm run eslint
+        {%- else %}
+        run: npm run eslint:mobile
+        {%- endif %}
 {%- endif %}

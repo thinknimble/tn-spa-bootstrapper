@@ -16,8 +16,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
-          cache: yarn
-          cache-dependency-path: ./mobile/yarn.lock
+          cache: npm
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          cache-dependency-path: ./package-lock.json
+          {%- else %}
+          cache-dependency-path: ./mobile/package-lock.json
+          {%- endif %}
 
       - name: 🏗 Setup Expo and EAS
         uses: expo/expo-github-action@v7
@@ -27,7 +31,13 @@ jobs:
           token:  {{ "${{ secrets.EXPO_TOKEN }}"  }}
 
       - name: 📦 Install dependencies
-        run: cd mobile && yarn install
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+        run: npm install
+      - name: 📦 Build services core
+        run: npm run build:services
+        {%- else %}
+        run: cd mobile && npm install
+        {%- endif %}
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform android --profile production  --non-interactive --auto-submit

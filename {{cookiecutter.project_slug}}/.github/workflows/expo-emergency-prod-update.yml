@@ -13,7 +13,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: {{ "${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}" }}
+          key: {{ "${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}" }}
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v2
@@ -28,8 +28,15 @@ jobs:
           token: {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: 📦 Install dependencies
-        run: cd mobile && yarn install
-
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+        run: npm install --workspace=client
+        {%- else %}
+        run: npm install
+        {%- endif %}
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+      - name: 📦 Build services core
+        run: npm run build:services
+        {%- endif %}
       - name: 🚀 Publish preview
         run: cd mobile && eas update --branch=production --non-interactive --auto
 
