@@ -1,8 +1,25 @@
 {
+  {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+  "scripts": {
+    "build:services": "npm run build --workspace=services-core",
+    "start:web": "npm run build:services && npm run serve --workspace=client",
+    "start:mobile": "npm run build:services && npm run start --workspace=mobile",
+    "build:web": "npm run build --workspace=client",
+    "eslint:web": "npm run eslint --workspace=client",
+    "tslint:web": "npm run tslint --workspace=client",
+    "lint:web": "npm run eslint:web && npm run tslint:web",
+    "tslint:mobile": "npm run tslint --workspace=mobile",
+    "eslint:mobile": "npm run eslint --workspace=mobile",
+    "lint:mobile": "npm run eslint:mobile && npm run tslint:mobile",
+    "lint": "npm run lint:web && npm run lint:mobile",
+    "heroku-postbuild": "npm install --workspace=services-core && npm run build:services && npm install --workspace=client && npm run build:web"
+  },
+  {%- else %}
   "scripts": {
     "postinstall": "cd client && npm install",
     "heroku-postbuild": "cd client && npm run build"
   },
+  {%- endif %}
   "engines": {
     "node": "18.*.*",
     "npm": "9.*.*"
@@ -11,5 +28,11 @@
     "client/node_modules",
     ".cache/Cypress"
   ],
-  "dependencies": {}
+  {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+  "workspaces":[
+    "services-core",
+    "client",
+    "mobile"
+  ]
+  {%- endif %}
 }

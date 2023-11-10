@@ -23,6 +23,9 @@
     "format:write": "prettier --write ./src",
     "tslint": "tsc --skipLibCheck",
     "eslint": "eslint --ext .js,.ts,.jsx,.tsx src",
+    {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+    "postinstall": "cd .. && npm run build:services",
+    {%- endif %}
     "lint": "yarn run tslint && yarn run eslint"
   },
   "dependencies": {
@@ -74,6 +77,9 @@
     "rn-navio": "0.0.6",
     "rollbar-react-native": "^0.9.3",
     "sentry-expo": "~7.0.0",
+    {%- if cookiecutter.include_services_core == 'y' %}
+    "services-core": "*",
+    {%- endif %}
     "zod": "3.21.4",
     "zustand": "^4.3.3"
   },

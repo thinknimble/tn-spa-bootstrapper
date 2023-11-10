@@ -11,7 +11,7 @@
     "test:single": "vitest $0",
     "prettier": "prettier --write ./src",
     "tslint": "tsc",
-    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
+    "eslint": "eslint --ext .js,.ts,.jsx,.tsx src"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.33.0",
@@ -23,6 +23,9 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
     "react-router-dom": "^6.15.0",
+    {%- if cookiecutter.include_services_core == 'y' %}
+    "services-core": "*",
+    {%- endif %}
     "zod": "3.22.2",
     "zustand": "^4.4.0"
   },

@@ -9,7 +9,9 @@
     "cypress": "source ../.env && npx cypress open",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
+    "tslint":"",
     "lint": "vue-cli-service lint",
+    "eslint":"eslint --ext .js,.ts,.vue src",
     "heroku-postbuild": "vue-cli-service build"
   },
   "dependencies": {
@@ -24,6 +26,9 @@
     "g": "^2.0.1",
     "js-cookie": "^3.0.5",
     "postcss": "^8.4.28",
+    {%- if cookiecutter.include_services_core == 'y' %}
+    "services-core": "*",
+    {%- endif %}
     "tailwindcss": "3.3.3",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
