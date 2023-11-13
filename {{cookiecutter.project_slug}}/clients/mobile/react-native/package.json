@@ -23,10 +23,10 @@
     "format:write": "prettier --write ./src",
     "tslint": "tsc --skipLibCheck",
     "eslint": "eslint --ext .js,.ts,.jsx,.tsx src",
-    {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
-    "postinstall": "cd .. && npm run build:services",
+    {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+    "postinstall": "cd .. && npm install --workspace=services-core && npm run build:services",
     {%- endif %}
-    "lint": "yarn run tslint && yarn run eslint"
+    "lint": "npm run tslint && npm run eslint"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.18.2",
@@ -44,7 +44,7 @@
     "@tanstack/react-query": "^4.24.4",
     "@thinknimble/tn-forms": "^3.1.3",
     "@thinknimble/tn-forms-react": "^1.0.3",
-    "@thinknimble/tn-models": "^2.1.1",
+    "@thinknimble/tn-models": "2.2.0",
     "axios": "^1.3.2",
     "date-fns": "^2.29.3",
     "expo": "^49.0.0",
@@ -122,4 +122,3 @@
   ],
   "license": "MIT"
 }
-

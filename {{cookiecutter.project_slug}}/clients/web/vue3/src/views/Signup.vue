@@ -88,7 +88,12 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { SignupForm } from 'services-core'
+import { userApi } from '@/services/users/'
+{%- else %}
 import { userApi, SignupForm } from '@/services/users/'
+{%- endif %}
 import InputField from '@/components/inputs/InputField'
 
 

@@ -7,12 +7,21 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import {
+  AccountForm,
+  TAccountForm,
+  AccountFormInputs,
+} from 'services-core'
+import { userApi } from 'src/services/user'
+{%- else %}
 import {
   AccountForm,
   TAccountForm,
   AccountFormInputs,
 } from 'src/services/user/forms'
 import { User, userApi } from 'src/services/user'
+{%- endif %}
 import { useAuth } from 'src/stores/auth'
 
 function SignUpInner() {

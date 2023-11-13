@@ -3,7 +3,12 @@ import { ScrollViewWind } from '@components/styled'
 import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
 import { useServices } from '@services/index'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { LoginForm, LoginFormInputs, TLoginForm } from 'services-core'
+import { userApi } from '@services/user'
+{%- else %}
 import { LoginForm, LoginFormInputs, TLoginForm, userApi } from '@services/user'
+{%- endif %}
 import { useAuth } from '@stores/auth'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { styled } from 'nativewind'

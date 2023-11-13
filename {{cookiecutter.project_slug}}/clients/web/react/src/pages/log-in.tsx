@@ -5,9 +5,15 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { LoginForm, TLoginForm, LoginFormInputs,
+} from 'services-core'
+import { userApi } from 'src/services/user'
+{%- else %}
 import { LoginForm, TLoginForm, LoginFormInputs,
   userApi 
 } from 'src/services/user'
+{%- endif %}
 
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
@@ -24,7 +30,7 @@ function LogInInner() {
   const { mutate: logIn } = useMutation({
     mutationFn: userApi.csc.login,
     onSuccess: (data) => {
-      changeToken(data.token)
+      data.token && changeToken(data.token)
       changeUserId(data.id)
       navigate('/home')
     },

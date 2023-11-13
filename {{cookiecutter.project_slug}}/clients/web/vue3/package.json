@@ -1,5 +1,5 @@
 {
-  "name": "{{ cookiecutter.project_slug }}",
+  "name": "{{ cookiecutter.project_slug }}-web",
   "version": "1.0.0",
   "description": "{{ cookiecutter.project_name }} Client Application",
   "private": true,
@@ -12,13 +12,16 @@
     "tslint":"",
     "lint": "vue-cli-service lint",
     "eslint":"eslint --ext .js,.ts,.vue src",
+    {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+    "postinstall": "cd .. && npm install --workspace=services-core && npm run build:services",
+    {%- endif %}
     "heroku-postbuild": "vue-cli-service build"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "^2.0.18",
     "@thinknimble/tn-forms": "^3.1.8",
-    "@thinknimble/tn-models": "^2.0.0",
+    "@thinknimble/tn-models": "2.2.0",
     "@thinknimble/tn-utils": "2.0.1",
     "autoprefixer": "^10.4.15",
     "axios": "^1.5.0",

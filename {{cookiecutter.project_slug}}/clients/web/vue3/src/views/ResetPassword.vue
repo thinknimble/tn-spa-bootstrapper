@@ -36,6 +36,12 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import  { PasswordResetForm } from 'services-core'
+import  { userApi } from '@/services/users/'
+{%- else %}
+import  { userApi, PasswordResetForm } from '@/services/users/'
+{%- endif %}
 import  { userApi, PasswordResetForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 

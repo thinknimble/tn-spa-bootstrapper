@@ -1,5 +1,5 @@
 {
-  {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+  {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
   "scripts": {
     "build:services": "npm run build --workspace=services-core",
     "start:web": "npm run build:services && npm run serve --workspace=client",
@@ -28,8 +28,8 @@
     "client/node_modules",
     ".cache/Cypress"
   ],
-  {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
-  "workspaces":[
+  {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+  "workspaces": [
     "services-core",
     "client",
     "mobile"

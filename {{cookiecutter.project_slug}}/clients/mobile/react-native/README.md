@@ -175,16 +175,16 @@ When using environment variables that need to be initialized as part of the app.
 
 ### Running the project
 
-1. Install deps with `yarn`
+1. Install deps 
 
 ```bash
-cd app && yarn
+cd app && npm install
 ```
 
 3. Run the project and pick your platform from the console options
 
 ```bash
-yarn start
+npm start
 ```
 
 ## Tech Stack

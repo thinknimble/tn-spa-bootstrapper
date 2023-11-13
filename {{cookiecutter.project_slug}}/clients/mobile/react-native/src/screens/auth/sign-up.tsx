@@ -3,8 +3,12 @@ import { ScrollViewWind } from '@components/styled'
 import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
 import { useServices } from '@services/index'
-import { userApi } from '@services/user'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { AccountForm, TAccountForm } from 'services-core'
+{%- else %}
 import { AccountForm, TAccountForm } from '@services/user/forms'
+{%- endif %}
+import { userApi } from '@services/user'
 import { useAuth } from '@stores/auth'
 import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'

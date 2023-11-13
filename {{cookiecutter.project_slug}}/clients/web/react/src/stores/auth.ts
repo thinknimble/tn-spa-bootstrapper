@@ -1,6 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { User } from 'services-core'
+{%- else %}
 import { User } from '../services/user'
+{%- endif %}
 import { queryClient } from '../utils/query-client'
 import { createSelectors } from './utils'
 

@@ -1,5 +1,5 @@
 {
-  "name": "{{ cookiecutter.project_slug }}",
+  "name": "{{ cookiecutter.project_slug }}-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,13 +10,16 @@
     "test:watch": "vitest src",
     "test:single": "vitest $0",
     "prettier": "prettier --write ./src",
+    {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+    "postinstall": "cd .. && npm install --workspace=services-core && npm run build:services",
+    {%- endif %}
     "tslint": "tsc",
     "eslint": "eslint --ext .js,.ts,.jsx,.tsx src"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.33.0",
     "axios": "^1.5.0",
-    "@thinknimble/tn-models": "^2.0.0",
+    "@thinknimble/tn-models": "2.2.0",
     "@thinknimble/tn-forms": "^3.1.8",
     "@thinknimble/tn-forms-react": "^1.0.3",
     "react": "^18.2.0",

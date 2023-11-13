@@ -1,5 +1,5 @@
 import secrets
-from os import remove, rename
+from os import listdir, remove, rename
 from os.path import exists, join
 from shutil import copy2, move, rmtree
 
@@ -92,6 +92,12 @@ def move_mobile_client_to_root(client):
     rmtree(join(mobile_clients_path))
 
 
+def move_services_core_to_root():
+    if exists("services-core"):
+        rmtree("services-core")
+    move(join(clients_path, "services-core"), join("services-core"))
+
+
 def set_flag(file_path, flag, value=None):
     value = value or get_random_secret_key()
     with open(file_path, "r+") as f:
@@ -109,6 +115,22 @@ def remove_expo_yaml_files():
         join(".github/workflows", "expo-pr.yml"),
         join(".github/workflows", "expo-teststore-build-android.yml"),
         join(".github/workflows", "expo-teststore-build-ios.yml"),
+    ]
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
+
+def remove_services_files():
+    """Remove services files in client which are not needed when using a shared library"""
+    extension = "js" if "{{ cookiecutter.client_app }}".lower() == "vue3" else "ts"
+    file_names = [
+        join("client/src/services/user", f"forms.{extension}"),
+        join("client/src/services/user", f"models.{extension}"),
+        join("client/src/services", f"base-model.{extension}"),
+        join("mobile/src/services", "base-model.ts"),
+        join("mobile/src/services/user", "models.ts"),
+        join("mobile/src/services/user", "forms.ts"),
     ]
     for file_name in file_names:
         if exists(file_name):
@@ -170,6 +192,13 @@ def main():
         move_mobile_client_to_root("react-native")
     else:
         remove_expo_yaml_files()
+    if (
+        "{{ cookiecutter.include_services_core }}".lower() == "y"
+        and "{{ cookiecutter.client_app }}".lower() != "none"
+        and "{{ cookiecutter.include_mobile }}".lower() == "y"
+    ):
+        move_services_core_to_root()
+        remove_services_files()
 
     clean_up_clients_folder()
 

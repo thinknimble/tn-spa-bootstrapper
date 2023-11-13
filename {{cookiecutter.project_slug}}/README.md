@@ -26,8 +26,31 @@ If not using Docker...
 See the [backend README](server/README.md)
 
 ### Frontend
-If not using Docker...
-See the [frontend README](client/README.md)
+We have three repos which are linked together as workspaces at the root of the project so we need to do installs **from ROOT**:
+
+First we need to get the services core warmed up
+
+```shell
+npm install --workspace=services-core && npm run build:services
+```
+
+Install both web and mobile with a regular install
+
+```shell
+npm install
+```
+
+#### Run web client
+
+```
+npm run start:web
+```
+
+#### Run mobile client
+
+```
+npm run start:mobile
+```
 
 
 ## Testing & Linting Locally

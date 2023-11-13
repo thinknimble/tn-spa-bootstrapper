@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: 18.x
           cache: npm
-          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
           cache-dependency-path: ./package-lock.json
           {%- else %}
           cache-dependency-path: ./mobile/package-lock.json
@@ -56,7 +56,7 @@ jobs:
         run: echo "GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
 
       - name: 📦 Install dependencies
-        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
         run: npm install
       - name: 📦 Build services core
         run: npm run build:services

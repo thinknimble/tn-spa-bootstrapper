@@ -1,7 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { UserShape as User } from '@services/user/'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { User } from 'services-core'
+{%- else %}
+import { User } from '@services/user'
+{%- endif %}
 import { queryClient } from '@utils/query-client'
 import { createSelectors } from '@stores/utils'
 

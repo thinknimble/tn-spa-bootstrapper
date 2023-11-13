@@ -1,3 +1,9 @@
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { buildUserApi } from 'services-core'
+import { axiosInstance } from '../axios-instance'
+
+export const userApi = buildUserApi(axiosInstance)
+{%- else %}
 import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
 import { z } from 'zod'
 import { axiosInstance } from '../axios-instance'
@@ -45,3 +51,4 @@ export const userApi = createApi(
   },
   { login, requestPasswordReset, resetPassword },
 )
+{%- endif %}

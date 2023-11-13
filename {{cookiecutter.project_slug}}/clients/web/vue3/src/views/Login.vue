@@ -73,7 +73,12 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { LoginForm, userApi } from '@/services/users/'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import { LoginForm } from 'services-core'
+import { userApi } from '@/services/users'
+{%- else %}
+import { LoginForm, userApi } from '@/services/users'
+{%- endif %}
 import InputField from '@/components/inputs/InputField'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 

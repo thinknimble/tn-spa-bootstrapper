@@ -49,7 +49,12 @@
 
 <script>
 import { ref } from 'vue'
-import  { userApi,  RequestPasswordResetForm } from '@/services/users/'
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+import  { userApi } from '@/services/users'
+import  { RequestPasswordResetForm } from 'services-core'
+{%- else %}
+import  { userApi,  RequestPasswordResetForm } from '@/services/users'
+{%- endif %}
 import InputField from '@/components/inputs/InputField'
 
 export default {

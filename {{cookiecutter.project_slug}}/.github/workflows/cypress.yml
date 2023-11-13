@@ -17,14 +17,14 @@ jobs:
           node-version: 18.x
           cache: npm
           cache-dependency-path: ./package-lock.json
-        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
       - name: 📦 Install dependencies
         run: npm install --workspace=client
         {%- endif %}
-      - name: 🧪 Run against ${{ github.event.deployment_status.environment_url }}
+      - name: 🧪 Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
-          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
           install: false
           {%- endif %}
           project: ./client
@@ -49,14 +49,14 @@ jobs:
           node-version: 18.x
           cache: npm
           cache-dependency-path: ./package-lock.json
-        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
       - name: 📦 Install dependencies
         run: npm install --workspace=client
         {%- endif %}
-      - name: 🧪 Run against ${{ github.event.deployment_status.environment_url }}
+      - name: 🧪 Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
-          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+          {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
           install: false
           {%- endif %}
           project: ./client

@@ -28,12 +28,12 @@ jobs:
           token: {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: 📦 Install dependencies
-        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
         run: npm install --workspace=client
         {%- else %}
         run: npm install
         {%- endif %}
-        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client != 'None' %}
+        {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
       - name: 📦 Build services core
         run: npm run build:services
         {%- endif %}
