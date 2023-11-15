@@ -23,6 +23,13 @@ export default defineConfig(({ mode }) => {
       },
       port: 8080,
     },
+    test: {
+      // enable jest-like global test APIs
+      globals: true,
+      // simulate DOM with happy-dom
+      // (requires installing happy-dom as a peer dependency)
+      environment: 'happy-dom',
+    },
     cacheDir: process.env.VITE_CACHE_DIR || 'node_modules/.vite',
   }
 })
