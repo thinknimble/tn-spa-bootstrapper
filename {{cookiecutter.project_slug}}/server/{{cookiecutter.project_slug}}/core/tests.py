@@ -102,21 +102,27 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
-        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
-            client.post(f"{self.url}?template=core/index-placeholder.html")
+        with mock.patch("my_project.core.views.render", return_value=Response()) as mocked_render:
+            client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
 
     @override_settings(DEBUG=True)
     def test_no_template_provided(self, client):
-        response = client.post(self.url)
+        response = client.post(self.url, data={"_send_to": "someone@example.com"})
+        assert response.status_code == 400
+        assert any("You must provide a template name" in e for e in response.json())
+
+    @override_settings(DEBUG=True)
+    def test_invalid_template_provided(self, client):
+        response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST", data={"_send_to": "someone@example.com"})
         assert response.status_code == 400
         assert any("Invalid template name" in e for e in response.json())
 
     @override_settings(DEBUG=True)
-    def test_invalid_template_provided(self, client):
+    def test_missing__send_to(self, client):
         response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST")
         assert response.status_code == 400
-        assert any("Invalid template name" in e for e in response.json())
+        assert "This field is required." in response.json()["_send_to"]
 
     def test_parse_value_without_model(self):
         assert PreviewTemplateView.parse_value("some_key", "value") == ("some_key", "value")

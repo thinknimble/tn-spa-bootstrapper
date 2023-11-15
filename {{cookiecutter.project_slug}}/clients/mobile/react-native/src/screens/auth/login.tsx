@@ -1,17 +1,14 @@
-import { useMutation } from '@tanstack/react-query'
+import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
+import { ScrollViewWind } from '@components/styled'
+import { Text } from '@components/text'
+import { TextFormField } from '@components/text-form-field'
+import { useServices } from '@services/index'
+import { LoginForm, LoginFormInputs, TLoginForm, userApi } from '@services/user'
+import { useAuth } from '@stores/auth'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { styled } from 'nativewind'
-import { Button, View } from 'react-native'
+import { View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
-import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-area-view'
-import { Text } from '../../components/text'
-import { LoginForm, LoginFormInputs, TLoginForm, userApi } from '../../services/user'
-import { TextFormField } from '../../components/text-form-field'
-import { ScrollViewWind } from '../../components/styled'
-import { useServices } from '../../services'
-import { useAuth } from '../../stores/auth'
-
-const ButtonWind = styled(Button)
 
 const BounceableWind = styled(Bounceable, {
   props: {
@@ -20,20 +17,24 @@ const BounceableWind = styled(Bounceable, {
 })
 
 const LoginInner = () => {
-  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TLoginForm>()
+  const { form, overrideForm } = useTnForm<TLoginForm>()
   const navio = useServices().navio
   const { changeToken, changeUserId } = useAuth.use.actions()
   const handleSubmit = async () => {
     //TODO:
     if (!form.isValid) {
-      const newForm = form.replicate()
-      form.validate()
+      const newForm = form.replicate() as TLoginForm
+      newForm.validate()
+      overrideForm(newForm)
     } else {
       try {
         // HACK FOR TN-Forms
-        const res = await userApi.csc.login(form.value as any)
+        const res = await userApi.csc.login(form.value as { email: string; password: string })
+        if (!res?.token) {
+          throw 'Missing token from response'
+        }
         changeUserId(res.id)
-        changeToken(res.token!)
+        changeToken(res.token)
         navio.stacks.push('MainStack')
       } catch (e) {
         console.log(e)

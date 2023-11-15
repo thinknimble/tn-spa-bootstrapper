@@ -1,18 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-{% if cookiecutter.use_graphql == 'n' -%}
-import { queryClient } from '../utils/query-client'
 import { User } from '../services/user'
-{% endif -%}
+import { queryClient } from '../utils/query-client'
 import { createSelectors } from './utils'
-{% if cookiecutter.use_graphql == 'y' -%}
-import {client} from 'src/services/apollo-client'
-{% endif -%}
-
-{% if cookiecutter.use_graphql == 'y' -%}
-//TODO: need a user model for gql
-type User = unknown
-{% endif -%}
 
 type AuthState = {
   token: string
@@ -98,9 +88,5 @@ export const useAuth = createSelectors(
 
 export const logout = () => {
   useAuth.getState().actions.clearAuth()
-{% if cookiecutter.use_graphql == 'y' -%}
-  client.clearStore()
-{% else -%}
 queryClient.invalidateQueries(['user'])
-{% endif -%}
 }

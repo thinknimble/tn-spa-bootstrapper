@@ -17,7 +17,6 @@ export default defineConfig(({ mode }) => {
       setupFiles: './src/setup-tests.ts',
     },
     server: {
-      {% if cookiecutter.use_graphql == 'n' -%}
       proxy: {
         '/api': {
           target: (env.VITE_DEV_BACKEND_URL || 'http://server:8000') + '/api',
@@ -25,7 +24,6 @@ export default defineConfig(({ mode }) => {
           rewrite: path => path.replace(/^\/api/, ''),
         },
       },
-      {% endif -%}
       port: 8080
     },
     cacheDir: process.env.VITE_CACHE_DIR || "node_modules/.vite",

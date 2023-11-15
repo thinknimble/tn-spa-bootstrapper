@@ -4,12 +4,11 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { useAuth } from '../../stores/auth'
+import { useAuth } from '@stores/auth'
 import { userApi } from './api'
 
 export const useUser = () => {
   const userId = useAuth.use.userId()
-  const user = useAuth.use.user()
   const { writeUserInStorage } = useAuth.use.actions()
   return useQuery({
     queryKey: ['user', userId],

@@ -101,44 +101,6 @@ def set_flag(file_path, flag, value=None):
         f.truncate()
 
 
-def remove_graphql_files():
-    file_names = [
-        join("server/{{ cookiecutter.project_slug }}/core", "schema.py"),
-        join("server/{{ cookiecutter.project_slug }}/core", "types.py"),
-        join("server/{{ cookiecutter.project_slug }}/core", "mutations.py"),
-        join("server/{{ cookiecutter.project_slug }}/core", "jwt_auth.py"),
-    ]
-    for file_name in file_names:
-        if exists(file_name):
-            remove(file_name)
-
-
-def remove_rest_react_files():
-    file_names = [
-        join("client/src/services", "axios-instance.ts"),
-        join("client/src/services", "auth.ts"),
-        join("client/src/services", "base-model.ts"),
-        join("client/src/services/user", "api.ts"),
-        join("client/src/services/user", "hooks.ts"),
-        join("client/src/services/user", "models.ts"),
-        join("client/src/utils", "query-client.ts"),
-    ]
-    for file_name in file_names:
-        if exists(file_name):
-            remove(file_name)
-
-
-def remove_gql_react_files():
-    file_names = [
-        join("client/src/utils", "mutations.ts"),
-        join("client/src/utils", "queries.ts"),
-        join("client/src/services", "apollo-client.ts"),
-    ]
-    for file_name in file_names:
-        if exists(file_name):
-            remove(file_name)
-
-
 def remove_expo_yaml_files():
     file_names = [
         join(".github/workflows", "expo-emergency-prod-update.yml"),
@@ -204,16 +166,10 @@ def main():
     elif "{{ cookiecutter.client_app }}".lower() == "react":
         remove_web_client_files("vue3")
         move_web_client_to_root("react")
-        if "{{ cookiecutter.use_graphql }}".lower() == "y":
-            remove_rest_react_files()
-        else:
-            remove_gql_react_files()
     if "{{ cookiecutter.include_mobile }}".lower() == "y":
         move_mobile_client_to_root("react-native")
     else:
         remove_expo_yaml_files()
-    if "{{ cookiecutter.use_graphql }}".lower() == "n":
-        remove_graphql_files()
 
     clean_up_clients_folder()
 

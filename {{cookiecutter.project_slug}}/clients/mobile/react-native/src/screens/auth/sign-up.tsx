@@ -1,19 +1,17 @@
+import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
+import { ScrollViewWind } from '@components/styled'
+import { Text } from '@components/text'
+import { TextFormField } from '@components/text-form-field'
+import { useServices } from '@services/index'
+import { userApi } from '@services/user'
+import { AccountForm, TAccountForm } from '@services/user/forms'
+import { useAuth } from '@stores/auth'
 import { useMutation } from '@tanstack/react-query'
+import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { styled } from 'nativewind'
-import { Button, View } from 'react-native'
+import { View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
-import { MultiPlatformSafeAreaView } from '../../components/multi-platform-safe-area-view'
-import { ScrollViewWind } from '../../components/styled'
-import { Text } from '../../components/text'
-import { TextFormField } from '../../components/text-form-field'
-import { AccountForm, TAccountForm } from '../../services/user/forms'
-import { userApi } from '../../services/user'
-import { MustMatchValidator } from '@thinknimble/tn-forms'
-import { useAuth } from '../../stores/auth'
-import { useServices } from '../../services'
-
-const ButtonWind = styled(Button)
 
 const BounceableWind = styled(Bounceable, {
   props: {
@@ -23,18 +21,24 @@ const BounceableWind = styled(Bounceable, {
 
 const InnerForm = () => {
   //TODO: match bootstrapper style for signup and hit backend
-  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TAccountForm>()
+  const { form } = useTnForm<TAccountForm>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const navio = useServices().navio
-  const { mutate: createUser, isLoading } = useMutation({
+  const { mutate: createUser } = useMutation({
     mutationFn: userApi.create,
     onSuccess: (data) => {
-      changeToken(data.token!)
+      if (!data?.token) return
+      changeToken(data.token)
       changeUserId(data.id)
       navio.stacks.push('MainStack')
     },
-    onError(e: any) {
-      if (e?.message === 'Please enter valid credentials') {
+    onError(e: unknown) {
+      if (
+        e &&
+        typeof e === 'object' &&
+        'message' in e &&
+        e?.message === 'Please enter valid credentials'
+      ) {
         console.log('invalid credentials')
       }
     },
@@ -47,7 +51,7 @@ const InnerForm = () => {
       firstName: form.firstName.value ?? '',
       lastName: form.lastName.value ?? '',
     }
-    createUser(input as any)
+    createUser(input)
   }
 
   return (
@@ -84,10 +88,7 @@ const confirmPasswordValidator = {
 
 export const SignUp = () => {
   return (
-    <FormProvider
-      formClass={AccountForm}
-      formLevelValidators={confirmPasswordValidator}
-    >
+    <FormProvider formClass={AccountForm} formLevelValidators={confirmPasswordValidator}>
       <InnerForm />
     </FormProvider>
   )

@@ -1,7 +1,7 @@
 import { IFormFieldError } from '@thinknimble/tn-forms'
 import { FC, Fragment, ReactNode } from 'react'
 import { View } from 'react-native'
-import { Text } from './text'
+import { Text } from '@components/text'
 
 export const ErrorMessage: FC<{ children: ReactNode }> = ({ children }) => {
   return <Text textClassName="text-red-500 text-base">{children}</Text>

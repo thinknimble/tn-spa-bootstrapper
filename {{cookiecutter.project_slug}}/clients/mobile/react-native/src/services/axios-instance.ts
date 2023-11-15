@@ -1,10 +1,9 @@
 import axios, { AxiosError } from 'axios'
+import { useAuth } from '@stores/auth'
 import Config from '../../Config'
-import { useAuth } from '../stores/auth'
 
-const appConfig = Config as any
 export const axiosInstance = axios.create({
-  baseURL: `${appConfig?.backendServerUrl}/api`,
+  baseURL: `${Config?.backendServerUrl}/api`,
 })
 
 axiosInstance.interceptors.request.use(
@@ -28,10 +27,10 @@ axiosInstance.interceptors.request.use(
 )
 
 axiosInstance.interceptors.response.use(
-  async (config:any) => {
+  async (config) => {
     return config
   },
-  (err:any) => {
+  (err: unknown) => {
     if (
       err instanceof AxiosError &&
       err.response &&

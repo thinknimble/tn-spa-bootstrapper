@@ -1,7 +1,4 @@
 import os
-{%- if cookiecutter.use_graphql == 'y' %}
-from datetime import timedelta
-{%- endif %}
 
 import dj_database_url
 from decouple import config
@@ -65,29 +62,7 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "django_extensions",
-{% if cookiecutter.use_graphql == 'y' -%}
-    "graphene_django",
-{% endif -%}
 ]
-{% if cookiecutter.use_graphql == 'y' -%}
-GRAPHENE = {
-    "SCHEMA": "{{ cookiecutter.project_slug }}.core.schema.schema",
-    "MIDDLEWARE": [
-        "graphql_jwt.middleware.JSONWebTokenMiddleware",
-    ],
-}
-
-GRAPHQL_JWT = {
-    "JWT_VERIFY_EXPIRATION": True,
-    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
-    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
-}
-
-AUTHENTICATION_BACKENDS = [
-    "graphql_jwt.backends.JSONWebTokenBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
-{%- endif %}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -187,11 +162,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "{{ cookiecutter.project_slug }}.core.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        {% if cookiecutter.use_graphql == 'y' -%}
-        "{{ cookiecutter.project_slug }}.core.jwt_auth.JSONWebTokenAuthentication",
-        {% else -%}
         "rest_framework.authentication.TokenAuthentication",
-        {% endif -%}
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_RENDERER_CLASSES": [
@@ -413,10 +384,6 @@ TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 CORS_ALLOWED_ORIGINS = ["https://{{ cookiecutter.project_slug|replace('_', '-') }}-staging.herokuapp.com", "https://{{ cookiecutter.project_slug|replace('_', '-') }}.herokuapp.com"]
 {% if cookiecutter.client_app.lower() != 'none' -%}
 CORS_ALLOWED_ORIGINS.append("http://localhost:8080")
-{% endif -%}
-
-{% if cookiecutter.use_graphql == 'y' %}
-CORS_ALLOW_CREDENTIALS = True
 {% endif -%}
 
 SWAGGER_SETTINGS = {

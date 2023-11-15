@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { UserShape as User } from '../services/user/'
-import { queryClient } from '../utils/query-client'
-import { createSelectors } from './utils'
+import { UserShape as User } from '@services/user/'
+import { queryClient } from '@utils/query-client'
+import { createSelectors } from '@stores/utils'
 
 type AuthState = {
   token: string
@@ -43,7 +43,7 @@ const defaultState: Omit<AuthState, 'actions'> = {
 export const useAuth = createSelectors(
   create<AuthState>()(
     persist(
-      (set, get) => ({
+      (set) => ({
         ...defaultState,
         actions: {
           changeToken(t) {
@@ -82,6 +82,7 @@ export const useAuth = createSelectors(
         storage: createJSONStorage(() => AsyncStorage),
         partialize(state) {
           // ignore actions since functions are not serializable for localStorage
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { actions, ...rest } = state
           return rest
         },

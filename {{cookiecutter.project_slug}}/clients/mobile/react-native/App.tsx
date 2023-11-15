@@ -1,4 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AppRoot } from '@screens/index'
+import { initServices } from '@services/index'
+import { useAuth } from '@stores/auth'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { customFonts } from '@utils/fonts'
+import { SSProvider } from '@utils/providers'
+import { queryClient } from '@utils/query-client'
+import { initSentry } from '@utils/sentry'
 import 'expo-dev-client'
 import { loadAsync } from 'expo-font'
 import { setNotificationHandler } from 'expo-notifications'
@@ -8,13 +15,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { LogBox, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { AppRoot } from './src/screens'
-import { initServices } from './src/services'
-import { useAuth } from './src/stores/auth'
-import { customFonts } from './src/utils/fonts'
-import { SSProvider } from './src/utils/providers'
-import { queryClient } from './src/utils/query-client'
-import { initSentry } from './src/utils/sentry'
 
 LogBox.ignoreLogs(['Require'])
 
@@ -48,7 +48,7 @@ export default (): JSX.Element => {
     flushSync(() => {
       setReady(true)
     })
-  }, [])
+  }, [hasLocalStorageHydratedState])
 
   useEffect(() => {
     start()
