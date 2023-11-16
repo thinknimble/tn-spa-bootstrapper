@@ -23,7 +23,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "cypress"
     ],
     "paths": {
       "@/*": [

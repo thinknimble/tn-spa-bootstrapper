@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:dev": "vitest",
+    "cypress:dev": "cypress open",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "prettier": "prettier . --write",
     "heroku-postbuild": "vue-tsc && vite build"
@@ -34,6 +35,7 @@
     "@typescript-eslint/parser": "^6.7.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "autoprefixer": "^10.4.15",
+    "cypress": "^13.5.1",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",

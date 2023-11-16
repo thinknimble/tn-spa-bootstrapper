@@ -70,12 +70,12 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import { LoginForm, userApi } from '@/services/users/'
-import InputField from '@/components/inputs/InputField'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import InputField from '@/components/inputs/InputField.vue'
+import { LoginForm, userApi } from '@/services/users/'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 export default {
   name: 'Login',
