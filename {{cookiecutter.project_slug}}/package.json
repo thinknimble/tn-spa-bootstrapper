@@ -30,7 +30,8 @@
     "services-core",
     "client",
     "mobile"
-  ],
+  ]
+  {%- else %}
   "cacheDirectories": [
     "client/node_modules",
     ".cache/Cypress"
