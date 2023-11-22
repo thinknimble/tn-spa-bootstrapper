@@ -42,7 +42,6 @@ import  { userApi } from '@/services/users/'
 {%- else %}
 import  { userApi, PasswordResetForm } from '@/services/users/'
 {%- endif %}
-import  { userApi, PasswordResetForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField'
 
 export default {

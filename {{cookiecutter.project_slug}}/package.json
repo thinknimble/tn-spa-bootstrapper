@@ -1,6 +1,7 @@
 {
   {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
   "scripts": {
+    "init":"npm install --workspace=services-core && npm run build:services",
     "build:services": "npm run build --workspace=services-core",
     "start:web": "npm run build:services && npm run serve --workspace=client",
     "start:mobile": "npm run build:services && npm run start --workspace=mobile",
@@ -24,15 +25,15 @@
     "node": "18.*.*",
     "npm": "9.*.*"
   },
-  "cacheDirectories": [
-    "client/node_modules",
-    ".cache/Cypress"
-  ],
   {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
   "workspaces": [
     "services-core",
     "client",
     "mobile"
+  ],
+  "cacheDirectories": [
+    "client/node_modules",
+    ".cache/Cypress"
   ]
   {%- endif %}
 }
