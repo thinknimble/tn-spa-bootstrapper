@@ -125,12 +125,12 @@ def remove_services_files():
     """Remove services files in client which are not needed when using a shared library"""
     extension = "js" if "{{ cookiecutter.client_app }}".lower() == "vue3" else "ts"
     file_names = [
-        join("client/src/services/user", f"forms.{extension}"),
-        join("client/src/services/user", f"models.{extension}"),
+        join("client/src/services/users", f"forms.{extension}"),
+        join("client/src/services/users", f"models.{extension}"),
         join("client/src/services", f"base-model.{extension}"),
         join("mobile/src/services", "base-model.ts"),
-        join("mobile/src/services/user", "models.ts"),
-        join("mobile/src/services/user", "forms.ts"),
+        join("mobile/src/services/users", "models.ts"),
+        join("mobile/src/services/users", "forms.ts"),
     ]
     for file_name in file_names:
         if exists(file_name):

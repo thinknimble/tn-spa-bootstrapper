@@ -73,7 +73,7 @@
 import { ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
+{%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' %}
 import { LoginForm } from 'services-core'
 import { userApi } from '@/services/users'
 {%- else %}

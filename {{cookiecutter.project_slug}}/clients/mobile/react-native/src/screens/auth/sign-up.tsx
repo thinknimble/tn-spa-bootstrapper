@@ -6,9 +6,9 @@ import { useServices } from '@services/index'
 {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
 import { AccountForm, TAccountForm } from 'services-core'
 {%- else %}
-import { AccountForm, TAccountForm } from '@services/user/forms'
+import { AccountForm, TAccountForm } from '@services/users/forms'
 {%- endif %}
-import { userApi } from '@services/user'
+import { userApi } from '@services/users'
 import { useAuth } from '@stores/auth'
 import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'

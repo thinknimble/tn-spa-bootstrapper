@@ -13,14 +13,14 @@ import {
   TAccountForm,
   AccountFormInputs,
 } from 'services-core'
-import { userApi } from 'src/services/user'
+import { userApi } from 'src/services/users'
 {%- else %}
 import {
   AccountForm,
   TAccountForm,
   AccountFormInputs,
-} from 'src/services/user/forms'
-import { User, userApi } from 'src/services/user'
+} from 'src/services/users/forms'
+import { User, userApi } from 'src/services/users'
 {%- endif %}
 import { useAuth } from 'src/stores/auth'
 

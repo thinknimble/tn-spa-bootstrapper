@@ -8,11 +8,11 @@ import { Input } from 'src/components/input'
 {%- if cookiecutter.include_services_core == 'y' and cookiecutter.include_mobile == 'y' and cookiecutter.client_app != 'None' %}
 import { LoginForm, TLoginForm, LoginFormInputs,
 } from 'services-core'
-import { userApi } from 'src/services/user'
+import { userApi } from 'src/services/users'
 {%- else %}
 import { LoginForm, TLoginForm, LoginFormInputs,
   userApi 
-} from 'src/services/user'
+} from 'src/services/users'
 {%- endif %}
 
 import { useFollowupRoute } from 'src/utils/auth'
