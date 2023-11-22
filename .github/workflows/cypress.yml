@@ -44,7 +44,7 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./my_project/client
         run: npm install
-      - name: Run against {{ ${{ github.event.deployment_status.environment_url }} }}
+      - name: Run against ${{ github.event.deployment_status.environment_url }}
         uses: cypress-io/github-action@v4
         with:
           working-directory: my_project/client
@@ -52,8 +52,8 @@ jobs:
         env: 
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
-          CYPRESS_TEST_USER_PASS: {{ ${{ secrets.CYPRESS_TEST_USER_PASS }} }}
-          CYPRESS_baseUrl: {{ ${{ github.event.deployment_status.environment_url }} }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
   Firefox:
     needs: Setup
     runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./my_project/client
         run: npm install
-      - name: Run against {{ ${{ github.event.deployment_status.environment_url }} }}
+      - name: Run against ${{ github.event.deployment_status.environment_url }}
         uses: cypress-io/github-action@v4
         with:
           working-directory: my_project/client
@@ -82,8 +82,8 @@ jobs:
         env: 
           NPM_CONFIG_PRODUCTION: false
           CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
-          CYPRESS_TEST_USER_PASS: {{ ${{ secrets.CYPRESS_TEST_USER_PASS }} }}
-          CYPRESS_baseUrl: {{ ${{ github.event.deployment_status.environment_url }} }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
 
   configuremobile:
     needs: Setup
@@ -157,8 +157,8 @@ jobs:
           eas update --branch="${{ needs.getprnumber.outputs.PR }}" --non-interactive --auto
           echo "${{ env.BACKEND_SERVER_URL }} and ${{ needs.getprnumber.outputs.PR }}"
         env:
-          BACKEND_SERVER_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
+          BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
           ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
           SENTRY_PROJECT_NAME: "tn-staging"
           SENTRY_DSN: "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
-          SENTRY_AUTH_TOKEN: {{ "${{ secrets.SENTRY_AUTH_TOKEN }}" }}
+          SENTRY_AUTH_TOKEN: "${{ secrets.SENTRY_AUTH_TOKEN }}"
