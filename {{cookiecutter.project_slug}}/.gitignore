@@ -75,11 +75,8 @@ target/
 celerybeat-schedule
 
 # Environments
-.env
-.venv
-env/
-venv/
-ENV/
+.env*
+!.env.example
 
 # Rope project settings
 .ropeproject
