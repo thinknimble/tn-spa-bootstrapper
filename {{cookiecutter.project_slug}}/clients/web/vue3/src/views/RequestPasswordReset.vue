@@ -50,7 +50,7 @@
 <script>
 import { ref } from 'vue'
 import  { userApi,  RequestPasswordResetForm } from '@/services/users/'
-import InputField from '@/components/inputs/InputField'
+import InputField from '@/components/inputs/InputField.vue'
 
 export default {
   name: 'RequestPasswordReset',
