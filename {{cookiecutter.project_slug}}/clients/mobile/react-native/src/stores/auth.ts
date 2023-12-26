@@ -93,5 +93,5 @@ export const useAuth = createSelectors(
 
 export const logout = () => {
   useAuth.getState().actions.clearAuth()
-  queryClient.invalidateQueries(['user'])
+  queryClient.invalidateQueries({queryKey: ['user']})
 }
