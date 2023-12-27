@@ -1,19 +1,14 @@
 import { FC, InputHTMLAttributes } from 'react'
 
-export const Input: FC<InputHTMLAttributes<HTMLInputElement> & { extendClassName?: string }> = ({
-  className,
-  extendClassName,
-  ...props
-}) => {
+export const Input: FC<
+  InputHTMLAttributes<HTMLInputElement> & { extendClassName?: string; label?: string }
+> = ({ className, extendClassName, label, ...props }) => {
   return (
-    <input
-      className={
-        className ??
-        `placeholder:text-slate-700 rounded-md p-2 bg-slate-400 text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 invalid:outline-none invalid:ring-2 invalid:ring-red-400  ${
-          extendClassName ?? ''
-        }`
-      }
-      {...props}
-    />
+    <div className="mb-2 flex w-full flex-col items-start">
+      {label && (
+        <span className="input--label text-primary block text-sm font-medium">{label}</span>
+      )}
+      <input className={className ?? `input ${extendClassName ?? ''}`} {...props} />
+    </div>
   )
 }

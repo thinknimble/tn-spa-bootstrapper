@@ -2,7 +2,7 @@ import { IFormFieldError } from '@thinknimble/tn-forms'
 import { FC, Fragment, ReactNode } from 'react'
 
 export const ErrorMessage: FC<{ children: ReactNode }> = ({ children }) => {
-  return <p className="text-red-400">{children}</p>
+  return <p className="input--error">{children}</p>
 }
 
 /**
@@ -12,9 +12,9 @@ export const ErrorMessage: FC<{ children: ReactNode }> = ({ children }) => {
 export const ErrorsList: FC<{ errors: IFormFieldError[] }> = ({ errors }) => {
   if (!errors?.length) return <></>
   return (
-    <ul className="pt-3 flex flex-col gap-2">
-      {errors.map((e,idx) => (
-        <Fragment key={e.code+idx}>
+    <ul className="flex flex-col gap-2 ">
+      {errors.map((e, idx) => (
+        <Fragment key={e.code + idx}>
           <ErrorMessage>{e.message}</ErrorMessage>
         </Fragment>
       ))}

@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, FC } from 'react'
 
 type ButtonVariant = 'primary' | 'accent'
 const buttonVariantMap: Record<ButtonVariant, string> = {
-  primary: 'text-black bg-slate-200 p-2 active:bg-slate-400',
+  primary: 'btn--primary bg-primary',
   accent: '',
 }
 export const Button: FC<
@@ -12,7 +12,7 @@ export const Button: FC<
   }
 > = ({ extendClassName = '', children, variant = 'primary', ...props }) => {
   return (
-    <button {...props} className={` rounded-lg ${buttonVariantMap[variant]} ${extendClassName}`}>
+    <button {...props} className={`rounded-lg ${buttonVariantMap[variant]} ${extendClassName}`}>
       {children}
     </button>
   )

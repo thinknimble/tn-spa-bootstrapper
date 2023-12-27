@@ -9,7 +9,7 @@ import { LoginForm, TLoginForm, LoginFormInputs, login } from 'src/services/user
 
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
-
+import { Logo } from 'src/components/logo'
 
 function LogInInner() {
   const params = useLocation()
@@ -35,10 +35,10 @@ function LogInInner() {
   })
 
   const handleLogin = () => {
-const input = {
-  email: form.email.value ?? '',
-  password: form.password.value ?? '',
-}
+    const input = {
+      email: form.email.value ?? '',
+      password: form.password.value ?? '',
+    }
     logIn(input)
   }
 
@@ -46,14 +46,19 @@ const input = {
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
   if (isAuth) {
-    return <Navigate to={'/'} state={{'{{'}} from: followupRoute {{ '}}' }} />
+    return <Navigate to={'/'} state={{ from: followupRoute }} />
   }
 
   return (
-    <main className="bg-slate-800 h-screen flex flex-col justify-center items-center gap-3">
-      <header className="text-2xl text-white">Login</header>
-      <section className="flex flex-col justify-center items-center gap-3">
-        <p className="text-slate-200 text-xl">Enter your login credentials below</p>
+    <main className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <Logo />
+        <h2 className="text-primary mt-4 text-center text-2xl font-bold leading-9 tracking-tight">
+          Log in
+        </h2>
+      </div>
+
+      <section className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -62,36 +67,49 @@ const input = {
         >
           <div>
             <Input
-              placeholder="Email"
+              placeholder="Enter email..."
               onChange={(e) => createFormFieldChangeHandler(form.email)(e.target.value)}
               value={form.email.value ?? ''}
               data-cy="email"
               id="id"
+              label="Email address"
             />
             <ErrorsList errors={form.email.errors} />
           </div>
           <div>
-            <Input
-              placeholder="Password"
-              type="password"
-              onChange={(e) => {
-                createFormFieldChangeHandler(form.password)(e.target.value)
-              }}
-              value={form.password.value ?? ''}
-              data-cy="password"
-              id="password"
-            />
-            <ErrorsList errors={form.password.errors} />
+            <div className="mt-2">
+              <div className="flex w-full items-center justify-between">
+                <label className="text-primary block text-sm font-medium leading-6">Password</label>
+                <div className="text-sm hover:underline">
+                  <Link to="/sign-up">
+                    <p className="text-accent font-semibold">Forgot password?</p>
+                  </Link>
+                </div>
+              </div>
+              <Input
+                placeholder="Enter password..."
+                type="password"
+                onChange={(e) => {
+                  createFormFieldChangeHandler(form.password)(e.target.value)
+                }}
+                value={form.password.value ?? ''}
+                data-cy="password"
+                id="password"
+              />
+              <ErrorsList errors={form.password.errors} />
+            </div>
           </div>
         </form>
-        <Button data-cy="login-btn" onClick={handleLogin}>
+
+        <Button data-cy="login-btn" onClick={handleLogin} variant="primary">
           Log in
         </Button>
       </section>
-      <div className="flex flex-col gap-3">
-        <p className="text-xl text-slate-200 font-semibold">Don&apos;t have an account?</p>
-        <Link className="text-xl text-teal-600 font-semibold text-center" to="/sign-up">
-          Register here
+
+      <div className="m-4 flex self-center text-sm">
+        <p className="mr-2">Don&apos;t have an account?</p>
+        <Link className="text-primary font-bold hover:underline" to="/sign-up">
+          Sign up.
         </Link>
       </div>
     </main>
