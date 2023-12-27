@@ -85,7 +85,7 @@ const input = {
           </div>
         </form>
         <Button data-cy="login-btn" onClick={handleLogin}>
-          Login
+          Log in
         </Button>
       </section>
       <div className="flex flex-col gap-3">
