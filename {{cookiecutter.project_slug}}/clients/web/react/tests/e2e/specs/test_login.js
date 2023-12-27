@@ -1,7 +1,6 @@
 describe('Tests login workflow', () => {
-  it('Home page has link to login', () => {
+  it('Home page auto redirects to login', () => {
     cy.visit('/')
-    cy.get('[data-cy="login-btn"]').click()
     cy.url().should('include', '/log-in')
   })
   it('Filling in email and passwords goes to', () => {
@@ -11,3 +10,4 @@ describe('Tests login workflow', () => {
     cy.url().should('include', '/home')
   })
 })
+ 
