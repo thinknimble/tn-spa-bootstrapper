@@ -21,7 +21,7 @@ function SignUpInner() {
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
-const { mutate: createUser, isLoading } = useMutation({
+const { mutate: createUser, isPending } = useMutation({
   mutationFn: userApi.create,
   onSuccess: (data) => {
     if(!data.token) throw new Error('Token should be returned on user creation')
