@@ -30,6 +30,7 @@ export const NavBar = () => {
 
   const navigate = useNavigate()
   const logOutUser = () => {
+    toggleMobileMenu()
     logout()
     navigate('/log-in')
   }
@@ -66,7 +67,7 @@ export const NavBar = () => {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             {!isAuth && (
               <>
-                <Link to="/log-in" className="btn--primary bg-primary">
+                <Link data-cy="login-btn" to="/log-in" className="btn--primary bg-primary">
                   Login
                 </Link>
                 <Link to="/sign-up" className="btn--secondary ml-5">
@@ -110,7 +111,7 @@ export const NavBar = () => {
                 <img
                   src={XMark}
                   alt="Close"
-                  className="text-primary block h-6 w-6 cursor-pointer"
+                  className="block h-6 w-6 cursor-pointer text-primary"
                   onClick={toggleMobileMenu}
                 />
               )}

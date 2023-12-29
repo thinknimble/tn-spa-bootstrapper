@@ -3,9 +3,9 @@ import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
-import { ErrorsList } from 'src/components/errors'
+import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { LoginForm, TLoginForm, LoginFormInputs, login } from 'src/services/user'
+import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/user'
 
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
@@ -14,23 +14,21 @@ import { Logo } from 'src/components/logo'
 function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
-  const [error, setError] = useState(autoError ? true : false)
+  const [errorMessage, setErrorMessage] = useState<string | undefined>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
   const navigate = useNavigate()
 
   const { mutate: logIn } = useMutation({
-    mutationFn: login,
+    mutationFn: userApi.csc.login,
     onSuccess: (data) => {
-      if (!data.token) throw new Error('Missing token from response')
       changeToken(data.token)
       changeUserId(data.id)
       navigate('/home')
     },
     onError(e: any) {
-      if (e?.message === 'Please enter valid credentials') {
-        setError(true)
-      }
+      const error = e.response.data[0] ?? 'An error occurred. Please try again.'
+      setErrorMessage(error)
     },
   })
 
@@ -53,7 +51,7 @@ function LogInInner() {
     <main className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <Logo />
-        <h2 className="text-primary mt-4 text-center text-2xl font-bold leading-9 tracking-tight">
+        <h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
           Log in
         </h2>
       </div>
@@ -79,10 +77,10 @@ function LogInInner() {
           <div>
             <div className="mt-2">
               <div className="flex w-full items-center justify-between">
-                <label className="text-primary block text-sm font-medium leading-6">Password</label>
+                <label className="block text-sm font-medium leading-6 text-primary">Password</label>
                 <div className="text-sm hover:underline">
-                  <Link to="/sign-up">
-                    <p className="text-accent font-semibold">Forgot password?</p>
+                  <Link to="/request-reset">
+                    <p className="font-semibold text-accent">Forgot password?</p>
                   </Link>
                 </div>
               </div>
@@ -101,6 +99,9 @@ function LogInInner() {
           </div>
         </form>
 
+        <div className="mb-2">
+          <ErrorMessage>{errorMessage}</ErrorMessage>
+        </div>
         <Button data-cy="login-btn" onClick={handleLogin} variant="primary">
           Log in
         </Button>
@@ -108,7 +109,7 @@ function LogInInner() {
 
       <div className="m-4 flex self-center text-sm">
         <p className="mr-2">Don&apos;t have an account?</p>
-        <Link className="text-primary font-bold hover:underline" to="/sign-up">
+        <Link className="font-bold text-primary hover:underline" to="/sign-up">
           Sign up.
         </Link>
       </div>

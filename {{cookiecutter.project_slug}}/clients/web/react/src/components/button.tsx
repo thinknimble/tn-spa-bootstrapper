@@ -1,9 +1,10 @@
 import { ButtonHTMLAttributes, FC } from 'react'
 
-type ButtonVariant = 'primary' | 'accent'
+type ButtonVariant = 'primary' | 'accent' | 'disabled'
 const buttonVariantMap: Record<ButtonVariant, string> = {
   primary: 'btn--primary bg-primary',
   accent: '',
+  disabled: 'btn--disabled bg-gray-200',
 }
 export const Button: FC<
   ButtonHTMLAttributes<HTMLButtonElement> & {
