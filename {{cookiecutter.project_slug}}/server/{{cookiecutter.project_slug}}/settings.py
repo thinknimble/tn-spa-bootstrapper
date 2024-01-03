@@ -321,16 +321,18 @@ def fix_strings(record):
     record.msg = record.msg.replace("'", "\"")
     return True
 
+class MyFilter(logging.Filter):
+    def filter(self, record):
+        record.msg = record.msg.replace("'", "\"")
+        return True
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
         "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
-        "fix_strings": {
-            "()": "django.utils.log.CallbackFilter",
-            "callback": fix_strings,
-        },
+        "fix_strings": {"()": "MyFilter"},
     },
     "formatters": {
         "verbose": {
