@@ -313,7 +313,7 @@ if not IN_DEV:
 
 class MyFilter(logging.Filter):
     def filter(self, record):
-        record.msg = str(record.msg).replace("'", "\"")
+        record.msg = str(record.msg).replace("'", '"')
         return True
 
 
