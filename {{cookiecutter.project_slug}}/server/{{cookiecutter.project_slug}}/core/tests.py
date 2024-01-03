@@ -119,7 +119,7 @@ class TestPreviewTemplateView:
         assert any("Invalid template name" in e for e in response.json())
 
     @override_settings(DEBUG=True)
-    def test_missing__send_to(self, client):
+    def test_missing_send_to(self, client):
         response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST")
         assert response.status_code == 400
         assert "This field is required." in response.json()["_send_to"]

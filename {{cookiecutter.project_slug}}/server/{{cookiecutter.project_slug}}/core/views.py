@@ -130,6 +130,8 @@ def reset_password(request, *args, **kwargs):
 
 
 class PreviewTemplateView(views.APIView):
+    permission_classes = (permissions.AllowAny,)
+
     def get(self, request):
         return self.preview_template_view(request, form=PreviewTemplateForm())
 
