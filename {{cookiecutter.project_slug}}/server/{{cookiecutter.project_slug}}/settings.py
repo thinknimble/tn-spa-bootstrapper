@@ -338,6 +338,7 @@ LOGGING = {
                 "console",
             ],
             "level": "INFO",
+            "propagate": False,
         },
         # The logger name matters -- it MUST match the name of the app
         "{{ cookiecutter.project_slug }}": {
