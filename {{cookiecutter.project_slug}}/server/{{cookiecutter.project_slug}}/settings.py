@@ -317,10 +317,12 @@ LOGGING = {
     },
     "formatters": {
         "verbose": {
-            "format": "%(asctime)s %(name)s [%(levelname)s] %(message)s",
+            'format': '[%(asctime)s] %(levelname)s %(funcName)s:%(lineno)d "%(message)s"',  # noqa
+            "datefmt": "%d/%b/%Y %H:%M:%S",
         },
         "simple": {
-            "format": "%(asctime)s %(name)s [%(levelname)s] %(message)s",
+            "format": "[%(asctime)s] %(levelname)s %(message)s",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
         },
     },
     "handlers": {
@@ -331,12 +333,9 @@ LOGGING = {
         },
     },
     "loggers": {
-        "django": {
-            "handlers": [
-                "console",
-            ],
-            "level": "INFO",
-            "propagate": False,
+        "django.request": {
+            "handlers": ["console"],
+            "level": "DEBUG",
         },
         # The logger name matters -- it MUST match the name of the app
         "{{ cookiecutter.project_slug }}": {
