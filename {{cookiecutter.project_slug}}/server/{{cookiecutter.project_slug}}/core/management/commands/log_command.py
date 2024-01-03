@@ -4,7 +4,7 @@ from decouple import config
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-logger = logging.getLogger("foo")
+logger = logging.getLogger("my_project")
 
 
 class Command(BaseCommand):
