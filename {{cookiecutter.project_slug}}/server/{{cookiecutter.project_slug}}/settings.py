@@ -332,7 +332,7 @@ LOGGING = {
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
         "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
-        "fix_strings": {"()": "MyFilter"},
+        "fix_strings": {"()": MyFilter},
     },
     "formatters": {
         "verbose": {
