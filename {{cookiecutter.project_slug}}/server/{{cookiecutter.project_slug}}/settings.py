@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 
 import dj_database_url
 from decouple import config
@@ -310,10 +310,12 @@ if not IN_DEV:
 # Custom logging configuration
 #
 
+
 class MyFilter(logging.Filter):
     def filter(self, record):
         record.msg = str(record.msg).replace("'", "\"")
         return True
+
 
 LOGGING = {
     "version": 1,
