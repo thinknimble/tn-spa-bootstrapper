@@ -1,4 +1,5 @@
 import os
+import logging
 
 import dj_database_url
 from decouple import config
@@ -308,12 +309,28 @@ if not IN_DEV:
 #
 # Custom logging configuration
 #
+
+class customFormatter(logging.Formatter):
+    def format(self, record):
+        record.msg = record.msg.replace("'", "\"")
+        return logging.Formatter.format(self, record)
+
+verbose = customFormatter('[%(asctime)s] %(levelname)s %(funcName)s:%(lineno)d "%(message)s"', "%d/%b/%Y %H:%M:%S")
+
+def fix_strings(record):
+    record.msg = record.msg.replace("'", "\"")
+    return True
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
         "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
+        "fix_strings": {
+            "()": "django.utils.log.CallbackFilter",
+            "callback": fix_strings,
+        },
     },
     "formatters": {
         "verbose": {
@@ -330,12 +347,13 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
+            "filters": ['fix_strings'],
         },
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "ERROR",
         },
         # The logger name matters -- it MUST match the name of the app
         "{{ cookiecutter.project_slug }}": {
