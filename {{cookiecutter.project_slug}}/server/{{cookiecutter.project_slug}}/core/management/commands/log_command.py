@@ -4,7 +4,7 @@ from decouple import config
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("foo")
 
 
 class Command(BaseCommand):
@@ -24,7 +24,7 @@ class Command(BaseCommand):
             }
         }
         logger.info(json_data)
-        logger.info(f"f-string version of the log {json_data}")
-        logger.info(".format version of the log {}".format(json_data))
-        logger.info("percent S version would be %s" % str(json_data))
+        logger.info(f"f-string version of the log: {json_data}")
+        logger.info(".format version of the log: {}".format(json_data))
+        logger.info("percent S version would be: %s" % str(json_data))
         logger.info(f"Finished management command {__name__}")
