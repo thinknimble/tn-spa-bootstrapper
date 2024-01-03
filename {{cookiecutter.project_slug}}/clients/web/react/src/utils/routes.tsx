@@ -3,6 +3,8 @@ import { Home, Layout, LogIn, SignUp } from 'src/pages'
 import { AppOrAuth } from 'src/pages/app-or-auth'
 import { Dashboard } from 'src/pages/dashboard'
 import { PageNotFound } from 'src/pages/page-not-found'
+import { RequestPasswordReset } from 'src/pages/request-password-reset'
+import { ResetPassword } from 'src/pages/reset-password'
 import { useAuth } from 'src/stores/auth'
 
 const PrivateRoutes = () => {
@@ -28,6 +30,8 @@ export const AppRoutes = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/log-in" element={<LogIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/request-reset" element={<RequestPasswordReset />} />
+        <Route path="/password/reset/confirm/:email/:code" element={<ResetPassword />} />
         <Route path="/*" element={<PrivateRoutes />} />
       </Route>
     </Routes>
