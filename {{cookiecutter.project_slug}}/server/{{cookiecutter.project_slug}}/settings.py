@@ -310,17 +310,6 @@ if not IN_DEV:
 # Custom logging configuration
 #
 
-class customFormatter(logging.Formatter):
-    def format(self, record):
-        record.msg = record.msg.replace("'", "\"")
-        return logging.Formatter.format(self, record)
-
-verbose = customFormatter('[%(asctime)s] %(levelname)s %(funcName)s:%(lineno)d "%(message)s"', "%d/%b/%Y %H:%M:%S")
-
-def fix_strings(record):
-    record.msg = record.msg.replace("'", "\"")
-    return True
-
 class MyFilter(logging.Filter):
     def filter(self, record):
         record.msg = str(record.msg).replace("'", "\"")
@@ -336,7 +325,7 @@ LOGGING = {
     },
     "formatters": {
         "verbose": {
-            'format': '[%(asctime)s] %(levelname)s %(funcName)s:%(lineno)d "%(message)s"',  # noqa
+            "format": "%(asctime)s %(levelname)s %(name)s:%(funcName)s:%(lineno)s %(message)s",
             "datefmt": "%d/%b/%Y %H:%M:%S",
         },
         "simple": {
@@ -348,8 +337,8 @@ LOGGING = {
         "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
-            "formatter": "verbose",
             "filters": ['fix_strings'],
+            "formatter": "verbose",
         },
     },
     "loggers": {
