@@ -333,7 +333,7 @@ LOGGING = {
         },
     },
     "loggers": {
-        "django.request": {
+        "django": {
             "handlers": ["console"],
             "level": "DEBUG",
         },
