@@ -339,7 +339,7 @@ LOGGING = {
         "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
-            "filters": ['fix_strings'],
+            "filters": ["fix_strings"],
             "formatter": "verbose",
         },
     },
