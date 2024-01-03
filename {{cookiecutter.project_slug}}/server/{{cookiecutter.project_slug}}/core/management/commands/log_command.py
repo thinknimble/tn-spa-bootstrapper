@@ -27,4 +27,9 @@ class Command(BaseCommand):
         logger.info(f"f-string version of the log: {json_data}")
         logger.info(".format version of the log: {}".format(json_data))
         logger.info("percent S version would be: %s" % str(json_data))
+        try:
+            raise Exception("something bad happened")
+        except Exception as e:
+            logger.error(e)
+        logger.info('What about this: {"a": "foo"}')
         logger.info(f"Finished management command {__name__}")
