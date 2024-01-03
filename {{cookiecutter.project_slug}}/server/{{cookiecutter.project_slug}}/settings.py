@@ -317,12 +317,10 @@ LOGGING = {
     },
     "formatters": {
         "verbose": {
-            "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)s %(message)s",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "format": "%(asctime)s %(name)s [%(levelname)s] %(message)s",
         },
         "simple": {
-            "format": "[%(asctime)s] %(levelname)s %(message)s",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "format": "%(asctime)s %(name)s [%(levelname)s] %(message)s",
         },
     },
     "handlers": {
