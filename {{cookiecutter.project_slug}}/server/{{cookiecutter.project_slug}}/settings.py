@@ -348,11 +348,9 @@ LOGGING = {
         },
         # The logger name matters -- it MUST match the name of the app
         "{{ cookiecutter.project_slug }}": {
-            "handlers": [
-                "console",
-            ],
+            "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
         },
         "{{ cookiecutter.project_slug }}.request": {"handlers": [], "level": "INFO", "propagate": True},
         "{{ cookiecutter.project_slug }}.tasks": {"handlers": [], "level": "INFO", "propagate": True},
