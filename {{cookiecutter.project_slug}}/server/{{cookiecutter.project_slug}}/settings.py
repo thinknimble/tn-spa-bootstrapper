@@ -323,7 +323,7 @@ def fix_strings(record):
 
 class MyFilter(logging.Filter):
     def filter(self, record):
-        record.msg = record.msg.replace("'", "\"")
+        record.msg = str(record.msg).replace("'", "\"")
         return True
 
 LOGGING = {
