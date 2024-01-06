@@ -27,6 +27,9 @@ COPY ./Pipfile.lock /app/Pipfile.lock
 RUN pip3 install pipenv \
     && pipenv install --system --deploy --ignore-pipfile
 
+RUN pip3 install pipenv \
+    && pipenv install --dev --system --deploy --ignore-pipfile
+
 # Move the 'start' shell script to the root
 # and alter line endings for compatibility.
 COPY ./compose/server/start /start
