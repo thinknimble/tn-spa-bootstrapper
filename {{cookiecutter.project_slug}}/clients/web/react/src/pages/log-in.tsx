@@ -10,7 +10,6 @@ import { LoginForm, TLoginForm, LoginFormInputs, login } from 'src/services/user
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
 
-
 function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
@@ -35,10 +34,10 @@ function LogInInner() {
   })
 
   const handleLogin = () => {
-const input = {
-  email: form.email.value ?? '',
-  password: form.password.value ?? '',
-}
+    const input = {
+      email: form.email.value ?? '',
+      password: form.password.value ?? '',
+    }
     logIn(input)
   }
 
@@ -46,14 +45,14 @@ const input = {
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
   if (isAuth) {
-    return <Navigate to={'/'} state={{'{{'}} from: followupRoute {{ '}}' }} />
+    return <Navigate to={'/'} state={{ from: followupRoute }} />
   }
 
   return (
-    <main className="bg-slate-800 h-screen flex flex-col justify-center items-center gap-3">
+    <main className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-800">
       <header className="text-2xl text-white">Login</header>
-      <section className="flex flex-col justify-center items-center gap-3">
-        <p className="text-slate-200 text-xl">Enter your login credentials below</p>
+      <section className="flex flex-col items-center justify-center gap-3">
+        <p className="text-xl text-slate-200">Enter your login credentials below</p>
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -89,8 +88,8 @@ const input = {
         </Button>
       </section>
       <div className="flex flex-col gap-3">
-        <p className="text-xl text-slate-200 font-semibold">Don&apos;t have an account?</p>
-        <Link className="text-xl text-teal-600 font-semibold text-center" to="/sign-up">
+        <p className="text-xl font-semibold text-slate-200">Don&apos;t have an account?</p>
+        <Link className="text-center text-xl font-semibold text-teal-600" to="/sign-up">
           Register here
         </Link>
       </div>
