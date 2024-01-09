@@ -26,5 +26,6 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'error',
     "@typescript-eslint/no-unused-vars": 'off',
     "@typescript-eslint/no-explicit-any": 'off'
+    'prettier/prettier': 'error'
   },
 }
