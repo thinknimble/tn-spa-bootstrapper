@@ -91,7 +91,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
-
 export default {
   name: 'Signup',
   components: {
@@ -122,7 +121,8 @@ export default {
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
 
-      userApi.create({
+      userApi
+        .create({
           firstName: unwrappedForm.firstName.value,
           lastName: unwrappedForm.lastName.value,
           email: unwrappedForm.email.value,
