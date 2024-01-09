@@ -21,17 +21,17 @@ const requestPasswordReset = createCustomServiceCall(
     await client.get(`/password/reset/${input.email}/`)
   },
 )
-const resetPassword = createCustomServiceCall(
-  {
+
+export const resetPassword = async (input: LoginShape) => {
+  const { utils } = createApiUtils({
     inputShape: { email: z.string().email(), code: z.string(), password: z.string() },
     outputShape: userShape,
-  },
-  async ({ client, input, utils }) => {
-    const { email, ...rest } = utils.toApi(input)
-    const res = await client.post(`/password/reset/code/confirm/${input.email}/`, rest)
-    return utils.fromApi(res.data)
-  },
-)
+    name: resetPassword.name,
+  })
+  const { email, ...rest } = utils.toApi(input)
+  const res = await axiosInstance.post(`/password/reset/code/confirm/${input.email}/`, rest)
+  return utils.fromApi(res.data)
+}
 
 export const userApi = createApi(
   {
@@ -42,5 +42,5 @@ export const userApi = createApi(
       entity: userShape,
     },
   },
-  { requestPasswordReset, resetPassword },
+  { requestPasswordReset },
 )
