@@ -25,6 +25,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react-hooks/exhaustive-deps': 'error',
     "@typescript-eslint/no-unused-vars": 'off',
-    "@typescript-eslint/no-explicit-any": 'off'
+    "@typescript-eslint/no-explicit-any": 'off',
+    'prettier/prettier': 'error',
   },
 }
