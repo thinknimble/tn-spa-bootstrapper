@@ -1,17 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
-import { FormEvent ,useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import {
-  AccountForm,
-  TAccountForm,
-  AccountFormInputs,
-} from 'src/services/user/forms'
+import { AccountForm, TAccountForm, AccountFormInputs } from 'src/services/user/forms'
 import { User, userApi } from 'src/services/user'
 import { useAuth } from 'src/stores/auth'
 
@@ -21,22 +17,22 @@ function SignUpInner() {
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
-const { mutate: createUser, isPending } = useMutation({
-  mutationFn: userApi.create,
-  onSuccess: (data) => {
-    if(!data.token) throw new Error('Token should be returned on user creation')
-    changeToken(data.token)
-    changeUserId(data.id)
-    navigate('/home')
-  },
-  onError(e: any) {
-    if (e?.message === 'Please enter valid credentials') {
-     console.log(e)
-    }
-  },
-})
+  const { mutate: createUser, isPending } = useMutation({
+    mutationFn: userApi.create,
+    onSuccess: (data) => {
+      if (!data.token) throw new Error('Token should be returned on user creation')
+      changeToken(data.token)
+      changeUserId(data.id)
+      navigate('/home')
+    },
+    onError(e: any) {
+      if (e?.message === 'Please enter valid credentials') {
+        console.log(e)
+      }
+    },
+  })
 
-  const onSubmit = (e:FormEvent) => {
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault()
     const data = {
       email: form.email.value,
@@ -45,15 +41,15 @@ const { mutate: createUser, isPending } = useMutation({
       lastName: form.lastName.value,
     }
     const input = {
-      ...data
+      ...data,
     }
     createUser(input as any)
   }
 
   return (
-    <main className="bg-slate-800 h-screen flex flex-col justify-center items-center gap-3">
-      <header className="text-white text-xl">WELCOME</header>
-      <p className="text-white text-md">Enter your details below to create an account</p>
+    <main className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-800">
+      <header className="text-xl text-white">WELCOME</header>
+      <p className="text-md text-white">Enter your details below to create an account</p>
       <form onSubmit={onSubmit} className="flex flex-col gap-3">
         <div className="flex flex-col gap-3">
           <div>
@@ -112,8 +108,8 @@ const { mutate: createUser, isPending } = useMutation({
       </form>
 
       <div className="flex flex-col gap-3">
-        <p className="text-xl text-slate-200 font-semibold">Already have an account?</p>
-        <Link to="/log-in" className="text-xl text-teal-600 font-semibold text-center">
+        <p className="text-xl font-semibold text-slate-200">Already have an account?</p>
+        <Link to="/log-in" className="text-center text-xl font-semibold text-teal-600">
           Log in here
         </Link>
       </div>
@@ -129,7 +125,10 @@ const confirmPasswordValidator = {
 
 export const SignUp = () => {
   return (
-    <FormProvider<AccountFormInputs> formClass={AccountForm} formLevelValidators={confirmPasswordValidator}>
+    <FormProvider<AccountFormInputs>
+      formClass={AccountForm}
+      formLevelValidators={confirmPasswordValidator}
+    >
       <SignUpInner />
     </FormProvider>
   )
