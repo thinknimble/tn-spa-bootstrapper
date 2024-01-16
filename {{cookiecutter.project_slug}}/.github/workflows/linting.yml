@@ -40,9 +40,9 @@ jobs:
       - name: Run ESLint
         working-directory: ./client
         {% if cookiecutter.client_app == 'Vue3' -%}
-        run: npx eslint --ext .js,.vue src
+        run: npx eslint --ext .js,.vue src --max-warnings=0
         {% elif cookiecutter.client_app == 'React' -%}
-        run: npx eslint --ext .ts,tsx,js src
+        run: npx eslint --ext .ts,tsx,js src --max-warnings=0
         {% endif -%}
 {%- endif %}
 {%- if cookiecutter.include_mobile == 'y' %}
