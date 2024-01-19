@@ -37,10 +37,14 @@ Set the `SENTRY_AUTH_TOKEN` in the Expo secrets see Error Logging & Crash Analyt
 
 #### Error Logging and Crashanalytics
 
-Set up rollbar organization with 2 (or 3 projects if you want local to also report)
-For each project retrieve the post_client_token
+Set up a rollbar instance (if using heroku 1 app in the production environment is recommended)
+
+Create a project in your rollbar account fo each project and retrieve the `post_client_token`
+
 Set up sentry for crash analytics and additional error logs (We use sentry because it is pre-built to integrate with expo)
-Create 2 (or 3 projects if you want local to report as well otherwise set the values for local to staging)
+
+Create a sentry account and set up the projects for the various environments (this can also be added to the prod instance on heroku)
+
 Retrieve:
 
 1. API Key
@@ -63,7 +67,11 @@ in [app.config.js](./app.config.js) set the confiuration variables
 - ios: bundleIdentifier: this should be created in the apple developer account
 - android: package: this should be created in the google play developer console
 
-To configure automatic submissions for each platform first run eas credentials. This will prompt you for the credentials we recommend allowing expo to create and manage all provising profiles and certs.
+To configure non-inetractive builds for the CI/CD pipeline you must run: 
+
+`eas credentials`
+
+The recommended approach for managing credentials is through expo, in the selections you should see this as an option
 
 Once configured these are the final steps:
 
@@ -76,9 +84,13 @@ For internal builds to pass you must first register at least one testing device 
 
 `eas device:create`
 
-Select the option for URL and send the URL to each user who wants to test a staging build. Because the UUID is stored in the staging build the user must register before the build, otherwise you will have to rebuild the staging env.
+you will then need to generate a new set of adhoc/development credentials depending on the distribution method using eas credentials again
 
-You must run a first time production build to set up appstore connect keys to be managed by Expo
+`eas credentials`
+
+You will have to then rebuild the app with the new profiles
+
+**You must run a first time production build to set up appstore connect keys to be managed by Expo**
 
 **Google**
 There is no required configuration for google in the eas.json however you must build and upload the apk for the first time before being able to automate.
