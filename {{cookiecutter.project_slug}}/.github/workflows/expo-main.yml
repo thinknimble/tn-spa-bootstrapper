@@ -60,6 +60,7 @@ jobs:
       - name: 🚀 Publish Staging Preview
         run: cd mobile && eas update --branch=staging --non-interactive --auto
         env:
+         # these variables should match the variables in eas.json for staging!
           BACKEND_SERVER_URL: ""
           ROLLBAR_ACCESS_TOKEN: ""
           SENTRY_PROJECT_NAME: ""
