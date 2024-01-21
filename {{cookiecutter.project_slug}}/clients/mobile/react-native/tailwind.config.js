@@ -1,11 +1,13 @@
 /** @type {import('tailwindcss').Config} */
+const { colors } = require('./tailwind-colors')
 
 module.exports = {
   content: ['./App.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
-      colors: {
-        primary: 'rgb(217,58,0)',
+      colors,
+      zIndex: {
+        infinity: '9999',
       },
     },
   },
