@@ -41,6 +41,5 @@ if settings.DEBUG:  # pragma: no cover
     urlpatterns += [path("api-auth/", include("rest_framework.urls"))]
 
 urlpatterns += [
-    path("", common_views.index),
     re_path(r".*/$", common_views.index),
 ]
