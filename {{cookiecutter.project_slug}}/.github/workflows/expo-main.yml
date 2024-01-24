@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+
+  workflow_dispatch:
+  
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -15,6 +18,10 @@ jobs:
         name: check diff
       - id: checkdiff
         run: |
+          if [ {{ "${{ github.event_name }}" }} == "workflow_dispatch" ]; then
+            echo "This workflow was triggered by a workflow_dispatch event."
+            echo "BUILD_MOBILE_APP=1" >> $GITHUB_OUTPUT
+          else
           echo "BUILD_MOBILE_APP=$(git diff-tree --no-commit-id --name-only -r {{ "${{ github.sha }}" }} | xargs | grep mobile/ | wc -l)" >> $GITHUB_OUTPUT
 
   printouts:
