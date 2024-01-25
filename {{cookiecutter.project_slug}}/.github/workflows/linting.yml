@@ -31,7 +31,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: 📦 Install dependencies        env:
+      - name: 📦 Install dependencies
+        env:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./client
         run: |
