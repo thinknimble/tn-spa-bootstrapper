@@ -31,19 +31,23 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./client
         run: |
           npm install
+      - name: 🆎 TypeCheck
+        working-directory: ./client
+        run: npm run tslint
+      - name: 🚧 ESLint
+        working-directory: ./client
+        run: npm run eslint
+      - name: 🎨 Prettier
+        working-directory: ./client
+        run: npm run format:check
       - name: Run ESLint
         working-directory: ./client
-        {% if cookiecutter.client_app == 'Vue3' -%}
-        run: npx eslint --ext .js,.vue src --max-warnings=0
-        {% elif cookiecutter.client_app == 'React' -%}
-        run: npx eslint --ext .ts,tsx,js src --max-warnings=0
-        {% endif -%}
 {%- endif %}
 {%- if cookiecutter.include_mobile == 'y' %}
   Lint_Mobile:
@@ -57,11 +61,14 @@ jobs:
           node-version: 18.x
       - name: 📦 Install dependencies
         working-directory: ./mobile
-        run: yarn install
+        run: npm install
       - name: 🆎 TypeCheck
         working-directory: ./mobile
-        run: yarn run tslint
+        run: npm run tslint
       - name: 🚧 ESLint
         working-directory: ./mobile
-        run: yarn run eslint
+        run: npm run eslint
+      - name: 🎨 Prettier
+        working-directory: ./mobile
+        run: npm run format:check
 {%- endif %}

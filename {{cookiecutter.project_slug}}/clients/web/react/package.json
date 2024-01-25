@@ -10,9 +10,10 @@
     "test:dev": "vitest",
     "test:watch": "vitest run",
     "test:single": "vitest $0",
-    "prettier": "prettier --write ./src",
+    "format:write": "prettier --write ./src",
+    "format:check": "prettier --check ./src",
     "tslint": "tsc",
-    "lint": "eslint --ext .js,.ts,.jsx,.tsx src"
+    "eslint": "eslint --ext .js,.ts,.jsx,.tsx --max-warnings=0 src"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.15.0",
