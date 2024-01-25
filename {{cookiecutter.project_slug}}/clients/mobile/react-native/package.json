@@ -19,11 +19,10 @@
     "run:ios:release": "expo run:ios --configuration Release",
     "prebuild:local": "source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME} SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} expo prebuild",
     "pub:web": "npx expo export:web && cd web-build && vercel --prod && cd ..",
-    "format": "prettier --check ./src",
+    "format:check": "prettier --check ./src",
     "format:write": "prettier --write ./src",
     "tslint": "tsc --skipLibCheck",
-    "eslint": "eslint --ext .js,.ts,.jsx,.tsx src",
-    "lint": "yarn run tslint && yarn run eslint"
+    "eslint": "eslint --ext .js,.ts,.jsx,.tsx src"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.18.2",
@@ -116,4 +115,3 @@
   ],
   "license": "MIT"
 }
-
