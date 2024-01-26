@@ -47,5 +47,5 @@ export const userApi = createApi(
       entity: userShape,
     },
   },
-  { login, requestPasswordReset, resetPassword , logout },
+  { login, requestPasswordReset, resetPassword, logout },
 )
