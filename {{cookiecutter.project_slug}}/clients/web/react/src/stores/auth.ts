@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { User } from '../services/user'
+import { User, userApi } from '../services/user'
 import { queryClient } from '../utils/query-client'
 import { createSelectors } from './utils'
 
@@ -86,7 +86,8 @@ export const useAuth = createSelectors(
   ),
 )
 
-export const logout = () => {
+export const logout = async() => {
+  await userApi.csc.logout()
   useAuth.getState().actions.clearAuth()
   queryClient.invalidateQueries({ queryKey: ['user'] })
 }

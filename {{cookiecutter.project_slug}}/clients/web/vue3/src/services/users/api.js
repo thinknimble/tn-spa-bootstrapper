@@ -34,6 +34,10 @@ const resetPassword = createCustomServiceCall(
   },
 )
 
+const logout = createCustomServiceCall(async ({ client }) => {
+  return client.post(`/logout/`)
+})
+
 export const userApi = createApi(
   {
     client: axiosInstance,
@@ -43,5 +47,5 @@ export const userApi = createApi(
       entity: userShape,
     },
   },
-  { login, requestPasswordReset, resetPassword },
+  { login, requestPasswordReset, resetPassword , logout },
 )
