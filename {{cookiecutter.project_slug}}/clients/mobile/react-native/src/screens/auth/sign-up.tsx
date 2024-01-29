@@ -64,8 +64,8 @@ const InnerForm = () => {
           <TextFormField field={form.firstName} />
           <TextFormField field={form.lastName} containerClassName="pt-4" />
           <TextFormField field={form.email} containerClassName="pt-4" />
-          <TextFormField field={form.password} containerClassName="pt-4" />
-          <TextFormField field={form.confirmPassword} containerClassName="pt-4" />
+          <TextFormField field={form.password} secureTextEntry containerClassName="pt-4" />
+          <TextFormField field={form.confirmPassword} secureTextEntry containerClassName="pt-4" />
         </ScrollViewWind>
         <BounceableWind contentContainerStyle="w-full pt-5" onPress={onSubmit}>
           <View className="rounded-lg bg-[#042642] w-full items-center py-2">
