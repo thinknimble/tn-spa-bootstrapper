@@ -4,7 +4,7 @@ jobs:
   Setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: jwalton/gh-find-current-pr@v1
         id: findPr
       - name: Set app_name for Staging

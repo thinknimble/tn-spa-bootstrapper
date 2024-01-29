@@ -5,9 +5,9 @@ jobs:
   Black_bootstrapper:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -17,9 +17,9 @@ jobs:
   flake8_bootstrapper:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -32,9 +32,9 @@ jobs:
         fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -54,9 +54,9 @@ jobs:
         fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -76,9 +76,9 @@ jobs:
         fe_type: [react, vue]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -87,7 +87,7 @@ jobs:
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: 📦 Install client dependencies
@@ -102,9 +102,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -114,7 +114,7 @@ jobs:
           config_file="cookiecutter/rn_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: 🏗 Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
       - name: 📦 Install dependencies

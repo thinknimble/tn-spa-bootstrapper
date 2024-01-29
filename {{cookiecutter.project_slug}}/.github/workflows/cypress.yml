@@ -9,10 +9,10 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
@@ -30,7 +30,7 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Run against {{ "${{ github.event.deployment_status.environment_url }}" }}
         uses: cypress-io/github-action@v4
         with:
