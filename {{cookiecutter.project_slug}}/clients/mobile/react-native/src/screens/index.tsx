@@ -33,6 +33,18 @@ export const navio = Navio.build({
     AuthStack: ['Auth'],
     MainStack: ['DashboardScreen'],
   },
+  tabs: {
+    AppTabs: {
+      content: {
+        DashboardTab: {
+          stack: 'MainStack',
+          options: {
+           
+          },
+        },
+      }
+    },
+  },
   root: 'AuthStack',
   defaultOptions: {
     stacks: { screen: screenDefaultOptions },
