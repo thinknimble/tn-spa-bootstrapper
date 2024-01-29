@@ -46,8 +46,6 @@ jobs:
       - name: 🎨 Prettier
         working-directory: ./client
         run: npm run format:check
-      - name: Run ESLint
-        working-directory: ./client
 {%- endif %}
 {%- if cookiecutter.include_mobile == 'y' %}
   Lint_Mobile:
