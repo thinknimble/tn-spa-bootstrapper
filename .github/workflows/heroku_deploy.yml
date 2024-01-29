@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: jwalton/gh-find-current-pr@v1
+      - uses: jwalton/gh-find-current-pr@master
         id: findPr
       - name: Set app_name for Staging
         run: echo "APP_NAME=tn-spa-bootstrapper-staging" >> $GITHUB_ENV

@@ -4,7 +4,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: jwalton/gh-find-current-pr@v1
+      - uses: jwalton/gh-find-current-pr@master
         id: findPr
       - name: Set name for PR
         if: success() && steps.findPr.outputs.number
@@ -33,7 +33,7 @@ jobs:
           node-version: 18.x
 
       - name: 🏗 Setup Expo and EAS
-        uses: expo/expo-github-action@v7
+        uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest

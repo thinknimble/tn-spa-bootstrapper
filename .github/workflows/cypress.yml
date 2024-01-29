@@ -45,7 +45,7 @@ jobs:
         working-directory: ./my_project/client
         run: npm install
       - name: Run against ${{ github.event.deployment_status.environment_url }}
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           working-directory: my_project/client
           browser: chrome
@@ -75,7 +75,7 @@ jobs:
         working-directory: ./my_project/client
         run: npm install
       - name: Run against ${{ github.event.deployment_status.environment_url }}
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           working-directory: my_project/client
           browser: firefox
@@ -106,7 +106,7 @@ jobs:
     needs: configuremobile
     if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
     steps:
-      - uses: jwalton/gh-find-current-pr@v1
+      - uses: jwalton/gh-find-current-pr@master
         id: findPr
       - name: Set name for PR
         if: success() && steps.findPr.outputs.number
