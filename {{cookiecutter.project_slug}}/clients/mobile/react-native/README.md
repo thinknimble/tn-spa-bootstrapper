@@ -34,13 +34,13 @@ alternatively if you want to use expo run command
 Set up an expo organization
 Generate an expo robot and api key
 Set the env secret `EXPO_TOKEN` in GH secrets for the pipeline
-Set the `SENTRY_AUTH_TOKEN` in the Expo secrets see Error Logging & Crash Analytics
+Set the `SENTRY_AUTH_TOKEN` in the Expo secrets see (Error Logging & Crash Analytics)
 
-#### Error Logging and Crashanalytics
+#### Error Logging and Crash Analytics
 
 Set up a rollbar instance (if using heroku 1 app in the production environment is recommended)
 
-Create a project in your rollbar account fo each project and retrieve the `post_client_token`
+Create a project in your rollbar account for each project and retrieve the `post_client_token`
 
 Set up sentry for crash analytics and additional error logs (We use sentry because it is pre-built to integrate with expo)
 
