@@ -19,11 +19,10 @@
     "run:ios:release": "expo run:ios --configuration Release",
     "prebuild:local": "source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME} SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} expo prebuild",
     "pub:web": "npx expo export:web && cd web-build && vercel --prod && cd ..",
-    "format": "prettier --check ./src",
+    "format:check": "prettier --check ./src",
     "format:write": "prettier --write ./src",
     "tslint": "tsc --skipLibCheck",
-    "eslint": "eslint --ext .js,.ts,.jsx,.tsx src",
-    "lint": "yarn run tslint && yarn run eslint"
+    "eslint": "eslint --ext .js,.ts,.jsx,.tsx --max-warnings=0 src"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.18.2",
@@ -84,7 +83,7 @@
     "@expo/config-plugins": "~7.2.2",
     "@expo/webpack-config": "^19.0.0",
     "@react-native-community/eslint-config": "2.0.0",
-    "@tanstack/eslint-plugin-query": "^5.14.6",
+    "@tanstack/eslint-plugin-query": "^5.17.20",
     "@types/i18n-js": "^3.8.3",
     "@types/lodash": "^4.14.185",
     "@types/react": "~18.2.14",
@@ -92,7 +91,7 @@
     "@typescript-eslint/eslint-plugin": "^5.37.0",
     "@typescript-eslint/parser": "^5.37.0",
     "dotenv-cli": "^6.0.0",
-    "eslint": "^7.28.0",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.7.1",
@@ -117,4 +116,3 @@
   ],
   "license": "MIT"
 }
-
