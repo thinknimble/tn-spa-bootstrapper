@@ -5,7 +5,7 @@
  *
  */
 
-import { GetInferredFromRaw } from '@thinknimble/tn-models'
+import { GetInferredFromRaw, readonly } from '@thinknimble/tn-models'
 import { z } from 'zod'
 import { baseModelShape } from '../base-model'
 
@@ -14,8 +14,7 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  //TODO:add back `readonly` https://github.com/thinknimble/tn-models-fp/issues/161
-  token: z.string().nullable(),
+  token: readonly(z.string().nullable().optional()),
 }
 export type UserShape = GetInferredFromRaw<typeof userShape>
 
