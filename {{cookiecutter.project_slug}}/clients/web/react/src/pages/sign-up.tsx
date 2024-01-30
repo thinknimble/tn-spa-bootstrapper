@@ -18,7 +18,7 @@ function SignUpInner() {
   const navigate = useNavigate()
 
   const { mutate: createUser, isPending } = useMutation({
-    mutationFn: userApi.create,
+    mutationFn: userApi.csc.signup,
     onSuccess: (data) => {
       if (!data.token) throw new Error('Token should be returned on user creation')
       changeToken(data.token)
