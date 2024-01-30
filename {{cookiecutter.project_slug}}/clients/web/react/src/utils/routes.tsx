@@ -9,6 +9,7 @@ const PrivateRoutes = () => {
     <Routes>
       <Route path="/home" element={<Home />} />
       <Route path="/private" element={<div>Hello from private</div>} />
+      <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   )
 }
@@ -30,7 +31,7 @@ const AuthRoutes = () => {
 export const AppRoutes = () => {
   const token = useAuth.use.token()
   const isAuth = Boolean(token)
-  
+
   if (!isAuth) return <AuthRoutes />
   return <PrivateRoutes />
 }

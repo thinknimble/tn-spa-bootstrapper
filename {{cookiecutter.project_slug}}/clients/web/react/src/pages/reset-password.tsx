@@ -10,8 +10,6 @@ import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { PasswordInput } from 'src/components/password-input'
 import { ResetPasswordForm, TResetPasswordForm, userApi } from 'src/services/user'
 
-const BE_ERROR_MESSAGE = 'Invalid or expired token'
-
 export const ResetPasswordInner = () => {
   const { form, createFormFieldChangeHandler } = useTnForm<TResetPasswordForm>()
   const { userId, token } = useParams()
@@ -82,7 +80,7 @@ export const ResetPasswordInner = () => {
           />
           <ErrorsList errors={form.confirmPassword.errors} />
         </section>
-        <Button type="submit" tabIndex={3}>
+        <Button variant="primary" type="submit" tabIndex={3}>
           Submit
         </Button>
       </form>

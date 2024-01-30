@@ -7,7 +7,7 @@ export const AuthLayout: FC<{ title: string; description: string; children: Reac
   title,
 }) => {
   return (
-    <main className="flex h-full w-full flex-col items-center gap-3 bg-white text-black md:justify-center">
+    <main className="text-dark flex h-full w-full flex-col items-center gap-3 bg-white md:justify-center">
       <section className="flex w-full max-w-2xl flex-col items-center gap-4 px-4">
         <section className="flex h-full flex-col items-center gap-2">
           <header className="text-3xl font-semibold">{title}</header>

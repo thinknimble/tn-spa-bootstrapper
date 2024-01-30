@@ -1,14 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
-import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
+import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { AccountForm, TAccountForm, AccountFormInputs } from 'src/services/user/forms'
-import { User, userApi } from 'src/services/user'
+import { userApi } from 'src/services/user'
+import { AccountForm, AccountFormInputs, TAccountForm } from 'src/services/user/forms'
 import { useAuth } from 'src/stores/auth'
 
 function SignUpInner() {
