@@ -9,7 +9,7 @@ jobs:
     outputs:
         BUILD_MOBILE_APP: {{ "${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}" }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
         name: check diff
@@ -31,17 +31,17 @@ jobs:
     if: needs.setup.outputs.BUILD_MOBILE_APP != 0
     steps:
       - name: 🏗 Setup repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: 🏗 Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
           cache: yarn
           cache-dependency-path: ./mobile/yarn.lock
 
       - name: 🏗 Setup Expo and EAS
-        uses: expo/expo-github-action@v7
+        uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
