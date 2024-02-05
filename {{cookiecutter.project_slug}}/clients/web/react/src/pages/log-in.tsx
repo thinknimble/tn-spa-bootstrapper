@@ -5,7 +5,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { LoginForm, TLoginForm, LoginFormInputs, login } from 'src/services/user'
+import { LoginForm, LoginFormInputs, TLoginForm, userApi  } from 'src/services/user'
 
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
@@ -19,7 +19,7 @@ function LogInInner() {
   const navigate = useNavigate()
 
   const { mutate: logIn } = useMutation({
-    mutationFn: login,
+    mutationFn: userApi.csc.login,
     onSuccess: (data) => {
       if (!data.token) throw new Error('Missing token from response')
       changeToken(data.token)

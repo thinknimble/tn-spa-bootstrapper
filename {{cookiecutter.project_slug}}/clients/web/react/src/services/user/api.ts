@@ -3,15 +3,16 @@ import { z } from 'zod'
 import { axiosInstance } from '../axios-instance'
 import { userShape, forgotPasswordShape, userCreateShape, loginShape, LoginShape } from './models'
 
-export const login = async (input: LoginShape) => {
-  const { utils } = createApiUtils({
+const login = createCustomServiceCall(
+  {
     inputShape: loginShape,
     outputShape: userShape,
-    name: login.name,
-  })
-  const res = await axiosInstance.post('/login/', utils.toApi(input))
-  return utils.fromApi(res.data)
-}
+  },
+  async ({ client, input, utils }) => {
+    const res = await client.post('/login/', utils.toApi(input))
+    return utils.fromApi(res.data)
+  },
+)
 
 const requestPasswordReset = createCustomServiceCall(
   {
@@ -33,6 +34,10 @@ const resetPassword = createCustomServiceCall(
   },
 )
 
+const logout = createCustomServiceCall(async ({ client }) => {
+  return client.post(`/logout/`)
+})
+
 export const userApi = createApi(
   {
     client: axiosInstance,
@@ -42,5 +47,5 @@ export const userApi = createApi(
       entity: userShape,
     },
   },
-  { requestPasswordReset, resetPassword },
+  { login, requestPasswordReset, resetPassword ,logout },
 )
