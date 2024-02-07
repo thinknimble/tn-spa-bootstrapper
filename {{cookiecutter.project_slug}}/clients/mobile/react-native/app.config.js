@@ -26,7 +26,7 @@ module.exports = {
           config: {
             organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
             project: process.env.SENTRY_PROJECT_NAME, // see readme for this variables
-            authToken: process.env.SENTRY_AUTH_TOKEN, // defined in GH Secrets
+            authToken: process.env.SENTRY_AUTH_TOKEN, // this is set in Expo Secrets
           },
         },
       ],
