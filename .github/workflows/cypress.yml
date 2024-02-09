@@ -6,9 +6,9 @@ jobs:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           # Can't use cache because of https://github.com/actions/cache/issues/319
@@ -19,7 +19,7 @@ jobs:
           config_file=$(./scripts/vue_or_react.sh)
           pipenv run cookiecutter . --config-file $config_file --no-input -f
           cat $config_file
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: my_project
           path: my_project/
@@ -31,12 +31,12 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           name: my_project
           path: my_project/
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
       - name: Install frontend dependencies
@@ -45,7 +45,7 @@ jobs:
         working-directory: ./my_project/client
         run: npm install
       - name: Run against ${{ github.event.deployment_status.environment_url }}
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           working-directory: my_project/client
           browser: chrome
@@ -61,12 +61,12 @@ jobs:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102  # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers
       options: --user 1001
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           name: my_project
           path: my_project/
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
       - name: Install frontend dependencies
@@ -75,7 +75,7 @@ jobs:
         working-directory: ./my_project/client
         run: npm install
       - name: Run against ${{ github.event.deployment_status.environment_url }}
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
           working-directory: my_project/client
           browser: firefox
@@ -91,7 +91,7 @@ jobs:
     outputs:
       BUILD_MOBILE_APP: ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 5
         name: check diff
@@ -106,7 +106,7 @@ jobs:
     needs: configuremobile
     if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
     steps:
-      - uses: jwalton/gh-find-current-pr@v1
+      - uses: jwalton/gh-find-current-pr@master
         id: findPr
       - name: Set name for PR
         if: success() && steps.findPr.outputs.number
@@ -120,17 +120,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: getprnumber
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           name: my_project
           path: my_project/
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: 🏗 Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
 

@@ -5,7 +5,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { LoginForm, LoginFormInputs, TLoginForm, userApi } from 'src/services/user'
+import { LoginForm, LoginFormInputs, TLoginForm, userApi  } from 'src/services/user'
 
 import { useAuth } from 'src/stores/auth'
 import { useFollowupRoute } from 'src/utils/auth'

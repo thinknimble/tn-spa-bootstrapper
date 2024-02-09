@@ -56,6 +56,10 @@ const resetPassword = createCustomServiceCall(
   },
 )
 
+const logout = createCustomServiceCall(async ({ client }) => {
+  return client.post(`/logout/`)
+})
+
 export const userApi = createApi(
   {
     client: axiosInstance,

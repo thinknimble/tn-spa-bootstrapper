@@ -5,9 +5,9 @@ jobs:
   Pytest_bootstrapper:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -31,9 +31,9 @@ jobs:
       matrix:
         fe_type: [react, vue]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
