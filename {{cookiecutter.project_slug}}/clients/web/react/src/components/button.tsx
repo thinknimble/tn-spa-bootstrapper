@@ -34,7 +34,6 @@ export const Button: FC<
     )
   } else {
     const { isLoading, ...rest } = props
-    console.log('hola?', variant, buttonVariantMap[variant])
     return (
       <button
         {...rest}
