@@ -131,6 +131,7 @@
 </template>
 
 <script>
+import { userApi } from '@/services/users'
 import { computed, ref } from 'vue'
 
 import { useRouter } from 'vue-router'
@@ -143,7 +144,8 @@ export default {
     let mobileMenuOpen = ref(false)
     let profileMenuOpen = ref(false)
 
-    function logout() {
+    async function logout() {
+      await userApi.csc.logout()
       profileMenuOpen.value = false
       mobileMenuOpen.value = false
       store.dispatch('setUser', null)
