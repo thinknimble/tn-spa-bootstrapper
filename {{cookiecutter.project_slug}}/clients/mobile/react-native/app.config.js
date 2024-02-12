@@ -17,7 +17,7 @@ module.exports = {
       fallbackToCacheTimeout: 0,
       url: 'https://u.expo.dev/<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
     },
-    plugins: ['sentry-expo', 'expo-build-properties', 'expo-localization'],
+    plugins: ['sentry-expo', 'expo-build-properties', 'expo-localization', 'expo-font'],
     hooks: {
       postPublish: [
         {
