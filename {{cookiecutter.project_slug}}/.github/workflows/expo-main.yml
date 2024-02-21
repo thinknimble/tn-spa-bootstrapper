@@ -63,14 +63,14 @@ jobs:
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform all --profile staging --non-interactive
+        env: 
+          SENTRY_PROJECT_NAME: "<REPLACE_WTIH_SENTRY_PROJECT_NAME>"
 
       - name: 🚀 Publish Staging Preview
         run: cd mobile && eas update --branch=staging --non-interactive --auto
         env:
-         # these variables should match the variables in eas.json for staging!
+         # Since expo update replaces code OTA these variables should match the staging variables in eas.json
           BACKEND_SERVER_URL: ""
           ROLLBAR_ACCESS_TOKEN: ""
-          SENTRY_PROJECT_NAME: ""
-          SENTRY_DSN: ""
-          SENTRY_AUTH_TOKEN: ""
+
         
