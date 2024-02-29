@@ -1,9 +1,7 @@
-import { AppRoot } from '@screens/index'
-import { initServices } from '@services/index'
+import { AppRoot } from '@screens/routes'
 import { useAuth } from '@stores/auth'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { customFonts } from '@utils/fonts'
-import { SSProvider } from '@utils/providers'
 import { queryClient } from '@utils/query-client'
 import { initSentry } from '@utils/sentry'
 import 'expo-dev-client'
@@ -42,7 +40,6 @@ export default (): JSX.Element => {
 
   const start = useCallback(async () => {
     await loadAsync(customFonts)
-    await initServices()
     await hasLocalStorageHydratedState
     await SplashScreen.hideAsync()
     flushSync(() => {
@@ -57,12 +54,10 @@ export default (): JSX.Element => {
   if (!ready) return <></>
   return (
     <GestureHandlerRootView style={styles.flex}>
-      <SSProvider>
-        <QueryClientProvider client={queryClient}>
-          <StatusBar />
-          <AppRoot />
-        </QueryClientProvider>
-      </SSProvider>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar />
+        <AppRoot />
+      </QueryClientProvider>
     </GestureHandlerRootView>
   )
 }
