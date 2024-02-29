@@ -16,8 +16,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-          cache: yarn
-          cache-dependency-path: ./mobile/yarn.lock
+          cache: npm
+          cache-dependency-path: ./mobile/package-lock.json
 
       - name: 🏗 Setup Expo and EAS
         uses: expo/expo-github-action@v8
@@ -27,7 +27,8 @@ jobs:
           token:  {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: 📦 Install dependencies
-        run: cd mobile && yarn install
+        working-directory: ./mobile
+        run: npm install
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform ios --profile production --non-interactive --auto-submit
