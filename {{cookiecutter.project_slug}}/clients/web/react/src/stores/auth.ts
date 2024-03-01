@@ -86,8 +86,12 @@ export const useAuth = createSelectors(
   ),
 )
 
-export const logout = async() => {
-  await userApi.csc.logout()
+export const logout = async () => {
+  try {
+    await userApi.csc.logout()
+  } catch (e) {
+    console.error
+  }
   useAuth.getState().actions.clearAuth()
   queryClient.invalidateQueries({ queryKey: ['user'] })
 }

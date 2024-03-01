@@ -7,8 +7,8 @@ import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { LoginForm, LoginFormInputs, TLoginForm, userApi  } from 'src/services/user'
 
-import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
+import { useFollowupRoute } from 'src/utils/auth'
 
 function LogInInner() {
   const params = useLocation()
@@ -83,6 +83,14 @@ function LogInInner() {
             <ErrorsList errors={form.password.errors} />
           </div>
         </form>
+        <section>
+          <Link
+            to={'/forgot-password'}
+            className="text-sm font-semibold text-white hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </section>
         <Button data-cy="login-btn" onClick={handleLogin}>
           Log in
         </Button>
