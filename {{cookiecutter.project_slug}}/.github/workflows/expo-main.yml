@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Echo files
         run: |
-          echo "${{ needs.setup.outputs.BUILD_MOBILE_APP}}"
+          echo "{{ "${{ needs.setup.outputs.BUILD_MOBILE_APP}}" }}"
           echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP != 0 ]] && echo 'Changes detected in mobile dir..' || 'No changes in mobile app detected... will not deploy to expo')"
   publish:
     needs: setup
