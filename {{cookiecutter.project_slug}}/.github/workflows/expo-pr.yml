@@ -49,5 +49,3 @@ jobs:
         env:
           BACKEND_SERVER_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
           ROLLBAR_ACCESS_TOKEN: ""
-          SENTRY_PROJECT_NAME: ""
-          SENTRY_DSN: ""
