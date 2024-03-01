@@ -1,31 +1,37 @@
-import React from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { Home, Layout, LogIn, SignUp } from 'src/pages'
-import { AppOrAuth } from 'src/pages/app-or-auth'
+import { Home, LogIn, SignUp } from 'src/pages'
+import { ForgotPassword } from 'src/pages/forgot-password'
+import { ResetPassword } from 'src/pages/reset-password'
 import { useAuth } from 'src/stores/auth'
 
 const PrivateRoutes = () => {
-  const token = useAuth.use.token()
-  const isAuth = Boolean(token)
-  return isAuth ? (
+  return (
     <Routes>
       <Route path="/home" element={<Home />} />
       <Route path="/private" element={<div>Hello from private</div>} />
+      <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
-  ) : (
-    <Navigate to="/log-in" />
+  )
+}
+
+const AuthRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/*">
+        <Route path="log-in" element={<LogIn />} />
+        <Route path="sign-up" element={<SignUp />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password/:userId/:token" element={<ResetPassword />} />
+        <Route path="*" element={<Navigate to="/log-in" />} />
+      </Route>
+    </Routes>
   )
 }
 
 export const AppRoutes = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<AppOrAuth />} />
-        <Route path="/log-in" element={<LogIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/*" element={<PrivateRoutes />} />
-      </Route>
-    </Routes>
-  )
+  const token = useAuth.use.token()
+  const isAuth = Boolean(token)
+
+  if (!isAuth) return <AuthRoutes />
+  return <PrivateRoutes />
 }
