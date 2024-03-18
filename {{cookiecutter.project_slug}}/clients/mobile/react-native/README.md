@@ -210,13 +210,6 @@ From the `mobile/` folder run:
 1. Once you verify that builds are still working, you can delete your backup copy
 
 
-#### Useful services/methods
-
-- `navio` - a service that exposes all navigation methods of [Navio](https://github.com/kanzitelli/rn-navio) instance.
-- `translate` - a service that brings an easy integration of localization for an app by using [i18n-js](https://github.com/fnando/i18n-js) and [expo-localization](https://github.com/expo/expo/tree/master/packages/expo-localization).
-- `api` - a service where API-related methods are located.
-- `onStart` - a service where you can write your own logic when app is launched. For example, you can increment number of `appLaunches` there.
-
 #### Design system
 
 Use `tailwind.config.js` to define the styles you're going to use in the app.
