@@ -1,12 +1,18 @@
 import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
 import { z } from 'zod'
 import { axiosInstance } from '../axios-instance'
-import { userShape, forgotPasswordShape, userCreateShape, loginShape } from './models'
+import {
+  forgotPasswordShape,
+  loginShape,
+  userCreateShape,
+  userShape,
+  userShapeWithToken,
+} from './models'
 
 const login = createCustomServiceCall(
   {
     inputShape: loginShape,
-    outputShape: userShape,
+    outputShape: userShapeWithToken,
   },
   async ({ client, input, utils }) => {
     const res = await client.post('/login/', utils.toApi(input))
@@ -14,22 +20,38 @@ const login = createCustomServiceCall(
   },
 )
 
-const requestPasswordReset= createCustomServiceCall(
+const signup = createCustomServiceCall(
+  {
+    inputShape: userCreateShape,
+    outputShape: userShapeWithToken,
+  },
+  async ({ client, input, utils }) => {
+    const res = await client.post('/users/', utils.toApi(input))
+    return utils.fromApi(res.data)
+  },
+)
+
+const logout = createCustomServiceCall(async ({ client }) => {
+  return client.post(`/logout/`)
+})
+
+const requestPasswordReset = createCustomServiceCall(
   {
     inputShape: forgotPasswordShape,
   },
   async ({ client, input }) => {
-    await client.get(`/password/reset/${input.email}/`)
+    await client.post(`/password/reset/`, input)
   },
 )
+
 const resetPassword = createCustomServiceCall(
   {
-    inputShape: { email: z.string().email(), code: z.string(), password: z.string() },
+    inputShape: { userId: z.string(), token: z.string(), password: z.string() },
     outputShape: userShape,
   },
   async ({ client, input, utils }) => {
-    const { email, ...rest } = utils.toApi(input)
-    const res = await client.post(`/password/reset/code/confirm/${input.email}/`, rest)
+    const { token, user_id, ...rest } = utils.toApi(input)
+    const res = await client.post(`/password/reset/confirm/${user_id}/${token}/`, rest)
     return utils.fromApi(res.data)
   },
 )
@@ -43,5 +65,5 @@ export const userApi = createApi(
       entity: userShape,
     },
   },
-  { login, requestPasswordReset, resetPassword },
+  { login, logout, requestPasswordReset, resetPassword, signup },
 )

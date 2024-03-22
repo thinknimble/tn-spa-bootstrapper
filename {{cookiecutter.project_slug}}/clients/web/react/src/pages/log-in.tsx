@@ -5,13 +5,10 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { LoginForm, TLoginForm, LoginFormInputs,
-  userApi 
-} from 'src/services/user'
+import { LoginForm, LoginFormInputs, TLoginForm, userApi  } from 'src/services/user'
 
-import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
-
+import { useFollowupRoute } from 'src/utils/auth'
 
 function LogInInner() {
   const params = useLocation()
@@ -24,6 +21,7 @@ function LogInInner() {
   const { mutate: logIn } = useMutation({
     mutationFn: userApi.csc.login,
     onSuccess: (data) => {
+      if (!data.token) throw new Error('Missing token from response')
       changeToken(data.token)
       changeUserId(data.id)
       navigate('/home')
@@ -36,10 +34,10 @@ function LogInInner() {
   })
 
   const handleLogin = () => {
-const input = {
-  email: form.email.value ?? '',
-  password: form.password.value ?? '',
-}
+    const input = {
+      email: form.email.value ?? '',
+      password: form.password.value ?? '',
+    }
     logIn(input)
   }
 
@@ -51,10 +49,10 @@ const input = {
   }
 
   return (
-    <main className="bg-slate-800 h-screen flex flex-col justify-center items-center gap-3">
+    <main className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-800">
       <header className="text-2xl text-white">Login</header>
-      <section className="flex flex-col justify-center items-center gap-3">
-        <p className="text-slate-200 text-xl">Enter your login credentials below</p>
+      <section className="flex flex-col items-center justify-center gap-3">
+        <p className="text-xl text-slate-200">Enter your login credentials below</p>
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -85,13 +83,21 @@ const input = {
             <ErrorsList errors={form.password.errors} />
           </div>
         </form>
+        <section>
+          <Link
+            to={'/forgot-password'}
+            className="text-sm font-semibold text-white hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </section>
         <Button data-cy="login-btn" onClick={handleLogin}>
-          Login
+          Log in
         </Button>
       </section>
       <div className="flex flex-col gap-3">
-        <p className="text-xl text-slate-200 font-semibold">Don&apos;t have an account?</p>
-        <Link className="text-xl text-teal-600 font-semibold text-center" to="/sign-up">
+        <p className="text-xl font-semibold text-slate-200">Don&apos;t have an account?</p>
+        <Link className="text-center text-xl font-semibold text-teal-600" to="/sign-up">
           Register here
         </Link>
       </div>

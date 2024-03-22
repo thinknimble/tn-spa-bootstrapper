@@ -17,7 +17,7 @@ module.exports = {
       fallbackToCacheTimeout: 0,
       url: 'https://u.expo.dev/<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
     },
-    plugins: ['sentry-expo', 'expo-build-properties', 'expo-localization'],
+    plugins: ['sentry-expo', 'expo-build-properties', 'expo-localization', 'expo-font'],
     hooks: {
       postPublish: [
         {
@@ -26,7 +26,20 @@ module.exports = {
           config: {
             organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
             project: process.env.SENTRY_PROJECT_NAME, // see readme for this variables
-            authToken: process.env.SENTRY_AUTH_TOKEN, // defined in GH Secrets
+            /**
+             * TL;DR This variable is mentioned here for documentation and not required to be explicitly set 
+             * 
+             * This variable is retrieved from the global environment variables available at build time 
+             * It is not required to be explicitly set here, 
+             * uncommenting this line results in warnings from expo 
+             * These warnings can be safely ignored
+             * If building locally you can pass the variable in the build command 
+             * 
+             * source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME}\
+             *  SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} expo prebuild
+             * 
+             */
+            // authToken: process.env.SENTRY_AUTH_TOKEN, 
           },
         },
       ],

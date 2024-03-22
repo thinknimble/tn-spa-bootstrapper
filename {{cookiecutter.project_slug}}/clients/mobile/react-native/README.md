@@ -9,6 +9,7 @@ This app is bootstrapped with the TN-Bootsrapper, it uses Expo as a wrapper fram
 After running the bootsrapper a mobile directory is created the following steps are needed to run and deploy the app
 
 ## Running the app locally
+(Assuming you have already set up the app for the first time)
 
 User `npm run start` to run the app and source the env variables 
 
@@ -33,14 +34,18 @@ alternatively if you want to use expo run command
 Set up an expo organization
 Generate an expo robot and api key
 Set the env secret `EXPO_TOKEN` in GH secrets for the pipeline
-Set the `SENTRY_AUTH_TOKEN` in the Expo secrets see Error Logging & Crash Analytics
+Set the `SENTRY_AUTH_TOKEN` in the Expo secrets see (Error Logging & Crash Analytics)
 
-#### Error Logging and Crashanalytics
+#### Error Logging and Crash Analytics
 
-Set up rollbar organization with 2 (or 3 projects if you want local to also report)
-For each project retrieve the post_client_token
+Set up a rollbar instance (if using heroku 1 app in the production environment is recommended)
+
+Create a project in your rollbar account for each project and retrieve the `post_client_token`
+
 Set up sentry for crash analytics and additional error logs (We use sentry because it is pre-built to integrate with expo)
-Create 2 (or 3 projects if you want local to report as well otherwise set the values for local to staging)
+
+Create a sentry account and set up the projects for the various environments (this can also be added to the prod instance on heroku)
+
 Retrieve:
 
 1. API Key
@@ -63,22 +68,55 @@ in [app.config.js](./app.config.js) set the confiuration variables
 - ios: bundleIdentifier: this should be created in the apple developer account
 - android: package: this should be created in the google play developer console
 
-To configure automatic submissions for each platform first run eas credentials. This will prompt you for the credentials we recommend allowing expo to create and manage all provising profiles and certs.
+To configure non-inetractive builds for the CI/CD pipeline you must run BUT you will be doing that after the next step: 
 
-Once configured these are the final steps:
+`eas credentials`
+
+The recommended approach for managing credentials is through expo, in the selections you should see this as an option
+
+|   Build Credentials: Manage everything needed to build your project
+    |   All: Set up all the required credentials to build your project
+
+
+
 
 **Apple**
+
+Head over to the (apple developer account)[https://developer.apple.com/account/resources/identifiers/bundleId/add/bundle] and set up a new bundle identifier <-- Only set up the bundle identifier not a complete app yet
+
+`eas credentials`
+
+|   Build Credentials: Manage everything needed to build your project
+    |   All: Set up all the required credentials to build your project
+
+Return to the menu and also set up AppStore Connect API Key
+
+| App Store Connect: Manage your API Key
+
+If you need Push Notifications as well 
+
+| Push Notifications: Manage your Apple Push Notifications Key
+
+
 Configure the submit environment in the [eas.json](./eas.json)
 
-- ascAppId: this is a random uid set when creating the app
+- ascAppId: this is a random uid that you will set when creating the app
 
 For internal builds to pass you must first register at least one testing device using
 
 `eas device:create`
 
-Select the option for URL and send the URL to each user who wants to test a staging build. Because the UUID is stored in the staging build the user must register before the build, otherwise you will have to rebuild the staging env.
+Select the option for URL and send the URL to each user who wants to test a  build.
+
+Recreate the provisioning profile <- **this step is required in order for the user to be able to install the app**
+
+`eas credentials`
+
+Rebuild the app <- **this step is required in order for the user to be able to install the app**
+
 
 You must run a first time production build to set up appstore connect keys to be managed by Expo
+
 
 **Google**
 There is no required configuration for google in the eas.json however you must build and upload the apk for the first time before being able to automate.
@@ -149,12 +187,28 @@ Select the option for URL and send the URL to each user who wants to test a stag
 
 Lastly you can test any of the internal distribution builds (in other words development, staging) directly on browserstack
 
-#### Useful services/methods
+### Update certificates (IOS yearly)
 
-- `navio` - a service that exposes all navigation methods of [Navio](https://github.com/kanzitelli/rn-navio) instance.
-- `translate` - a service that brings an easy integration of localization for an app by using [i18n-js](https://github.com/fnando/i18n-js) and [expo-localization](https://github.com/expo/expo/tree/master/packages/expo-localization).
-- `api` - a service where API-related methods are located.
-- `onStart` - a service where you can write your own logic when app is launched. For example, you can increment number of `appLaunches` there.
+This needs to be done yearly or builds will fail (live apps would be fine).
+We should get an email from Apple when this is coming up
+
+From the `mobile/` folder run:
+
+`eas credentials`
+
+1. select platform (probably IOS)
+1. select `production`
+1. log in
+1. `Build Credentials`
+1. `Distribution Certificate: Add a new one to your account`
+1. New? `yes`
+1. Use? `yes`
+1. New Profile? Optional, but `yes`
+1. visit the project dashboard at `https://expo.dev/`
+1. Go to `Credentials` in the nav and see that you now have two, the old and the new.
+1. Download the old one before deleting
+1. Once you verify that builds are still working, you can delete your backup copy
+
 
 #### Design system
 

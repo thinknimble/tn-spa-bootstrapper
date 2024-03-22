@@ -1,3 +1,4 @@
+import logging
 import os
 
 import dj_database_url
@@ -158,7 +159,7 @@ USE_TZ = True
 REST_FRAMEWORK = {
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.AcceptHeaderVersioning",
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     "DEFAULT_PAGINATION_CLASS": "{{ cookiecutter.project_slug }}.core.pagination.PageNumberPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -259,7 +260,7 @@ else:
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
-if config("USE_AWS_STORAGE", cast=bool, default=False) and not IS_REVIEW_APP:
+if config("USE_AWS_STORAGE", cast=bool, default=False):
     AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
@@ -308,16 +309,25 @@ if not IN_DEV:
 #
 # Custom logging configuration
 #
+
+
+class MyFilter(logging.Filter):
+    def filter(self, record):
+        record.msg = str(record.msg).replace("'", '"')
+        return True
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
         "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
+        "fix_strings": {"()": MyFilter},
     },
     "formatters": {
         "verbose": {
-            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            "format": "%(asctime)s %(levelname)s %(name)s:%(funcName)s:%(lineno)s %(message)s",
             "datefmt": "%d/%b/%Y %H:%M:%S",
         },
         "simple": {
@@ -329,23 +339,20 @@ LOGGING = {
         "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
+            "filters": ["fix_strings"],
             "formatter": "verbose",
         },
     },
     "loggers": {
         "django": {
-            "handlers": [
-                "console",
-            ],
-            "level": "INFO",
+            "handlers": ["console"],
+            "level": "ERROR",
         },
         # The logger name matters -- it MUST match the name of the app
         "{{ cookiecutter.project_slug }}": {
-            "handlers": [
-                "console",
-            ],
+            "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": True,
+            "propagate": False,
         },
         "{{ cookiecutter.project_slug }}.request": {"handlers": [], "level": "INFO", "propagate": True},
         "{{ cookiecutter.project_slug }}.tasks": {"handlers": [], "level": "INFO", "propagate": True},

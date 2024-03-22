@@ -85,12 +85,11 @@
 </template>
 
 <script>
+import InputField from '@/components/inputs/InputField.vue'
+import { SignupForm, userApi } from '@/services/users/'
 import { ref } from 'vue'
-import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { userApi, SignupForm } from '@/services/users/'
-import InputField from '@/components/inputs/InputField'
-
+import { useStore } from 'vuex'
 
 export default {
   name: 'Signup',
@@ -122,7 +121,8 @@ export default {
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
 
-      userApi.create({
+      userApi
+        .create({
           firstName: unwrappedForm.firstName.value,
           lastName: unwrappedForm.lastName.value,
           email: unwrappedForm.email.value,

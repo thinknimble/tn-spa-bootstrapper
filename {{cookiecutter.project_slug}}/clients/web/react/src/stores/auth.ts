@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { User } from '../services/user'
+import { User, userApi } from '../services/user'
 import { queryClient } from '../utils/query-client'
 import { createSelectors } from './utils'
 
@@ -12,8 +12,8 @@ type AuthState = {
    * @deprecated This is a copy of the user model, we keep this in local storage to have it readily available on app load. We will update it accordingly in time if the server user has changed. Do not use this as source of truth, use `useUser` from `src/services/user` instead
    */
   user: User | null
-  isClearingAuth: boolean,
-  tokenExpirationDate : null | string,
+  isClearingAuth: boolean
+  tokenExpirationDate: null | string
   actions: {
     hydrate: () => void
     changeToken: (t: string) => void
@@ -23,7 +23,7 @@ type AuthState = {
      * Use only if you're syncing this state with the server
      * @deprecated
      */
-    writeUserInStorage: (user: User) => void,
+    writeUserInStorage: (user: User) => void
     changeTokenExpirationDate: (tokenExpirationDate: string) => void
   }
 }
@@ -37,7 +37,7 @@ const defaultValues: Omit<AuthState, 'actions' | 'hasHydrated'> = {
   userId: '',
   user: null,
   isClearingAuth: false,
-  tokenExpirationDate:null
+  tokenExpirationDate: null,
 }
 
 export const useAuth = createSelectors(
@@ -86,7 +86,12 @@ export const useAuth = createSelectors(
   ),
 )
 
-export const logout = () => {
+export const logout = async () => {
+  try {
+    await userApi.csc.logout()
+  } catch (e) {
+    console.error
+  }
   useAuth.getState().actions.clearAuth()
-queryClient.invalidateQueries(['user'])
+  queryClient.invalidateQueries({ queryKey: ['user'] })
 }

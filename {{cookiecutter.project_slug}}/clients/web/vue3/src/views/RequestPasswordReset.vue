@@ -49,8 +49,8 @@
 
 <script>
 import { ref } from 'vue'
-import  { userApi,  RequestPasswordResetForm } from '@/services/users/'
-import InputField from '@/components/inputs/InputField'
+import { userApi, RequestPasswordResetForm } from '@/services/users/'
+import InputField from '@/components/inputs/InputField.vue'
 
 export default {
   name: 'RequestPasswordReset',
@@ -76,7 +76,8 @@ export default {
       unwrappedForm.validate()
       if (!unwrappedForm.isValid) return
 
-      userApi.csc.requestPasswordReset({email: unwrappedForm.email.value})
+      userApi.csc
+        .requestPasswordReset({ email: unwrappedForm.email.value })
         .then(handleResetRequestSuccess)
         .catch(handleResetRequestFailure)
     }

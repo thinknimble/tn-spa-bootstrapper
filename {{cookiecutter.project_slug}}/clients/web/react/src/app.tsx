@@ -4,7 +4,7 @@ import { AppRoutes } from './utils/routes'
 export const AppRoot = () => {
   return (
     <Router>
-        <AppRoutes />
+      <AppRoutes />
       <Outlet />
     </Router>
   )

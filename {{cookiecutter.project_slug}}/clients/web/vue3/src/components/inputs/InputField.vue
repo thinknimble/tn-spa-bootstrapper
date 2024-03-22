@@ -1,11 +1,13 @@
 <template>
   <div class="mb-2 flex w-full flex-col items-start">
-    <label
-      v-if="label"
-      :for="`${label}-field`"
-      v-text="label"
-      class="input--label block text-sm font-medium text-primary"
-    />
+    <slot name="input-label">
+      <label
+        v-if="label"
+        :for="`${label}-field`"
+        v-text="label"
+        class="input--label block text-sm font-medium text-primary"
+      />
+    </slot>
     <input
       :id="`${label}-field`"
       :type="type"
@@ -16,6 +18,7 @@
       @blur="$emit('blur')"
       @focus="$emit('focus', $event)"
       class="input"
+      :autocomplete="autocomplete"
     />
     <ul v-if="errors.length">
       <li
@@ -29,7 +32,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { useModelWrapper } from '@/composables/VModelWrapper'
 
 export default {
   name: 'InputField',
@@ -53,14 +56,14 @@ export default {
       type: Array,
       required: true,
     },
+    autocomplete: {
+      type: String,
+      default: 'off',
+    },
   },
   emits: ['blur', 'focus', 'input', 'update:value'],
-  setup(props, context) {
-    const val = computed({
-      get: () => props.value,
-      set: (value) => context.emit('update:value', value),
-    })
-
+  setup(props, { emit }) {
+    const val = useModelWrapper(props, emit, 'value')
     return { val }
   },
 }

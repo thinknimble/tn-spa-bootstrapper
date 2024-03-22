@@ -18,7 +18,8 @@ from rest_framework.decorators import (
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from {{cookiecutter.project_slug}}.utils.emails import send_html_email
+from {{ cookiecutter.project_slug }}.core.forms import PreviewTemplateForm
+from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 from .models import User
 from .permissions import CreateOnlyPermissions
@@ -129,23 +130,35 @@ def reset_password(request, *args, **kwargs):
 
 
 class PreviewTemplateView(views.APIView):
+    permission_classes = (permissions.AllowAny,)
+
     def get(self, request):
-        return self.preview_template_view(request)
+        return self.preview_template_view(request, form=PreviewTemplateForm())
 
     def post(self, request):
-        return self.preview_template_view(request)
+        return self.preview_template_view(request, form=PreviewTemplateForm(data=request.data))
 
-    def preview_template_view(self, request):
+    def preview_template_view(self, request, form: PreviewTemplateForm):
         if not settings.DEBUG:
             raise Http404
         context = {}
         self.fill_context_from_params(context, request.query_params)
         self.fill_context_from_params(context, request.data)
-        template_name = context.pop("template", None)
         try:
-            return render(request, template_name, context=context)
+            if form.is_bound:
+                if not form.is_valid():
+                    raise ValidationError(form.errors)
+                send_html_email(
+                    "Template Preview", context["template"], settings.DEFAULT_FROM_EMAIL, form.cleaned_data["_send_to"], context=context
+                )
+                return Response(status=204)
+            context["email_form"] = form
+            return render(request, "core/preview.html", context=context)
         except (TypeError, TemplateDoesNotExist):
-            raise ValidationError(detail=f"Invalid template name: {template_name}")
+            raise ValidationError(detail=f"Invalid template name: {context['template']}")
+        except KeyError as ex:
+            if "template" in ex.args:
+                raise ValidationError(detail="You must provide a template name.")
 
     def fill_context_from_params(self, context: dict, args: dict):
         """

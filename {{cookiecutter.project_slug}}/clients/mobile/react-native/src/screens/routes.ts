@@ -5,7 +5,7 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
 import { Login, SignUp } from '@screens/auth'
 import { Main } from '@screens/main'
 import { Auth } from '@screens/auth/auth'
-import { DashboardScreen } from '@screens/DashboardScreen'
+import { DashboardScreen } from '@screens/dashboard'
 
 // Default options - forcing a mobile trigger
 export const screenDefaultOptions = (): NativeStackNavigationOptions => ({

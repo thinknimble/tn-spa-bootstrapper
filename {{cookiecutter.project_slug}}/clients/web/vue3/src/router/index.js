@@ -26,7 +26,8 @@ const routes = [
   {
     path: '/password/request-reset/',
     name: 'RequestPasswordReset',
-    component: () => import(/* webpackChunkName: "requestreset" */ '../views/RequestPasswordReset.vue'),
+    component: () =>
+      import(/* webpackChunkName: "requestreset" */ '../views/RequestPasswordReset.vue'),
     beforeEnter: requireNoAuth,
   },
   {
