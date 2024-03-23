@@ -1,5 +1,4 @@
 import Logger from './logger'
-import { BACKEND_SERVER_URL, ROLLBAR_ACCESS_TOKEN, SENTRY_DSN } from '@env'
 import { Platform } from 'react-native'
 import Constants from 'expo-constants'
 
@@ -19,7 +18,7 @@ const ENV = () => {
     }
   }
   return {
-    backendServerUrl: BACKEND_SERVER_URL,
+    backendServerUrl: BACKEND_SERVER_URL ?? backendServerUrl,
     logger: new Logger(rollbarToken).logger,
     sentryDSN: SENTRY_DSN,
   }
