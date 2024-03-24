@@ -76,6 +76,7 @@ import { LoginForm, userApi } from '@/services/users/'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { useAlert } from '@/composables/CommonAlerts'
 
 export default {
   name: 'Login',
@@ -88,6 +89,7 @@ export default {
     const router = useRouter()
     const form = ref(new LoginForm())
     const loggingIn = ref(false)
+    const {  errorAlert } = useAlert()
 
     async function handleLoginSuccess(user) {
       await store.dispatch('setUser', user)
@@ -100,7 +102,7 @@ export default {
     }
 
     function handleLoginFailure(error) {
-      alert(error)
+      errorAlert(error)
     }
 
     function attemptLogin() {
