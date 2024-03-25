@@ -2,6 +2,10 @@ from decouple import config
 
 from {{ cookiecutter.project_slug }}.settings import *  # noqa
 
+# Override staticfiles setting to avoid cache issues with whitenoise Manifest staticfiles storage
+# See: https://stackoverflow.com/a/69123932
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
 MEDIA_URL = "/media/"
 DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
