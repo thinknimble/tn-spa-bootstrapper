@@ -1,4 +1,5 @@
 import { AppRoot } from '@screens/routes'
+import * as Sentry from '@sentry/react-native'
 import { useAuth } from '@stores/auth'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { customFonts } from '@utils/fonts'
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
 
 SplashScreen.preventAutoHideAsync()
 
-export default (): JSX.Element => {
+export default Sentry.wrap((): JSX.Element => {
   const [ready, setReady] = useState(false)
   const hasLocalStorageHydratedState = useAuth.use.hasHydrated()
 
@@ -61,4 +62,4 @@ export default (): JSX.Element => {
       </QueryClientProvider>
     </GestureHandlerRootView>
   )
-}
+})
