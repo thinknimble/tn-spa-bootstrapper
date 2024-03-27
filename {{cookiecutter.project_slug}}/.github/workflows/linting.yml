@@ -62,10 +62,10 @@ jobs:
         run: npm install
       - name: 🆎 TypeCheck
         working-directory: ./mobile
-        run: npm run tslint
+        run: npm run lint:tslint
       - name: 🚧 ESLint
         working-directory: ./mobile
-        run: npm run eslint
+        run: npm run lint:eslint
       - name: 🎨 Prettier
         working-directory: ./mobile
         run: npm run format:check

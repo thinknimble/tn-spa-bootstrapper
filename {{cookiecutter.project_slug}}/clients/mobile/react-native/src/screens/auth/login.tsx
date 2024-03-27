@@ -1,20 +1,12 @@
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
-import { ScrollViewWind } from '@components/styled'
+import { BounceableWind } from '@components/styled'
 import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
 import { LoginForm, LoginFormInputs, TLoginForm, userApi } from '@services/user'
 import { useAuth } from '@stores/auth'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { styled } from 'nativewind'
-import { View } from 'react-native'
-import { Bounceable } from 'rn-bounceable'
+import { ScrollView, View } from 'react-native'
 import { getNavio } from '../routes'
-
-const BounceableWind = styled(Bounceable, {
-  props: {
-    contentContainerStyle: true,
-  },
-})
 
 const LoginInner = () => {
   const { form, overrideForm } = useTnForm<TLoginForm>()
@@ -46,12 +38,12 @@ const LoginInner = () => {
         <Text textClassName="text-black text-3xl" variant="bold">
           Log in
         </Text>
-        <ScrollViewWind className="w-full" contentContainerStyle="self-start w-full">
+        <ScrollView className="w-full" contentContainerClassName="self-start w-full">
           <TextFormField field={form.email} />
           <TextFormField field={form.password} secureTextEntry containerClassName="pt-4" />
-        </ScrollViewWind>
+        </ScrollView>
         <BounceableWind
-          contentContainerStyle="w-full pt-5"
+          contentContainerClassName="w-full pt-5"
           onPress={handleSubmit}
           disabled={!form.isValid}
         >

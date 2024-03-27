@@ -1,4 +1,5 @@
 import { AppRoot } from '@screens/routes'
+import * as Sentry from '@sentry/react-native'
 import { useAuth } from '@stores/auth'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { customFonts } from '@utils/fonts'
@@ -13,6 +14,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { LogBox, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import './global.css'
 
 LogBox.ignoreLogs(['Require'])
 
@@ -34,7 +36,7 @@ const styles = StyleSheet.create({
 
 SplashScreen.preventAutoHideAsync()
 
-export default (): JSX.Element => {
+export default Sentry.wrap((): JSX.Element => {
   const [ready, setReady] = useState(false)
   const hasLocalStorageHydratedState = useAuth.use.hasHydrated()
 
@@ -60,4 +62,4 @@ export default (): JSX.Element => {
       </QueryClientProvider>
     </GestureHandlerRootView>
   )
-}
+})
