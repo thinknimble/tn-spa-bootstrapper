@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { LogBox, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import './global.css'
 
 LogBox.ignoreLogs(['Require'])
 
