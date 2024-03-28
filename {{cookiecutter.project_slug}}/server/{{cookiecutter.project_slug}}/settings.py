@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
-    "drf_yasg",
+    "drf_spectacular",
     "django_nose",
     "rest_framework",
     "rest_framework.authtoken",
@@ -177,6 +177,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_VERSION": "1.0",
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 #
 # Static files (CSS, JavaScript, Images)
