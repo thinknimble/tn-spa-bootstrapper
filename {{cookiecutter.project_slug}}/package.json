@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "postinstall": "cd client && npm install",
-    "heroku-postbuild": "cd client && npm run build"
+    "postinstall": "cd client && bun install",
+    "heroku-postbuild": "cd client && bun run build"
   },
   "engines": {
     "node": "18.*.*",
