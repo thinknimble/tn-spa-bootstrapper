@@ -3,10 +3,6 @@
     "postinstall": "cd client && bun install",
     "heroku-postbuild": "cd client && bun run build"
   },
-  "engines": {
-    "node": "18.*.*",
-    "npm": "9.*.*"
-  },
   "cacheDirectories": [
     "client/node_modules",
     ".cache/Cypress"
