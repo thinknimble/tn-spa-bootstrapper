@@ -29,21 +29,15 @@
       "generator": "secret"
     }
   },
-  "addons": [
-    "heroku-postgresql:standard-0",
-    "papertrail:Choklad"
-  ],
+  "addons": ["heroku-postgresql:standard-0", "papertrail:Choklad"],
   "environments": {
     "review": {
-      "addons": [
-        "heroku-postgresql:mini",
-        "papertrail:Choklad"
-      ]
+      "addons": ["heroku-postgresql:mini", "papertrail:Choklad"]
     }
   },
   "buildpacks": [
     {
-      "url": "heroku/nodejs"
+      "url": "https://github.com/jakeg/heroku-buildpack-bun"
     },
     {
       "url": "heroku/python"

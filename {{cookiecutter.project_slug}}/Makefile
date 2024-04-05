@@ -32,7 +32,7 @@
 #	make client-shell
 #
 # This will place you inside of the container in the /app/client directory
-# where you can run `npm install {package_name}` as usual.
+# where you can run `bun install {package_name}` as usual.
 ##
 
 

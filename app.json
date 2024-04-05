@@ -1,58 +1,58 @@
 {
-    "name": "TN SPA Bootstrapper",
-    "env": {
-        "ALLOWED_HOSTS": {
-            "value": ".herokuapp.com"
-        },
-        "BUILDPACK_RUN": {
-            "value": "pipenv run cookiecutter . --config-file cookiecutter/vue_template.yaml --no-input -f"
-        },
-        "DEBUG": {
-            "value": "True"
-        },
-        "DISABLE_COLLECTSTATIC": {
-            "value": 1
-        },
-        "ENVIRONMENT": {
-            "value": "staging"
-        },
-        "MAILGUN_DOMAIN": {
-            "value": "thinknimble.com"
-        },
-        "NPM_CONFIG_PRODUCTION": {
-            "value": "false"
-        },
-        "PROJECT_PATH": {
-            "value": "my_project"
-        },
-        "SECRET_KEY": {
-            "generator": "secret"
-        }
+  "name": "TN SPA Bootstrapper",
+  "env": {
+    "ALLOWED_HOSTS": {
+      "value": ".herokuapp.com"
     },
-    "addons": ["heroku-postgresql:standard-0"],
-    "environments": {
-        "review": {
-            "addons": ["heroku-postgresql:mini"]
-        }
+    "BUILDPACK_RUN": {
+      "value": "pipenv run cookiecutter . --config-file cookiecutter/vue_template.yaml --no-input -f"
     },
-    "buildpacks": [
-        {
-            "url": "heroku/python"
-        },
-        {
-            "url": "https://github.com/weibeld/heroku-buildpack-run.git"
-        },
-        {
-            "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
-        },
-        {
-            "url": "heroku/nodejs"
-        },
-        {
-            "url": "heroku/python"
-        }
-    ],
-    "scripts": {
-        "postdeploy": "./scripts/db_setup.sh"
+    "DEBUG": {
+      "value": "True"
+    },
+    "DISABLE_COLLECTSTATIC": {
+      "value": 1
+    },
+    "ENVIRONMENT": {
+      "value": "staging"
+    },
+    "MAILGUN_DOMAIN": {
+      "value": "thinknimble.com"
+    },
+    "NPM_CONFIG_PRODUCTION": {
+      "value": "false"
+    },
+    "PROJECT_PATH": {
+      "value": "my_project"
+    },
+    "SECRET_KEY": {
+      "generator": "secret"
     }
+  },
+  "addons": ["heroku-postgresql:standard-0"],
+  "environments": {
+    "review": {
+      "addons": ["heroku-postgresql:mini"]
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    },
+    {
+      "url": "https://github.com/weibeld/heroku-buildpack-run.git"
+    },
+    {
+      "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
+    },
+    {
+      "url": "https://github.com/jakeg/heroku-buildpack-bun"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "./scripts/db_setup.sh"
+  }
 }
