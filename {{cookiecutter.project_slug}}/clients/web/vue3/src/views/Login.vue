@@ -90,7 +90,7 @@ export default {
     const router = useRouter()
     const form = ref(new LoginForm())
     const loggingIn = ref(false)
-    const {  errorAlert } = useAlert()
+    const { errorAlert } = useAlert()
 
     async function handleLoginSuccess(user) {
       await store.dispatch('setUser', user)
