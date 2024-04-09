@@ -2,13 +2,13 @@ import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-
 import { ScrollViewWind } from '@components/styled'
 import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
-import { useServices } from '@services/index'
 import { LoginForm, LoginFormInputs, TLoginForm, userApi } from '@services/user'
 import { useAuth } from '@stores/auth'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { styled } from 'nativewind'
 import { View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
+import { getNavio } from '../routes'
 
 const BounceableWind = styled(Bounceable, {
   props: {
@@ -18,7 +18,6 @@ const BounceableWind = styled(Bounceable, {
 
 const LoginInner = () => {
   const { form, overrideForm } = useTnForm<TLoginForm>()
-  const navio = useServices().navio
   const { changeToken, changeUserId } = useAuth.use.actions()
   const handleSubmit = async () => {
     //TODO:
@@ -35,7 +34,7 @@ const LoginInner = () => {
         }
         changeUserId(res.id)
         changeToken(res.token)
-        navio.stacks.push('MainStack')
+        getNavio().stacks.push('MainStack')
       } catch (e) {
         console.log(e)
       }

@@ -8,28 +8,28 @@ jobs:
 
     steps:
       - name: 🏗 Setup repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: {{ "${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}" }}
+          key: {{ "${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}" }}
 
       - name: 🏗 Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
 
       - name: 🏗 Setup Expo and EAS
-        uses: expo/expo-github-action@v7
+        uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
           token: {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: 📦 Install dependencies
-        run: cd mobile && yarn install
+        working-directory: ./mobile
+        run: npm install
 
       - name: 🚀 Publish preview
         run: cd mobile && eas update --branch=production --non-interactive --auto
-

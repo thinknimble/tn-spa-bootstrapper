@@ -1,38 +1,47 @@
 import Logger from './logger'
-import { BACKEND_SERVER_URL, ROLLBAR_ACCESS_TOKEN, SENTRY_DSN } from '@env'
 import { Platform } from 'react-native'
-import Constants from 'expo-constants'
+import Constants, { ExecutionEnvironment } from 'expo-constants'
 
-const [PROD_URL, STAGING_URL, DEV_URL] = [
-  'https://api.example.app',
-  'https://example.herokuapp.com',
-  'http://localhost:8000',
-]
-const [PROD, STAGING, DEV, REVIEW] = ['production', 'staging', 'development', 'review']
+const BACKEND_SERVER_URL = process.env.EXPO_PUBLIC_BACKEND_SERVER_URL
+const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN
+const ROLLBAR_ACCESS_TOKEN = process.env.EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN
 
-// Check if this is a build defined by EAS Build
 
-const { backendServerUrl, buildEnv, rollbarAccessToken, sentryDSN } = Constants?.expoConfig?.extra
+const {
+  backendServerUrl,
+  rollbarAccessToken,
+  sentryDSN,
+} = Constants?.expoConfig?.extra
 
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient
 const isAndroid = Platform.OS === 'android'
-let rollbarToken = isAndroid ? undefined : ROLLBAR_ACCESS_TOKEN
+
 
 const ENV = () => {
-  if (buildEnv) {
-    rollbarToken = rollbarAccessToken
+
+
+  if(!isExpoGo){
+    let rollbarToken = isAndroid ? undefined :  rollbarAccessToken
+    const logger = new Logger(rollbarToken).logger
     return {
-      backendServerUrl: backendServerUrl,
-      logger: new Logger(rollbarToken).logger,
-      sentryDSN: sentryDSN,
+      backendServerUrl,
+      logger,
+      sentryDSN,
+    
     }
+
   }
+
+  let rollbarToken = isAndroid ? undefined :  ROLLBAR_ACCESS_TOKEN
+  const logger = new Logger(rollbarToken).logger
   return {
     backendServerUrl: BACKEND_SERVER_URL,
-    logger: new Logger(rollbarToken).logger,
+    logger,
     sentryDSN: SENTRY_DSN,
   }
 }
 
-Config = { ...ENV() }
+const Config = { ...ENV() }
+Config.logger.info('Config', JSON.stringify(Config, null, 2))
 
 export default Config

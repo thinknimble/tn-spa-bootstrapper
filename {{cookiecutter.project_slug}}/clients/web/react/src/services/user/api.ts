@@ -1,37 +1,60 @@
-import { createApi, createApiUtils, createCustomServiceCall } from '@thinknimble/tn-models'
+import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
 import { z } from 'zod'
 import { axiosInstance } from '../axios-instance'
-import { userShape, forgotPasswordShape, userCreateShape, loginShape, LoginShape } from './models'
+import {
+  forgotPasswordShape,
+  loginShape,
+  userCreateShape,
+  userShape,
+  userShapeWithToken,
+} from './models'
 
-export const login = async (input: LoginShape) => {
-  const { utils } = createApiUtils({
+const login = createCustomServiceCall(
+  {
     inputShape: loginShape,
-    outputShape: userShape,
-    name: login.name,
-  })
-  const res = await axiosInstance.post('/login/', utils.toApi(input))
-  return utils.fromApi(res.data)
-}
+    outputShape: userShapeWithToken,
+  },
+  async ({ client, input, utils }) => {
+    const res = await client.post('/login/', utils.toApi(input))
+    return utils.fromApi(res.data)
+  },
+)
+
+const signup = createCustomServiceCall(
+  {
+    inputShape: userCreateShape,
+    outputShape: userShapeWithToken,
+  },
+  async ({ client, input, utils }) => {
+    const res = await client.post('/users/', utils.toApi(input))
+    return utils.fromApi(res.data)
+  },
+)
+
+const logout = createCustomServiceCall(async ({ client }) => {
+  return client.post(`/logout/`)
+})
 
 const requestPasswordReset = createCustomServiceCall(
   {
     inputShape: forgotPasswordShape,
   },
   async ({ client, input }) => {
-    await client.get(`/password/reset/${input.email}/`)
+    await client.post(`/password/reset/`, input)
   },
 )
 
-export const resetPassword = async (input: LoginShape) => {
-  const { utils } = createApiUtils({
-    inputShape: { email: z.string().email(), code: z.string(), password: z.string() },
+const resetPassword = createCustomServiceCall(
+  {
+    inputShape: { userId: z.string(), token: z.string(), password: z.string() },
     outputShape: userShape,
-    name: resetPassword.name,
-  })
-  const { email, ...rest } = utils.toApi(input)
-  const res = await axiosInstance.post(`/password/reset/code/confirm/${input.email}/`, rest)
-  return utils.fromApi(res.data)
-}
+  },
+  async ({ client, input, utils }) => {
+    const { token, user_id, ...rest } = utils.toApi(input)
+    const res = await client.post(`/password/reset/confirm/${user_id}/${token}/`, rest)
+    return utils.fromApi(res.data)
+  },
+)
 
 export const userApi = createApi(
   {
@@ -42,5 +65,5 @@ export const userApi = createApi(
       entity: userShape,
     },
   },
-  { requestPasswordReset },
+  { login, logout, requestPasswordReset, resetPassword, signup },
 )

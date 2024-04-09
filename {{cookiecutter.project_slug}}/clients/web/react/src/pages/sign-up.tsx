@@ -1,9 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
-import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
+import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
@@ -19,7 +18,7 @@ function SignUpInner() {
   const navigate = useNavigate()
 
   const { mutate: createUser, isPending } = useMutation({
-    mutationFn: userApi.create,
+    mutationFn: userApi.csc.signup,
     onSuccess: (data) => {
       if (!data.token) throw new Error('Token should be returned on user creation')
       changeToken(data.token)

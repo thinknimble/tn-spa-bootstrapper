@@ -1,4 +1,6 @@
-import { ButtonHTMLAttributes, FC } from 'react'
+import { ButtonHTMLAttributes, FC, ReactNode } from 'react'
+import { Link, LinkProps } from 'react-router-dom'
+import { Spinner } from './spinner'
 
 type ButtonVariant = 'primary' | 'accent' | 'disabled'
 const buttonVariantMap: Record<ButtonVariant, string> = {
@@ -6,15 +8,40 @@ const buttonVariantMap: Record<ButtonVariant, string> = {
   accent: '',
   disabled: 'btn--disabled bg-gray-200',
 }
+
+type CommonButtonProps = {
+  variant?: ButtonVariant
+  extendClassName?: string
+}
 export const Button: FC<
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: ButtonVariant
-    extendClassName?: string
-  }
+  CommonButtonProps &
+    (
+      | ({ link?: undefined; isLoading?: boolean } & ButtonHTMLAttributes<HTMLButtonElement>)
+      | {
+          link: LinkProps
+          children: ReactNode
+        }
+    )
 > = ({ extendClassName = '', children, variant = 'primary', ...props }) => {
-  return (
-    <button {...props} className={`rounded-lg ${buttonVariantMap[variant]} ${extendClassName}`}>
-      {children}
-    </button>
-  )
+  if ('link' in props && props.link) {
+    return (
+      <Link
+        className={` rounded-lg transition-transform hover:scale-[1.05] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none ${buttonVariantMap[variant]} ${extendClassName}`}
+        {...props.link}
+      >
+        {children}
+      </Link>
+    )
+  } else {
+    const { isLoading, ...rest } = props
+    return (
+      <button
+        {...rest}
+        className={` rounded-lg transition-transform hover:scale-[1.05] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none ${buttonVariantMap[variant]} ${extendClassName}`}
+        disabled={props.disabled || isLoading}
+      >
+        {props.isLoading ? <Spinner size="md" /> : children}
+      </button>
+    )
+  }
 }

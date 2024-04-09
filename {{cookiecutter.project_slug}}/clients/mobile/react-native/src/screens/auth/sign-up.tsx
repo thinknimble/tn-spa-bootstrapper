@@ -2,7 +2,6 @@ import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-
 import { ScrollViewWind } from '@components/styled'
 import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
-import { useServices } from '@services/index'
 import { userApi } from '@services/user'
 import { AccountForm, TAccountForm } from '@services/user/forms'
 import { useAuth } from '@stores/auth'
@@ -12,6 +11,7 @@ import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { styled } from 'nativewind'
 import { View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
+import { getNavio } from '../routes'
 
 const BounceableWind = styled(Bounceable, {
   props: {
@@ -23,14 +23,13 @@ const InnerForm = () => {
   //TODO: match bootstrapper style for signup and hit backend
   const { form } = useTnForm<TAccountForm>()
   const { changeToken, changeUserId } = useAuth.use.actions()
-  const navio = useServices().navio
   const { mutate: createUser } = useMutation({
     mutationFn: userApi.create,
     onSuccess: (data) => {
       if (!data?.token) return
       changeToken(data.token)
       changeUserId(data.id)
-      navio.stacks.push('MainStack')
+      getNavio().stacks.push('MainStack')
     },
     onError(e: unknown) {
       if (

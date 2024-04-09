@@ -41,7 +41,7 @@ def test_create_user():
 
     # AbstractBaseModel
     assert user.id
-    assert user.datetime_created
+    assert user.created
     assert user.last_edited
 
     # PermissionsMixin
@@ -102,7 +102,7 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
-        with mock.patch("my_project.core.views.render", return_value=Response()) as mocked_render:
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
             client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
 
@@ -119,7 +119,7 @@ class TestPreviewTemplateView:
         assert any("Invalid template name" in e for e in response.json())
 
     @override_settings(DEBUG=True)
-    def test_missing__send_to(self, client):
+    def test_missing_send_to(self, client):
         response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST")
         assert response.status_code == 400
         assert "This field is required." in response.json()["_send_to"]

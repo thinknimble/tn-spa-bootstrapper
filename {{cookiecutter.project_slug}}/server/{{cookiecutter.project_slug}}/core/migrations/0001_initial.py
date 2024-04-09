@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name="User",
             fields=[
                 ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ("datetime_created", models.DateTimeField(auto_now_add=True)),
+                ("created", models.DateTimeField(auto_now_add=True)),
                 ("last_edited", models.DateTimeField(auto_now=True)),
                 ("password", models.CharField(max_length=128, verbose_name="password")),
                 ("last_login", models.DateTimeField(blank=True, null=True, verbose_name="last login")),

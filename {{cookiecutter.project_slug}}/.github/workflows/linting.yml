@@ -4,9 +4,9 @@ jobs:
   Black:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -15,9 +15,9 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pipx install pipenv
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pipenv'
@@ -27,41 +27,46 @@ jobs:
   Lint_Web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
-      - name: Install dependencies
+          node-version: 18
+      - name: 📦 Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
         working-directory: ./client
         run: |
           npm install
-      - name: Run ESLint
+      - name: 🆎 TypeCheck
         working-directory: ./client
-        {% if cookiecutter.client_app == 'Vue3' -%}
-        run: npx eslint --ext .js,.vue src
-        {% elif cookiecutter.client_app == 'React' -%}
-        run: npx eslint --ext .ts,tsx,js src
-        {% endif -%}
+        run: npm run tslint
+      - name: 🚧 ESLint
+        working-directory: ./client
+        run: npm run eslint
+      - name: 🎨 Prettier
+        working-directory: ./client
+        run: npm run format:check
 {%- endif %}
 {%- if cookiecutter.include_mobile == 'y' %}
   Lint_Mobile:
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: 🏗 Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
       - name: 📦 Install dependencies
         working-directory: ./mobile
-        run: yarn install
+        run: npm install
       - name: 🆎 TypeCheck
         working-directory: ./mobile
-        run: yarn run tslint
+        run: npm run tslint
       - name: 🚧 ESLint
         working-directory: ./mobile
-        run: yarn run eslint
+        run: npm run eslint
+      - name: 🎨 Prettier
+        working-directory: ./mobile
+        run: npm run format:check
 {%- endif %}

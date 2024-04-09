@@ -36,7 +36,7 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import  { userApi, PasswordResetForm } from '@/services/users/'
+import { userApi, PasswordResetForm } from '@/services/users/'
 import InputField from '@/components/inputs/InputField.vue'
 
 export default {

@@ -7,6 +7,7 @@ import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/user'
 
+import { useAuth } from 'src/stores/auth'
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
 import { Logo } from 'src/components/logo'
