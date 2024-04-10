@@ -6,7 +6,6 @@ module.exports = {
   theme: {
     extend: {
       colors,
-    },
       fontFamily: {
         avenir: ['Avenir', 'Helvetica', 'Arial', 'sans-serif'],
       },

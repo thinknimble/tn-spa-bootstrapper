@@ -7,10 +7,10 @@ import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/user'
 
-import { useAuth } from 'src/stores/auth'
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
 import { Logo } from 'src/components/logo'
+import { PasswordInput } from 'src/components/password-input'
 
 function LogInInner() {
   const params = useLocation()
@@ -20,7 +20,7 @@ function LogInInner() {
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
   const navigate = useNavigate()
 
-  const { mutate: logIn } = useMutation({
+  const { mutate: logIn, isPending } = useMutation({
     mutationFn: userApi.csc.login,
     onSuccess: (data) => {
       changeToken(data.token)
@@ -45,7 +45,7 @@ function LogInInner() {
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
   if (isAuth) {
-    return <Navigate to={'/'} state={{'{{'}} from: followupRoute {{ '}}' }} />
+    return <Navigate to={'/'} state={{ from: followupRoute }} />
   }
 
   return (
@@ -85,9 +85,8 @@ function LogInInner() {
                   </Link>
                 </div>
               </div>
-              <Input
+              <PasswordInput
                 placeholder="Enter password..."
-                type="password"
                 onChange={(e) => {
                   createFormFieldChangeHandler(form.password)(e.target.value)
                 }}
@@ -103,7 +102,12 @@ function LogInInner() {
         <div className="mb-2">
           <ErrorMessage>{errorMessage}</ErrorMessage>
         </div>
-        <Button data-cy="login-btn" onClick={handleLogin} variant="primary">
+        <Button
+          data-cy="login-btn"
+          onClick={handleLogin}
+          variant="primary"
+          disabled={isPending || !form.isValid}
+        >
           Log in
         </Button>
       </section>

@@ -40,7 +40,7 @@ export const Button: FC<
         className={` rounded-lg transition-transform hover:scale-[1.05] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none ${buttonVariantMap[variant]} ${extendClassName}`}
         disabled={props.disabled || isLoading}
       >
-        {props.isLoading ? <Spinner size="md" /> : children}
+        {props.isLoading ? <Spinner size="sm" /> : children}
       </button>
     )
   }

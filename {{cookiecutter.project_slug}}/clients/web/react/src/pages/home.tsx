@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from 'src/stores/auth'
 
 export const Home = () => {
+  const token = useAuth.use.token()
+  const isAuth = Boolean(token)
+
   return (
     <>
       <div className="mx-auto flex min-h-full max-w-2xl flex-col items-center px-6 py-20 sm:py-48 lg:px-8">
@@ -11,11 +15,13 @@ export const Home = () => {
           Here&apos;s some information about {`{{ cookiecutter.project_name }}`}. Please update and
           expand on this text. This text is the first thing that users will see on the home page.
         </p>
-        <div className="mt-10 flex items-center justify-center gap-x-6">
-          <Link to="/dashboard" className="btn--accent">
-            Get started
-          </Link>
-        </div>
+        {isAuth && (
+          <div className="mt-10 flex items-center justify-center gap-x-6">
+            <Link to="/dashboard" className="btn--accent">
+              Get started
+            </Link>
+          </div>
+        )}
       </div>
     </>
   )

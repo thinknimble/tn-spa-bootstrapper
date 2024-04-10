@@ -2,7 +2,7 @@ import { IFormFieldError } from '@thinknimble/tn-forms'
 import { FC, Fragment, ReactNode } from 'react'
 
 export const ErrorMessage: FC<{ children: ReactNode }> = ({ children }) => {
-  return <p className="input--error">{children}</p>
+  return <p className="text-left text-sm text-error">{children}</p>
 }
 
 /**

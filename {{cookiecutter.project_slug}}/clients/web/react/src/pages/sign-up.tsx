@@ -4,12 +4,13 @@ import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
-import { ErrorsList } from 'src/components/errors'
+import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { AccountForm, TAccountForm, AccountFormInputs } from 'src/services/user/forms'
-import { User, userApi } from 'src/services/user'
+import { userApi } from 'src/services/user'
 import { useAuth } from 'src/stores/auth'
 import { Logo } from 'src/components/logo'
+import { PasswordInput } from 'src/components/password-input'
 
 function SignUpInner() {
   const [error, setError] = useState('')
@@ -26,9 +27,7 @@ function SignUpInner() {
       navigate('/home')
     },
     onError(e: any) {
-      if (e?.message === 'Please enter valid credentials') {
-        console.log(e)
-      }
+      setError('Something went wrong, please try again later.')
     },
   })
 
@@ -50,7 +49,7 @@ function SignUpInner() {
     <main className="flex min-h-full flex-1 flex-col justify-center px-6 py-10 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <Logo />
-        <h2 className="text-primary mt-4 text-center text-2xl font-bold leading-9 tracking-tight">
+        <h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
           Sign up
         </h2>
       </div>
@@ -91,36 +90,33 @@ function SignUpInner() {
             <ErrorsList errors={form.email.errors} />
           </div>
 
-          <div>
-            <Input
-              placeholder="Enter password..."
-              type="password"
-              onChange={(e) => {
-                createFormFieldChangeHandler(form.password)(e.target.value)
-              }}
-              label="Password"
-            />
-            <ErrorsList errors={form.password.errors} />
-          </div>
-          <div>
-            <Input
-              id="confirmPassword"
-              placeholder="Confirm Password"
-              type="password"
-              onChange={(e) => {
-                createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
-              }}
-              label="Confirm Password"
-            />
-            <ErrorsList errors={form.confirmPassword.errors} />
-          </div>
-          <Button type="submit">Sign Up</Button>
+          <PasswordInput
+            placeholder="Enter password..."
+            onChange={(e) => {
+              createFormFieldChangeHandler(form.password)(e.target.value)
+            }}
+            label="Password"
+          />
+          <ErrorsList errors={form.password.errors} />
+          <PasswordInput
+            id="confirmPassword"
+            placeholder="Confirm Password"
+            onChange={(e) => {
+              createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
+            }}
+            label="Confirm Password"
+          />
+          <ErrorsList errors={form.confirmPassword.errors} />
+          <Button type="submit" isLoading={isPending} disabled={isPending || !form.isValid}>
+            Sign Up
+          </Button>
+          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
         </form>
       </div>
       <div className="m-4 flex self-center text-sm">
         <p className="mr-2">Already have an account?</p>
 
-        <Link to="/log-in" className="text-primary font-bold hover:underline">
+        <Link to="/log-in" className="font-bold text-primary hover:underline">
           Log in.
         </Link>
       </div>
@@ -129,7 +125,7 @@ function SignUpInner() {
 }
 const confirmPasswordValidator = {
   confirmPassword: new MustMatchValidator({
-    message: 'passwordsMustMatch',
+    message: 'Passwords must match',
     matcher: 'password',
   }),
 }
