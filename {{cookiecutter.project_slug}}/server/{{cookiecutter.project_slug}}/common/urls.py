@@ -1,8 +1,11 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from rest_framework import permissions
 from rest_framework_nested import routers
 
@@ -16,24 +19,16 @@ if settings.DEBUG:
 # extend url patterns here
 urlpatterns = [*core_urls.urlpatterns]
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="{{cookiecutter.project_name}} API",
-        default_version="1.0",
-        description="{{cookiecutter.project_name}} Docs",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="support@thinknimble.com"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=False,
-    permission_classes=[permissions.IsAuthenticated],
-)
+SpectacularAPIView.permission_classes = (permissions.IsAuthenticated,)
+SpectacularSwaggerView.permission_classes = (permissions.IsAuthenticated,)
+SpectacularRedocView.permission_classes = (permissions.IsAuthenticated,)
 
 urlpatterns = urlpatterns + [
-    re_path(r"^api/swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
-    path(r"api/docs/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-    path(r"api/swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-    path(r"api/redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    # Optional UI:
+    path("api/swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
 if settings.DEBUG:  # pragma: no cover
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
