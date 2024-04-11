@@ -17,20 +17,18 @@ module.exports = {
         fallbackToCacheTimeout: 0,
         url: 'https://u.expo.dev/ec1b86e2-2582-48cf-8a7a-c6d2772ba4f2', // uuid of app
       },
-      plugins: ['sentry-expo'],
-      hooks: {
-        postPublish: [
+      plugins: [
+        [
+          '@sentry/react-native/expo',
           {
-            // this set up assumes you are using one application with multiple projects in sentry
-            file: 'sentry-expo/upload-sourcemaps',
-            config: {
-              organization: 'tn-bootstrapper',
-              project: process.env.SENTRY_PROJECT_NAME,
-              authToken: process.env.SENTRY_AUTH_TOKEN, // defined in expo secrets
-            },
-          },
+            organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
+            project: process.env.SENTRY_PROJECT_NAME, // see readme for these variables
+          }
         ],
-      },
+        'expo-build-properties',
+        'expo-localization',
+        'expo-font',  
+      ],
       ios: {
         supportsTablet: true,
         bundleIdentifier: 'org.thinknimble.expo.bootstrapper',
