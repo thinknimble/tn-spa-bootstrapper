@@ -21,7 +21,7 @@ module.exports = {
         [
           '@sentry/react-native/expo',
           {
-            organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
+            organization: 'tn-bootstrapper', // replace with org in sentry
             project: process.env.SENTRY_PROJECT_NAME, // see readme for these variables
           }
         ],
