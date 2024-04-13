@@ -22,7 +22,6 @@ media/
 # will be generated after `expo run:ios` or `expo run:android`
 ios/
 android/
-metro.config.js
 react-native.config.js
 index.js
 
