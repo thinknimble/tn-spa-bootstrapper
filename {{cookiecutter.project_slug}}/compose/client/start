@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+# Check if node_modules directory is empty
+if [ ! "$(ls -A /app/node_modules)" ]; then
+   echo "node_modules directory is empty. Installing dependencies..."
+   npm install
+fi
+
+# Start your application
+exec "$@"

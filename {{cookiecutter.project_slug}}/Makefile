@@ -43,7 +43,7 @@ build-client:
 	docker compose build client
 
 build-server:
-	docker-compose build server
+	docker compose build server
 
 run:
 	docker compose up
