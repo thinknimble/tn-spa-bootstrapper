@@ -36,7 +36,7 @@
   "environments": {
     "review": {
       "addons": [
-        "heroku-postgresql:mini",
+        "heroku-postgresql:essential-0",
         "papertrail:choklad"
       ]
     }
