@@ -5,7 +5,7 @@ import {
   forgotPasswordShape,
   resetPasswordShape,
   userCreateShape,
-  loginShape
+  loginShape,
 } from './models'
 
 const login = createCustomServiceCall(

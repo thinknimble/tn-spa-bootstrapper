@@ -33,6 +33,7 @@ def test_get_site_url_negative(settings, custom_settings):
         get_site_url()
 
 
+@pytest.mark.use_requests
 def test_password_reset_email_link(user):
     context = user.reset_password_context()
     html_body = get_html_body("registration/password_reset.html", context)

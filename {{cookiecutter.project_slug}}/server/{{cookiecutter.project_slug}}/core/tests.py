@@ -72,6 +72,7 @@ def test_user_can_login(test_user):
     assert res.status_code == 200
 
 
+@pytest.mark.use_requests
 @pytest.mark.django_db
 def test_password_reset(caplog, test_user, client):
     # fake our API call to the view that generates an email for the user to reset their password
