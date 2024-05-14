@@ -25,4 +25,4 @@ if config("CI", False):
 # Normally propagate is disabled so we don't get duplicate logs in production
 # Enabling it here so pytest caplog fixture can be used to inspect them
 LOGGING["loggers"]["django"]["propagate"] = True
-LOGGING["loggers"]["meals_on_wheels"]["propagate"] = True
+LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["propagate"] = True
