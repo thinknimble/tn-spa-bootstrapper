@@ -3,13 +3,14 @@ from unittest import mock
 import pytest
 from django.contrib.auth import authenticate
 from django.test import Client, override_settings
+from django.test.client import RequestFactory
 from pytest_factoryboy import register
 from rest_framework.response import Response
 
 from .factories import UserFactory
 from .models import User
 from .serializers import UserLoginSerializer
-from .views import PreviewTemplateView
+from .views import PreviewTemplateView, request_reset_link
 
 JSON_RQST_HEADERS = dict(
     content_type="application/json",

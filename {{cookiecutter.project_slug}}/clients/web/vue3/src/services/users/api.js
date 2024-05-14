@@ -1,7 +1,12 @@
 import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
-import { z } from 'zod'
 import axiosInstance from '../AxiosClient'
-import { userShape, forgotPasswordShape, resetPasswordShape, userCreateShape, loginShape } from './models'
+import {
+  userShape,
+  forgotPasswordShape,
+  resetPasswordShape,
+  userCreateShape,
+  loginShape
+} from './models'
 
 const login = createCustomServiceCall(
   {

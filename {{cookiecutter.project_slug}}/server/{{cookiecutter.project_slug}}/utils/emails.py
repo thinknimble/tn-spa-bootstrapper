@@ -8,8 +8,8 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from premailer import transform as inline_css
 
-
 logger = logging.getLogger(__name__)
+
 
 def log_email_details(html_text):
     if any(x in settings.EMAIL_BACKEND for x in ["console", "locmem"]):
