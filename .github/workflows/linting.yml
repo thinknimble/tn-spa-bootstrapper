@@ -90,14 +90,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: 📦 Install client dependencies
+      - name: 📦 Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
-        working-directory: ./my_project/client
-        run: npm install
-      - name: Run ESLint
-        working-directory: ./my_project/client
-        run: npx eslint --ext .js,.ts,.vue,.jsx,.tsx src
+        working-directory: ./client
+        run: |
+          npm install
+      - name: 🆎 TypeCheck
+        working-directory: ./client
+        run: npm run tslint
+      - name: 🚧 ESLint
+        working-directory: ./client
+        run: npm run eslint
   Lint_Mobile:
     runs-on: ubuntu-latest
     steps:
