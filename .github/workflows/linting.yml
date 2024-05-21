@@ -9,8 +9,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.10"
+          cache: "pipenv"
       - run: pipenv install --dev --deploy
       - name: Run Black
         run: pipenv run black --check --exclude \{\{cookiecutter .
@@ -21,8 +21,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.10"
+          cache: "pipenv"
       - run: pipenv install --dev --deploy
       - name: Run flake8
         run: pipenv run flake8 --extend-exclude server
@@ -36,8 +36,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.10"
+          cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy
       - run: |
@@ -58,8 +58,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.10"
+          cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy
       - run: |
@@ -80,8 +80,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.10"
+          cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy
       - run: |
@@ -106,8 +106,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.10"
+          cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy
       - run: |
@@ -119,10 +119,10 @@ jobs:
           node-version: 18.x
       - name: 📦 Install dependencies
         working-directory: ./my_project/mobile
-        run: yarn install
+        run: npm install
       - name: 🆎 TypeCheck
         working-directory: ./my_project/mobile
-        run: yarn run tslint
+        run: npm run lint:tslint
       - name: 🚧 ESLint
         working-directory: ./my_project/mobile
-        run: yarn run eslint
+        run: npm run lint:eslint
