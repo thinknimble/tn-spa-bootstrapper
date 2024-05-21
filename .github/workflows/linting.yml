@@ -93,14 +93,14 @@ jobs:
       - name: 📦 Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
-        working-directory: ./client
+        working-directory: ./my_project/client
         run: |
           npm install
       - name: 🆎 TypeCheck
-        working-directory: ./client
+        working-directory: ./my_project/client
         run: npm run tslint
       - name: 🚧 ESLint
-        working-directory: ./client
+        working-directory: ./my_project/client
         run: npm run eslint
   Lint_Mobile:
     runs-on: ubuntu-latest
