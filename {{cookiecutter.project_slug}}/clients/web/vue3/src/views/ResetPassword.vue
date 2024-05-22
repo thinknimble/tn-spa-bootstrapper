@@ -25,7 +25,6 @@
           label="Confirm Password"
           placeholder="Confirm Password"
         />
-
         <button class="btn--primary bg-primary" type="submit">Reset Password</button>
       </form>
     </div>
@@ -33,7 +32,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { userApi, PasswordResetForm } from '@/services/users/'
