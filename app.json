@@ -32,7 +32,7 @@
     "addons": ["heroku-postgresql:standard-0"],
     "environments": {
         "review": {
-            "addons": ["heroku-postgresql:mini"]
+            "addons": ["heroku-postgresql:essential-0"]
         }
     },
     "buildpacks": [

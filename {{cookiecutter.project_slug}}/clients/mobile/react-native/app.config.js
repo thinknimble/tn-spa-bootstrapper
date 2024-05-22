@@ -17,33 +17,18 @@ module.exports = {
       fallbackToCacheTimeout: 0,
       url: 'https://u.expo.dev/<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
     },
-    plugins: ['sentry-expo', 'expo-build-properties', 'expo-localization', 'expo-font'],
-    hooks: {
-      postPublish: [
+    plugins: [
+      [
+        '@sentry/react-native/expo',
         {
-          // this set up assumes you are using one application with multiple projects in sentry
-          file: 'sentry-expo/upload-sourcemaps',
-          config: {
-            organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
-            project: process.env.SENTRY_PROJECT_NAME, // see readme for this variables
-            /**
-             * TL;DR This variable is mentioned here for documentation and not required to be explicitly set 
-             * 
-             * This variable is retrieved from the global environment variables available at build time 
-             * It is not required to be explicitly set here, 
-             * uncommenting this line results in warnings from expo 
-             * These warnings can be safely ignored
-             * If building locally you can pass the variable in the build command 
-             * 
-             * source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME}\
-             *  SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} expo prebuild
-             * 
-             */
-            // authToken: process.env.SENTRY_AUTH_TOKEN, 
-          },
+          organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
+          project: process.env.SENTRY_PROJECT_NAME, // see readme for these variables
         },
       ],
-    },
+      'expo-build-properties',
+      'expo-localization',
+      'expo-font',
+    ],
     ios: {
       supportsTablet: true,
       bundleIdentifier: '<REPLACE_WITH_IOS_BUNDLE_ID>', // CHANGE TO BUNDLE ID
