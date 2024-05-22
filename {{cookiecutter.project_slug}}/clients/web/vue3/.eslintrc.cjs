@@ -35,5 +35,6 @@ module.exports = {
     'vue/no-v-model-argument': process.env.NODE_ENV ? 'warn' : 'off',
     'vue/multi-word-component-names': process.env.NODE_ENV ? 'warn' : 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
+    'prettier/prettier': 'off'  
   },
 }

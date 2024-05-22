@@ -29,7 +29,7 @@ const resetPassword = createCustomServiceCall(
   },
   async ({ client, input, utils }) => {
     const { email, ...rest } = utils.toApi(input)
-    const res = await client.post(`/password/reset/code/confirm/${input.email}/`, rest)
+    const res = await client.post(`/password/reset/code/confirm/${email}/`, rest)
     return utils.fromApi(res.data)
   },
 )
