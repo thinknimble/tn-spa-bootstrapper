@@ -19,13 +19,13 @@ const login = createCustomServiceCall({
 
 const requestPasswordReset = createCustomServiceCall({
   inputShape: forgotPasswordShape,
-  cb: async ({ client, input }) => {
+  cb: async ({ client, input, utils }) => {
     await client.post('/password/reset/', utils.toApi(input))
     return
   },
 })
 const resetPassword = createCustomServiceCall({
-  inputShape: { uid: z.string().email(), token: z.string(), password: z.string() },
+  inputShape: resetPasswordShape,
   outputShape: userShape,
   cb: async ({ client, input, utils }) => {
     const { password } = utils.toApi(input)
