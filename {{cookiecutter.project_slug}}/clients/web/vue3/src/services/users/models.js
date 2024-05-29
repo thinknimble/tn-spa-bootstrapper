@@ -21,6 +21,12 @@ export const forgotPasswordShape = {
   email: z.string().email(),
 }
 
+export const resetPasswordShape = {
+  uid: z.string().uuid(),
+  token: z.string(),
+  password: z.string(),
+}
+
 export const loginShape = {
   email: z.string().email(),
   password: z.string(),

@@ -13,12 +13,14 @@
             v-model:value="form.email.value"
             :errors="form.email.errors"
             @blur="form.email.validate()"
+            data-cy="email"
             type="email"
             label="Email address"
             placeholder="Enter email..."
           />
           <button
             :class="form.isValid ? 'btn--primary bg-primary' : 'btn--disabled bg-gray-200'"
+            data-cy="submit"
             type="submit"
           >
             Request Password Reset
@@ -26,7 +28,7 @@
         </form>
       </template>
       <template v-if="resetLinkSent">
-        <p class="text-md">
+        <p class="text-md" data-cy="submit-success">
           Your request has been submitted. If there is an account associated with the email
           provided, you should receive an email momentarily with instructions to reset your
           password.

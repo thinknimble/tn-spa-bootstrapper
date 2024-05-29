@@ -43,6 +43,7 @@
                     <router-link
                       :to="{ name: 'RequestPasswordReset' }"
                       class="font-semibold text-accent"
+                      data-cy="password-reset"
                       >Forgot password?</router-link
                     >
                   </div>
