@@ -2,7 +2,10 @@ import {
     AccountForm,
     EmailForgotPasswordForm,
     LoginForm,
+    LoginShape,
     ResetPasswordForm,
+    ResetPasswordShape,
+    UserCreateShape,
     UserShape,
     userApi,
   } from '@/services/users'
@@ -24,7 +27,7 @@ import {
     const { errorAlert, successAlert } = useAlert()
 
     const { data: user, mutate: login } = useMutation({
-      mutationFn: async (user: any) => {
+      mutationFn: async (user: LoginShape) => {
         return await userApi.csc.login(user)
       },
       onMutate: async () => {
@@ -63,7 +66,7 @@ import {
     })
   
     const { mutate: resetPassword } = useMutation({
-      mutationFn: async (data: any) => {
+      mutationFn: async (data: ResetPasswordShape) => {
         return await userApi.csc.resetPassword(data)
       },
       onError: (error: Error) => {
@@ -80,7 +83,7 @@ import {
     })
   
     const { mutate: register } = useMutation({
-      mutationFn: async (data: UserShape) => {
+      mutationFn: async (data: UserCreateShape) => {
         return await userApi.create(data)
       },
       onError: (error: Error) => {
@@ -88,7 +91,7 @@ import {
         console.log(error)
         errorAlert('There was an error attempting to register')
       },
-      onSuccess: (data: Error, _, __) => {
+      onSuccess: (data: UserShape, _, __) => {
         store.dispatch('setUser', data)
         router.push({ name: 'Dashboard' })
         qc.invalidateQueries({ queryKey: ['user'] })
