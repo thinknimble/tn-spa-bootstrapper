@@ -76,7 +76,6 @@
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import InputField from '@/components/inputs/InputField.vue'
 import { useUsers } from '@/composables/Users'
-import { ref } from 'vue'
 
 export default {
   name: 'Login',

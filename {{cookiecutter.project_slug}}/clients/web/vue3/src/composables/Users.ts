@@ -91,7 +91,7 @@ import {
         console.log(error)
         errorAlert('There was an error attempting to register')
       },
-      onSuccess: (data: UserShape, _, __) => {
+      onSuccess: (data: UserShape ) => {
         store.dispatch('setUser', data)
         router.push({ name: 'Dashboard' })
         qc.invalidateQueries({ queryKey: ['user'] })

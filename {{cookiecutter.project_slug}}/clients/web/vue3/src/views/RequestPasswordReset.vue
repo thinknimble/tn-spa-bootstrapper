@@ -36,7 +36,6 @@
 </template>
 
 <script>
-import { ref } from 'vue'
 import { useUsers } from '@/composables/Users'
 import InputField from '@/components/inputs/InputField.vue'
 
