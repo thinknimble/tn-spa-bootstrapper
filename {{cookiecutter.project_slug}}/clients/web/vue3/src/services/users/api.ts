@@ -1,11 +1,12 @@
 import { createApi, createCustomServiceCall } from '@thinknimble/tn-models'
+import { z } from 'zod'
 import axiosInstance from '../AxiosClient'
 import {
-  userShape,
   forgotPasswordShape,
+  loginShape,
   resetPasswordShape,
   userCreateShape,
-  loginShape,
+  userShape,
 } from './models'
 
 const login = createCustomServiceCall({
@@ -13,6 +14,7 @@ const login = createCustomServiceCall({
   outputShape: userShape,
   cb: async ({ client, input, utils }) => {
     const res = await client.post('/login/', utils.toApi(input))
+    console.log(res)
     return utils.fromApi(res.data)
   },
 })
@@ -21,9 +23,9 @@ const requestPasswordReset = createCustomServiceCall({
   inputShape: forgotPasswordShape,
   cb: async ({ client, input, utils }) => {
     await client.post('/password/reset/', utils.toApi(input))
-    return
   },
 })
+
 const resetPassword = createCustomServiceCall({
   inputShape: resetPasswordShape,
   outputShape: userShape,
@@ -32,7 +34,6 @@ const resetPassword = createCustomServiceCall({
     const res = await client.post(`/password/reset/confirm/${input.uid}/${input.token}/`, {
       password,
     })
-    
     return utils.fromApi(res.data)
   },
 })
@@ -49,4 +50,15 @@ export const userApi = createApi({
     entity: userShape,
   },
   customCalls: { login, requestPasswordReset, resetPassword, logout },
+})
+
+export const organizationApi = createApi({
+  client: axiosInstance,
+  baseUri: '/organizations/',
+  models: {
+    entity: {
+      id: z.string(),
+      name: z.string(),
+    },
+  },
 })
