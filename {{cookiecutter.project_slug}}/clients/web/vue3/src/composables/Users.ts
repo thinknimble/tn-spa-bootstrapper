@@ -3,6 +3,7 @@ import {
     EmailForgotPasswordForm,
     LoginForm,
     ResetPasswordForm,
+    UserShape,
     userApi,
   } from '@/services/users'
   import { useMutation, useQueryClient } from '@tanstack/vue-query'
@@ -29,12 +30,12 @@ import {
       onMutate: async () => {
         loading.value = true
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         loading.value = false
         console.log(error)
         errorAlert('Invalid email or password')
       },
-      onSuccess: (data, _, __) => {
+      onSuccess: (data: UserShape, _, __) => {
         loading.value = false
         store.dispatch('setUser', data)
         const redirectPath = router.currentRoute.value.query.redirect
@@ -50,7 +51,7 @@ import {
       mutationFn: async (email: string) => {
         await userApi.csc.requestPasswordReset({ email })
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         loading.value = false
         console.log(error)
       },
@@ -65,12 +66,12 @@ import {
       mutationFn: async (data: any) => {
         return await userApi.csc.resetPassword(data)
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         loading.value = false
         console.log(error)
         errorAlert('There was an error attempting to reset password')
       },
-      onSuccess: (data, _, __) => {
+      onSuccess: (data: Error, _, __) => {
         loading.value = false
         store.dispatch('setUser', data)
         router.push({ name: 'Dashboard' })
@@ -79,15 +80,15 @@ import {
     })
   
     const { mutate: register } = useMutation({
-      mutationFn: async (data: any) => {
+      mutationFn: async (data: UserShape) => {
         return await userApi.create(data)
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         loading.value = false
         console.log(error)
         errorAlert('There was an error attempting to register')
       },
-      onSuccess: (data, _, __) => {
+      onSuccess: (data: Error, _, __) => {
         store.dispatch('setUser', data)
         router.push({ name: 'Dashboard' })
         qc.invalidateQueries({ queryKey: ['user'] })
