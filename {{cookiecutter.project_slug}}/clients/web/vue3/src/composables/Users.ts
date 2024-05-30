@@ -38,7 +38,7 @@ import {
         console.log(error)
         errorAlert('Invalid email or password')
       },
-      onSuccess: (data: UserShape, _, __) => {
+      onSuccess: (data: UserShape) => {
         loading.value = false
         store.dispatch('setUser', data)
         const redirectPath = router.currentRoute.value.query.redirect
@@ -58,7 +58,7 @@ import {
         loading.value = false
         console.log(error)
       },
-      onSuccess: (_, __, ___) => {
+      onSuccess: () => {
         loading.value = false
         successAlert('Password reset link sent to your email')
         qc.invalidateQueries({ queryKey: ['user'] })
@@ -74,7 +74,7 @@ import {
         console.log(error)
         errorAlert('There was an error attempting to reset password')
       },
-      onSuccess: (data: UserShape, _, __) => {
+      onSuccess: (data: UserShape) => {
         loading.value = false
         store.dispatch('setUser', data)
         router.push({ name: 'Dashboard' })
