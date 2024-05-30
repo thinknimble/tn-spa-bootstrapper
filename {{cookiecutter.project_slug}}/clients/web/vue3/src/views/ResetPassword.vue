@@ -26,6 +26,7 @@
           label="Confirm Password"
           placeholder="Confirm Password"
           :id="form.confirmPassword.id"
+          data-cy=""
         />
 
         <button class="btn--primary bg-primary" :disabled="!form.isValid" type="submit">
