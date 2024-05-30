@@ -8,7 +8,7 @@
     </div>
 
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form @submit.prevent="attemptUserRegistration()">
+      <form @submit.prevent="register(form.value)">
         <div>
           <label class="mb-2 block text-left text-sm font-medium leading-6 text-primary"
             >First Name</label
@@ -71,7 +71,16 @@
           />
         </div>
         <div>
-          <button type="submit" data-cy="submit" class="btn--primary bg-primary">Sign up</button>
+          <LoadingSpinner v-if="loading" />
+          <button
+            v-else
+            :disabled="!form.isValid"
+            type="submit"
+            data-cy="submit"
+            class="btn--primary bg-primary"
+          >
+            Sign up
+          </button>
         </div>
       </form>
     </div>
@@ -86,55 +95,26 @@
 
 <script>
 import InputField from '@/components/inputs/InputField.vue'
-import { SignupForm, userApi } from '@/services/users/'
+import { AccountForm, userApi } from '@/services/users'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { useUsers } from '@/composables/Users'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 export default {
   name: 'Signup',
   components: {
     InputField,
+    LoadingSpinner,
   },
   setup() {
-    const store = useStore()
-    const router = useRouter()
-    const form = ref(new SignupForm())
-
-    async function handleRegistrationSuccess(user) {
-      await store.dispatch('setUser', user)
-      const redirectPath = router.currentRoute.value.query.redirect
-      if (redirectPath) {
-        router.push({ path: redirectPath })
-      } else {
-        router.push({ name: 'Dashboard' })
-      }
-    }
-
-    function handleRegistrationFailure(error) {
-      alert(error)
-    }
-
-    function attemptUserRegistration() {
-      // unwrap form
-      const unwrappedForm = form.value
-      unwrappedForm.validate()
-      if (!unwrappedForm.isValid) return
-
-      userApi
-        .create({
-          firstName: unwrappedForm.firstName.value,
-          lastName: unwrappedForm.lastName.value,
-          email: unwrappedForm.email.value,
-          password: unwrappedForm.password.value,
-        })
-        .then(handleRegistrationSuccess)
-        .catch(handleRegistrationFailure)
-    }
+    const { register, loading, registerForm } = useUsers()
 
     return {
-      form,
-      attemptUserRegistration,
+      form: registerForm,
+      loading,
+      register,
     }
   },
 }
