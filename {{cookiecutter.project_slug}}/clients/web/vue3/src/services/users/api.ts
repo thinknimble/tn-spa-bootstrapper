@@ -51,14 +51,3 @@ export const userApi = createApi({
   },
   customCalls: { login, requestPasswordReset, resetPassword, logout },
 })
-
-export const organizationApi = createApi({
-  client: axiosInstance,
-  baseUri: '/organizations/',
-  models: {
-    entity: {
-      id: z.string(),
-      name: z.string(),
-    },
-  },
-})
