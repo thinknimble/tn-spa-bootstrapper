@@ -1,0 +1,1 @@
+declare module '@thinknimble/vue3-alert-alert';
