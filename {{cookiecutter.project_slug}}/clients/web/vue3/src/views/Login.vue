@@ -43,6 +43,7 @@
 
                   <div class="text-sm hover:underline">
                     <router-link
+                      data-cy="password-reset"
                       :to="{ name: 'RequestPasswordReset' }"
                       class="font-semibold text-accent"
                       >Forgot password?</router-link
