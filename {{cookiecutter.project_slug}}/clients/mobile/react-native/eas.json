@@ -55,10 +55,10 @@
       "channel": "production",
       "autoIncrement": true,
       "env": {
-        "BACKEND_SERVER_URL": "<REPLACE_WITH_PROD_BACKEND_SERVER_URL>",
+        "BACKEND_SERVER_URL": "<REPLACE_WITH_PRODUCTION_BACKEND_SERVER_URL>",
         "BUILD_ENV": "production",
-        "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_PROD_ROLLBAR_TOKEN>",
-        "SENTRY_DSN": "<REPLACE_WITH_PROD_SENTRY_DSN>"
+        "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_PRODUCTION_ROLLBAR_TOKEN>",
+        "SENTRY_DSN": "<REPLACE_WITH_PRODUCTION_SENTRY_DSN>"
       }
     }
   },
