@@ -74,7 +74,7 @@ import {
         console.log(error)
         errorAlert('There was an error attempting to reset password')
       },
-      onSuccess: (data: ResetPasswordShape, _, __) => {
+      onSuccess: (data: UserShape, _, __) => {
         loading.value = false
         store.dispatch('setUser', data)
         router.push({ name: 'Dashboard' })
