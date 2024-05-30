@@ -7,7 +7,7 @@
       </h2>
     </div>
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form @submit.prevent="attemptPasswordReset()">
+      <form @submit.prevent="resetPassword(form.value)">
         <InputField
           v-model:value="form.password.value"
           :errors="form.password.errors"
@@ -15,6 +15,7 @@
           type="password"
           label="New Password"
           placeholder="New password"
+          :id="form.password.id"
         />
 
         <InputField
@@ -24,18 +25,20 @@
           type="password"
           label="Confirm Password"
           placeholder="Confirm Password"
+          :id="form.confirmPassword.id"
         />
-        <button class="btn--primary bg-primary" type="submit">Reset Password</button>
+
+        <button class="btn--primary bg-primary" :disabled="!form.isValid" type="submit">
+          Reset Password
+        </button>
       </form>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
-import { userApi, PasswordResetForm } from '@/services/users/'
+import { useUsers } from '@/composables/Users'
+
 import InputField from '@/components/inputs/InputField.vue'
 
 export default {
@@ -44,41 +47,16 @@ export default {
     InputField,
   },
   setup() {
-    const form = ref(new PasswordResetForm())
-    const store = useStore()
-    const route = useRoute()
-    const router = useRouter()
+    const { resetPasswordForm, loading, resetPassword, getCodeUidFromRoute } = useUsers()
+    const { uid, token } = getCodeUidFromRoute()
 
-    function handleResetSuccess(data) {
-      store.dispatch('setUser', data)
-      router.push({ name: 'Dashboard' })
-    }
-
-    function handleResetFailure(error) {
-      alert(error)
-    }
-
-    function attemptPasswordReset() {
-      // unwrap form
-      const unwrappedForm = form.value
-      unwrappedForm.validate()
-      if (!unwrappedForm.isValid) return
-
-      const { uid, token } = route.params
-
-      userApi.csc
-        .resetPassword({
-          uid,
-          token,
-          password: unwrappedForm.password.value,
-        })
-        .then(handleResetSuccess)
-        .catch(handleResetFailure)
-    }
+    resetPasswordForm.uid.value = uid
+    resetPasswordForm.token.value = token
 
     return {
-      form,
-      attemptPasswordReset,
+      form: resetPasswordForm,
+      loading,
+      resetPassword,
     }
   },
 }
