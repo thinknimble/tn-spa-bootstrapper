@@ -36,9 +36,6 @@ jobs:
         with:
           name: my_project
           path: my_project/
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 16
       - name: Install frontend dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
@@ -66,9 +63,6 @@ jobs:
         with:
           name: my_project
           path: my_project/
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 16
       - name: Install frontend dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
