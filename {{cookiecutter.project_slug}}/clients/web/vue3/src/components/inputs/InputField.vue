@@ -3,13 +3,14 @@
     <slot name="input-label">
       <label
         v-if="label"
-        :for="`${label}-field`"
+        :for="`${id ? id : label - 'field'}`"
         v-text="label"
         class="input--label block text-sm font-medium text-primary"
       />
     </slot>
     <input
-      :id="`${label}-field`"
+      :disabled="disabled"
+      :id="`${id ? id : label - 'field'}`"
       :type="type"
       :placeholder="placeholder"
       spellcheck="false"
@@ -40,6 +41,9 @@ export default {
     label: {
       type: String,
     },
+    id: {
+      type: String,
+    },
     type: {
       type: String,
       default: 'text',
@@ -59,6 +63,10 @@ export default {
     autocomplete: {
       type: String,
       default: 'off',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ['blur', 'focus', 'input', 'update:value'],

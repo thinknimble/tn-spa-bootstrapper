@@ -7,27 +7,23 @@
       </h2>
     </div>
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-      <template v-if="!resetLinkSent">
-        <form @submit.prevent="attemptResetRequest()">
-          <InputField
-            v-model:value="form.email.value"
-            :errors="form.email.errors"
-            @blur="form.email.validate()"
-            data-cy="email"
-            type="email"
-            label="Email address"
-            placeholder="Enter email..."
-          />
-          <button
-            :class="form.isValid ? 'btn--primary bg-primary' : 'btn--disabled bg-gray-200'"
-            data-cy="submit"
-            type="submit"
-          >
-            Request Password Reset
-          </button>
-        </form>
-      </template>
-      <template v-if="resetLinkSent">
+      <form @submit.prevent="makeRequest">
+        <InputField
+          v-model:value="form.email.value"
+          :errors="form.email.errors"
+          @blur="form.email.validate()"
+          type="email"
+          label="Email address"
+          placeholder="Enter email..."
+          data-cy="email"
+        />
+
+        <LoadingSpinner v-if="loading" />
+        <button v-else-if="!loading && !passwordResetSuccess" type="submit" :disabled="loading||!form.email.isValid" class="btn--primary bg-primary" data-cy="submit">
+          Request Password Reset
+        </button>
+      </form>
+      <template v-if="passwordResetSuccess">
         <p class="text-md" data-cy="submit-success">
           Your request has been submitted. If there is an account associated with the email
           provided, you should receive an email momentarily with instructions to reset your
@@ -51,43 +47,32 @@
 
 <script>
 import { ref } from 'vue'
-import { userApi, RequestPasswordResetForm } from '@/services/users/'
+import { useUsers } from '@/composables/Users'
 import InputField from '@/components/inputs/InputField.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 export default {
   name: 'RequestPasswordReset',
   components: {
     InputField,
+    LoadingSpinner,
   },
   setup() {
-    const form = ref(new RequestPasswordResetForm())
-    const resetLinkSent = ref(false)
+    const passwordResetSuccess = ref(false)
 
-    function handleResetRequestSuccess(data) {
-      resetLinkSent.value = true
-      console.log('success', data)
-    }
+    const { forgotPasswordForm, loading, requestPasswordReset } = useUsers()
 
-    function handleResetRequestFailure(error) {
-      alert(error)
-    }
-
-    function attemptResetRequest() {
-      // unwrap form
-      const unwrappedForm = form.value
-      unwrappedForm.validate()
-      if (!unwrappedForm.isValid) return
-
-      userApi.csc
-        .requestPasswordReset({ email: unwrappedForm.email.value })
-        .then(handleResetRequestSuccess)
-        .catch(handleResetRequestFailure)
+    const makeRequest = async () => {
+      await requestPasswordReset(forgotPasswordForm.email.value)
+      passwordResetSuccess.value = true
     }
 
     return {
-      form,
-      attemptResetRequest,
-      resetLinkSent,
+      form: forgotPasswordForm,
+      loading,
+      requestPasswordReset,
+      passwordResetSuccess,
+      makeRequest,
     }
   },
 }

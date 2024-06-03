@@ -8,7 +8,7 @@
     </div>
 
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form @submit.prevent="attemptLogin()">
+      <form @submit.prevent="login(form.value)">
         <InputField
           v-model:value="form.email.value"
           :errors="form.email.errors"
@@ -17,6 +17,7 @@
           data-cy="email"
           label="Email address"
           placeholder="Enter email..."
+          :id="form.email.id"
         />
         <div>
           <div class="mt-2">
@@ -29,6 +30,7 @@
               placeholder="Enter password..."
               label="Password"
               autocomplete="current-password"
+              :id="form.password.id"
             >
               <template v-slot:input-label>
                 <div class="flex items-center justify-between w-full">
@@ -41,9 +43,9 @@
 
                   <div class="text-sm hover:underline">
                     <router-link
+                      data-cy="password-reset"
                       :to="{ name: 'RequestPasswordReset' }"
                       class="font-semibold text-accent"
-                      data-cy="password-reset"
                       >Forgot password?</router-link
                     >
                   </div>
@@ -53,7 +55,7 @@
           </div>
         </div>
 
-        <div v-if="!loggingIn">
+        <div v-if="!loading">
           <button type="submit" data-cy="submit" class="btn--primary bg-primary">Log in</button>
         </div>
         <div v-else>
@@ -73,10 +75,7 @@
 <script>
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import InputField from '@/components/inputs/InputField.vue'
-import { LoginForm, userApi } from '@/services/users/'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useUsers } from '@/composables/Users'
 
 export default {
   name: 'Login',
@@ -85,42 +84,11 @@ export default {
     LoadingSpinner,
   },
   setup() {
-    const store = useStore()
-    const router = useRouter()
-    const form = ref(new LoginForm())
-    const loggingIn = ref(false)
-
-    async function handleLoginSuccess(user) {
-      await store.dispatch('setUser', user)
-      const redirectPath = router.currentRoute.value.query.redirect
-      if (redirectPath) {
-        router.push({ path: redirectPath })
-      } else {
-        router.push({ name: 'Dashboard' })
-      }
-    }
-
-    function handleLoginFailure(error) {
-      alert(error)
-    }
-
-    function attemptLogin() {
-      // unwrap form
-      const unwrappedForm = form.value
-      unwrappedForm.validate()
-      if (!unwrappedForm.isValid) return
-      loggingIn.value = true
-      userApi.csc
-        .login({ email: unwrappedForm.email.value, password: unwrappedForm.password.value })
-        .then(handleLoginSuccess)
-        .catch(handleLoginFailure)
-        .finally(() => (loggingIn.value = false))
-    }
-
+    const { loginForm, loading, login } = useUsers()
     return {
-      form,
-      attemptLogin,
-      loggingIn,
+      form: loginForm,
+      loading,
+      login,
     }
   },
 }
