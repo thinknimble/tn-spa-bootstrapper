@@ -9,13 +9,14 @@ import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/us
 
 import { useFollowupRoute } from 'src/utils/auth'
 import { useAuth } from 'src/stores/auth'
-import { Logo } from 'src/components/logo'
 import { PasswordInput } from 'src/components/password-input'
+import { getErrorMessages } from 'src/utils/errors'
+import { AuthLayout } from 'src/components/auth-layout'
 
 function LogInInner() {
   const params = useLocation()
   const autoError = params.state?.autoError
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorMessage, setErrorMessage] = useState<string[] | undefined>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
   const navigate = useNavigate()
@@ -28,8 +29,8 @@ function LogInInner() {
       navigate('/home')
     },
     onError(e: any) {
-      const error = e.response.data[0] ?? 'An error occurred. Please try again.'
-      setErrorMessage(error)
+      const errors = getErrorMessages(e)
+      setErrorMessage(errors)
     },
   })
 
@@ -49,14 +50,7 @@ function LogInInner() {
   }
 
   return (
-    <main className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <Logo />
-        <h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
-          Log in
-        </h2>
-      </div>
-
+    <AuthLayout title="Log In">
       <section className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
         <form
           onSubmit={(e) => {
@@ -118,7 +112,7 @@ function LogInInner() {
           Sign up.
         </Link>
       </div>
-    </main>
+    </AuthLayout>
   )
 }
 

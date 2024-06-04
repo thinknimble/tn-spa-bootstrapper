@@ -9,11 +9,12 @@ import { Input } from 'src/components/input'
 import { AccountForm, TAccountForm, AccountFormInputs } from 'src/services/user/forms'
 import { userApi } from 'src/services/user'
 import { useAuth } from 'src/stores/auth'
-import { Logo } from 'src/components/logo'
 import { PasswordInput } from 'src/components/password-input'
+import { getErrorMessages } from 'src/utils/errors'
+import { AuthLayout } from 'src/components/auth-layout'
 
 function SignUpInner() {
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string[] | undefined>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
@@ -27,7 +28,8 @@ function SignUpInner() {
       navigate('/home')
     },
     onError(e: any) {
-      setError('Something went wrong, please try again later.')
+      const errors = getErrorMessages(e)
+      setError(errors)
     },
   })
 
@@ -46,13 +48,7 @@ function SignUpInner() {
   }
 
   return (
-    <main className="flex min-h-full flex-1 flex-col justify-center px-6 py-10 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <Logo />
-        <h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
-          Sign up
-        </h2>
-      </div>
+    <AuthLayout title="Sign Up">
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           <div className="flex flex-col gap-3">
@@ -120,7 +116,7 @@ function SignUpInner() {
           Log in.
         </Link>
       </div>
-    </main>
+    </AuthLayout>
   )
 }
 const confirmPasswordValidator = {

@@ -2,19 +2,20 @@ import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AuthLayout } from 'src/components/auth-layout'
 import { Button } from 'src/components/button'
 import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { Logo } from 'src/components/logo'
 import {
   EmailForgotPasswordForm,
   EmailForgotPasswordInput,
   TEmailForgotPasswordForm,
   userApi,
 } from 'src/services/user'
+import { getErrorMessages } from 'src/utils/errors'
 
 export const RequestPasswordResetInner = () => {
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorMessage, setErrorMessage] = useState<string[] | undefined>()
   const [resetLinkSent, setResetLinkSent] = useState(false)
   const { createFormFieldChangeHandler, form } = useTnForm<TEmailForgotPasswordForm>()
   const navigate = useNavigate()
@@ -26,8 +27,8 @@ export const RequestPasswordResetInner = () => {
       setResetLinkSent(true)
     },
     onError(e: any) {
-      const error = e.response.data[0] ?? 'An error occurred. Please try again.'
-      setErrorMessage(error)
+      const errors = getErrorMessages(e)
+      setErrorMessage(errors)
     },
   })
 
@@ -39,13 +40,7 @@ export const RequestPasswordResetInner = () => {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <Logo />
-        <h2 className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
-          Request Password Reset
-        </h2>
-      </div>
+    <AuthLayout title="Request Password Reset">
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
         {resetLinkSent ? (
           <>
@@ -99,7 +94,7 @@ export const RequestPasswordResetInner = () => {
           </>
         )}
       </div>
-    </div>
+    </AuthLayout>
   )
 }
 
