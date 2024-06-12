@@ -18,6 +18,7 @@ pytest-instafail = "==0.4.2"
 PyYAML = "==6.0.1"
 PyGithub = "==1.55"
 Jinja2 = "==3.0.1"
+jinja2-time = "*"
 
 [dev-packages]
 
