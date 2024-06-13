@@ -1,20 +1,21 @@
 import { FC, ReactNode } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Logo } from 'src/components/logo'
 
-export const AuthLayout: FC<{ title: string; description: string; children: ReactNode }> = ({
+export const AuthLayout: FC<{ title: string; description?: string; children: ReactNode }> = ({
   children,
   description,
   title,
 }) => {
   return (
-    <main className="text-dark flex h-full w-full flex-col items-center gap-3 bg-white md:justify-center">
-      <section className="flex w-full max-w-2xl flex-col items-center gap-4 px-4">
-        <section className="flex h-full flex-col items-center gap-2">
-          <header className="text-3xl font-semibold">{title}</header>
-          <p className="text-md text-slate-400">{description}</p>
-        </section>
-        {children}
-      </section>
-    </main>
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <Logo />
+        <header className="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
+          {title}
+        </header>
+        {description && <p className="text-md text-slate-400">{description}</p>}
+      </div>
+      {children}
+    </div>
   )
 }

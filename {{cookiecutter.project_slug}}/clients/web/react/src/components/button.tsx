@@ -2,11 +2,11 @@ import { ButtonHTMLAttributes, FC, ReactNode } from 'react'
 import { Link, LinkProps } from 'react-router-dom'
 import { Spinner } from './spinner'
 
-type ButtonVariant = 'primary' | 'ghost' | 'discreet'
+type ButtonVariant = 'primary' | 'accent' | 'disabled'
 const buttonVariantMap: Record<ButtonVariant, string> = {
-  primary: 'text-white bg-primary px-4 py-2 active:bg-slate-400 ',
-  discreet: 'text-primary hover:shadow-none',
-  ghost: 'border border-primary text-primary py-2 px-4 active:bg-primary active:text-white',
+  primary: 'btn--primary bg-primary',
+  accent: '',
+  disabled: 'btn--disabled bg-gray-200',
 }
 
 type CommonButtonProps = {
@@ -40,7 +40,7 @@ export const Button: FC<
         className={` rounded-lg transition-transform hover:scale-[1.05] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none ${buttonVariantMap[variant]} ${extendClassName}`}
         disabled={props.disabled || isLoading}
       >
-        {props.isLoading ? <Spinner size="md" /> : children}
+        {props.isLoading ? <Spinner size="sm" /> : children}
       </button>
     )
   }

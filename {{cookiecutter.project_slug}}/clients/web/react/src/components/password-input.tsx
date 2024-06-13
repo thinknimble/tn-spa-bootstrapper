@@ -3,7 +3,11 @@ import { Input } from './input'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
 export const PasswordInput: FC<
-  InputHTMLAttributes<HTMLInputElement> & { extendClassName?: string; iconTabIndex?: number }
+  InputHTMLAttributes<HTMLInputElement> & {
+    extendClassName?: string
+    iconTabIndex?: number
+    label?: string
+  }
 > = ({ extendClassName, iconTabIndex, ...props }) => {
   const [showPassword, setShowPassword] = useState(false)
   const onTogglePassword = () => {
