@@ -21,7 +21,7 @@ const AuthRoutes = () => {
         <Route path="log-in" element={<LogIn />} />
         <Route path="sign-up" element={<SignUp />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
-        <Route path="reset-password/:userId/:token" element={<ResetPassword />} />
+        <Route path="password/reset/confirm/:userId/:token" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/log-in" />} />
       </Route>
     </Routes>
