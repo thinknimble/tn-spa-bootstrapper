@@ -4,7 +4,7 @@ import pytest
 from pytest_factoryboy import register
 from rest_framework.test import APIClient
 
-from {{ cookiecutter.project_slug }}.core.factories import User
+from {{ cookiecutter.project_slug }}.core.factories import UserFactory
 from {{ cookiecutter.project_slug }}.core.models import User
 
 JSON_RQST_HEADERS = dict(
