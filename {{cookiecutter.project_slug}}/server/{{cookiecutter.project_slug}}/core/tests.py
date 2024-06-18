@@ -91,7 +91,7 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
-        with mock.patch("marks_home.core.views.render", return_value=Response()) as mocked_render:
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
             client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
 
@@ -119,7 +119,7 @@ class TestPreviewTemplateView:
         assert PreviewTemplateView.parse_value("some__key", "value") == ("some__key", "value")
 
     def test_parse_value_with_model(self):
-        with mock.patch("marks_home.core.views.apps") as mock_apps:
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.apps") as mock_apps:
             PreviewTemplateView.parse_value("some_key:from_model", "core.User:PK")
             assert mock_apps.get_model.call_count == 1
             assert mock_apps.get_model.call_args[0][0] == "core.User"
