@@ -51,7 +51,7 @@ def test_create_user_from_factory(sample_user):
 def test_user_can_login(api_client, sample_user):
     res = api_client.post("/api/login/", {"email": sample_user.email, "password": "password"}, format="json")
     assert res.status_code == 200
-    
+
 
 @pytest.mark.use_requests
 @pytest.mark.django_db
