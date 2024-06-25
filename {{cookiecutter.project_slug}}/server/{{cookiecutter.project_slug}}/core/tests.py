@@ -2,29 +2,13 @@ from unittest import mock
 
 import pytest
 from django.contrib.auth import authenticate
-from django.test import Client, override_settings
+from django.test import override_settings
 from django.test.client import RequestFactory
-from pytest_factoryboy import register
 from rest_framework.response import Response
 
-from .factories import UserFactory
 from .models import User
 from .serializers import UserLoginSerializer
 from .views import PreviewTemplateView, request_reset_link
-
-JSON_RQST_HEADERS = dict(
-    content_type="application/json",
-    HTTP_ACCEPT="application/json",
-)
-
-register(UserFactory)
-
-
-@pytest.fixture
-def test_user():
-    user = UserFactory()
-    user.save()
-    return user
 
 
 @pytest.mark.django_db
@@ -59,25 +43,22 @@ def test_create_superuser():
 
 
 @pytest.mark.django_db
-def test_create_user_from_factory(test_user):
-    assert test_user.email
+def test_create_user_from_factory(sample_user):
+    assert sample_user.email
 
 
 @pytest.mark.django_db
-def test_user_can_login(test_user):
-    test_user.set_password("testing123")
-    test_user.save()
-    client = Client()
-    res = client.post("/api/login/", {"email": test_user.email, "password": "testing123"}, **JSON_RQST_HEADERS)
+def test_user_can_login(api_client, sample_user):
+    res = api_client.post("/api/login/", {"email": sample_user.email, "password": "password"}, format="json")
     assert res.status_code == 200
 
 
 @pytest.mark.use_requests
 @pytest.mark.django_db
-def test_password_reset(caplog, test_user, client):
+def test_password_reset(caplog, api_client, sample_user):
     # fake our API call to the view that generates an email for the user to reset their password
     rf = RequestFactory()
-    post_request = rf.post("api/password/reset/", {"email": test_user.email})
+    post_request = rf.post("api/password/reset/", {"email": sample_user.email})
     request_reset_link(post_request)
 
     # Grab from the logs the actual URL link we would send to the user
@@ -85,18 +66,18 @@ def test_password_reset(caplog, test_user, client):
     password_reset_url = f"/api/password/reset/confirm/{password_reset_creds}/"
 
     # Verify the link works for reseting the password
-    response = client.post(password_reset_url, data={"password": "new_password"}, format="json")
+    response = api_client.post(password_reset_url, data={"password": "new_password"}, format="json")
     assert response.status_code == 200
 
     # New Password should now work for authentication
-    serializer = UserLoginSerializer(data={"email": test_user.email, "password": "new_password"})
+    serializer = UserLoginSerializer(data={"email": sample_user.email, "password": "new_password"})
     serializer.is_valid()
     assert authenticate(**serializer.validated_data)
 
 
 @pytest.mark.django_db
-def test_user_token_gets_created_from_signal(test_user):
-    assert test_user.auth_token
+def test_user_token_gets_created_from_signal(sample_user):
+    assert sample_user.auth_token
 
 
 @pytest.mark.django_db
