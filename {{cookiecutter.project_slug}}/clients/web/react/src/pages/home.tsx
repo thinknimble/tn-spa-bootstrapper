@@ -1,12 +1,16 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { logout } from 'src/stores/auth'
+import { useLogout } from 'services/user'
 
 export const Home = () => {
   const navigate = useNavigate()
+  const { mutate: logout, isPending: isLoggingOut } = useLogout()
   const logOutUser = () => {
-    logout()
-    navigate('/log-in')
+    logout(undefined,{
+      onSettled:()=>{
+        navigate('/log-in')
+      }
+    })
   }
 
   return (

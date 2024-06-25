@@ -4,9 +4,10 @@
  */
 
 import { useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@stores/auth'
 import { userApi } from './api'
+import { queryClient } from '@utils/query-client'
 
 export const useUser = () => {
   const userId = useAuth.use.userId()
@@ -27,4 +28,18 @@ export const useUser = () => {
   }, [data.data, data.isSuccess, writeUserInStorage])
 
   return data
+}
+
+
+/**
+ * To use directly in components
+ */
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: userApi.csc.logout,
+    onSettled: () => {
+      useAuth.getState().actions.clearAuth()
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+    },
+  })
 }

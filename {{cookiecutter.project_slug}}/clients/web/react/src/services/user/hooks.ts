@@ -1,9 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from 'src/stores/auth'
 import { useEffect } from 'react'
 import { HttpStatusCode, isAxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { userQueries } from './queries'
+import { queryClient } from 'src/utils/query-client'
+import { userApi } from './api'
 
 export const useUser = () => {
   const { clearAuth } = useAuth.use.actions()
@@ -31,4 +33,18 @@ export const useUser = () => {
   }, [clearAuth, navigate, query.error])
 
   return query
+}
+
+/**
+ * To use directly in components
+ */
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: userApi.csc.logout,
+    onSettled: () => {
+      useAuth.getState().actions.clearAuth()
+      queryClient.invalidateQueries({ queryKey: userQueries.all() })
+      localStorage.clear()
+    },
+  })
 }
