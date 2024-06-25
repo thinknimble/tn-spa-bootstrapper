@@ -9,7 +9,7 @@ import { Input } from 'src/components/input'
 import { userApi } from 'src/services/user'
 import { AccountForm, AccountFormInputs, TAccountForm } from 'src/services/user/forms'
 import { isAxiosError } from 'axios'
-import { GENERIC_REQUEST_ERROR } from 'utils/constants'
+import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 import { useAuth } from 'src/stores/auth'
 
 function SignUpInner() {
