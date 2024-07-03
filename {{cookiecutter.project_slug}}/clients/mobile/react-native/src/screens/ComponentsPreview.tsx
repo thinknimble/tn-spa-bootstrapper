@@ -1,10 +1,7 @@
-import React, { useMemo } from 'react'
-import {
-  View,
-} from 'react-native'
+import React from 'react'
+import {View } from 'react-native'
 
 import { Text } from '@components/text'
-import colors from '@utils/colors'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { BButton } from '@components/Button'
 
