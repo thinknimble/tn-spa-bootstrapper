@@ -8,13 +8,16 @@ import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { AccountForm, TAccountForm, AccountFormInputs } from 'src/services/user/forms'
 import { userApi } from 'src/services/user'
+import { AccountForm, AccountFormInputs, TAccountForm } from 'src/services/user/forms'
+import { isAxiosError } from 'axios'
+import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 import { useAuth } from 'src/stores/auth'
 import { PasswordInput } from 'src/components/password-input'
 import { getErrorMessages } from 'src/utils/errors'
 import { AuthLayout } from 'src/components/auth-layout'
 
 function SignUpInner() {
-  const [error, setError] = useState<string[] | undefined>()
+  const [errors, setErrors] = useState<string[]>([])
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
@@ -28,8 +31,18 @@ function SignUpInner() {
       navigate('/home')
     },
     onError(e: any) {
-      const errors = getErrorMessages(e)
-      setError(errors)
+      console.error(e)
+      if (isAxiosError(e)) {
+        if (e.response?.data && typeof e.response.data === 'object') {
+          setErrors(Object.values(e.response.data))
+          return
+        }
+        if (e.message) {
+          setErrors([e.message])
+        } else {
+          setErrors([GENERIC_REQUEST_ERROR])
+        }
+      }
     },
   })
 
@@ -106,7 +119,9 @@ function SignUpInner() {
           <Button type="submit" isLoading={isPending} disabled={isPending || !form.isValid}>
             Sign Up
           </Button>
-          {error ? <ErrorMessage>{error}</ErrorMessage> : null}
+      {errors.length
+            ? errors.map((e, idx) => <ErrorMessage key={idx}>{e}</ErrorMessage>)
+            : null}
         </form>
       </div>
       <div className="m-4 flex self-center text-sm">

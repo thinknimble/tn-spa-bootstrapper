@@ -25,6 +25,11 @@ import {
     const registerForm = reactive(new AccountForm({}))
     const loading = ref(false)
     const { errorAlert, successAlert } = useAlert()
+  
+    const getCodeUidFromRoute = () => {
+      const { uid, token } = router.currentRoute.value.params
+      return { uid, token }
+    }
 
     const { data: user, mutate: login } = useMutation({
       mutationFn: async (user: LoginShape) => {
@@ -110,6 +115,7 @@ import {
       user,
       register,
       registerForm,
+      getCodeUidFromRoute,
     }
   }
   

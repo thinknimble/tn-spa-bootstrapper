@@ -11,7 +11,6 @@ import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { ScrollView, View } from 'react-native'
 import { getNavio } from '../routes'
 
-
 const InnerForm = () => {
   //TODO: match bootstrapper style for signup and hit backend
   const { form } = useTnForm<TAccountForm>()
