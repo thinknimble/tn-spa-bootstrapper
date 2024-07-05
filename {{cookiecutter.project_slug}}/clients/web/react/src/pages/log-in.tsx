@@ -97,7 +97,7 @@ function LogInInner() {
           <ErrorMessage>{errorMessage}</ErrorMessage>
         </div>
         <Button
-          data-cy="login-btn"
+          data-cy="btn-login"
           onClick={handleLogin}
           variant="primary"
           disabled={isPending || !form.isValid}
