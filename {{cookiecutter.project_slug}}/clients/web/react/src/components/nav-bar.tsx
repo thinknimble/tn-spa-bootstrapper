@@ -67,7 +67,7 @@ export const NavBar = () => {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             {!isAuth && (
               <>
-                <Link data-cy="login-btn" to="/log-in" className="btn--primary bg-primary">
+                <Link data-cy="login" to="/log-in" className="btn--primary bg-primary">
                   Login
                 </Link>
                 <Link to="/sign-up" className="btn--secondary ml-5">

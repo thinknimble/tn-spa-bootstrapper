@@ -26,7 +26,7 @@ function LogInInner() {
     onSuccess: (data) => {
       changeToken(data.token)
       changeUserId(data.id)
-      navigate('/home')
+      navigate('/dashboard')
     },
     onError(e: any) {
       const errors = getErrorMessages(e)
@@ -97,7 +97,7 @@ function LogInInner() {
           <ErrorMessage>{errorMessage}</ErrorMessage>
         </div>
         <Button
-          data-cy="btn-login"
+          data-cy="submit"
           onClick={handleLogin}
           variant="primary"
           disabled={isPending || !form.isValid}
