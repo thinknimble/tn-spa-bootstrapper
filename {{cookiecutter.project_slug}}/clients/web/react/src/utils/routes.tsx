@@ -19,11 +19,10 @@ const PrivateRoutes = () => {
 const AuthRoutes = () => {
   return (
     <React.Fragment>
-      <Route path="/home" element={<Home />} />
       <Route path="/log-in" element={<LogIn />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/request-reset" element={<RequestPasswordReset />} />
-      <Route path="reset-password/:userId/:token" element={<ResetPassword />} />
+      <Route path="/password/reset/confirm/:userId/:token" element={<ResetPassword />} />
     </React.Fragment>
   )
 }
@@ -35,7 +34,7 @@ export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
+        <Route path="/home" index element={<Home />} />
         {isAuth ? PrivateRoutes() : AuthRoutes()}
         <Route path="*" element={<PageNotFound />} />
       </Route>
