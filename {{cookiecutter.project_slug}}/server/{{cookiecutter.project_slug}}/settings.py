@@ -407,6 +407,6 @@ SWAGGER_SETTINGS = {
     "OPERATIONS_SORTER": "alpha",
 }
 
-SPECTACULAR_SETTINGS = {
+SPECTACULAR_DEFAULTS = {
     'COMPONENT_SPLIT_REQUEST': True, # Needed for file upload to work
 }
