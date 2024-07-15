@@ -408,5 +408,5 @@ SWAGGER_SETTINGS = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "COMPONENT_SPLIT_REQUEST": True, # Needed for file upload to work
+    "COMPONENT_SPLIT_REQUEST": True,  # Needed for file upload to work
 }
