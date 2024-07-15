@@ -1,7 +1,9 @@
 import { isAxiosError, AxiosError } from 'axios'
 
-export function handleDRFAPIErrorsOrReThrow(e: AxiosError | Error): string[]{
-  if (isAxiosError(e as AxiosError)){
+export function handleDRFAPIErrorsOrReThrow(error: AxiosError | Error): string[]{
+  if (isAxiosError(error)){
+    const e: AxiosError = error
+    
     const { data } = e?.response ?? {}
     if (data) {
       const isArrayOfStrings =
@@ -16,6 +18,6 @@ export function handleDRFAPIErrorsOrReThrow(e: AxiosError | Error): string[]{
     }
     return []
   }
-  throw e as Error
+  throw error as Error
 }
 
