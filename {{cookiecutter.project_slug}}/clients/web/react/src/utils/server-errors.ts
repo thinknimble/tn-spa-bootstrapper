@@ -4,7 +4,7 @@ export function handleDRFAPIErrorsOrReThrow(error: AxiosError | Error): string[]
   if (isAxiosError(error)){
     const e: AxiosError = error
     
-    const { data } = e?.response ?? {}
+    const { data } = e?.response ?? null
     if (data) {
       const isArrayOfStrings =
         Array.isArray(data) && data.length && typeof data[0] === 'string'
