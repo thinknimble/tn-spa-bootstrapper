@@ -135,11 +135,11 @@ import { userApi } from '@/services/users'
 import { computed, ref } from 'vue'
 
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useUserStore } from '@/stores/user'
 
 export default {
   setup() {
-    const store = useStore()
+    const userStore = useUserStore()
     const router = useRouter()
     let mobileMenuOpen = ref(false)
     let profileMenuOpen = ref(false)
@@ -155,15 +155,15 @@ export default {
       } finally {
         profileMenuOpen.value = false
         mobileMenuOpen.value = false
-        store.dispatch('setUser', null)
+        userStore.clearUser()
         router.push({ name: 'Home' })
       }
     }
 
     return {
       logout,
-      isLoggedIn: computed(() => store.getters.isLoggedIn),
-      user: computed(() => store.getters.user),
+      isLoggedIn: computed(() => userStore.isLoggedIn),
+      user: computed(() => userStore.user),
       mobileMenuOpen,
       profileMenuOpen,
     }
