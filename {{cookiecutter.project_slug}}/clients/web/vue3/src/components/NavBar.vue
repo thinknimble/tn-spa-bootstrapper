@@ -145,11 +145,19 @@ export default {
     let profileMenuOpen = ref(false)
 
     async function logout() {
-      await userApi.csc.logout()
-      profileMenuOpen.value = false
-      mobileMenuOpen.value = false
-      store.dispatch('setUser', null)
-      router.push({ name: 'Home' })
+      try {
+        await userApi.csc.logout()
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          console.error('User is not logged in')
+        }
+        console.log(error)
+      } finally {
+        profileMenuOpen.value = false
+        mobileMenuOpen.value = false
+        store.dispatch('setUser', null)
+        router.push({ name: 'Home' })
+      }
     }
 
     return {

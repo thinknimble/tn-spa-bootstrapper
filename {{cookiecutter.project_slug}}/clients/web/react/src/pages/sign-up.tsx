@@ -4,14 +4,16 @@ import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
-import { ErrorsList } from 'src/components/errors'
+import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
 import { userApi } from 'src/services/user'
 import { AccountForm, AccountFormInputs, TAccountForm } from 'src/services/user/forms'
+import { isAxiosError } from 'axios'
+import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 import { useAuth } from 'src/stores/auth'
 
 function SignUpInner() {
-  const [error, setError] = useState('')
+  const [errors, setErrors] = useState<string[]>([])
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
@@ -25,8 +27,17 @@ function SignUpInner() {
       navigate('/home')
     },
     onError(e: any) {
-      if (e?.message === 'Please enter valid credentials') {
-        console.log(e)
+      console.error(e)
+      if (isAxiosError(e)) {
+        if (e.response?.data && typeof e.response.data === 'object') {
+          setErrors(Object.values(e.response.data))
+          return
+        }
+        if (e.message) {
+          setErrors([e.message])
+        } else {
+          setErrors([GENERIC_REQUEST_ERROR])
+        }
       }
     },
   })
@@ -105,7 +116,9 @@ function SignUpInner() {
         </div>
         <Button type="submit">Sign Up</Button>
       </form>
-
+      {errors.length
+            ? errors.map((e, idx) => <ErrorMessage key={idx}>{e}</ErrorMessage>)
+            : null}
       <div className="flex flex-col gap-3">
         <p className="text-xl font-semibold text-slate-200">Already have an account?</p>
         <Link to="/log-in" className="text-center text-xl font-semibold text-teal-600">

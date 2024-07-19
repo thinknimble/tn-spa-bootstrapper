@@ -31,13 +31,13 @@
   },
   "addons": [
     "heroku-postgresql:standard-0",
-    "papertrail:Choklad"
+    "papertrail:choklad"
   ],
   "environments": {
     "review": {
       "addons": [
-        "heroku-postgresql:mini",
-        "papertrail:Choklad"
+        "heroku-postgresql:essential-0",
+        "papertrail:choklad"
       ]
     }
   },

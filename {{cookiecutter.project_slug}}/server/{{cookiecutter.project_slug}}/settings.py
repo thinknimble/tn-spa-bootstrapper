@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third Party
     "corsheaders",
-    "drf_yasg",
+    "drf_spectacular",
     "django_nose",
     "rest_framework",
     "rest_framework.authtoken",
@@ -157,6 +157,7 @@ USE_TZ = True
 # Django Rest Framework Configuration
 #
 REST_FRAMEWORK = {
+    "COERCE_DECIMAL_TO_STRING": False,
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.AcceptHeaderVersioning",
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -177,6 +178,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_VERSION": "1.0",
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 #
 # Static files (CSS, JavaScript, Images)
@@ -264,18 +266,18 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
     AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-    AWS_S3_CUSTOM_DOMAIN = AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com"
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     AWS_LOCATION = config("AWS_LOCATION")  # production, staging, etc
     AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME")
+    AWS_QUERYSTRING_EXPIRE = 10 * 365 * 24 * 60 * 60  # 10 years
 
-    aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
     # Default file storage is private
-    PRIVATE_MEDIAFILES_LOCATION = AWS_LOCATION + "/media"
+    PRIVATE_MEDIAFILES_LOCATION = f"{AWS_LOCATION}/media"
     DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
     # STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
-    # STATIC_URL = f"https://{aws_s3_domain}/static/"
-    MEDIA_URL = f"https://{aws_s3_domain}/media/"
+    # STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 #
 # STATIC

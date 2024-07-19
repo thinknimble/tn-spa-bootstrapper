@@ -6,7 +6,7 @@
 APP_NAME={{ cookiecutter.project_slug|replace('_', '-') }}-staging.herokuapp.com
 heroku login --interactive
 heroku create $APP_NAME --buildpack heroku/python
-heroku addons:create heroku-postgresql:mini --app $APP_NAME
+heroku addons:create heroku-postgresql:essential-0 --app $APP_NAME
 
 {%- if cookiecutter.client_app.lower() != "none" %}
 heroku buildpacks:add --index 1 heroku/nodejs --app $APP_NAME

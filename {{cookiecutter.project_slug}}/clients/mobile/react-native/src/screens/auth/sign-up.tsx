@@ -1,5 +1,5 @@
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
-import { ScrollViewWind } from '@components/styled'
+import { BounceableWind } from '@components/styled'
 import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
 import { userApi } from '@services/user'
@@ -8,16 +8,8 @@ import { useAuth } from '@stores/auth'
 import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { styled } from 'nativewind'
-import { View } from 'react-native'
-import { Bounceable } from 'rn-bounceable'
+import { ScrollView, View } from 'react-native'
 import { getNavio } from '../routes'
-
-const BounceableWind = styled(Bounceable, {
-  props: {
-    contentContainerStyle: true,
-  },
-})
 
 const InnerForm = () => {
   //TODO: match bootstrapper style for signup and hit backend
@@ -59,14 +51,14 @@ const InnerForm = () => {
         <Text textClassName="text-black text-3xl" variant="bold">
           Sign up
         </Text>
-        <ScrollViewWind className="w-full" contentContainerStyle="self-start w-full">
+        <ScrollView className="w-full" contentContainerClassName="self-start w-full">
           <TextFormField field={form.firstName} />
           <TextFormField field={form.lastName} containerClassName="pt-4" />
           <TextFormField field={form.email} containerClassName="pt-4" />
           <TextFormField field={form.password} containerClassName="pt-4" />
           <TextFormField field={form.confirmPassword} containerClassName="pt-4" />
-        </ScrollViewWind>
-        <BounceableWind contentContainerStyle="w-full pt-5" onPress={onSubmit}>
+        </ScrollView>
+        <BounceableWind contentContainerClassName="w-full pt-5" onPress={onSubmit}>
           <View className="rounded-lg bg-[#042642] w-full items-center py-2">
             <Text textClassName="text-white text-lg" variant="bold">
               Sign Up
