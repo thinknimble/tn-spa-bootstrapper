@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { isAxiosError } from 'axios'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AuthLayout } from 'src/components/auth-layout'
 import { Button } from 'src/components/button'
@@ -11,8 +11,9 @@ import { PasswordInput } from 'src/components/password-input'
 import { ResetPasswordForm, TResetPasswordForm, userApi } from 'src/services/user'
 
 export const ResetPasswordInner = () => {
-  const { form, createFormFieldChangeHandler } = useTnForm<TResetPasswordForm>()
+  const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TResetPasswordForm>()
   const { userId, token } = useParams()
+  console.log(userId, token)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
@@ -30,13 +31,21 @@ export const ResetPasswordInner = () => {
     },
   })
 
+  useEffect(() => {
+    if (token && userId) {
+      overrideForm(ResetPasswordForm.create({ token: token, uid: userId }) as TResetPasswordForm)
+    }
+  }, [overrideForm, token, userId])
+
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (form.isValid && userId && token && form.password.value) {
+    console.log(form.value)
+
+    if (form.isValid) {
       confirmResetPassword({
-        userId,
-        token,
-        password: form.password.value,
+        userId: form.value.uid!,
+        token: form.value.token!,
+        password: form.value.password!,
       })
     }
   }
@@ -47,9 +56,7 @@ export const ResetPasswordInner = () => {
         title="Successfully reset password"
         description="You can now log in with your new password"
       >
-        <Link to="/log-in" className="text-primary text-sm font-semibold hover:underline">
-          Go to login
-        </Link>
+        <br />
       </AuthLayout>
     )
   }
