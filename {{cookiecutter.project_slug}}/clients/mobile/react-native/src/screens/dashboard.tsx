@@ -8,7 +8,7 @@ import { useLogout } from '@services/user'
 
 export const DashboardScreen = () => {
   const navio = useAtomValue(navioAtom)
-  const { mutate: logout, isPending: isLoggingOut } = useLogout()
+  const { mutate: logout } = useLogout()
 
   return (
     <MultiPlatformSafeAreaView>
