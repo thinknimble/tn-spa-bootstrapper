@@ -22,6 +22,7 @@ export default defineConfig(({ mode }) => {
         },
       },
       port: 8080,
+      host: true,
     },
     test: {
       // enable jest-like global test APIs

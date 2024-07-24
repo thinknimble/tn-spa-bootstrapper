@@ -125,6 +125,7 @@ def reset_password(request, *args, **kwargs):
     logger.info(f"Resetting password for user {user_id}")
     user.set_password(request.data.get("password"))
     user.save()
+    # COMMENT THIS WHEN USING THE PASSWORD RESET FLOW ON WEB ONLY FOR MOBILE - PARI BAKER
     response_data = UserLoginSerializer.login(user, request)
     return Response(response_data, status=status.HTTP_200_OK)
 
