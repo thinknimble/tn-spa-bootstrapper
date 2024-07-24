@@ -11,6 +11,8 @@ module.exports = {
     'prettier/prettier': 'off',
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
+    'react-native/no-raw-text': 2,
+    'react-native/no-unused-styles': 2,
   },
   ignorePatterns: ['tailwind.config.js', 'metro.config.js'],
 }
