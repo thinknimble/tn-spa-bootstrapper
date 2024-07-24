@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLogout } from 'services/user'
+import { useLogout } from 'src/services/user'
 
 export const Home = () => {
   const navigate = useNavigate()
