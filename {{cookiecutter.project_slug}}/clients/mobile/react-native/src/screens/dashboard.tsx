@@ -4,7 +4,7 @@ import React from 'react'
 export const DashboardScreen = () => {
   return (
     <MultiPlatformSafeAreaView>
-      <Text>Welcom to the Dash</Text>
+          <Text>Welcome to the Dashboard</Text>
     </MultiPlatformSafeAreaView>
   )
 }
