@@ -76,9 +76,6 @@ def move_web_client_to_root(client):
         rmtree("client")
     move(join(web_clients_path, client), join("client"))
     rmtree(join(web_clients_path))
-    env_path = join("client", ".env.local.example")
-    if exists(env_path):
-        rename(env_path, join("client", ".env.local"))
 
 
 def remove_mobile_client_files(client):

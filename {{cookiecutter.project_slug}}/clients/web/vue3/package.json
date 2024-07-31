@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "serve": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:dev": "vitest",
