@@ -14,6 +14,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { LogBox, StyleSheet } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { SheetProvider } from 'react-native-actions-sheet'
+import '@components/sheets/register-sheets'
 import './global.css'
 
 LogBox.ignoreLogs(['Require'])
