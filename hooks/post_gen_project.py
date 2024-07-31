@@ -1,5 +1,5 @@
 import secrets
-from os import remove, rename
+from os import remove
 from os.path import exists, join
 from shutil import copy2, move, rmtree
 
