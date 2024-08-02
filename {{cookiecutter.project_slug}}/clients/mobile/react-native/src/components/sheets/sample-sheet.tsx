@@ -4,7 +4,7 @@ import { ActionSheetRef, SheetProps } from 'react-native-actions-sheet'
 import { Text } from '../text'
 import { CustomActionSheet } from './custom-action-sheet'
 
-export const Sample = (props: SheetProps<'sample'>) => {
+export const Sample = (props: SheetProps<'Sample'>) => {
   const actionSheetRef = useRef<ActionSheetRef>(null)
 
   return (

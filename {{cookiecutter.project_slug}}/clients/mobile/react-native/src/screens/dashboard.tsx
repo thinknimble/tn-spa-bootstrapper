@@ -16,15 +16,15 @@ export const DashboardScreen = () => {
   }
 
   return (
-    <MultiPlatformSafeAreaView>
-          <Text>Welcome to the Dashboard</Text>
-          <View className="w-full pb-3 ">
-          <BButton
-            label="Open sheet"
-            onPress={onOpenSheet}
-            variant="primary"
-          />
-        </View>
-    </MultiPlatformSafeAreaView>
+    <MultiPlatformSafeAreaView safeAreaClassName="flex-1">
+      <View className="flex-grow items-center justify-center">
+        <Text textClassName="text-xl" variant="bold">
+          Welcome to the Dashboard
+        </Text>
+      </View>
+      <View className="w-full p-3">
+        <BButton label="Open sheet" onPress={onOpenSheet} variant="primary" />
+      </View>
+    </MultiPlatformSafeAreaView>    
   )
 }

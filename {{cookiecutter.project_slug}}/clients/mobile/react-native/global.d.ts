@@ -21,7 +21,7 @@ declare global {
 
 declare module 'react-native-actions-sheet' {
   interface Sheets {
-    sample: SheetDefinition<{
+    Sample: SheetDefinition<{
       payload: {
         input: string
       }
