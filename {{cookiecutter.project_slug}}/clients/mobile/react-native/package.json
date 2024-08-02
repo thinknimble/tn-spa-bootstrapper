@@ -73,7 +73,8 @@
     "rn-navio": "0.0.6",
     "rollbar-react-native": "^0.9.3",
     "zod": "3.21.4",
-    "zustand": "^4.3.3"
+    "zustand": "^4.3.3",
+    "react-native-actions-sheet": "^0.9.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
