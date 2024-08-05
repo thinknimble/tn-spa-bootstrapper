@@ -49,5 +49,6 @@ export const navio = Navio.build({
 export const getNavio = () => navio
 export const AppRoot = navio.App
 
+export type MyNavio = typeof navio
 export type AppScreens = Parameters<typeof navio['push']>[0]
 export type AppStacks = Parameters<typeof navio['stacks']['push']>[0]
