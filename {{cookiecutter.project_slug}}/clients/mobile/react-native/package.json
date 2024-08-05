@@ -57,6 +57,7 @@
     "expo-status-bar": "~1.12.1",
     "expo-updates": "~0.25.14",
     "expo-web-browser": "~13.0.3",
+    "jotai": "^2.7.1",
     "nativewind": "^4.0.36",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -73,7 +74,8 @@
     "rn-navio": "0.0.6",
     "rollbar-react-native": "^0.9.3",
     "zod": "3.21.4",
-    "zustand": "^4.3.3"
+    "zustand": "^4.3.3",
+    "react-native-actions-sheet": "^0.9.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

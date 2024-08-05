@@ -1,7 +1,18 @@
-import { Link } from 'react-router-dom'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useLogout } from 'src/services/user'
 import { useAuth } from 'src/stores/auth'
 
 export const Home = () => {
+  const navigate = useNavigate()
+  const { mutate: logout, isPending: isLoggingOut } = useLogout()
+  const logOutUser = () => {
+    logout(undefined,{
+      onSettled:()=>{
+        navigate('/log-in')
+      }
+    })
+  }
   const token = useAuth.use.token()
   const isAuth = Boolean(token)
 
@@ -17,9 +28,9 @@ export const Home = () => {
         </p>
         {isAuth && (
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link to="/dashboard" className="btn--accent">
+            <button className="btn--accent" onClick={logOutUser} disabled={isLoggingOut}>
               Get started
-            </Link>
+            </button>
           </div>
         )}
       </div>

@@ -39,7 +39,7 @@ const LoginInner = () => {
           Log in
         </Text>
         <ScrollView className="w-full" contentContainerClassName="self-start w-full">
-          <TextFormField field={form.email} />
+          <TextFormField field={form.email} keyboardType="email-address" autoCapitalize="none" />
           <TextFormField field={form.password} secureTextEntry containerClassName="pt-4" />
         </ScrollView>
         <BounceableWind
