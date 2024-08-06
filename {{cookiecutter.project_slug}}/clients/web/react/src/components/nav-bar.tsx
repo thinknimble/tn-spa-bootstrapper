@@ -129,7 +129,9 @@ export const NavBar = () => {
           <div className="space-y-1 pb-3 pt-2">
             <NavLink
               to="/home"
-              className={({ isActive }) => `mobile-link--main ${isActive && 'active--mobile'}`}
+              className={({ isActive }) =>
+                `block border-l-4 py-2 pl-3 pr-4 text-base font-medium hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 ${isActive && 'active--mobile'}`
+              }
               onClick={toggleMobileMenu}
             >
               Home
@@ -137,7 +139,9 @@ export const NavBar = () => {
             {isAuth && (
               <NavLink
                 to="/dashboard"
-                className={({ isActive }) => `mobile-link--main ${isActive && 'active--mobile'}`}
+                className={({ isActive }) =>
+                  `block border-l-4 py-2 pl-3 pr-4 text-base font-medium hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 ${isActive && 'active--mobile'}`
+                }
                 onClick={toggleMobileMenu}
               >
                 Dashboard
@@ -160,14 +164,18 @@ export const NavBar = () => {
                 <>
                   <NavLink
                     to="/sign-up"
-                    className={({ isActive }) => `mobile-link ${isActive && 'active--mobile'}`}
+                    className={({ isActive }) =>
+                      `block cursor-pointer border-l-4 px-4 py-2 text-base font-medium hover:bg-gray-100 hover:text-gray-800 ${isActive && 'active--mobile'}`
+                    }
                     onClick={toggleMobileMenu}
                   >
                     Signup
                   </NavLink>
                   <NavLink
                     to="/log-in"
-                    className={({ isActive }) => `mobile-link ${isActive && 'active--mobile'}`}
+                    className={({ isActive }) =>
+                      `block cursor-pointer border-l-4 px-4 py-2 text-base font-medium hover:bg-gray-100 hover:text-gray-800 ${isActive && 'active--mobile'}`
+                    }
                     onClick={toggleMobileMenu}
                   >
                     Login
@@ -175,7 +183,10 @@ export const NavBar = () => {
                 </>
               )}
               {isAuth && (
-                <div className="mobile-link" onClick={logOutUser}>
+                <div
+                  className="block cursor-pointer border-l-4 px-4 py-2 text-base font-medium hover:bg-gray-100 hover:text-gray-800"
+                  onClick={logOutUser}
+                >
                   Log Out
                 </div>
               )}
