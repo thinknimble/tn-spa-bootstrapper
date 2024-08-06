@@ -1,4 +1,3 @@
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { Home, Layout, LogIn, SignUp } from 'src/pages'
 import { Dashboard } from 'src/pages/dashboard'
@@ -9,21 +8,21 @@ import { useAuth } from 'src/stores/auth'
 
 const PrivateRoutes = () => {
   return (
-    <React.Fragment>
+    <>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/private" element={<div>Hello from private</div>} />
-    </React.Fragment>
+    </>
   )
 }
 
 const AuthRoutes = () => {
   return (
-    <React.Fragment>
+    <>
       <Route path="/log-in" element={<LogIn />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/request-reset" element={<RequestPasswordReset />} />
       <Route path="/password/reset/confirm/:userId/:token" element={<ResetPassword />} />
-    </React.Fragment>
+    </>
   )
 }
 
