@@ -17,7 +17,10 @@ export const Home = () => {
         </p>
         {isAuth && (
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link to="/dashboard" className="btn--accent">
+            <Link
+              to="/dashboard"
+              className="flex w-full cursor-pointer items-center justify-center rounded-md border bg-accent px-3 py-2 text-sm font-semibold text-white shadow-sm"
+            >
               Get Started
             </Link>
           </div>

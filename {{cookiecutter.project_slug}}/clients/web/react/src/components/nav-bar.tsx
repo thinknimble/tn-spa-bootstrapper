@@ -71,10 +71,17 @@ export const NavBar = () => {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             {!isAuth && (
               <>
-                <Link data-cy="login" to="/log-in" className="btn--primary bg-primary">
+                <Link
+                  data-cy="login"
+                  to="/log-in"
+                  className="flex w-full cursor-pointer items-center justify-center rounded-md border border-primary bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primaryLight"
+                >
                   Login
                 </Link>
-                <Link to="/sign-up" className="btn--secondary ml-5">
+                <Link
+                  to="/sign-up"
+                  className="ml-5 flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-50"
+                >
                   Signup
                 </Link>
               </>

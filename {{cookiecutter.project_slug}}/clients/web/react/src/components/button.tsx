@@ -4,9 +4,11 @@ import { Spinner } from './spinner'
 
 type ButtonVariant = 'primary' | 'accent' | 'disabled'
 const buttonVariantMap: Record<ButtonVariant, string> = {
-  primary: 'btn--primary bg-primary',
+  primary:
+    'flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm border-primary text-white hover:bg-primaryLight bg-primary',
   accent: '',
-  disabled: 'btn--disabled bg-gray-200',
+  disabled:
+    'flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm cursor-not-allowed border-gray-200 bg-gray-200',
 }
 
 type CommonButtonProps = {
