@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import { Home, Layout, LogIn, SignUp } from 'src/pages'
 import { Dashboard } from 'src/pages/dashboard'
 import { PageNotFound } from 'src/pages/page-not-found'
@@ -33,7 +33,8 @@ export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route path="/home" index element={<Home />} />
+        <Route index element={<Navigate to="/home" />} />
+        <Route path="/home" element={<Home />} />
         {isAuth ? PrivateRoutes() : AuthRoutes()}
         <Route path="*" element={<PageNotFound />} />
       </Route>
