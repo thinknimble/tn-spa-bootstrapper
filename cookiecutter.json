@@ -12,7 +12,6 @@
     "clients/web/vue3/src/components",
     "clients/web/react/src/components",
     "clients/web/react/src/pages/app-or-auth.tsx",
-    "clients/web/react/src/pages/home.tsx",
     "clients/web/react/src/pages/index.ts",
     "clients/web/react/src/pages/layout.tsx",
     "*/swagger-ui.html"
