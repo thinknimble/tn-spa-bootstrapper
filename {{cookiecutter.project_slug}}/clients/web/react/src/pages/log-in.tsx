@@ -15,7 +15,6 @@ import { AuthLayout } from 'src/components/auth-layout'
 
 function LogInInner() {
   const params = useLocation()
-  const autoError = params.state?.autoError
   const [errorMessage, setErrorMessage] = useState<string[] | undefined>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
@@ -51,7 +50,7 @@ function LogInInner() {
 
   return (
     <AuthLayout title="Log In">
-      <section className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+      <section className="mt-6 flex flex-col gap-3 sm:mx-auto sm:w-full sm:max-w-sm">
         <form
           onSubmit={(e) => {
             e.preventDefault()

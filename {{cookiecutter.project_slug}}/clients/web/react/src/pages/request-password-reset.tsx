@@ -70,6 +70,7 @@ export const RequestPasswordResetInner = () => {
               onSubmit={(e) => {
                 e.preventDefault()
               }}
+              className="flex flex-col gap-2"
             >
               <Input
                 placeholder="Enter email..."

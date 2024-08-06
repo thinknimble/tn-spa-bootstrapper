@@ -1,7 +1,7 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom'
-import { logout, useAuth } from 'src/stores/auth'
+import { useAuth } from 'src/stores/auth'
 import { useState } from 'react'
-import { useUser } from 'src/services/user'
+import { useLogout, useUser } from 'src/services/user'
 import BarsIcon from '../assets/images/bars.svg'
 import XMark from '../assets/images/x-mark.svg'
 import Logo from '../assets/images/logo.svg'
@@ -27,12 +27,16 @@ export const NavBar = () => {
   const token = useAuth.use.token()
   const { data: user } = useUser()
   const isAuth = Boolean(token)
+  const { mutate: logout } = useLogout()
 
   const navigate = useNavigate()
   const logOutUser = () => {
     toggleMobileMenu()
-    logout()
-    navigate('/log-in')
+    logout(undefined, {
+      onSettled: () => {
+        navigate('/log-in')
+      },
+    })
   }
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen)
