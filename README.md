@@ -8,6 +8,11 @@ A production-ready Django SPA app on Heroku in 20-min or less!
 
 First, get cookiecutter, as detailed in the [official documentation](https://cookiecutter.readthedocs.io/en/stable/installation.html#install-cookiecutter).
 
+
+You will also need some of the libraries being used to generate your artifacts
+
+`python -m pip install Jinja2 jinja2-time`
+
 Now run it against this repo:
 
 ```bash
