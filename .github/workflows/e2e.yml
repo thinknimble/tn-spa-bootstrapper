@@ -35,15 +35,11 @@ jobs:
         with:
           node-version: 18
       - name: 📦 Install frontend dependencies
-        working-directory: ./client
-        run: pwd
-      - name: 📦 Install frontend dependencies
-        working-directory: ./my_project/client
-        run: npm install
+        run: npm --prefix ./client i
       - name: 🎭 Install Playwright
-        run: npx playwright install --with-deps
+        run: npx --prefix ./client playwright install --with-deps
       - name: Run Playwright tests against ${{ github.event.deployment_status.environment_url }}
-        run: npx playwright test --reporter=html
+        run: npx --prefix ./client playwright test --reporter=html
         env:
           NPM_CONFIG_PRODUCTION: false
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.environment_url }}
