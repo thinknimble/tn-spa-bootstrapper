@@ -40,7 +40,7 @@ jobs:
           node-version: 18
       - name: 📦 Install frontend dependencies
         working-directory: ./my_project/client
-        run: npm --prefix  i
+        run: npm install
       - name: 🎭 Install Playwright
         working-directory: ./my_project/client
         run: npx playwright install --with-deps
