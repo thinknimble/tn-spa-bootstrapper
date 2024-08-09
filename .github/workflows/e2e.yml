@@ -31,15 +31,22 @@ jobs:
     if: github.event.deployment_status.state == 'success'
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: my_project
+          path: my_project/
       - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: 📦 Install frontend dependencies
-        run: npm --prefix ./my_project/client i
+        working-directory: ./my_project/client
+        run: npm --prefix  i
       - name: 🎭 Install Playwright
-        run: npx --prefix ./my_project/client playwright install --with-deps
+        working-directory: ./my_project/client
+        run: npx playwright install --with-deps
       - name: Run Playwright tests against ${{ github.event.deployment_status.environment_url }}
-        run: npx --prefix ./my_project/client playwright test --reporter=html
+        working-directory: ./my_project/client
+        run: npx playwright test --reporter=html
         env:
           NPM_CONFIG_PRODUCTION: false
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.environment_url }}
