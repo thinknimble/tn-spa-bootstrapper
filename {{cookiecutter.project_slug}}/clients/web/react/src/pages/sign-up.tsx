@@ -12,7 +12,6 @@ import { isAxiosError } from 'axios'
 import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 import { useAuth } from 'src/stores/auth'
 import { PasswordInput } from 'src/components/password-input'
-import { getErrorMessages } from 'src/utils/errors'
 import { AuthLayout } from 'src/components/auth-layout'
 
 function SignUpInner() {
