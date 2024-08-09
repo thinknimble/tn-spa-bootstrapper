@@ -34,12 +34,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: 📦 Install frontend dependencies
-        working-directory: my_project/client
-        run: |
-          pwd
-          ls
-          npm install
+      - name: 📦 Install frontend dependencies ${{ github.workspace }}
+        working-directory: ./my_project/client
+        run: npm install
       - name: 🎭 Install Playwright
         run: npx playwright install --with-deps
       - name: Run Playwright tests against ${{ github.event.deployment_status.environment_url }}
