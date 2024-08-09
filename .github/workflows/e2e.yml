@@ -30,16 +30,22 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.deployment_status.state == 'success'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          name: my_project
+          path: my_project/
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Install frontend dependencies
-        run: npm --prefix ./client i
+        env:
+          NPM_CONFIG_PRODUCTION: false
+        working-directory: ./my_project/client
+        run: npm install
       - name: Install Playwright
-        run: npx --prefix ./client playwright install --with-deps
-      - name: Run Playwright tests
-        run: npx --prefix ./client playwright test --reporter=html
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests against ${{ github.event.deployment_status.environment_url }}
+        run: npx playwright test --reporter=html
         env:
           NPM_CONFIG_PRODUCTION: false
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.environment_url }}
