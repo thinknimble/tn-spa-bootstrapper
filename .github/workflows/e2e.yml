@@ -34,8 +34,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install dependencies
-        run: npm --prefix ./client ci
+      - name: Install frontend dependencies
+        run: npm --prefix ./client i
       - name: Install Playwright
         run: npx --prefix ./client playwright install --with-deps
       - name: Run Playwright tests
