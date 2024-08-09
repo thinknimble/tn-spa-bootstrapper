@@ -123,10 +123,6 @@ def set_keys_in_envs(django_secret, postgres_secret):
     set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
     set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
     copy2(env_file_path, join(".env"))
-    cypress_example_file_dir = join(web_clients_path, "react")
-    cypress_example_file = join(cypress_example_file_dir, "cypress.example.env.json")
-    set_flag(cypress_example_file, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
-    copy2(cypress_example_file, join(cypress_example_file_dir, "cypress.env.json"))
 
 
 def get_secrets():

@@ -51,7 +51,7 @@ function LogInInner() {
   return (
     <AuthLayout title="Log In">
       <section className="mt-6 flex flex-col gap-3 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form
+      <form
           onSubmit={(e) => {
             e.preventDefault()
           }}
@@ -62,7 +62,7 @@ function LogInInner() {
               placeholder="Enter email..."
               onChange={(e) => createFormFieldChangeHandler(form.email)(e.target.value)}
               value={form.email.value ?? ''}
-              data-cy="email"
+              data-testid="email"
               id="id"
               label="Email address"
             />
@@ -84,7 +84,7 @@ function LogInInner() {
                   createFormFieldChangeHandler(form.password)(e.target.value)
                 }}
                 value={form.password.value ?? ''}
-                data-cy="password"
+                data-testid="password"
                 id="password"
               />
               <ErrorsList errors={form.password.errors} />
@@ -96,7 +96,7 @@ function LogInInner() {
           <ErrorMessage>{errorMessage}</ErrorMessage>
         </div>
         <Button
-          data-cy="submit"
+          data-testid="submit"
           onClick={handleLogin}
           variant="primary"
           disabled={isPending || !form.isValid}

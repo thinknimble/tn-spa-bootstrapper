@@ -22,7 +22,7 @@
     "DJANGO_SUPERUSER_PASSWORD": {
       "value": "!!!DJANGO_SECRET_KEY!!!"
     },
-    "CYPRESS_TEST_USER_PASS": {
+    "PLAYWRIGHT_TEST_USER_PASS": {
       "value": "!!!DJANGO_SECRET_KEY!!!"
     },
     "SECRET_KEY": {
