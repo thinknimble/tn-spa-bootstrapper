@@ -18,6 +18,6 @@ class Command(BaseCommand):
             email="admin@thinknimble.com", password=superuser_password, first_name="Admin", last_name="ThinkNimble"
         )
         get_user_model().objects.create_user(
-            email="playwright@example.com", password=playwright_password, first_name="Playwright", last_name="E2E_test"
+            email="playwright@thinknimble.com", password=playwright_password, first_name="Playwright", last_name="E2E_test"
         )
         logger.info(f"Finished management command {__name__}")

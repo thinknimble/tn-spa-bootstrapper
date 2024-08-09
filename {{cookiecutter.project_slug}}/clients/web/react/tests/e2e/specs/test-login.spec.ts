@@ -8,7 +8,7 @@ test('Login workflow', async ({ page }) => {
   }
 
   await page.goto('/log-in')
-  await page.getByTestId('email').fill('playwright@example.com')
+  await page.getByTestId('email').fill('playwright@thinknimble.com')
   await page.getByTestId('password').fill(process.env.PLAYWRIGHT_TEST_USER_PASS ?? '')
   await page.getByTestId('submit').click()
 
