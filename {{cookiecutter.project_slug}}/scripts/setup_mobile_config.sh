@@ -1,4 +1,5 @@
 #!/bin/bash
+printf "begining replacement"
 
 base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # echo $base_dir
@@ -6,7 +7,8 @@ config_file=mobile/$1
 
 defaults_file=resources/$2
 
-
+printf $config_file 
+print $defaults_file
 
 declare -a replace_with
 declare -a merged_arr
