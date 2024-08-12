@@ -2,10 +2,14 @@ import axios, { AxiosError } from 'axios'
 import { useAuth } from '@stores/auth'
 import Config from '../../Config'
 
+const baseUrl =
+  Config?.backendServerUrl && Config?.backendServerUrl.endsWith('/')
+    ? Config?.backendServerUrl.substring(0, Config?.backendServerUrl.length - 1)
+    : `${Config?.backendServerUrl}`
 export const axiosInstance = axios.create({
-  baseURL: `${Config?.backendServerUrl}/api`,
+  baseURL: `${baseUrl}/api`,
 })
-
+console.log('axiosInstance', `${baseUrl}/api`)
 axiosInstance.interceptors.request.use(
   async (config) => {
     const { token } = useAuth.getState()

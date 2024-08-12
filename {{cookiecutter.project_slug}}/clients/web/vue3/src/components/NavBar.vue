@@ -135,27 +135,35 @@ import { userApi } from '@/services/users'
 import { computed, ref } from 'vue'
 
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useUserStore } from '@/stores/user'
 
 export default {
   setup() {
-    const store = useStore()
+    const userStore = useUserStore()
     const router = useRouter()
     let mobileMenuOpen = ref(false)
     let profileMenuOpen = ref(false)
 
     async function logout() {
-      await userApi.csc.logout()
-      profileMenuOpen.value = false
-      mobileMenuOpen.value = false
-      store.dispatch('setUser', null)
-      router.push({ name: 'Home' })
+      try {
+        await userApi.csc.logout()
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          console.error('User is not logged in')
+        }
+        console.log(error)
+      } finally {
+        profileMenuOpen.value = false
+        mobileMenuOpen.value = false
+        userStore.clearUser()
+        router.push({ name: 'Home' })
+      }
     }
 
     return {
       logout,
-      isLoggedIn: computed(() => store.getters.isLoggedIn),
-      user: computed(() => store.getters.user),
+      isLoggedIn: computed(() => userStore.isLoggedIn),
+      user: computed(() => userStore.user),
       mobileMenuOpen,
       profileMenuOpen,
     }

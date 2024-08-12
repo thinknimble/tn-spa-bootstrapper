@@ -29,13 +29,6 @@ alternatively if you want to use expo run command
 
 ### Set up external dependencies
 
-#### Expo
-
-Set up an expo organization
-Generate an expo robot and api key
-Set the env secret `EXPO_TOKEN` in GH secrets for the pipeline
-Set the `SENTRY_AUTH_TOKEN` in the Expo secrets see (Error Logging & Crash Analytics)
-
 #### Error Logging and Crash Analytics
 
 Set up a rollbar instance (if using heroku 1 app in the production environment is recommended)
@@ -46,11 +39,20 @@ Set up sentry for crash analytics and additional error logs (We use sentry becau
 
 Create a sentry account and set up the projects for the various environments (this can also be added to the prod instance on heroku)
 
+Then go to `Settings` > `Developer Settings` > `Auth Tokens` and create a new token that you'll use in `Expo`
+
 Retrieve:
 
 1. API Key
 2. Sentry DSN for each project
 3. project-name
+
+#### Expo
+
+Set up an expo organization
+Generate an expo robot (name ex: `CI/CD`) and api key (name ex: `GH_ACTIONS`)
+Set the env secret `EXPO_TOKEN` in GH secrets for the pipeline
+Set the `SENTRY_AUTH_TOKEN` in Expo under `Secrets` (see `Error Logging & Crash Analytics` above)
 
 ### Environment Variables
 
@@ -143,7 +145,7 @@ the variables for this environment are set up in the eas.json under the developm
 To set env variables you should use the [eas.json](./eas.json) and [app.config.js](./app.config.js) although it is possible to define variables in a .env (eg in the CI yaml files) due to inconsistencies while testing I consider this to be the best approach.
 Staging builds are created automatically when merging into the main branch you can also build manually
 
-`eas build --platform all --profile stagign --non-interactive`
+`eas build --platform all --profile staging --non-interactive`
 
 **Prod**
 
@@ -172,7 +174,7 @@ We currently use `expo update` when building our staging app to get a quick and 
 There are certain situations when this may not be possible for example we are installing a package that does not currently have an expo extension (revenue cat for in-app purchases) or we are using a native package that expo does not have access to (face id)
 
 
-When mergning into main we deploy a new staging version that can be run in expo we also build a staging version of the app as a stand-alone native build that can be ran on a device. Staging versions will point to he staging backend defined in the [eas.json](./eas.json)
+When merging into main we deploy a new staging version that can be run in expo we also build a staging version of the app as a stand-alone native build that can be ran on a device. Staging versions will point to he staging backend defined in the [eas.json](./eas.json)
 
 Most internal testing should be sufficient on the expo staging build however you can also provide the link for testing with the native build. When installed this build will replace the version on your device.
 

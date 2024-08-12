@@ -1,3 +1,4 @@
+import logging
 import os
 from email.mime.application import MIMEApplication
 from io import StringIO
@@ -6,6 +7,18 @@ from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from premailer import transform as inline_css
+
+logger = logging.getLogger(__name__)
+
+
+def log_email_details(html_text):
+    if any(x in settings.EMAIL_BACKEND for x in ["console", "locmem"]):
+        # Only true when running tests or in lower environments that don't email
+        # Log URLs more clearing to help with debugging and automated tests
+        for line in html_text.split("\n"):
+            if "href" in line:
+                url_path = line.split('href="')[1].split('"')[0]
+                logger.info(f"Sending email with containing URL: '{url_path}'")
 
 
 def get_html_body(template, context):
@@ -56,7 +69,8 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     plaintext_body = f"This is an HTML email. If you can read this, then your email client does not support HTML emails. Please contact us at {settings.STAFF_EMAIL} to report the problem."  # noqa
 
     email = EmailMultiAlternatives(subject, plaintext_body, send_from, send_to, bcc_emails)
-    email.attach_alternative(get_html_body(template, context), "text/html")
+    html_text = get_html_body(template, context)
+    email.attach_alternative(html_text, "text/html")
 
     # Handle file attachments
     for f in files or []:
@@ -79,3 +93,4 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
         email.attach(part)
 
     email.send(fail_silently=False)
+    log_email_details(html_text)
