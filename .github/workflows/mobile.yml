@@ -45,25 +45,10 @@ jobs:
             echo $(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)
             echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
           fi
-
-  getprnumber:
-    runs-on: ubuntu-latest
-    needs: configuremobile
-    # if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
-    steps:
-      - uses: jwalton/gh-find-current-pr@master
-        id: findPr
-      - name: Set name for PR
-        if: success() && steps.findPr.outputs.number
-        run: echo "PR=pr-${PR}" >> $GITHUB_ENV
-        env:
-          PR: ${{ steps.findPr.outputs.pr }}
-    outputs:
-      PR: ${{ env.PR }}
-  
+          
+          # if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
   publish:
     runs-on: ubuntu-latest
-    needs: getprnumber
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -102,8 +87,8 @@ jobs:
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
         run: |
-          eas update --branch="${{ needs.getprnumber.outputs.PR }}" --non-interactive --auto
-          echo "${{ env.BACKEND_SERVER_URL }} and ${{ needs.getprnumber.outputs.PR }}"
+          eas update --branch="${{ github.event.deployment_status.environment_url }}" --non-interactive --auto
+          echo "${{ env.BACKEND_SERVER_URL }} and ${{ github.event.deployment_status.environment_url }}"
         env:
           EXPO_PUBLIC_BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
           EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
