@@ -1,3 +1,5 @@
+#!/bin/bash
+
 base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # echo $base_dir
 config_file=mobile/$1

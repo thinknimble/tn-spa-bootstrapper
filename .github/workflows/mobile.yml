@@ -46,7 +46,7 @@ jobs:
             echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
           fi
           
-          # if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
+
   publish:
     needs: configuremobile
     runs-on: ubuntu-latest
@@ -79,11 +79,13 @@ jobs:
       - name: Create config files
         run: |
           ls 
-          cp resources/app-config-js-values.txt my_project/mobile/app-config-js-values.txt
-          cp resources/eas-json-values.txt my_project/mobile/easjson-values.txt
+          cp resources/app-config-js-values.txt my_project/resources/app-config-js-values.txt
+          cp resources/eas-json-values.txt my_project/resources/easjson-values.txt
           echo "Ran cp command"
-          ls my_project/
           cd my_project
+          echo "entered the directory"
+          chmod +x scripts/setup_mobile_config.sh
+          echo "ran chmod"
           . scripts/setup_mobile_config.sh app.config.js app-config-js-values.txt
           . scripts/setup_mobile_config.sh eas.json eas-json-values.txt
 
