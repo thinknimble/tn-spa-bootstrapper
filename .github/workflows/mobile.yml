@@ -79,11 +79,11 @@ jobs:
       - name: Create config files
         run: |
           ls 
-          . scripts/hello-world.sh
           cp resources/app-config-js-values.txt my_project/resources/app-config-js-values.txt
           cp resources/eas-json-values.txt my_project/resources/easjson-values.txt
           echo "Ran cp command"
           cd my_project
+          . scripts/hello-world.sh
           echo "entered the directory"
           chmod +x scripts/setup_mobile_config.sh
           echo "ran chmod"
