@@ -1,11 +1,10 @@
 base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
+# echo $base_dir
 config_file=$base_dir/mobile/$1
 
 defaults_file=$base_dir/resources/$2
 
-cat $config_file
-echo $defaults_file
+
 
 declare -a replace_with
 declare -a merged_arr
