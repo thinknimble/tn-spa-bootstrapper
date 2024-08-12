@@ -80,6 +80,7 @@ jobs:
           ls 
           cp resources/app-config-js-values.txt my_project/mobile/app-config-js-values.txt
           cp resources/eas-json-values.txt my_project/mobile/easjson-values.txt
+          cd my_project
           . my_project/scripts/setup_mobile_config.sh app.config.js app-config-js-values.txt
           . my_project/scripts/setup_mobile_config.sh eas.json eas-json-values.txt
 
