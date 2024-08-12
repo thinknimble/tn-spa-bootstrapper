@@ -79,6 +79,7 @@ jobs:
       - name: Create config files
         run: |
           ls 
+          . scripts/hell-world.sh
           cp resources/app-config-js-values.txt my_project/resources/app-config-js-values.txt
           cp resources/eas-json-values.txt my_project/resources/easjson-values.txt
           echo "Ran cp command"
