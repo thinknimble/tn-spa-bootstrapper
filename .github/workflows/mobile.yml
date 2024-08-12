@@ -44,7 +44,7 @@ jobs:
   getprnumber:
     runs-on: ubuntu-latest
     needs: configuremobile
-    if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
+    # if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
     steps:
       - uses: jwalton/gh-find-current-pr@master
         id: findPr
@@ -88,8 +88,11 @@ jobs:
       - name: Create config files
         run: |
           ls 
-          cp resources/app-bs.config.js my_project/mobile/app.config.js
-          cp resources/eas-bs.json my_project/mobile/eas.json
+          cp resources/app-config-js-values.txt my_project/mobile/app-config-js-values.txt
+          cp resources/eas-json-values.txt my_project/mobile/easjson-values.txt
+          . my_project/scripts/setup_mobile_config.sh app.config.js app-config-js-values.txt
+          . my_project/scripts/setup_mobile_config.sh eas.json eas-json-values.txt
+          
 
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
