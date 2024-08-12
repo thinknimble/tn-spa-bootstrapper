@@ -1,5 +1,5 @@
 name: Mobile Deployment
-on: [deployment_status]
+on: [deployment_status,   workflow_dispatch]
 
 jobs:
     # TODO move this to a common file
@@ -38,8 +38,13 @@ jobs:
       - id: checkdiff
         run: |
           git fetch origin main
-          echo $(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)
-          echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
+          if [ {{ "${{ github.event_name }}" }} == "workflow_dispatch" ]; then
+            echo "This workflow was triggered by a workflow_dispatch event."
+            echo "BUILD_MOBILE_APP=1" >> $GITHUB_OUTPUT
+          else
+            echo $(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)
+            echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
+          fi
 
   getprnumber:
     runs-on: ubuntu-latest
@@ -92,7 +97,7 @@ jobs:
           cp resources/eas-json-values.txt my_project/mobile/easjson-values.txt
           . my_project/scripts/setup_mobile_config.sh app.config.js app-config-js-values.txt
           . my_project/scripts/setup_mobile_config.sh eas.json eas-json-values.txt
-          
+
 
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile

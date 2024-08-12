@@ -1,8 +1,8 @@
 base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # echo $base_dir
-config_file=$base_dir/mobile/$1
+config_file=mobile/$1
 
-defaults_file=$base_dir/resources/$2
+defaults_file=resources/$2
 
 
 
