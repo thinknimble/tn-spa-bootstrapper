@@ -9,11 +9,11 @@ config_file=mobile/$1
 defaults_file=resources/$2
 
 
-declare -a replace_with
+declare -a config_vars
 declare -a merged_arr
 
 while IFS= read -r line; do
-    replace_with+=("$line")
+    config_vars+=("$line")
 done < <(grep -o "REPLACE_WITH_[A-Z_]*" "$config_file")
 
 while IFS= read -r line; do
@@ -21,13 +21,18 @@ while IFS= read -r line; do
 done < <(grep -o "REPLACE_WITH_[A-Z_]*" "$defaults_file")
 
 
-for i in "${replace_with[@]}"; do
+for i in "${config_vars[@]}"; do
     value=$(grep -o "$i=.*" "$defaults_file")
+    if [[ -z $value ]]; then
+        echo "Skipping $i as it does not exist in $defaults_file"
+        continue
+    fi
+
     value=${value#*=}
     value=$(printf '%q' "$value")
-    # echo $i has value $value
     if [[ -n $value ]]; then
-    # replace that name in the file with the value 
         sed -i.bak "s#<$i>#$value#g" "$config_file"
-    fi 
+    else
+        echo "Skipping $i as it does not exist in $defaults_file"
+    fi
 done
