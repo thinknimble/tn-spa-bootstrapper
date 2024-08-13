@@ -70,7 +70,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-json.lock') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:

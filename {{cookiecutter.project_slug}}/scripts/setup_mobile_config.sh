@@ -2,8 +2,8 @@
 
 # for debugging
 
-set -e
-set -x 
+# set -e
+# set -x 
 
 # base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -23,10 +23,6 @@ trap reset_config_vars EXIT
 while IFS= read -r line; do
     config_vars+=("$line")
 done < <(grep -o "REPLACE_WITH_[A-Z_]*" "$config_file")
-
-# while IFS= read -r line; do
-#     merged_arr+=("$line")
-# done < <(grep -o "REPLACE_WITH_[A-Z_]*" "$defaults_file")
 
 
 for i in "${config_vars[@]}"; do
