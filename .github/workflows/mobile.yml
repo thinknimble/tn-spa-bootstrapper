@@ -65,9 +65,8 @@ jobs:
           base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
           echo $base_dir
           echo $pwd
-
-          ls
-
+          current_dir=$(pwd)
+          echo $current_dir
 
           . scripts/setup_mobile_config.sh app.config.js resources/app-config-js-values.txt
           . scripts/setup_mobile_config.sh eas.json resources/eas-json-values.txt
