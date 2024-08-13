@@ -7,8 +7,6 @@ config_file=mobile/$1
 
 defaults_file=resources/$2
 
-echo $config_file 
-echo $defaults_file
 
 declare -a replace_with
 declare -a merged_arr
@@ -33,5 +31,5 @@ for i in "${replace_with[@]}"; do
     # replace that name in the file with the value 
         sed -i.bak "s#<$i>#$value#g" "$config_file"
     fi 
-
+    echo "Done replacing $i"
 done
