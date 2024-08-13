@@ -63,8 +63,8 @@ jobs:
           cp resources/eas-json-values.txt my_project/resources/eas-json-values.txt
           cd my_project
           current_dir=$(pwd)
-          . scripts/setup_mobile_config.sh app.config.js "$current_dir/resources/app-config-js-values.txt"
-          . scripts/setup_mobile_config.sh eas.json "$current_dir/resources/resources/eas-json-values.txt"
+          . scripts/setup_mobile_config.sh "$current_dir/app.config.js" "$current_dir/resources/app-config-js-values.txt"
+          . scripts/setup_mobile_config.sh "$current_dir/eas.json" "$current_dir/resources/resources/eas-json-values.txt"
 
           cat mobile/eas.json
           cat mobile/app.config.js
