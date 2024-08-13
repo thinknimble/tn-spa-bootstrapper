@@ -1,8 +1,8 @@
 module.exports = {
   expo: {
-    name: 'tn mobile bootstrapper',
-    slug: 'tn-sample-app',
-    owner: 'thinknimble-bootstrapper',
+    name: '<REPLACE_WITH_EXPO_APP_NAME>',
+    slug: '<REPLACE_WITH_EXPO_APP_SLUG>',
+    owner: '<REPLACE_WITH_EXPO_OWNER>',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/logo-sq.png',
@@ -15,13 +15,13 @@ module.exports = {
     assetBundlePatterns: ['**/*'],
     updates: {
       fallbackToCacheTimeout: 0,
-      url: 'https://u.expo.dev/ec1b86e2-2582-48cf-8a7a-c6d2772ba4f2', // uuid of app
+      url: 'https://u.expo.dev/<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
     },
     plugins: [
       [
         '@sentry/react-native/expo',
         {
-          organization: 'tn-bootstrapper', // replace with org in sentry
+          organization: '<REPLACE_WITH_SENTRY_ORG>', // replace with org in sentry
           project: process.env.SENTRY_PROJECT_NAME, // see readme for these variables
         },
       ],
@@ -31,7 +31,7 @@ module.exports = {
     ],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'org.thinknimble.expo.bootstrapper', // CHANGE TO BUNDLE ID
+      bundleIdentifier: '<REPLACE_WITH_IOS_BUNDLE_ID>', // CHANGE TO BUNDLE ID
       config: {
         usesNonExemptEncryption: false,
       },
@@ -41,14 +41,14 @@ module.exports = {
         foregroundImage: './assets/logo-sq.png',
         backgroundColor: '#FFFFFF',
       },
-      package: 'com.example.app', // CHANGE TO PACKAGE ID
+      package: '<REPLACE_WITH_ANDROID_PACKAGE_ID>', // CHANGE TO PACKAGE ID
     },
     web: {
       favicon: './assets/logo-sq.png',
     },
     extra: {
       eas: {
-        projectId: 'ec1b86e2-2582-48cf-8a7a-c6d2772ba4f2', // uuid of app
+        projectId: '<REPLACE_WITH_EXPO_APP_ID>', // uuid of app
       },
       // these values are hardcoded and provided in eas.json
       backendServerUrl: process.env.BACKEND_SERVER_URL,

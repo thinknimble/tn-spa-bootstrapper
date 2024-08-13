@@ -7,9 +7,9 @@
 
 # base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-config_file=mobile/$1
+config_file=$1
 
-defaults_file=resources/$2
+defaults_file=$2
 
 
 declare -a config_vars

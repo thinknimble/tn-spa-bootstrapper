@@ -60,10 +60,10 @@ jobs:
         run: |
           ls 
           cp resources/app-config-js-values.txt my_project/resources/app-config-js-values.txt
-          cp resources/eas-json-values.txt my_project/resources/easjson-values.txt
+          cp resources/eas-json-values.txt my_project/resources/eas-json-values.txt
           cd my_project
-          . scripts/setup_mobile_config.sh app.config.js app-config-js-values.txt
-          . scripts/setup_mobile_config.sh eas.json eas-json-values.txt
+          . scripts/setup_mobile_config.sh app.config.js my_project/resources/app-config-js-values.txt
+          . scripts/setup_mobile_config.sh eas.json my_project/resources/eas-json-values.txt
 
           cat mobile/eas.json
           cat mobile/app.config.js

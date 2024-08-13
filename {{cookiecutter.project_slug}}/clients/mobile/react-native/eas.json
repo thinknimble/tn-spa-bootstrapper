@@ -67,8 +67,8 @@
     "ios": {
       "appName": "<REPLACE_WITH_APPSTORE_CONNECT_APP_NAME>",
       "appleId": "<REPLACE_WITH_APPLE_ID_EMAIL_SIGNING_APP>",
-      "ascAppId": "<REPLACE_WITH_APPLESTORE_CONNECT_ID>",
-      "appleTeamId": "<REPLACE_WITH_APPLE_TEAM_ID>"
+      "appleTeamId": "<REPLACE_WITH_APPLE_TEAM_ID>",
+      "ascAppId": "<REPLACE_WITH_APPLESTORE_CONNECT_ID"
     }
   }
 }
