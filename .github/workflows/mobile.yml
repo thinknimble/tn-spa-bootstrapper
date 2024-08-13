@@ -64,21 +64,19 @@ jobs:
           cp resources/eas-json-values.txt my_project/resources/eas-json-values.txt
           cd my_project
           current_dir=$(pwd)
-          echo $current_dir
           . scripts/setup_mobile_config.sh "$current_dir/mobile/app.config.js" "$current_dir/resources/app-config-js-values.txt"
           . scripts/setup_mobile_config.sh "$current_dir/mobile/eas.json" "$current_dir/resources/eas-json-values.txt"
-
-          cat mobile/eas.json
-          cat mobile/app.config.js
 
       - uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-json.lock') }}
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
+          cache: npm
+          cache-dependency-path: ./mobile/package-lock.json
 
       - name: 🏗 Setup Expo and EAS
         uses: expo/expo-github-action@v8
@@ -89,7 +87,7 @@ jobs:
 
       - name: 📦 Install dependencies
         working-directory: ./my_project/mobile
-        run: yarn install
+        run: npm install
 
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
