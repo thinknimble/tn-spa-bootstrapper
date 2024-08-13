@@ -62,6 +62,12 @@ jobs:
           cp resources/app-config-js-values.txt my_project/resources/app-config-js-values.txt
           cp resources/eas-json-values.txt my_project/resources/eas-json-values.txt
           cd my_project
+          base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          echo $base_dir
+          ls
+          echo "RESOURCES"
+          ls resources
+
           . scripts/setup_mobile_config.sh app.config.js resources/app-config-js-values.txt
           . scripts/setup_mobile_config.sh eas.json resources/eas-json-values.txt
 
