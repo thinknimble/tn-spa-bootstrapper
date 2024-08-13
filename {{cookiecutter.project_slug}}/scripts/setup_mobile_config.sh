@@ -1,8 +1,9 @@
 #!/bin/bash
-echo "begining replacement"
+set -e
+set -x
 
-base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# echo $base_dir
+# base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 config_file=mobile/$1
 
 defaults_file=resources/$2
@@ -21,8 +22,6 @@ done < <(grep -o "REPLACE_WITH_[A-Z_]*" "$defaults_file")
 
 
 for i in "${replace_with[@]}"; do
-    # printf $i
-    # set the value equal to the value that matches the same name in the defaults file
     value=$(grep -o "$i=.*" "$defaults_file")
     value=${value#*=}
     value=$(printf '%q' "$value")
@@ -31,5 +30,4 @@ for i in "${replace_with[@]}"; do
     # replace that name in the file with the value 
         sed -i.bak "s#<$i>#$value#g" "$config_file"
     fi 
-    echo "Done replacing $i"
 done
