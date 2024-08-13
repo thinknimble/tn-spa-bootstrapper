@@ -17,8 +17,6 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |
-          current_dir=$(pwd)
-          echo $current_dir
           config_file=$(./scripts/vue_or_react.sh)
           pipenv run cookiecutter . --config-file $config_file --no-input -f
           cat $config_file
@@ -60,12 +58,12 @@ jobs:
           path: my_project/
       - name: Create config files
         run: |
-          cp resources/app-config-js-values.txt my_project/resources/app-config-js-values.txt
-          cp resources/eas-json-values.txt my_project/resources/eas-json-values.txt
+          cp resources/app.config.vars.txt my_project/resources/app.config.vars.txt
+          cp resources/eas.vars.txt my_project/resources/eas.vars.txt
           cd my_project
           current_dir=$(pwd)
-          . scripts/setup_mobile_config.sh "$current_dir/mobile/app.config.js" "$current_dir/resources/app-config-js-values.txt"
-          . scripts/setup_mobile_config.sh "$current_dir/mobile/eas.json" "$current_dir/resources/eas-json-values.txt"
+          . scripts/setup_mobile_config.sh "$current_dir/mobile/app.config.js" "$current_dir/resources/app.config.vars.txt"
+          . scripts/setup_mobile_config.sh "$current_dir/mobile/eas.json" "$current_dir/resources/eas.vars.txt"
 
       # - uses: actions/cache@v4
       #   with:
