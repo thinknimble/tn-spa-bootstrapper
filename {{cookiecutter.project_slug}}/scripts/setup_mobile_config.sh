@@ -1,6 +1,9 @@
 #!/bin/bash
-set -e
-set -x
+
+# for debugging
+
+# set -e
+# set -x 
 
 # base_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
