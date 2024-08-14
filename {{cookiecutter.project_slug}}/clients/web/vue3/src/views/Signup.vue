@@ -18,6 +18,7 @@
             :errors="form.firstName.errors"
             @blur="form.firstName.validate()"
             placeholder="Enter first name..."
+            data-testid="first-name"
           />
         </div>
 
@@ -30,6 +31,7 @@
             :errors="form.lastName.errors"
             @blur="form.lastName.validate()"
             placeholder="Enter last name..."
+            data-testid="last-name"
           />
         </div>
 
@@ -43,6 +45,7 @@
             @blur="form.email.validate()"
             type="email"
             placeholder="Enter email..."
+            data-testid="email"
           />
         </div>
 
@@ -56,6 +59,7 @@
             @blur="form.password.validate()"
             type="password"
             placeholder="Enter password..."
+            data-testid="password"
           />
         </div>
         <div>
@@ -68,6 +72,7 @@
             @blur="form.confirmPassword.validate()"
             type="password"
             placeholder="Confirm Password"
+            data-testid="confirm-password"
           />
         </div>
         <div>
@@ -76,7 +81,7 @@
             v-else
             :disabled="!form.isValid"
             type="submit"
-            data-cy="submit"
+            data-testid="submit"
             class="btn--primary bg-primary"
           >
             Sign up
