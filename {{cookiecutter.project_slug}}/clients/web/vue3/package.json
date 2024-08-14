@@ -9,6 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:e2e": "npx playwright test --reporter=html",
     "test:dev": "vitest",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "format:write": "prettier --write ./src",

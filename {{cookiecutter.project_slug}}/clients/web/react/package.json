@@ -6,6 +6,7 @@
     "serve": "vite --host 0.0.0.0",
     "build": "vite build --base=/static/",
     "test": "vitest run",
+    "test:e2e": "npx playwright test --reporter=html",
     "test:dev": "vitest",
     "test:watch": "vitest run",
     "test:single": "vitest $0",

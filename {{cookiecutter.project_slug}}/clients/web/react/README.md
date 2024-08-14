@@ -77,7 +77,7 @@ npm run test:single path/to/test/file
 ### Run e2e tests with Playwright
 
 ```
-npx playwright test
+npm run test:e2e
 ```
 
 Tests are run in headless mode meaning no browser will open up when running the tests. Results of the tests and test logs will be shown in the terminal.
