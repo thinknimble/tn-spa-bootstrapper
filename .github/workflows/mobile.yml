@@ -90,8 +90,8 @@ jobs:
         run:
           backend_url=${{ github.event.deployment_status.environment_url }} >> $GITHUB_ENV
           PR_NUMBER=$(echo "$backend_url" | grep -oP '(?<=pr-)\d+') >> $GITHUB_ENV
-          REPO_NAME=${{ github.repository }}
-          EXPO_NAME="${{ env.REPO_NAME }}-${{ env.PR_NUMBER }}"
+          REPO_NAME=${{ github.repository }} >> $GITHUB_ENV
+          EXPO_NAME="${{ env.REPO_NAME }}-${{ env.PR_NUMBER }}" >> $GITHUB_ENV
 
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
