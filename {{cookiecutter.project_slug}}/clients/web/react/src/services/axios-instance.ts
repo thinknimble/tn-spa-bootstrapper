@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+import qs from 'qs'
 import { useAuth } from 'src/stores/auth'
 import { getCookie } from 'src/utils/get-cookie'
 
@@ -8,6 +9,9 @@ export const axiosInstance = axios.create({
   baseURL,
   headers: {
     'Content-Type': 'application/json',
+  },
+  paramsSerializer: (params) => {
+    return qs.stringify(params, { arrayFormat: 'repeat' })
   },
 })
 
