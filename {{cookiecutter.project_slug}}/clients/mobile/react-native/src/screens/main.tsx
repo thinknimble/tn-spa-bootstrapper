@@ -1,6 +1,10 @@
 import { Dimensions, Image, StyleSheet, View } from 'react-native'
 import logo from '@assets/tn-logo.png'
 import { Text } from '@components/text'
+import { BButton } from '@components/Button'
+import { SheetManager } from 'react-native-actions-sheet'
+import { SHEET_NAMES } from '@components/sheets'
+import { vars } from '../../Config'
 
 const { height } = Dimensions.get('screen')
 
@@ -16,6 +20,14 @@ const styles = StyleSheet.create({
 })
 
 export const Main = () => {
+  const onOpenSheet = () => {
+    SheetManager.show(SHEET_NAMES.test, {
+      payload: {
+        input: JSON.stringify(vars),
+      },
+    })
+  }
+
   return (
     <View className="flex-grow items-center justify-center">
       <View className="items-center justify-center">
@@ -26,6 +38,7 @@ export const Main = () => {
           Welcome to my project
         </Text>
       </View>
+      <BButton label="Open sheet" onPress={onOpenSheet} variant="primary" />
     </View>
   )
 }

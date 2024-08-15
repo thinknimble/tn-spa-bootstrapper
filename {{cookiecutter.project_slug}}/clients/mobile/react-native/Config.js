@@ -74,3 +74,12 @@ const ENV = () => {
 
 const Config = { ...ENV() }
 export default Config
+
+export const vars = {
+  BACKEND_SERVER_URL,
+  SENTRY_DSN,
+  ROLLBAR_ACCESS_TOKEN,
+  backendServerUrl,
+  rollbarAccessToken,
+  sentryDSN,
+}
