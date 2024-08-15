@@ -73,7 +73,6 @@ const ENV = () => {
 }
 
 const Config = { ...ENV() }
-<<<<<<< HEAD
 export default Config
 
 export const vars = {
@@ -84,6 +83,3 @@ export const vars = {
   rollbarAccessToken,
   sentryDSN,
 }
-=======
-export default Config
->>>>>>> main
