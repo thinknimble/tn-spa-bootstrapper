@@ -1,12 +1,11 @@
 import { BButton } from '@components/Button'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { SHEET_NAMES } from '@components/sheets'
-import { Text } from '@components/text'
 import { useLogout } from '@services/user'
 import { navioAtom } from '@stores/navigation'
 import { useAtomValue } from 'jotai'
 import React from 'react'
-import { View } from 'react-native'
+import { Text, View } from 'react-native'
 import { SheetManager } from 'react-native-actions-sheet'
 
 export const DashboardScreen = () => {
@@ -24,9 +23,7 @@ export const DashboardScreen = () => {
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="flex-1">
       <View className="flex-grow items-center justify-center">
-        <Text textClassName="text-xl" variant="bold">
-          Welcome to the Dashboard
-        </Text>
+        <Text className="text-xl font-primary-bold">Welcome to the Dashboard</Text>
       </View>
       <View className="w-full p-3">
         <View className="pb-2">

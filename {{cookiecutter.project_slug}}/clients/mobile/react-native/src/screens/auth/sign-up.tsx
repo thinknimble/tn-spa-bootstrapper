@@ -1,6 +1,5 @@
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { BounceableWind } from '@components/styled'
-import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
 import { userApi } from '@services/user'
 import { AccountForm, TAccountForm } from '@services/user/forms'
@@ -8,7 +7,7 @@ import { useAuth } from '@stores/auth'
 import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 import { getNavio } from '../routes'
 
 const InnerForm = () => {
@@ -48,9 +47,7 @@ const InnerForm = () => {
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
       <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">
-        <Text textClassName="text-black text-3xl" variant="bold">
-          Sign up
-        </Text>
+        <Text className="text-black text-3xl font-primary-bold">Sign up</Text>
         <ScrollView className="w-full" contentContainerClassName="self-start w-full">
           <TextFormField field={form.firstName} />
           <TextFormField field={form.lastName} containerClassName="pt-4" />
@@ -60,9 +57,7 @@ const InnerForm = () => {
         </ScrollView>
         <BounceableWind contentContainerClassName="w-full pt-5" onPress={onSubmit}>
           <View className="rounded-lg bg-[#042642] w-full items-center py-2">
-            <Text textClassName="text-white text-lg" variant="bold">
-              Sign Up
-            </Text>
+            <Text className="text-white text-lg font-primary-bold">Sign Up</Text>
           </View>
         </BounceableWind>
       </View>
