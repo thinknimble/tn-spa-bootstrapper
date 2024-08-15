@@ -111,6 +111,7 @@ jobs:
             }' eas.json > tmp.$$.json && mv tmp.$$.json eas.json
   
       - name: Display Updated EAS Config
+        working-directory: ./my_project/mobile
         run: cat eas.json
 
       # - name: 🔨 Publish Build & Preview 
