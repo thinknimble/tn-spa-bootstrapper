@@ -73,5 +73,4 @@ const ENV = () => {
 }
 
 const Config = { ...ENV() }
-
 export default Config
