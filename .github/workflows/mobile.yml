@@ -87,16 +87,17 @@ jobs:
         run: npm install
 
       - name: Set Variables
-        run:
-          echo "backend_url=${{ github.event.deployment_status.environment_url }}" >> $GITHUB_ENV
-          echo "PR_NUMBER=$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+')" >> $GITHUB_ENV
-          echo "REPO_NAME=${{ github.repository }}" >> $GITHUB_ENV
-          echo "EXPO_NAME=${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+')" >> $GITHUB_ENV
+        id: set-vars
+        run: |
+          echo "::set-output name=backend_url::${{ github.event.deployment_status.environment_url }}"
+          echo "::set-output name=PR_NUMBER::$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+')"
+          echo "::set-output name=REPO_NAME::${{ github.repository }}"
+          echo "::set-output name=EXPO_NAME::${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+')"
 
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
         run: |
-          eas update --branch=${{ env.EXPO_NAME }} --non-interactive --auto
+          eas update --branch=${{ steps.set-vars.outputs.EXPO_NAME }} --non-interactive --auto
         env:
           EXPO_PUBLIC_BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
           EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
@@ -104,10 +105,10 @@ jobs:
       - name: Update EAS Config
         working-directory: ./my_project/mobile
         run: |
-            jq --arg pr_number "${{ env.PR_NUMBER }}" '.build["review_" + $pr_number] = {
+            jq --arg pr_number "${{ steps.set-vars.outputs.PR_NUMBER }}" '.build["review_" + $pr_number] = {
               "developmentClient": true,
               "distribution": "internal",
-              "channel": "",
+              "channel": "${{ steps.set-vars.outputs.EXPO_NAME }}",
               "env": {
                 "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url }}",
                 "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
