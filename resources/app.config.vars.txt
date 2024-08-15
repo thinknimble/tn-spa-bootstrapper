@@ -1,0 +1,8 @@
+
+REPLACE_WITH_EXPO_APP_NAME=tn mobile bootstrapper
+REPLACE_WITH_EXPO_APP_SLUG=tn-sample-app
+REPLACE_WITH_EXPO_OWNER=thinknimble-bootstrapper
+REPLACE_WITH_EXPO_APP_ID=ec1b86e2-2582-48cf-8a7a-c6d2772ba4f2
+REPLACE_WITH_SENTRY_ORG=tn-bootstrapper
+REPLACE_WITH_IOS_BUNDLE_ID=org.thinknimble.expo.bootstrapper
+REPLACE_WITH_ANDROID_PACKAGE_ID=com.example.app

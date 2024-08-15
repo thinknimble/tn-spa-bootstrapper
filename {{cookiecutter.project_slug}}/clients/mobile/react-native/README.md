@@ -15,9 +15,11 @@ User `npm run start` to run the app and source the env variables
 
 alternatively if you want to use expo run command 
 
-`source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME} npx expo start`
+`source .env && npx expo start`
 
-**When running the app locally and working against a local backend you will need to use a proxy**
+Run against a local backend using the ip address instead of local host
+
+**When running the app locally and working against a local backend with a proxy**
 
 1. Download and install ngrok 
 2. Set up ngrok auth token (request an account from William Huster)
@@ -58,6 +60,20 @@ Set the `SENTRY_AUTH_TOKEN` in Expo under `Secrets` (see `Error Logging & Crash 
 
 For local run set environment variables in .env file (from [.env.example](./.env.example))
 For builds set env variables in eas.json
+
+
+
+## Use the helper script to enter variables
+
+Complete the eas.vars.template.txt
+
+complete the app.config.vars.template.txt
+
+`. scripts/setup_mobile_config.sh eas.json <FULL_PATH>/resources/eas.vars.txt`
+
+`. scripts/setup_mobile_config.sh eas.json <FULL_PATH>/resources/app.config.vars.txt`
+
+
 
 ### Eas Project Configuration
 
