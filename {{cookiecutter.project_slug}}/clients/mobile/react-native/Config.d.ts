@@ -6,5 +6,8 @@ declare const Config: {
   sentryDSN: string
   isExpoGo?: boolean
 }
-
+declare const vars :{
+  [key:string]: any
+}
 export default Config
+export { vars }

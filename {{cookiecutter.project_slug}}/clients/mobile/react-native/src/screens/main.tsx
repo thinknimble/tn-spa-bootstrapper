@@ -4,6 +4,7 @@ import { Text } from '@components/text'
 import { BButton } from '@components/Button'
 import { SheetManager } from 'react-native-actions-sheet'
 import { SHEET_NAMES } from '@components/sheets'
+import { vars } from '../../Config'
 
 const { height } = Dimensions.get('screen')
 
@@ -22,7 +23,7 @@ export const Main = () => {
   const onOpenSheet = () => {
     SheetManager.show(SHEET_NAMES.test, {
       payload: {
-        input: 'Hello from payload',
+        input: JSON.stringify(vars),
       },
     })
   }
