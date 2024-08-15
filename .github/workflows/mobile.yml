@@ -98,7 +98,7 @@ jobs:
       - name: Update EAS Config
         working-directory: ./my_project/mobile
         run: |
-            PR_NUMBER=${{ github.event.number }}
+            PR_NUMBER=$(echo "$url" | grep -oP '(?<=pr-)\d+')
             jq --arg pr_number "$PR_NUMBER" '.build["review_" + $pr_number] = {
               "developmentClient": true,
               "distribution": "internal",
