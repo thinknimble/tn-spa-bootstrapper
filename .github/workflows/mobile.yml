@@ -91,9 +91,8 @@ jobs:
         run: |
           echo "backend_url=${{ github.event.deployment_status.environment_url }}" >> $GITHUB_ENV
           echo "PR_NUMBER=$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+')" >> $GITHUB_ENV
-          echo "REPO_NAME=${{ github.repository }}" >> $GITHUB_ENV
-          echo "EXPO_CHANNEL=${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+')" >> $GITHUB_ENV
-
+          echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
+          echo "EXPO_CHANNEL=$(echo ${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+') | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
         run: |
@@ -125,4 +124,4 @@ jobs:
         working-directory: ./my_project/mobile
 
         run: |
-          eas build --platform ios --profile "review_$pr_number" && eas update --branch="${{ env.EXPO_CHANNEL }}" --non-interactive --auto
+          eas build --platform ios --profile "review_$pr_number" && eas update --branch="$EXPO_CHANNEL" --non-interactive --auto
