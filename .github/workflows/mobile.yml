@@ -86,11 +86,17 @@ jobs:
         working-directory: ./my_project/mobile
         run: npm install
 
+      - name: Set Variables
+        run:
+          backend_url=${{ github.event.deployment_status.environment_url }} >> $GITHUB_ENV
+          PR_NUMBER=$(echo "$backend_url" | grep -oP '(?<=pr-)\d+') >> $GITHUB_ENV
+          REPO_NAME=${{ github.repository }}
+          EXPO_NAME="${{ env.REPO_NAME }}-${{ env.PR_NUMBER }}"
+
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
         run: |
-          eas update --branch="${{ github.event.deployment_status.environment_url }}" --non-interactive --auto
-          echo "${{ env.BACKEND_SERVER_URL }} and ${{ github.event.deployment_status.environment_url }}"
+          eas update --branch=${{ env.EXPO_NAME }} --non-interactive --auto
         env:
           EXPO_PUBLIC_BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
           EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
@@ -98,9 +104,7 @@ jobs:
       - name: Update EAS Config
         working-directory: ./my_project/mobile
         run: |
-            url=${{ github.event.deployment_status.environment_url }}
-            PR_NUMBER=$(echo "$url" | grep -oP '(?<=pr-)\d+')
-            jq --arg pr_number "$PR_NUMBER" '.build["review_" + $pr_number] = {
+            jq --arg pr_number "${{ env.PR_NUMBER }}" '.build["review_" + $pr_number] = {
               "developmentClient": true,
               "distribution": "internal",
               "channel": "",
@@ -120,4 +124,4 @@ jobs:
       #   working-directory: ./my_project/mobile
 
       #   run: |
-      #     eas build --platform ios --profile ${{ github.event.pull_request.number }} && eas update --branch="${{ github.event.deployment_status.environment_url }}" --non-interactive --auto
+      #     eas build --platform ios --profile ${{ env.PR_NUMBER }} && eas update --branch="${{ env.EXPO_NAME }}" --non-interactive --auto
