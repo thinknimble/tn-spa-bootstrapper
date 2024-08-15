@@ -2,7 +2,6 @@ name: Mobile Deployment
 on: [deployment_status,   workflow_dispatch]
 
 jobs:
-    # TODO move this to a common file
   Setup:
     if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
