@@ -105,10 +105,10 @@ jobs:
       - name: Update EAS Config
         working-directory: ./my_project/mobile
         run: |
-            jq --arg pr_number "$PR_NUMBER" --arg expo_channel "$EXPO_CHANNEL"'.build["review_" + $pr_number] = {
+            jq --arg pr_number "$PR_NUMBER" --arg expo_channel "$EXPO_CHANNEL" '.build["review_" + $pr_number] = {
               "developmentClient": true,
               "distribution": "internal",
-              "channel": "$expo_channel",
+              "channel": $expo_channel,
               "env": {
                 "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url }}",
                 "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
