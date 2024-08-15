@@ -98,6 +98,7 @@ jobs:
       - name: Update EAS Config
         working-directory: ./my_project/mobile
         run: |
+            url=${{ github.event.deployment_status.environment_url }}
             PR_NUMBER=$(echo "$url" | grep -oP '(?<=pr-)\d+')
             jq --arg pr_number "$PR_NUMBER" '.build["review_" + $pr_number] = {
               "developmentClient": true,
@@ -114,7 +115,8 @@ jobs:
         working-directory: ./my_project/mobile
         run: cat eas.json
 
-      # - name: 🔨 Publish Build & Preview 
+      # note: you will need to register your device first using eas device:create & eas credentials to test this  
+      # - name: 🔨 Build & Update App
       #   working-directory: ./my_project/mobile
 
       #   run: |
