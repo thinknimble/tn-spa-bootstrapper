@@ -75,22 +75,46 @@ jobs:
           # cache: npm
           # cache-dependency-path: ./mobile/package-lock.json
 
-      - name: 🏗 Setup Expo and EAS
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+      # - name: 🏗 Setup Expo and EAS
+      #   uses: expo/expo-github-action@v8
+      #   with:
+      #     expo-version: latest
+      #     eas-version: latest
+      #     token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Install dependencies
-        working-directory: ./my_project/mobile
-        run: npm install
+      # - name: 📦 Install dependencies
+      #   working-directory: ./my_project/mobile
+      #   run: npm install
 
-      - name: 🚀 Publish preview
+      # - name: 🚀 Publish preview
+      #   working-directory: ./my_project/mobile
+      #   run: |
+      #     eas update --branch="${{ github.event.deployment_status.environment_url }}" --non-interactive --auto
+      #     echo "${{ env.BACKEND_SERVER_URL }} and ${{ github.event.deployment_status.environment_url }}"
+      #   env:
+      #     EXPO_PUBLIC_BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
+      #     EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
+      
+      - name: Update EAS Config
         working-directory: ./my_project/mobile
         run: |
-          eas update --branch="${{ github.event.deployment_status.environment_url }}" --non-interactive --auto
-          echo "${{ env.BACKEND_SERVER_URL }} and ${{ github.event.deployment_status.environment_url }}"
-        env:
-          EXPO_PUBLIC_BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
-          EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
+            PR_NUMBER=${{ github.event.number }}
+            jq --arg pr_number "$PR_NUMBER" '.build["review_" + $pr_number] = {
+              "developmentClient": true,
+              "distribution": "internal",
+              "channel": "",
+              "env": {
+                "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url }}",
+                "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
+                "SENTRY_DSN": "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280",
+              }
+            }' eas.json > tmp.$$.json && mv tmp.$$.json eas.json
+  
+      - name: Display Updated EAS Config
+        run: cat eas.json
+
+      # - name: 🔨 Publish Build & Preview 
+      #   working-directory: ./my_project/mobile
+
+      #   run: |
+      #     eas build --platform ios --profile ${{ github.event.pull_request.number }} && eas update --branch="${{ github.event.deployment_status.environment_url }}" --non-interactive --auto
