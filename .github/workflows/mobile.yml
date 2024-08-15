@@ -121,8 +121,8 @@ jobs:
         run: cat eas.json
 
       # note: you will need to register your device first using eas device:create & eas credentials to test this  
-      # - name: 🔨 Build & Update App
-      #   working-directory: ./my_project/mobile
+      - name: 🔨 Build & Update App
+        working-directory: ./my_project/mobile
 
-      #   run: |
-      #     eas build --platform ios --profile ${{ env.PR_NUMBER }} && eas update --branch="${{ env.EXPO_NAME }}" --non-interactive --auto
+        run: |
+          eas build --platform ios --profile "review_$pr_number" && eas update --branch="${{ env.EXPO_NAME }}" --non-interactive --auto
