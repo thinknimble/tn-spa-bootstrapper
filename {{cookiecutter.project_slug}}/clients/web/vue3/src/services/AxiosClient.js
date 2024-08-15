@@ -29,7 +29,7 @@ class ApiService {
         ...CSRF.getHeaders(),
       },
       paramsSerializer: (params) => {
-        return qs.stringify(params, { arrayFormat: 'repeat' })
+        return qs.stringify(params, { arrayFormat: 'comma' })
       },
     })
     ApiService.session.interceptors.request.use(

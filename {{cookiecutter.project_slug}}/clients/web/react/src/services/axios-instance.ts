@@ -11,7 +11,7 @@ export const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
   paramsSerializer: (params) => {
-    return qs.stringify(params, { arrayFormat: 'repeat' })
+    return qs.stringify(params, { arrayFormat: 'comma' })
   },
 })
 

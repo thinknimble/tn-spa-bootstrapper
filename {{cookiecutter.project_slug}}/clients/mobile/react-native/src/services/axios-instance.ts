@@ -10,7 +10,7 @@ const baseUrl =
 export const axiosInstance = axios.create({
   baseURL: `${baseUrl}/api`,
   paramsSerializer: (params) => {
-    return qs.stringify(params, { arrayFormat: 'repeat' })
+    return qs.stringify(params, { arrayFormat: 'comma' })
   },
 })
 console.log('axiosInstance', `${baseUrl}/api`)
