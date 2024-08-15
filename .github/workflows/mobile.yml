@@ -124,4 +124,4 @@ jobs:
         working-directory: ./my_project/mobile
 
         run: |
-          eas build --platform ios --profile "review_$pr_number" && eas update --branch="$EXPO_CHANNEL" --non-interactive --auto
+          eas build --platform ios --profile review_${PR_NUMBER} && eas update --branch=$EXPO_CHANNEL --non-interactive --auto
