@@ -1,15 +1,15 @@
+import colors from '@utils/colors'
 import React, { useMemo } from 'react'
 import {
   ActivityIndicator,
   Platform,
   StyleProp,
+  Text,
+  TouchableNativeFeedback,
   View,
   ViewStyle,
-  TouchableNativeFeedback,
 } from 'react-native'
 import { BounceableProps } from 'rn-bounceable'
-import { Text } from './text'
-import colors from '@utils/colors'
 import { BounceableWind } from './styled'
 
 export type BButtonVariant = 'primary' | 'primary-transparent' | 'secondary'
@@ -97,7 +97,7 @@ export const BButton: React.FC<Props> = ({
         ) : (
           <View className="flex flex-row justify-between gap-2">
             {leftIcon}
-            <Text textClassName={`${variantStyle.text} ${textClassName}`}>{label}</Text>
+            <Text className={`${variantStyle.text} ${textClassName}`}>{label}</Text>
             {rightIcon}
           </View>
         )}

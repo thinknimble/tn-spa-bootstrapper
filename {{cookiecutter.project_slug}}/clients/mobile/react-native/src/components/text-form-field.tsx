@@ -1,7 +1,6 @@
 import Form, { IFormField } from '@thinknimble/tn-forms'
 import { useTnForm } from '@thinknimble/tn-forms-react'
-import { TextInput, TextInputProps, View } from 'react-native'
-import { Text } from '@components/text'
+import { Text, TextInput, TextInputProps, View } from 'react-native'
 import twColors from 'tailwindcss/colors'
 import { ErrorsList } from '@components/errors'
 import { FormFieldsRecord } from '@thinknimble/tn-forms/lib/cjs/types/interfaces'
@@ -14,9 +13,7 @@ export const TextFormField = <T extends IFormField<string>, TForm extends Form<F
   const { createFormFieldChangeHandler } = useTnForm<TForm>()
   return (
     <View className={containerClassName}>
-      <Text textClassName="text-lg" variant="medium">
-        {field.label}
-      </Text>
+      <Text className="text-lg font-primary-medium">{field.label}</Text>
       <View className="w-full">
         <TextInput
           {...textInputProps}
