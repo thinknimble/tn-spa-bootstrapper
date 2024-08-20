@@ -78,3 +78,25 @@ tox -e py -- -k test_default_configuration
 [`pytest-cookies`]: https://pypi.python.org/pypi/pytest-cookies/
 [`flake8`]: https://pypi.python.org/pypi/flake8/
 [`PyPI`]: https://pypi.python.org/pypi
+
+
+### Testing Review App Builds 
+
+Each build will first run `expo update` to create a testable version of your app in Expo Go for reviewers to test. Expo updates are typically quick and can allow testing of most functionality. When there is a need to test native code or React Native code that has not been ported to expo you will need to try out the development build. 
+
+Each push will also create a development build as well. This development build can be installed on any device and allows the user to test. 
+
+For iOS you will need to register your device and generate a new profile and then rebuild the app by commiting a change. 
+
+
+1. Visit the GH actions tag
+2. Copy the eas.json that was created by the build
+3. Paste it into your project 
+4. You will also need to refill the app.config.js
+    ```
+    <PATH_TO_SCRIPTS>/scripts/setup_mobile_config.sh <YOUR_PATH>/tn-spa-bootstrapper/{{cookiecutter.project_slug}}/clients/mobile/react-native/app.config.js <YOUR_PATH>/tn-spa-bootstrapper/resources/app.config.vars.txt
+    ```
+5. run eas device:create if you have never added your device before
+6. run eas credentials and select the new configuration for your device
+7. Push a change to trigger the build!
+

@@ -123,5 +123,6 @@ jobs:
       - name: 🔨 Build & Update App
         working-directory: ./my_project/mobile
 
+        # eas build --platform ios --profile review_${PR_NUMBER} && eas update --branch=$EXPO_CHANNEL --non-interactive --auto
         run: |
-          eas build --platform ios --profile review_${PR_NUMBER} && eas update --branch=$EXPO_CHANNEL --non-interactive --auto
+              eas build --platform ios --profile production && eas update --branch=production --non-interactive --auto

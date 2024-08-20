@@ -133,7 +133,9 @@ Recreate the provisioning profile <- **this step is required in order for the us
 Rebuild the app <- **this step is required in order for the user to be able to install the app**
 
 
-You must run a first time production build to set up appstore connect keys to be managed by Expo
+You must run a first time production build, locally to set up appstore connect keys to be managed by Expo
+
+`eas build --profile production`
 
 
 **Google**
