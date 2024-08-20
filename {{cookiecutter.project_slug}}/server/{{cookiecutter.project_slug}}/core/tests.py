@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from .models import User
 from .serializers import UserLoginSerializer
-from .views import PreviewTemplateView, request_reset_link
+from .views import PreviewTemplateView, request_reset_code
 
 
 @pytest.mark.django_db
@@ -119,14 +119,13 @@ def test_password_reset(caplog, api_client, sample_user):
     # fake our API call to the view that generates an email for the user to reset their password
     rf = RequestFactory()
     post_request = rf.post("api/password/reset/", {"email": sample_user.email})
-    request_reset_link(post_request)
+    request_reset_code(post_request)
 
-    # Grab from the logs the actual URL link we would send to the user
-    password_reset_creds = caplog.text.split("password/reset/confirm/")[1].split('"')[0]
-    password_reset_url = f"/api/password/reset/confirm/{password_reset_creds}/"
+    code = caplog.text.split()[-1].replace('"', "")
+    password_reset_url = f"/api/password/reset/confirm/{sample_user.email}/"
 
     # Verify the link works for reseting the password
-    response = api_client.post(password_reset_url, data={"password": "new_password"}, format="json")
+    response = api_client.post(password_reset_url, data={"password": "new_password", "code": code}, format="json")
     assert response.status_code == status.HTTP_200_OK
 
     # New Password should now work for authentication

@@ -19,11 +19,17 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
+from {{ cookiecutter.project_slug }}.utils.misc import random_pin_generator
 
 from .forms import PreviewTemplateForm
-from .models import User
 from .permissions import HasUserPermissions
-from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+from .models import User, UserResetPasswordCodeMessages
+from .serializers import (
+    ResetPasswordSerializer,
+    UserLoginSerializer,
+    UserRegistrationSerializer,
+    UserSerializer
+)
 
 logger = logging.getLogger(__name__)
 
@@ -92,22 +98,13 @@ class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
 
 @api_view(["post"])
-@permission_classes([])
-@authentication_classes([])
-def request_reset_link(request, *args, **kwargs):
+@permission_classes([permissions.AllowAny])
+def request_reset_code(request, *args, **kwargs):
     email = request.data.get("email")
     user = User.objects.filter(email=email).first()
     if not user:
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    reset_context = user.reset_password_context()
-
-    send_html_email(
-        "Password reset for {{ cookiecutter.project_name }}",
-        "registration/password_reset.html",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        context=reset_context,
-    )
+        raise ValidationError(detail={"non_field_errors": ["User not found with that email"]})
+    UserResetPasswordCodeMessages.objects.create_code(user=user, code=random_pin_generator(count=7))
 
     return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -115,20 +112,22 @@ def request_reset_link(request, *args, **kwargs):
 @api_view(["post"])
 @permission_classes([permissions.AllowAny])
 def reset_password(request, *args, **kwargs):
-    user_id = kwargs.get("uid")
-    token = kwargs.get("token")
-    user = User.objects.filter(pk=user_id).first()
-    if not user or not token:
-        raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
-    is_valid = default_token_generator.check_token(user, token)
-    if not is_valid:
-        raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
-    logger.info(f"Resetting password for user {user_id}")
+    email = kwargs.get("email")
+    user = User.objects.filter(email=email).first()
+    if not user:
+        raise ValidationError(detail={"non_field_errors": ["User not found with that email"]})
+    serializer = ResetPasswordSerializer(data=request.data, context={"user": user})
+    serializer.is_valid(raise_exception=True)
+
+    code_from_db = serializer.context.get("code_from_db")
+    code_from_db.is_used = True
+    code_from_db.save()
+
     user.set_password(request.data.get("password"))
     user.save()
-    # COMMENT THIS WHEN USING THE PASSWORD RESET FLOW ON WEB ONLY FOR MOBILE - PARI BAKER
-    response_data = UserLoginSerializer.login(user, request)
-    return Response(response_data, status=status.HTTP_200_OK)
+
+    u = UserLoginSerializer.login(user, request)
+    return Response(status=status.HTTP_200_OK, data=u)
 
 
 class PreviewTemplateView(views.APIView):

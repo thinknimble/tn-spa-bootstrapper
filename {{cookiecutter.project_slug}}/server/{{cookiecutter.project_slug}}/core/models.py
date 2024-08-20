@@ -1,12 +1,16 @@
 import logging
 
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
+from django.utils.timezone import now, timedelta
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
+
+from .dispatchers import new_reset_password_code_created_ds
 
 logger = logging.getLogger(__name__)
 
@@ -89,3 +93,48 @@ class User(AbstractUser, AbstractBaseModel):
 
     class Meta:
         ordering = ["email"]
+
+
+class UserResetPasswordCodeMessagesQuerySet(models.QuerySet):
+    def for_user(self, user) -> "models.QuerySet[UserResetPasswordCodeMessages]":
+        if not user or user.is_anonymous:
+            return self.none()
+        elif user.is_staff or user.is_superuser:
+            return self.all()
+        else:
+            return self.filter(user=user)
+
+
+class UserResetPasswordCodeMessagesManager(models.Manager):
+    use_in_migrations = True
+
+    def get_queryset(self) -> "models.QuerySet[UserResetPasswordCodeMessages]":
+        return UserResetPasswordCodeMessagesQuerySet(self.model, using=self.db)
+
+    def for_user(self, user):
+        return self.get_queryset().for_user(user)
+
+    def create_code(self, user, code, **kwargs):
+        hashed_code = make_password(str(code))
+        obj = self.model(user=user, code=hashed_code)
+        obj.save(using=self._db)
+        new_reset_password_code_created_ds.send(sender="reset_passoword_code_generator", code=code, instance=obj, created=True)
+
+        return obj
+
+
+class UserResetPasswordCodeMessages(AbstractBaseModel):
+    user = models.ForeignKey("core.User", related_name="reset_password_codes", on_delete=models.CASCADE)
+    code = models.CharField(max_length=255)
+    is_used = models.BooleanField(default=False)
+    objects = UserResetPasswordCodeMessagesManager()
+
+    def __str__(self):
+        return f"reset password code for {self.user.email}"
+
+    @property
+    def is_valid(self):
+        return not (self.is_used | (self.created > now() + timedelta(minutes=settings.RESET_PASSWORD_CODE_VALIDITY_MINUTES)))
+
+    class Meta:
+        ordering = ("-created",)

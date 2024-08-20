@@ -15,8 +15,13 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/login/", core_views.UserLoginView.as_view()),
     path(r"api/logout/", rest_auth_views.LogoutView.as_view()),
-    path(r"api/password/reset/confirm/<str:uid>/<str:token>/", core_views.reset_password, name="password_reset_confirm"),
-    path(r"api/password/reset/", core_views.request_reset_link),
+    path(r"api/password/reset/", core_views.request_reset_code),
+    path(
+        r"api/password/reset/confirm/<str:email>/",
+        core_views.reset_password,
+        # This URL must be named, because django.contrib.auth calls it via a reverse-lookup
+        name="password_reset_confirm",
+    ),
     path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
     path(r"api/template_preview/", core_views.PreviewTemplateView.as_view()),
 ]
