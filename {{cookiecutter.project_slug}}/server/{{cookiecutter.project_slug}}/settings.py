@@ -403,3 +403,6 @@ SWAGGER_SETTINGS = {
 SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,  # Needed for file upload to work
 }
+
+# Reset password expiration time in minutes
+RESET_PASSWORD_CODE_VALIDITY_MINUTES = config("RESET_PASSWORD_CODE_VALIDITY_MINUTES", default=5, cast=int)
