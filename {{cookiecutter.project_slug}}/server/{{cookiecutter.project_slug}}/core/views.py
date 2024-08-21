@@ -11,7 +11,6 @@ from django.template import TemplateDoesNotExist
 from rest_framework import generics, mixins, permissions, status, views, viewsets
 from rest_framework.decorators import (
     api_view,
-    authentication_classes,
     permission_classes,
 )
 from rest_framework.exceptions import ValidationError
@@ -27,7 +26,7 @@ from .serializers import (
     ResetPasswordSerializer,
     UserLoginSerializer,
     UserRegistrationSerializer,
-    UserSerializer
+    UserSerializer,
 )
 
 logger = logging.getLogger(__name__)
