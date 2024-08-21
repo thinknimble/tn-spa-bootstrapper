@@ -63,10 +63,9 @@ def test_password_reset(caplog, api_client, sample_user):
 
     code = caplog.text.split()[-1].replace('"', "")
     password_reset_url = f"/api/password/reset/confirm/{sample_user.email}/"
-    print(code)
+
     # Verify the link works for reseting the password
     response = api_client.post(password_reset_url, data={"password": "new_password", "code": code}, format="json")
-    print(response.json())
     assert response.status_code == 200
 
     # New Password should now work for authentication
