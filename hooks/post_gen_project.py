@@ -118,6 +118,7 @@ def set_keys_in_envs(django_secret, postgres_secret):
     cookie_cutter_settings_path = join("app.json")
     postgres_init_file = join("scripts/init-db.sh")
     set_flag(env_file_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
+    set_flag(env_file_path, "!!!PLAYWRIGHT_SECRET_KEY!!!", django_secret)
     set_flag(pull_request_template_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
     set_flag(cookie_cutter_settings_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
     set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", postgres_secret)

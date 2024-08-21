@@ -23,7 +23,7 @@
       "value": "!!!DJANGO_SECRET_KEY!!!"
     },
     "PLAYWRIGHT_TEST_USER_PASS": {
-      "value": "!!!DJANGO_SECRET_KEY!!!"
+      "value": "!!!PLAYWRIGHT_SECRET_KEY!!!"
     },
     "SECRET_KEY": {
       "generator": "secret"
