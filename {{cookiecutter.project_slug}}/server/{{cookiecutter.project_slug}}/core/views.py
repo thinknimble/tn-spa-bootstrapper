@@ -9,10 +9,7 @@ from django.http import Http404
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from rest_framework import generics, mixins, permissions, status, views, viewsets
-from rest_framework.decorators import (
-    api_view,
-    permission_classes,
-)
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
