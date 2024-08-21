@@ -50,7 +50,7 @@ jobs:
         env:
           NPM_CONFIG_PRODUCTION: false
           PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.environment_url }}
-          PLAYWRIGHT_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
