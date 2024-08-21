@@ -1,6 +1,5 @@
-import { Dimensions, Image, StyleSheet, View } from 'react-native'
+import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
 import logo from '@assets/tn-logo.png'
-import { Text } from '@components/text'
 
 const { height } = Dimensions.get('screen')
 
@@ -22,9 +21,7 @@ export const Main = () => {
         <Image source={logo} style={styles.logo} />
       </View>
       <View className="items-center pt-4">
-        <Text textClassName="text-center text-xl" variant="italic-bold">
-          Welcome to my project
-        </Text>
+        <Text className="text-center text-xl font-primary-bold">Welcome to my project</Text>
       </View>
     </View>
   )
