@@ -82,6 +82,20 @@ def remove_mobile_client_files(client):
     rmtree(join(mobile_clients_path, client))
 
 
+def remove_special_mobile_files():
+    file_names = [
+        join("scripts/setup_mobile_config.sh"),
+    ]
+    directories = [
+        join("resources")
+        
+    ]
+    for file in file_names:
+        if exists(file):
+            remove(file)
+    for directory in directories:
+        rmtree(directory)
+
 def move_mobile_client_to_root(client):
     if exists("mobile"):
         rmtree("mobile")
