@@ -20,7 +20,7 @@ Swap out the logo files in these locations:
 ## Initial Setup for non-Docker local
 
 First, create `.env.local` at the top-level of the **client** directory, and copy the contents of `.env.local.example` into it.
-Un-comment the value of `VUE_APP_DEV_SERVER_BACKEND` that is appropriate for your situation.
+Un-comment the value of `VITE_DEV_BACKEND_URL` that is appropriate for your situation.
 
 ```
 npm install
@@ -44,11 +44,18 @@ npm run build
 npm run test:unit
 ```
 
-### Run your end-to-end tests
+### Run e2e tests with Playwright
 
 ```
 npm run test:e2e
 ```
+
+Tests are run in headless mode meaning no browser will open up when running the tests. Results of the tests and test logs will be shown in the terminal.
+
+To open last HTML report run:
+
+```
+npx playwright show-report
 
 ### Lints and fixes files
 

@@ -72,13 +72,7 @@
         </div>
         <div>
           <LoadingSpinner v-if="loading" />
-          <button
-            v-else
-            :disabled="!form.isValid"
-            type="submit"
-            data-cy="submit"
-            class="btn--primary bg-primary"
-          >
+          <button v-else :disabled="!form.isValid" type="submit" class="btn--primary bg-primary">
             Sign up
           </button>
         </div>

@@ -22,4 +22,4 @@ Add user steps to achieve desired functionality for this feature.
 | user | password | has admin | notes |
 | --- | --- | --- | --- |
 | `admin@thinknimble.com` | !!!DJANGO_SECRET_KEY!!! | :white_check_mark: | |
-| `cypress@example.com` | !!!DJANGO_SECRET_KEY!!! | :x: | Only use for automated E2E testing |
+| `playwright@thinknimble.com` | !!!DJANGO_SECRET_KEY!!! | :x: | Only use for automated E2E testing |
