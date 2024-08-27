@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import CSRF from '@/services/csrf'
+import qs from 'qs'
 
 /**
  *   Get the axios API client.
@@ -26,6 +27,9 @@ class ApiService {
       baseURL,
       headers: {
         ...CSRF.getHeaders(),
+      },
+      paramsSerializer: (params) => {
+        return qs.stringify(params, { arrayFormat: 'comma' })
       },
     })
     ApiService.session.interceptors.request.use(
