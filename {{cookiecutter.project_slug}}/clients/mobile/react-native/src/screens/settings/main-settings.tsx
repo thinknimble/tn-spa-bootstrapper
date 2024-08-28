@@ -191,7 +191,7 @@ export const Settings = () => {
            containerClassName="mb-7"
            isLoading={isLoggingOut}
            buttonProps={{
-             disabled: isLoggingOut,
+             disabled: isLoggingOut
            }}
          />
          <View
