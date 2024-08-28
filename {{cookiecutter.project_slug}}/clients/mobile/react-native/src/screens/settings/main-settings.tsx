@@ -190,9 +190,6 @@ export const Settings = () => {
            onPress={showWarningAlert}
            containerClassName="mb-7"
            isLoading={isLoggingOut}
-           buttonProps={{
-             disabled: isLoggingOut
-           }}
          />
          <View
            style={{
