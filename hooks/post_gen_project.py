@@ -94,7 +94,7 @@ def remove_special_mobile_files():
             remove(file)
     for directory in directories:
         rmtree(directory)
-        
+
 
 def move_mobile_client_to_root(client):
     if exists("mobile"):
@@ -178,7 +178,7 @@ def main():
         move_mobile_client_to_root("react-native")
     else:
         remove_expo_yaml_files()
-        remove_special_mobile_files()   
+        remove_special_mobile_files()
 
     clean_up_clients_folder()
 
