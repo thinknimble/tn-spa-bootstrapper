@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         logger.info(f"Starting management command {__name__}")
         superuser_password = config("DJANGO_SUPERUSER_PASSWORD")
-        playwright_password = config("CYPRESS_TEST_USER_PASS")
+        playwright_password = config("PLAYWRIGHT_TEST_USER_PASS")
         get_user_model().objects.create_superuser(
             email="admin@thinknimble.com", password=superuser_password, first_name="Admin", last_name="ThinkNimble"
         )

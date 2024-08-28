@@ -9,7 +9,7 @@
   },
   "cacheDirectories": [
     "client/node_modules",
-    ".cache/Cypress"
+    ".cache/ms-playwright"
   ],
   "dependencies": {}
 }
