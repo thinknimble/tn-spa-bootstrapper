@@ -193,7 +193,7 @@ export const Settings = () => {
          />
          <View
            style={{
-             paddingBottom: bottom,
+             paddingBottom: bottom
            }}
          >
            <Text textClassName="text-grey-280 text-center">
