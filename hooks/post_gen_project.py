@@ -87,7 +87,7 @@ def remove_special_mobile_files():
         join("scripts/setup_mobile_config.sh")
     ]
     directories = [
-        join("resources")  
+        join("resources")
     ]
     for file in file_names:
         if exists(file):
@@ -181,6 +181,7 @@ def main():
         move_mobile_client_to_root("react-native")
     else:
         remove_expo_yaml_files()
+        remove_special_mobile_files()   
 
     clean_up_clients_folder()
 
