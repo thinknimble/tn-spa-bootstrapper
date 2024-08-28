@@ -14,7 +14,6 @@
           :errors="form.email.errors"
           @blur="form.email.validate()"
           type="email"
-          data-cy="email"
           label="Email address"
           placeholder="Enter email..."
           :id="form.email.id"
@@ -26,7 +25,6 @@
               :errors="form.password.errors"
               @blur="form.password.validate()"
               type="password"
-              data-cy="password"
               placeholder="Enter password..."
               label="Password"
               autocomplete="current-password"
@@ -56,7 +54,7 @@
         </div>
 
         <div v-if="!loading">
-          <button type="submit" data-cy="submit" class="btn--primary bg-primary">Log in</button>
+          <button type="submit" class="btn--primary bg-primary">Log in</button>
         </div>
         <div v-else>
           <LoadingSpinner />

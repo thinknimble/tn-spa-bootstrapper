@@ -1,0 +1,24 @@
+name: Playwright Tests
+on:
+  deployment_status:
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    if: github.event.deployment_status.state == 'success'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm --prefix ./client i
+      - name: Install Playwright
+        run: npx --prefix ./client playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx --prefix ./client playwright test --reporter=html
+        env:
+          PLAYWRIGHT_TEST_BASE_URL:
+            {{ "${{ github.event.deployment_status.environment_url }}" }}
+          CYPRESS_TEST_USER_PASS:
+            {{ "${{ secrets.CYPRESS_TEST_USER_PASS }}" }}

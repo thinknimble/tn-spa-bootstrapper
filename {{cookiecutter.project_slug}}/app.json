@@ -29,16 +29,10 @@
       "generator": "secret"
     }
   },
-  "addons": [
-    "heroku-postgresql:standard-0",
-    "papertrail:choklad"
-  ],
+  "addons": ["heroku-postgresql:standard-0", "papertrail:choklad"],
   "environments": {
     "review": {
-      "addons": [
-        "heroku-postgresql:essential-0",
-        "papertrail:choklad"
-      ]
+      "addons": ["heroku-postgresql:essential-0", "papertrail:choklad"]
     }
   },
   "buildpacks": [

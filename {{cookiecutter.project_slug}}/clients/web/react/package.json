@@ -5,8 +5,8 @@
   "scripts": {
     "serve": "vite --host 0.0.0.0",
     "build": "vite build --base=/static/",
-    "cypress": "source ../.env && cypress open",
     "test": "vitest run",
+    "test:e2e": "npx playwright test --reporter=html",
     "test:dev": "vitest",
     "test:watch": "vitest run",
     "test:single": "vitest $0",
@@ -30,10 +30,12 @@
     "zustand": "^4.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.46.0",
     "@tanstack/eslint-plugin-query": "5.35.6",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.4.3",
+    "@types/node": "^22.1.0",
     "@types/qs": "^6.9.15",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
@@ -42,7 +44,7 @@
     "@typescript-eslint/parser": "^6.19.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.15",
-    "cypress": "^13.5.1",
+    "dotenv": "^16.4.5",
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",

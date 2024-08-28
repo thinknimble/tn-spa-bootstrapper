@@ -12,7 +12,6 @@ import { isAxiosError } from 'axios'
 import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 import { useAuth } from 'src/stores/auth'
 import { PasswordInput } from 'src/components/password-input'
-import { getErrorMessages } from 'src/utils/errors'
 import { AuthLayout } from 'src/components/auth-layout'
 
 function SignUpInner() {
@@ -71,6 +70,7 @@ function SignUpInner() {
                   createFormFieldChangeHandler(form.firstName)(e.target.value)
                 }}
                 label="First Name"
+                data-testid="first-name"
               />
               <ErrorsList errors={form.firstName.errors} />
             </div>
@@ -81,6 +81,7 @@ function SignUpInner() {
                   createFormFieldChangeHandler(form.lastName)(e.target.value)
                 }}
                 label="Last Name"
+                data-testid="last-name"
               />
 
               <ErrorsList errors={form.lastName.errors} />
@@ -94,6 +95,7 @@ function SignUpInner() {
                 createFormFieldChangeHandler(form.email)(e.target.value)
               }}
               label="Email"
+              data-testid="email"
             />
             <ErrorsList errors={form.email.errors} />
           </div>
@@ -104,6 +106,7 @@ function SignUpInner() {
               createFormFieldChangeHandler(form.password)(e.target.value)
             }}
             label="Password"
+            data-testid="password"
           />
           <ErrorsList errors={form.password.errors} />
           <PasswordInput
@@ -113,12 +116,18 @@ function SignUpInner() {
               createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
             }}
             label="Confirm Password"
+            data-testid="confirm-password"
           />
           <ErrorsList errors={form.confirmPassword.errors} />
-          <Button type="submit" isLoading={isPending} disabled={isPending || !form.isValid}>
+          <Button
+            type="submit"
+            isLoading={isPending}
+            disabled={isPending || !form.isValid}
+            data-testid="submit"
+          >
             Sign Up
           </Button>
-      {errors.length
+          {errors.length
             ? errors.map((e, idx) => <ErrorMessage key={idx}>{e}</ErrorMessage>)
             : null}
         </form>
