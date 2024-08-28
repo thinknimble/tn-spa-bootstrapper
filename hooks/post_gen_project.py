@@ -83,12 +83,8 @@ def remove_mobile_client_files(client):
 
 
 def remove_special_mobile_files():
-    file_names = [
-        join("scripts/setup_mobile_config.sh")
-    ]
-    directories = [
-        join("resources")
-    ]
+    file_names = [join("scripts/setup_mobile_config.sh")]
+    directories = [join("resources")]
     for file in file_names:
         if exists(file):
             remove(file)
