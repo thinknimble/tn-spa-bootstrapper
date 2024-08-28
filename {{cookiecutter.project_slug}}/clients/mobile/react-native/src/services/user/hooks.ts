@@ -6,28 +6,21 @@
 import { useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@stores/auth'
-import { userApi } from './api'
+import { userApi, userQueries } from '.'
 import { queryClient } from '@utils/query-client'
 
 export const useUser = () => {
   const userId = useAuth.use.userId()
   const { writeUserInStorage } = useAuth.use.actions()
-  const data = useQuery({
-    queryKey: ['user', userId],
-    queryFn: async () => {
-      const user = await userApi.retrieve(userId)
-      return user
-    },
-    enabled: Boolean(userId),
-  })
+  const query = useQuery(userQueries.retrieve(userId))
 
   useEffect(() => {
-    if (data.isSuccess && data.data) {
-      writeUserInStorage(data.data)
+    if (query.isSuccess && query.data) {
+      writeUserInStorage(query.data)
     }
-  }, [data.data, data.isSuccess, writeUserInStorage])
+  }, [query.data, query.isSuccess, writeUserInStorage])
 
-  return data
+  return query
 }
 
 
