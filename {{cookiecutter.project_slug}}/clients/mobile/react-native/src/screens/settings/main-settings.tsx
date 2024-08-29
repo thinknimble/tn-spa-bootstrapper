@@ -38,14 +38,14 @@ type SectionChild = {
          title: 'Terms of Service',
          icon: <Ionicons name="document-outline" size={24} color="black" />,
          args: {
-           link: 'https://bebe-foodie.com/terms-of-use/',
+           link: 'https://www.thinknimble.com/privacy-policy',
          },
        },
        {
          title: 'Privacy Policy',
          icon: <Ionicons name="shield-checkmark-outline" size={24} color="black" />,
          args: {
-           link: 'https://bebe-foodie.com/privacy-policy/',
+           link: 'https://www.thinknimble.com/privacy-policy',
          },
        },
        {
