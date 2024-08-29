@@ -9,7 +9,7 @@ import { getNavio } from '..'
 import { ErrorMessage } from '@components/errors'
 import { Ionicons } from '@expo/vector-icons'
 import colors from '@utils/colors'
-import { BButton } from '@components/button'
+import { BButton } from '@components/Button'
 import { isAxiosError } from 'axios'
 
 const Separator = () => {

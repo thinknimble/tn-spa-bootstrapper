@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native'
-import { BButton } from '@components/button'
+import { BButton } from '@components/Button'
 import { Container } from '@components/container'
 import { getNavio } from '..'
 import { ContactEmailButton } from '@components/contact-email-button'

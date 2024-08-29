@@ -1,4 +1,4 @@
-import { BButton } from '@components/button'
+import { BButton } from '@components/Button'
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons'
 import { useLogout, useUser } from '@services/user'
 import * as Application from 'expo-application'

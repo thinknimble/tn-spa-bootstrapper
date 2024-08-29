@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, View } from 'react-native'
 
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
-import { BButton } from '@components/button'
+import { BButton } from '@components/Button'
 
 export function ComponentsPreview() {
   return (
