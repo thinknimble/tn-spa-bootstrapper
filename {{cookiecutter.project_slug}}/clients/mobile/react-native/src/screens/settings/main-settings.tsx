@@ -77,8 +77,8 @@ type SectionChild = {
            </View>
            <View className="pl-4 flex-1 items-center justify-between flex-row">
              <View className="flex-grow">
-               <Text textClassName="text-grey-280 text-lg">{user.fullName}</Text>
-               <Text textClassName="text-grey-280 text-base" numberOfLines={1}>
+               <Text className="text-grey-280 text-lg">{user.fullName}</Text>
+               <Text className="text-grey-280 text-base" numberOfLines={1}>
                  {user.email}
                </Text>
              </View>
@@ -100,7 +100,7 @@ type SectionChild = {
          return (
            <View className={sIdx !== 0 ? 'pt-10' : ''} key={sIdx}>
              <View className="pb-2">
-               <Text textClassName="text-grey-280 text-lg capitalize " variant="avenir-black">
+               <Text className="text-grey-280 text-lg capitalize " variant="avenir-black">
                  {s.name}
                </Text>
              </View>
@@ -124,7 +124,7 @@ type SectionChild = {
                      <View className={'flex-row justify-between p-3 bg-transparent rounded-lg '}>
                        <View className="flex-row items-center">
                          <View className="pr-4">{sc.icon}</View>
-                         <Text textClassName="text-grey-280 text-lg">{sc.title}</Text>
+                         <Text className="text-grey-280 text-lg">{sc.title}</Text>
                        </View>
                        <View>
                          <MaterialIcons name="chevron-right" size={24} color={colors.grey[280]} />
@@ -196,7 +196,7 @@ export const Settings = () => {
              paddingBottom: bottom
            }}
          >
-           <Text textClassName="text-grey-280 text-center">
+           <Text className="text-grey-280 text-center">
              Version released {Application.nativeApplicationVersion} (
              {Application.nativeBuildVersion}) - {Updates.channel ? Updates.channel : 'Dev'}
            </Text>
