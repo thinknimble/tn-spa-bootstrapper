@@ -100,7 +100,7 @@ type SectionChild = {
          return (
            <View className={sIdx !== 0 ? 'pt-10' : ''} key={sIdx}>
              <View className="pb-2">
-               <Text className="text-grey-280 text-lg capitalize " variant="avenir-black">
+               <Text className="text-grey-280 text-lg capitalize" >
                  {s.name}
                </Text>
              </View>
