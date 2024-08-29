@@ -1,4 +1,4 @@
-import { BButton } from '@components/Button'
+import { BButton } from '@components/button'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { SHEET_NAMES } from '@components/sheets'
 import { useLogout } from '@services/user'
