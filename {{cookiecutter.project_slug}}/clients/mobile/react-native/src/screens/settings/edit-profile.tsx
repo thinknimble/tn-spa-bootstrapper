@@ -122,11 +122,18 @@ export const EditProfile = () => {
         <Text className="text-xl">
           Edit Profile
         </Text>
-        <Bounceable onPress={handleSave} disabled={isDeleting || isLoggingOut || isSaving}>
+        <Bounceable
+          onPress={handleSave}
+          disabled={isDeleting || isLoggingOut || isSaving || (unsavedChanges && !isValid)}
+        >
           {isSaving ? (
             <ActivityIndicator />
           ) : (
-            <Text className={'text-xl ' + (unsavedChanges ? 'text-grey-280' : 'text-grey-180')}>
+            <Text
+              className={
+                'text-xl ' + (unsavedChanges && isValid ? 'text-grey-280' : 'text-grey-180')
+              }
+            >
               Save
             </Text>
           )}
