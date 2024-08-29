@@ -98,17 +98,24 @@ export const EditProfile = () => {
   }
 
   const showWarningAlert = () => {
-    Alert.alert('WARNING', 'Deleting your account is permanent and cannot be undone. If you would like to use this app again, you will need to create a new account.', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'Delete', onPress: () => {
-        if (!user) return
-        deleteUser(user?.id)
-      }},
-    ])
+    Alert.alert(
+      'WARNING',
+      'Deleting your account is permanent and cannot be undone. If you would like to use this app again, you will need to create a new account.',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            if (!user) return
+            deleteUser(user?.id)
+          },
+        },
+      ],
+    )
   }
 
   if (!user) return <></> //never
@@ -119,9 +126,7 @@ export const EditProfile = () => {
         <Bounceable onPress={onCancel} disabled={isDeleting || isLoggingOut || isSaving}>
           <Ionicons size={26} name="chevron-back" color={colors.grey[280]} />
         </Bounceable>
-        <Text className="text-xl">
-          Edit Profile
-        </Text>
+        <Text className="text-xl">Edit Profile</Text>
         <Bounceable
           onPress={handleSave}
           disabled={isDeleting || isLoggingOut || isSaving || (unsavedChanges && !isValid)}
@@ -143,9 +148,7 @@ export const EditProfile = () => {
         <View className="pt-10">
           <View>
             <View className="justify-center flex-1">
-              <Text className="text-grey-280 text-lg font-primary-bold">
-                Full Name
-              </Text>
+              <Text className="text-grey-280 text-lg font-primary-bold">Full Name</Text>
             </View>
             <Separator />
             <View className="justify-center flex-3">
@@ -167,10 +170,8 @@ export const EditProfile = () => {
           ) : null}
           <Separator />
           <View>
-            <View className="flex-1">
-              <Text className="text-grey-280 text-lg font-primary-bold">
-                Email
-              </Text>
+            <View className="flex">
+              <Text className="text-grey-280 text-lg font-primary-bold">Email</Text>
             </View>
             <Separator />
             <View className="flex-3">
@@ -199,4 +200,3 @@ export const EditProfile = () => {
     </Container>
   )
 }
-
