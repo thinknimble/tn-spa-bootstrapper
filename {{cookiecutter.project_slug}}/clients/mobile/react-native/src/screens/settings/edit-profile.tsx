@@ -80,6 +80,7 @@ export const EditProfile = () => {
     mutationFn: userApi.remove,
     onSuccess: () => {
       logout()
+      navio.stacks.setRoot('AuthStack')
     },
     onError: () => {
       Alert.alert('Error', "Couldn't delete your account. Please try again later.", [
