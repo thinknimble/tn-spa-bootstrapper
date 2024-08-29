@@ -38,5 +38,11 @@ See the [frontend README](client/README.md)
 1. `pipenv run pytest server`
 1. `pipenv run black server`
 1. `pipenv run isort server --diff` (shows you what isort is expecting)
+
+## Frontend E2E Testing with Playwright
+
+1. `cd client`
+1. `npx playwright install` - Installs browser driver
+1. `npx playwright install-deps` - Install system-level dependencies
 1. `npx playwright test`
-1. `npx playwright codegen localhost:8080` (generate your tests through manual testing)
+1. `npx playwright codegen localhost:8080` - Generate your tests through manual testing
