@@ -15,7 +15,7 @@
     "clients/web/react/src/pages/index.ts",
     "clients/web/react/src/pages/layout.tsx",
     "*/swagger-ui.html",
-    "clients/mobile/react-native/src/screens/settings/edit-profile.tsx"
+    "clients/mobile/react-native/src/screens/settings/edit-profile.tsx",
     "clients/mobile/react-native/src/screens/settings/main-settings.tsx"
   ],
   "mail_service": [
