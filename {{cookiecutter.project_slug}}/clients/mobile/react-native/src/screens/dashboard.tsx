@@ -27,7 +27,7 @@ export const DashboardScreen = () => {
       <View className="flex-grow items-center justify-center">
         <View className="flex-row justify-between items-center">
           <View></View>
-          <BounceableWind onPress={() => navio.stacks.push('SettingsStack')}>
+          <BounceableWind onPress={() => navio?.stacks.push('SettingsStack')}>
             <Ionicons name="settings-outline" size={24} color="black" />
           </BounceableWind>
         </View>

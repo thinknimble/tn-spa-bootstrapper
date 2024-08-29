@@ -14,6 +14,7 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
+  fullName: z.string(),
   //TODO:add back `readonly` https://github.com/thinknimble/tn-models-fp/issues/161
   token: z.string().nullable(),
 }
