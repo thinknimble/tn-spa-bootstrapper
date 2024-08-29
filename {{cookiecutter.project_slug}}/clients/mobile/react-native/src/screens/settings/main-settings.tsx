@@ -159,7 +159,6 @@ export const Settings = () => {
      Alert.alert('Log out', 'Are you sure you want to log out?', [
        {
          text: 'Cancel',
-         onPress: () => console.log('Cancel Pressed'),
          style: 'cancel',
        },
        {text: 'Log out', onPress: handleLogout},

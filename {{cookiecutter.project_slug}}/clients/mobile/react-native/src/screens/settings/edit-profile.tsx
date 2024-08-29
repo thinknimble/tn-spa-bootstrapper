@@ -86,7 +86,6 @@ export const EditProfile = () => {
       Alert.alert('Error', "Couldn't delete your account. Please try again later.", [
         {
           text: 'Ok',
-          onPress: () => console.log('Ok Pressed'),
         },
       ])
     },
@@ -105,7 +104,6 @@ export const EditProfile = () => {
       [
         {
           text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
         {
