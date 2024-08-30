@@ -21,7 +21,7 @@ const AuthRoutes = () => {
       <Route path="/log-in" element={<LogIn />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/request-reset" element={<RequestPasswordReset />} />
-      <Route path="/password/reset/confirm/:userId/:token" element={<ResetPassword />} />
+      <Route path="/password/reset/confirm/:userEmail" element={<ResetPassword />} />
     </>
   )
 }

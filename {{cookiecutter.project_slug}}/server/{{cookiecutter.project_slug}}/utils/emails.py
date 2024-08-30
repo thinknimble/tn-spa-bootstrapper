@@ -16,9 +16,12 @@ def log_email_details(html_text):
         # Only true when running tests or in lower environments that don't email
         # Log URLs more clearing to help with debugging and automated tests
         for line in html_text.split("\n"):
-            if "href" in line:
-                url_path = line.split('href="')[1].split('"')[0]
-                logger.info(f"Sending email with containing URL: '{url_path}'")
+            # if "href" in line:
+            #     url_path = line.split('href="')[1].split('"')[0]
+            #     logger.info(f"Sending email with containing URL: '{url_path}'")
+            if "code" in line:
+                code = line.split("<strong>")[1].split("</strong>")[0]
+                logger.info(f"Sending email with containing code: '{code}'")
 
 
 def get_html_body(template, context):
