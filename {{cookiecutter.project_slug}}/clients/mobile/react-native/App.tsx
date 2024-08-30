@@ -65,7 +65,7 @@ export default Sentry.wrap((): JSX.Element => {
     <GestureHandlerRootView style={styles.flex}>
       <QueryClientProvider client={queryClient}>
         <SheetProvider>
-          <StatusBar />
+          <StatusBar style="dark" />
           <AppRoot />
         </SheetProvider>
       </QueryClientProvider>

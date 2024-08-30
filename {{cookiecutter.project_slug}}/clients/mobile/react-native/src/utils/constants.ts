@@ -9,5 +9,6 @@ export const useConstants = () => {
       github: 'https://github.com/kanzitelli/expo-starter',
       website: 'https://github.com/kanzitelli/expo-starter',
     },
+    supportEmail: 'hello@thinknimble.com',
   };
 };

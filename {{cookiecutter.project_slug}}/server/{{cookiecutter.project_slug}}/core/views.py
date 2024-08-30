@@ -55,6 +55,7 @@ class UserViewSet(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
     mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
 ):
     queryset = User.objects.all()
     serializer_class = UserSerializer

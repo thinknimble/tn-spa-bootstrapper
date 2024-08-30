@@ -6,28 +6,22 @@
 import { useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@stores/auth'
-import { userApi } from './api'
 import { queryClient } from '@utils/query-client'
+import { userQueries } from './queries'
+import { userApi } from './api'
 
 export const useUser = () => {
   const userId = useAuth.use.userId()
   const { writeUserInStorage } = useAuth.use.actions()
-  const data = useQuery({
-    queryKey: ['user', userId],
-    queryFn: async () => {
-      const user = await userApi.retrieve(userId)
-      return user
-    },
-    enabled: Boolean(userId),
-  })
+  const query = useQuery(userQueries.retrieve(userId))
 
   useEffect(() => {
-    if (data.isSuccess && data.data) {
-      writeUserInStorage(data.data)
+    if (query.isSuccess && query.data) {
+      writeUserInStorage(query.data)
     }
-  }, [data.data, data.isSuccess, writeUserInStorage])
+  }, [query.data, query.isSuccess, writeUserInStorage])
 
-  return data
+  return query
 }
 
 
@@ -39,7 +33,7 @@ export const useLogout = () => {
     mutationFn: userApi.csc.logout,
     onSettled: () => {
       useAuth.getState().actions.clearAuth()
-      queryClient.invalidateQueries({ queryKey: ['user'] })
+      queryClient.invalidateQueries({ queryKey: userQueries.all() })
     },
   })
 }
