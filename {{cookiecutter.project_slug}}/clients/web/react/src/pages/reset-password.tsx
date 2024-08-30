@@ -12,8 +12,7 @@ import { ResetPasswordForm, TResetPasswordForm, userApi } from 'src/services/use
 
 export const ResetPasswordInner = () => {
   const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TResetPasswordForm>()
-  const { userId, token } = useParams()
-  console.log(userId, token)
+  const { userEmail } = useParams()
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
@@ -32,10 +31,10 @@ export const ResetPasswordInner = () => {
   })
 
   useEffect(() => {
-    if (token && userId) {
-      overrideForm(ResetPasswordForm.create({ token: token, uid: userId }) as TResetPasswordForm)
+    if (userEmail) {
+      overrideForm(ResetPasswordForm.create({ email: userEmail }) as TResetPasswordForm)
     }
-  }, [overrideForm, token, userId])
+  }, [overrideForm, userEmail])
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -43,8 +42,8 @@ export const ResetPasswordInner = () => {
 
     if (form.isValid) {
       confirmResetPassword({
-        userId: form.value.uid!,
-        token: form.value.token!,
+        email: form.value.email!,
+        code: form.value.code!,
         password: form.value.password!,
       })
     }
@@ -63,10 +62,18 @@ export const ResetPasswordInner = () => {
     )
   }
   return (
-    <AuthLayout title="Reset password" description="Choose a new password">
+    <AuthLayout title="Reset password" description="Enter verification code sent to your email and choose a new password">
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="flex w-full flex-col gap-3" onSubmit={onSubmit}>
           <section>
+            <Input
+              placeholder="Verification code"
+              onChange={(e) => createFormFieldChangeHandler(form.code)(e.target.value)}
+              value={form.code.value ?? ''}
+              data-cy="code"
+              id="code"
+            />
+            <ErrorsList errors={form.code.errors} />
             <PasswordInput
               value={form.password.value}
               onChange={(e) => createFormFieldChangeHandler(form.password)(e.target.value)}
