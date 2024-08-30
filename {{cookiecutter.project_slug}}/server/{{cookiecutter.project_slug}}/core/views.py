@@ -9,7 +9,7 @@ from django.http import Http404
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from rest_framework import generics, mixins, permissions, status, views, viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -25,6 +25,7 @@ from .serializers import (
     UserRegistrationSerializer,
     UserSerializer,
 )
+from .throttles import ResetPasswordConfirmLimit, ResetPasswordRequestLimit
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,7 @@ class UserViewSet(
 
 @api_view(["post"])
 @permission_classes([permissions.AllowAny])
+@throttle_classes([ResetPasswordRequestLimit])
 def request_reset_code(request, *args, **kwargs):
     email = request.data.get("email")
     user = User.objects.filter(email=email).first()
@@ -105,6 +107,7 @@ def request_reset_code(request, *args, **kwargs):
 
 @api_view(["post"])
 @permission_classes([permissions.AllowAny])
+@throttle_classes([ResetPasswordConfirmLimit])
 def reset_password(request, *args, **kwargs):
     email = kwargs.get("email")
     user = User.objects.filter(email=email).first()
