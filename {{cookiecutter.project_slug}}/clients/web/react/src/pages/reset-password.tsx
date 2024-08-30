@@ -9,6 +9,7 @@ import { Button } from 'src/components/button'
 import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { PasswordInput } from 'src/components/password-input'
 import { ResetPasswordForm, TResetPasswordForm, userApi } from 'src/services/user'
+import { Input } from 'src/components/input'
 
 export const ResetPasswordInner = () => {
   const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TResetPasswordForm>()
