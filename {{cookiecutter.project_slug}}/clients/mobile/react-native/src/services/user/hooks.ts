@@ -6,8 +6,9 @@
 import { useEffect } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@stores/auth'
-import { userApi, userQueries } from '.'
 import { queryClient } from '@utils/query-client'
+import { userQueries } from './queries'
+import { userApi } from './api'
 
 export const useUser = () => {
   const userId = useAuth.use.userId()
