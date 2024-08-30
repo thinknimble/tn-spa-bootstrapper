@@ -7,6 +7,8 @@ import { useAtomValue } from 'jotai'
 import React from 'react'
 import { Text, View } from 'react-native'
 import { SheetManager } from 'react-native-actions-sheet'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { BounceableWind } from '@components/styled'
 
 export const DashboardScreen = () => {
   const navio = useAtomValue(navioAtom)
@@ -22,8 +24,19 @@ export const DashboardScreen = () => {
 
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="flex-1">
-      <View className="flex-grow items-center justify-center">
-        <Text className="text-xl font-primary-bold">Welcome to the Dashboard</Text>
+      <View className="flex-grow items-center">
+        <View className="flex-row justify-end items-center w-full px-10">
+          <BounceableWind
+            contentContainerClassName="flex-row items-center gap-2"
+            onPress={() => navio?.stacks.push('SettingsStack')}
+          >
+            <Text>Settings</Text>
+            <Ionicons name="settings-outline" size={32} color="black" />
+          </BounceableWind>
+        </View>
+        <View className="flex-1 justify-center">
+          <Text className="text-xl font-primary-bold">Welcome to the Dashboard</Text>
+        </View>
       </View>
       <View className="w-full p-3">
         <View className="pb-2">
