@@ -39,11 +39,11 @@ const requestPasswordReset = createCustomServiceCall({
 })
 
 const resetPassword = createCustomServiceCall({
-  inputShape: { userId: z.string(), token: z.string(), password: z.string() },
+  inputShape: { email: z.string(), code: z.string(), password: z.string() },
   outputShape: userShape,
   cb: async ({ client, input, utils }) => {
-    const { token, user_id, ...rest } = utils.toApi(input)
-    const res = await client.post(`/password/reset/confirm/${user_id}/${token}/`, rest)
+    const { email, ...rest } = utils.toApi(input)
+    const res = await client.post(`/password/reset/confirm/${email}/`, rest)
     return utils.fromApi(res.data)
   },
 })
