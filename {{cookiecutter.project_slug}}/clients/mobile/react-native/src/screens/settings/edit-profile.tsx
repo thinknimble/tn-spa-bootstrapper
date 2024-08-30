@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons'
 import colors from '@utils/colors'
 import { BButton } from '@components/Button'
 import { isAxiosError } from 'axios'
+import { useAuth } from '@stores/auth'
 
 const Separator = () => {
   return (
@@ -26,6 +27,7 @@ export const EditProfile = () => {
     navio.goBack()
   }
   const { data: user } = useUser()
+  const { userId } = useAuth()
   const [fullName, setFullName] = useState(user?.fullName ?? '')
   const [errors, setErrors] = useState<string[] | undefined>()
 
@@ -39,11 +41,13 @@ export const EditProfile = () => {
   const qClient = useQueryClient()
 
   const { mutate: save, isPending: isSaving } = useMutation({
-    mutationFn: userApi.csc.patchUser,
+    mutationFn: userApi.update,
     onMutate: async () => {
-      const userSnapshot = qClient.getQueryData<UserShape>(userQueries.all())?.fullName
-      await qClient.cancelQueries({ queryKey: userQueries.all() })
-      await qClient.setQueryData(userQueries.all(), (input?: UserShape) => {
+      const userSnapshot = qClient.getQueryData<UserShape>(
+        userQueries.retrieve(userId).queryKey,
+      )?.fullName
+      await qClient.cancelQueries({ queryKey: userQueries.retrieve(userId).queryKey })
+      qClient.setQueryData(userQueries.retrieve(userId).queryKey, (input?: UserShape) => {
         return input ? { ...input } : undefined
       })
       return { userSnapshot }
@@ -53,8 +57,10 @@ export const EditProfile = () => {
     },
     onError: (e, _, context) => {
       //rollback update
-      qClient.setQueryData(userQueries.all(), (input?: UserShape) => {
-        return input ? { ...input, fullName: context?.userSnapshot ?? '' } : undefined
+      qClient.setQueryData(userQueries.retrieve(userId).queryKey, (input?: UserShape) => {
+        return input
+          ? { ...input, fullName: context?.userSnapshot ?? user?.fullName ?? '' }
+          : undefined
       })
 
       if (isAxiosError(e)) {
