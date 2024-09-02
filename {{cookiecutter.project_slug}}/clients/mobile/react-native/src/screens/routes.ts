@@ -2,7 +2,7 @@ import { Platform } from 'react-native'
 import { Navio } from 'rn-navio'
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
 import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
-import { Login, SignUp } from '@screens/auth'
+import { ForgotPassword, Login, ResetPassword, SignUp } from '@screens/auth'
 import { Main } from '@screens/main'
 import { Auth } from '@screens/auth/auth'
 import { DashboardScreen } from '@screens/dashboard'
@@ -30,11 +30,25 @@ export const tabDefaultOptions = (): BottomTabNavigationOptions => ({
 })
 // NAVIO
 export const navio = Navio.build({
-  screens: { Auth, Login, SignUp, Main, DashboardScreen, ComponentsPreview, Settings, ContactUs, EditProfile },
+  screens: {
+    Auth,
+    Login,
+    SignUp,
+    Main,
+    DashboardScreen,
+    ComponentsPreview,
+    Settings, 
+    ContactUs, 
+    EditProfile,
+    ForgotPassword,
+    ResetPassword,
+  },
   stacks: {
     AuthStack: ['Auth'],
     MainStack: ['DashboardScreen'],
     SettingsStack: ['Settings', 'ContactUs', 'EditProfile'],
+    ForgotPasswordStack: ['ForgotPassword'],
+    ResetPasswordStack: ['ResetPassword'],
     /**
      * Set me as the root to see the components preview
      */
