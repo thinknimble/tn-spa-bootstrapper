@@ -6,11 +6,12 @@ A production-ready Django SPA app on Heroku in 20-min or less!
 
 ## Quick Start
 
-First, get cookiecutter, as detailed in the [official documentation](https://cookiecutter.readthedocs.io/en/stable/installation.html#install-cookiecutter).
+First, get `pipx` for your system, if you don't already have it [installing pipx](https://pipx.pypa.io/stable/installation/#installing-pipx).
 
-Now run it against this repo:
+Adn run the following command:
 
 ```bash
+pipx install cookiecutter
 pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 ```
 
