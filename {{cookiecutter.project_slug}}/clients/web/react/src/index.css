@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Montserrat';
+    font-display: swap;
+    font-style: italic;
+    src:
+      url('assets/fonts/montserrat-italic-variable.woff2') format('woff2'),
+      url('assets/fonts/montserrat-italic-variable.woff') format('woff');
+  }
+
+  @font-face {
+    font-family: 'Montserrat';
+    font-display: swap;
+    font-style: normal;
+    src:
+      url('assets/fonts/montserrat-variable.woff2') format('woff2'),
+      url('assets/fonts/montserrat-variable.woff') format('woff');
+  }
+}
