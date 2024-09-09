@@ -18,9 +18,9 @@ from rest_framework.decorators import (
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from {{ cookiecutter.project_slug }}.core.forms import PreviewTemplateForm
 from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
+from .forms import PreviewTemplateForm
 from .models import User
 from .permissions import CreateOnlyPermissions
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
@@ -50,13 +50,7 @@ class UserLoginView(generics.GenericAPIView):
         return Response(response_data)
 
 
-class UserViewSet(
-    viewsets.GenericViewSet,
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-):
+class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -66,29 +60,29 @@ class UserViewSet(
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        """
-        Endpoint to create/register a new user.
-        """
         serializer = UserRegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()  # This calls .create() on serializer
-        user = serializer.instance
-
+        user = serializer.save()
         # Log-in user and re-serialize response
         response_data = UserLoginSerializer.login(user, request)
         return Response(response_data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        """
-        Endpoint to create/register a new user.
-        """
         serializer = UserSerializer(data=request.data, instance=self.get_object(), partial=True)
-
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        user = serializer.data
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(user, status=status.HTTP_200_OK)
+    def destroy(self, request, *args, **kwargs):
+        """
+        When deleting a user's account, just disable their account first
+        The user may have a regret and try to get their account back
+        A background job should then properly delete the data after X days
+        """
+        user = self.get_object()
+        user.is_active = False
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["post"])
