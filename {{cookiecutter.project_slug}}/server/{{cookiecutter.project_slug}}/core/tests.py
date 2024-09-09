@@ -82,9 +82,11 @@ def test_get_user(api_client, sample_user):
 
 
 @pytest.mark.django_db
-def test_get_other_user(api_client, sample_user, sample_user_2):
+def test_get_other_user(api_client, sample_user, user_factory):
     api_client.force_authenticate(sample_user)
-    res = api_client.get(f"/api/users/{sample_user_2.pk}/")
+    other_user = user_factory()
+    other_user.save()
+    res = api_client.get(f"/api/users/{other_user.pk}/")
     assert res.status_code == status.HTTP_403_FORBIDDEN
 
 
