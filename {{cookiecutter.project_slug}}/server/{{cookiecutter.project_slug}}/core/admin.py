@@ -35,7 +35,15 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
-    list_display = ("email", "permissions", "is_active", "is_staff", "is_superuser", "first_name", "last_name",)
+    list_display = (
+        "email",
+        "permissions",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "first_name",
+        "last_name",
+    )
     list_display_links = (
         "is_active",
         "email",
