@@ -22,7 +22,7 @@ from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 from .forms import PreviewTemplateForm
 from .models import User
-from .permissions import CreateOnlyPermissions
+from .permissions import HasUserPermissions
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
     # No auth required to create user
     # Auth required for all other actions
-    permission_classes = (permissions.IsAuthenticated | CreateOnlyPermissions,)
+    permission_classes = (HasUserPermissions,)
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
