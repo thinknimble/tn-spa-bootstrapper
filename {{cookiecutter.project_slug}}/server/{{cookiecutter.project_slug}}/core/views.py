@@ -51,12 +51,18 @@ class UserLoginView(generics.GenericAPIView):
 
 
 class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
 
     # No auth required to create user
     # Auth required for all other actions
     permission_classes = (HasUserPermissions,)
+
+    def get_queryset(self):
+        """
+        Users should only find themselves by default
+        """
+        user = self.request.user
+        return User.objects.filter(pk=user.pk)
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
