@@ -51,7 +51,7 @@ class UserLoginView(generics.GenericAPIView):
 
 
 class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
-    queryset = User.objects.all()
+    queryset = User.objects
     serializer_class = UserSerializer
 
     # No auth required to create user
