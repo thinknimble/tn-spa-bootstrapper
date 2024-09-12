@@ -87,7 +87,7 @@ def test_get_other_user(api_client, sample_user, user_factory):
     other_user = user_factory()
     other_user.save()
     res = api_client.get(f"/api/users/{other_user.pk}/")
-    assert res.status_code == status.HTTP_403_FORBIDDEN
+    assert res.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.django_db
