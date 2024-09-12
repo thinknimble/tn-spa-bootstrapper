@@ -61,8 +61,7 @@ class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
         """
         Users should only find themselves by default
         """
-        user = self.request.user
-        return User.objects.filter(pk=user.pk)
+        return super().get_queryset().for_user(self.request.user)
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -117,7 +116,7 @@ def request_reset_link(request, *args, **kwargs):
 def reset_password(request, *args, **kwargs):
     user_id = kwargs.get("uid")
     token = kwargs.get("token")
-    user = User.objects.filter(id=user_id).first()
+    user = User.objects.filter(pk=user_id).first()
     if not user or not token:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
     is_valid = default_token_generator.check_token(user, token)
