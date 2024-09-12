@@ -38,6 +38,9 @@ ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.sp
 if CURRENT_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(CURRENT_DOMAIN)
 
+# Used by the corsheaders app/middleware (django-cors-headers) to allow multiple domains to access the backend
+CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -306,7 +309,6 @@ MANAGERS = ADMINS
 if not IN_DEV:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    MIDDLEWARE += ["django.middleware.security.SecurityMiddleware"]
 
 #
 # Custom logging configuration
@@ -389,11 +391,6 @@ if IN_PROD or ROLLBAR_ACCESS_TOKEN:
 
 # Popular testing framework that allows logging to stdout while running unit tests
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
-
-CORS_ALLOWED_ORIGINS = ["https://{{ cookiecutter.project_slug|replace('_', '-') }}-staging.herokuapp.com", "https://{{ cookiecutter.project_slug|replace('_', '-') }}.herokuapp.com"]
-{% if cookiecutter.client_app.lower() != 'none' -%}
-CORS_ALLOWED_ORIGINS.append("http://localhost:8080")
-{% endif -%}
 
 SWAGGER_SETTINGS = {
     "LOGIN_URL": "/login",
