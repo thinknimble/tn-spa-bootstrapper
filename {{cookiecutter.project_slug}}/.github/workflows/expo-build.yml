@@ -50,7 +50,7 @@ jobs:
         with:
           expo-version: latest
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+          token: {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: 📦 Install dependencies
         working-directory: ./mobile
@@ -60,7 +60,7 @@ jobs:
         run: |
           cd mobile
           CLEAR_CACHE_FLAG=""
-          if [[ ${{ github.event.inputs.clear_cache }} ]]; then
+          if [[ {{ "${{ github.event.inputs.clear_cache }}" }} ]]; then
             CLEAR_CACHE_FLAG="--clear-cache"
           fi
-          eas build --profile ${{ github.event.inputs.profile }} --platform ${{ github.event.inputs.platform }} --non-interactive $CLEAR_CACHE_FLAG
+          eas build --profile {{ "${{ github.event.inputs.profile }}" }} --platform {{ "${{ github.event.inputs.platform }}" }} --non-interactive $CLEAR_CACHE_FLAG
