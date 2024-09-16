@@ -47,6 +47,7 @@ jobs:
           
 
   publish:
+    if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
     needs: configuremobile
     runs-on: ubuntu-latest
     steps:

@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
                 )
             },
         ),
-        ("Admin Options", {"classes": ("collapse",), "fields": ("is_staff", "groups")}),
+        ("Admin Options", {"classes": ("collapse",), "fields": ("is_active", "is_staff", "is_superuser", "groups")}),
     )
     add_fieldsets = (
         (
@@ -35,7 +35,15 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
-    list_display = ("email", "first_name", "last_name", "is_active", "is_staff", "is_superuser", "permissions")
+    list_display = (
+        "email",
+        "permissions",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "first_name",
+        "last_name",
+    )
     list_display_links = (
         "is_active",
         "email",
@@ -57,7 +65,7 @@ class CustomUserAdmin(UserAdmin):
     ordering = []
 
     def permissions(self, obj):
-        return ", ".join([g.name for g in obj.groups.all()])
+        return [g.name for g in obj.groups.all()]
 
     class Media(AutocompleteAdminMedia):
         pass

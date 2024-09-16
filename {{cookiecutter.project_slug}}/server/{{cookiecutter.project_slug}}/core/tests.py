@@ -4,6 +4,7 @@ import pytest
 from django.contrib.auth import authenticate
 from django.test import override_settings
 from django.test.client import RequestFactory
+from rest_framework import status
 from rest_framework.response import Response
 
 from .models import User
@@ -35,6 +36,13 @@ def test_create_user():
 
 
 @pytest.mark.django_db
+def test_create_user_api(api_client):
+    data = {"email": "example@example.com", "password": "password", "first_name": "Test", "last_name": "User"}
+    res = api_client.post("/api/users/", data, format="json")
+    assert res.status_code == status.HTTP_201_CREATED, res.data
+
+
+@pytest.mark.django_db
 def test_create_superuser():
     superuser = User.objects.create_superuser(email="test@example.com", password="password", first_name="Leslie", last_name="Burke")
 
@@ -50,7 +58,59 @@ def test_create_user_from_factory(sample_user):
 @pytest.mark.django_db
 def test_user_can_login(api_client, sample_user):
     res = api_client.post("/api/login/", {"email": sample_user.email, "password": "password"}, format="json")
-    assert res.status_code == 200
+    assert res.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.django_db
+def test_wrong_email(api_client, sample_user):
+    res = api_client.post("/api/login/", {"email": "wrong@example.com", "password": "password"}, format="json")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+def test_wrong_password(api_client, sample_user):
+    res = api_client.post("/api/login/", {"email": sample_user.email, "password": "wrong"}, format="json")
+    assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+def test_get_user(api_client, sample_user):
+    api_client.force_authenticate(sample_user)
+    res = api_client.get(f"/api/users/{sample_user.pk}/")
+    assert res.status_code == status.HTTP_200_OK
+    assert res.data["email"] == sample_user.email
+
+
+@pytest.mark.django_db
+def test_get_other_user(api_client, sample_user, user_factory):
+    api_client.force_authenticate(sample_user)
+    other_user = user_factory()
+    other_user.save()
+    res = api_client.get(f"/api/users/{other_user.pk}/")
+    assert res.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def test_update_user(api_client, sample_user):
+    existing_email = sample_user.email
+    api_client.force_authenticate(sample_user)
+    data = {"email": "example@example.com", "password": "password", "first_name": "Test", "last_name": "User"}
+    res = api_client.put(f"/api/users/{sample_user.pk}/", data, format="json")
+    assert res.status_code == status.HTTP_200_OK
+    sample_user.refresh_from_db()
+    # Email should NOT have changed
+    assert sample_user.email == existing_email
+    assert sample_user.first_name == data["first_name"] == res.data["first_name"]
+    assert sample_user.last_name == data["last_name"] == res.data["last_name"]
+
+
+@pytest.mark.django_db
+def test_delete_user(api_client, sample_user):
+    api_client.force_authenticate(sample_user)
+    res = api_client.delete(f"/api/users/{sample_user.pk}/")
+    assert res.status_code == status.HTTP_204_NO_CONTENT
+    sample_user.refresh_from_db()
+    assert sample_user.is_active is False
 
 
 @pytest.mark.use_requests
@@ -67,7 +127,7 @@ def test_password_reset(caplog, api_client, sample_user):
 
     # Verify the link works for reseting the password
     response = api_client.post(password_reset_url, data={"password": "new_password"}, format="json")
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
 
     # New Password should now work for authentication
     serializer = UserLoginSerializer(data={"email": sample_user.email, "password": "new_password"})
@@ -87,7 +147,7 @@ class TestPreviewTemplateView:
     @override_settings(DEBUG=False)
     def test_disabled_if_not_debug(self, client):
         response = client.post(self.url)
-        assert response.status_code == 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
@@ -98,19 +158,19 @@ class TestPreviewTemplateView:
     @override_settings(DEBUG=True)
     def test_no_template_provided(self, client):
         response = client.post(self.url, data={"_send_to": "someone@example.com"})
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert any("You must provide a template name" in e for e in response.json())
 
     @override_settings(DEBUG=True)
     def test_invalid_template_provided(self, client):
         response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST", data={"_send_to": "someone@example.com"})
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert any("Invalid template name" in e for e in response.json())
 
     @override_settings(DEBUG=True)
     def test_missing_send_to(self, client):
         response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST")
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "This field is required." in response.json()["_send_to"]
 
     def test_parse_value_without_model(self):
