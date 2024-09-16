@@ -7,6 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors,
+      //TODO: match font family from index.css @font-face directive
       fontFamily: { sans: ['Montserrat', ...defaultTheme.fontFamily.sans] },
     },
     container: {
