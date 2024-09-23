@@ -14,6 +14,7 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAlert } from '@/composables/CommonAlerts'
+import { MustMatchValidator } from '@thinknimble/tn-forms'
 
 export function useUsers() {
   const userStore = useUserStore()
@@ -22,9 +23,23 @@ export function useUsers() {
   const loginForm = reactive(new LoginForm({}))
   const forgotPasswordForm = reactive(new EmailForgotPasswordForm({}))
   const resetPasswordForm = reactive(new ResetPasswordForm({}))
-  const registerForm = reactive(new AccountForm({}))
+  const registerForm = ref(new AccountForm({}))
   const loading = ref(false)
   const { errorAlert, successAlert } = useAlert()
+
+  const fillUserForm = (data: UserShape | null ) =>{
+    if(data){
+      registerForm.value = new AccountForm(data)
+
+    }else{
+      registerForm.value = new AccountForm()
+    }
+    registerForm.value.addFormLevelValidator(
+      'confirmPassword',
+      new MustMatchValidator({ matcher: 'password' }),
+    )
+
+  }
 
   const getCodeUidFromRoute = () => {
     const { uid, token } = router.currentRoute.value.params
