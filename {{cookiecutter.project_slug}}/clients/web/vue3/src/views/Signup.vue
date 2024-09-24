@@ -91,6 +91,7 @@
 import InputField from '@/components/inputs/InputField.vue'
 import { useUsers } from '@/composables/Users'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { onMounted } from 'vue'
 
 export default {
   name: 'Signup',
@@ -99,7 +100,11 @@ export default {
     LoadingSpinner,
   },
   setup() {
-    const { register, loading, registerForm } = useUsers()
+    const { register, loading, registerForm, fillUserForm } = useUsers()
+
+    onMounted(() => {
+      fillUserForm()
+    })
 
     return {
       form: registerForm,

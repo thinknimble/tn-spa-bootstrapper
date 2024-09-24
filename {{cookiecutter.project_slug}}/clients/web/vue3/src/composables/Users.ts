@@ -131,5 +131,6 @@ export function useUsers() {
     register,
     registerForm,
     getCodeUidFromRoute,
+    fillUserForm,
   }
 }
