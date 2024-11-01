@@ -1,0 +1,3 @@
+# This file is where you can store values for variables that are declared in your configuration
+# If you provide a value here, you won't be prompted for each value when running `terraform apply`
+profile="tn-staging"
