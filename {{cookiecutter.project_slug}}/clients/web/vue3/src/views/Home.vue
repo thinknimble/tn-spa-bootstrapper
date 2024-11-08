@@ -1,3 +1,5 @@
+<script lang="ts" setup></script>
+
 <template>
   <div class="mx-auto flex min-h-full max-w-2xl flex-col items-center px-6 py-20 sm:py-48 lg:px-8">
     <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
@@ -12,11 +14,3 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'Home',
-  components: {},
-  setup() {},
-}
-</script>

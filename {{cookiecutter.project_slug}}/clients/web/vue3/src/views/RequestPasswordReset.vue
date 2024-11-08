@@ -1,3 +1,19 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { useUsers } from '@/composables/users-'
+import InputField from '@/components/inputs/InputField.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+
+const passwordResetSuccess = ref(false)
+
+const { forgotPasswordForm: form, loading, requestPasswordReset } = useUsers()
+
+const makeRequest = async () => {
+  await requestPasswordReset(form.email.value ?? '')
+  passwordResetSuccess.value = true
+}
+</script>
+
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -19,7 +35,13 @@
         />
 
         <LoadingSpinner v-if="loading" />
-        <button v-else-if="!loading && !passwordResetSuccess" type="submit" :disabled="loading||!form.email.isValid" class="btn--primary bg-primary" data-cy="submit">
+        <button
+          v-else-if="!loading && !passwordResetSuccess"
+          type="submit"
+          :disabled="loading || !form.email.isValid"
+          class="btn--primary bg-primary"
+          data-cy="submit"
+        >
           Request Password Reset
         </button>
       </form>
@@ -44,36 +66,3 @@
     </div>
   </div>
 </template>
-
-<script>
-import { ref } from 'vue'
-import { useUsers } from '@/composables/Users'
-import InputField from '@/components/inputs/InputField.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
-
-export default {
-  name: 'RequestPasswordReset',
-  components: {
-    InputField,
-    LoadingSpinner,
-  },
-  setup() {
-    const passwordResetSuccess = ref(false)
-
-    const { forgotPasswordForm, loading, requestPasswordReset } = useUsers()
-
-    const makeRequest = async () => {
-      await requestPasswordReset(forgotPasswordForm.email.value)
-      passwordResetSuccess.value = true
-    }
-
-    return {
-      form: forgotPasswordForm,
-      loading,
-      requestPasswordReset,
-      passwordResetSuccess,
-      makeRequest,
-    }
-  },
-}
-</script>

@@ -1,3 +1,36 @@
+<script lang="ts" setup>
+import { userApi } from '@/services/users'
+import { computed, ref } from 'vue'
+
+import { useUserStore } from '@/stores/user'
+import { isAxiosError } from 'axios'
+import { useRouter } from 'vue-router'
+
+const userStore = useUserStore()
+const router = useRouter()
+let mobileMenuOpen = ref(false)
+let profileMenuOpen = ref(false)
+
+async function logout() {
+  try {
+    await userApi.csc.logout()
+  } catch (error) {
+    if (isAxiosError(error) && error.response && error.response.status === 401) {
+      console.error('User is not logged in')
+    }
+    console.log(error)
+  } finally {
+    profileMenuOpen.value = false
+    mobileMenuOpen.value = false
+    userStore.clearUser()
+    router.push({ name: 'Home' })
+  }
+}
+
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+const user = computed(() => userStore.user)
+</script>
+
 <template>
   <nav class="fixed top-0 z-10 w-full bg-white shadow">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -98,9 +131,9 @@
           </div>
           <div class="ml-3">
             <div class="text-base font-medium text-gray-800">
-              {{ user.firstName }} {{ user.lastName }}
+              {{ user?.firstName }} {{ user?.lastName }}
             </div>
-            <div class="text-sm font-medium text-gray-500">{{ user.email }}</div>
+            <div class="text-sm font-medium text-gray-500">{{ user?.email }}</div>
           </div>
         </div>
         <div class="mt-3 space-y-1">
@@ -129,47 +162,6 @@
     </div>
   </nav>
 </template>
-
-<script>
-import { userApi } from '@/services/users'
-import { computed, ref } from 'vue'
-
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-
-export default {
-  setup() {
-    const userStore = useUserStore()
-    const router = useRouter()
-    let mobileMenuOpen = ref(false)
-    let profileMenuOpen = ref(false)
-
-    async function logout() {
-      try {
-        await userApi.csc.logout()
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          console.error('User is not logged in')
-        }
-        console.log(error)
-      } finally {
-        profileMenuOpen.value = false
-        mobileMenuOpen.value = false
-        userStore.clearUser()
-        router.push({ name: 'Home' })
-      }
-    }
-
-    return {
-      logout,
-      isLoggedIn: computed(() => userStore.isLoggedIn),
-      user: computed(() => userStore.user),
-      mobileMenuOpen,
-      profileMenuOpen,
-    }
-  },
-}
-</script>
 <style scoped>
 .mobile-link {
   @apply block cursor-pointer border-l-4 px-4 py-2 text-base font-medium hover:bg-gray-100 hover:text-gray-800;

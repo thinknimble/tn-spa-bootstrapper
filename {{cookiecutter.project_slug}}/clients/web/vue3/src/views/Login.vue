@@ -1,3 +1,20 @@
+<script lang="ts" setup>
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import InputField from '@/components/inputs/InputField.vue'
+import { useUsers } from '@/composables/users-'
+
+const { loginForm: form, loading, login } = useUsers()
+
+const onSubmit = () => {
+  if (!form.isValid) return
+  const loginInput = {
+    email: form.email.value ?? '',
+    password: form.password.value ?? '',
+  }
+  login(loginInput)
+}
+</script>
+
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -8,7 +25,7 @@
     </div>
 
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form @submit.prevent="login(form.value)">
+      <form @submit.prevent="onSubmit()">
         <InputField
           v-model:value="form.email.value"
           :errors="form.email.errors"
@@ -69,27 +86,5 @@
     </div>
   </div>
 </template>
-
-<script>
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
-import InputField from '@/components/inputs/InputField.vue'
-import { useUsers } from '@/composables/Users'
-
-export default {
-  name: 'Login',
-  components: {
-    InputField,
-    LoadingSpinner,
-  },
-  setup() {
-    const { loginForm, loading, login } = useUsers()
-    return {
-      form: loginForm,
-      loading,
-      login,
-    }
-  },
-}
-</script>
 
 <style scoped lang="css"></style>

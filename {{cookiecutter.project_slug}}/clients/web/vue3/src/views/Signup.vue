@@ -1,3 +1,20 @@
+<script lang="ts" setup>
+import InputField from '@/components/inputs/InputField.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { useUsers } from '@/composables/users-'
+const { register, loading, registerForm: form } = useUsers()
+const onRegister = () => {
+  const createAccountInput = {
+    firstName: form.firstName.value ?? '',
+    lastName: form.lastName.value ?? '',
+    email: form.email.value ?? '',
+    password: form.password.value ?? '',
+    confirmPassword: form.confirmPassword.value ?? '',
+  }
+  register(createAccountInput)
+}
+</script>
+
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-10 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -8,7 +25,7 @@
     </div>
 
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form @submit.prevent="register(form.value)">
+      <form @submit.prevent="onRegister()">
         <div>
           <label class="mb-2 block text-left text-sm font-medium leading-6 text-primary"
             >First Name</label
@@ -86,28 +103,5 @@
     </div>
   </div>
 </template>
-
-<script>
-import InputField from '@/components/inputs/InputField.vue'
-import { useUsers } from '@/composables/Users'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
-
-export default {
-  name: 'Signup',
-  components: {
-    InputField,
-    LoadingSpinner,
-  },
-  setup() {
-    const { register, loading, registerForm } = useUsers()
-
-    return {
-      form: registerForm,
-      loading,
-      register,
-    }
-  },
-}
-</script>
 
 <style scoped lang="css"></style>
