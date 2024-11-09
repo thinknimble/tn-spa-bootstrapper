@@ -9,8 +9,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.12"
+          cache: "pipenv"
       - run: pipenv install --dev --deploy
       - name: Test with pytest
         run: pipenv run pytest
@@ -35,8 +35,8 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          python-version: "3.12"
+          cache: "pipenv"
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |

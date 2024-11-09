@@ -33,7 +33,7 @@ premailer = "*"
 drf-spectacular = "*"
 
 [requires]
-python_version = "3.10"
+python_version = "3.12"
 
 [dev-packages]
 # Code quality
