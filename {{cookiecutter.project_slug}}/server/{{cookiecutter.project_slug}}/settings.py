@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     # Third Party
     "corsheaders",
     "drf_spectacular",
-    "django_nose",
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
@@ -388,9 +387,6 @@ if IN_PROD or ROLLBAR_ACCESS_TOKEN:
     )
     LOGGING["loggers"]["django"]["handlers"].append("rollbar")
     LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].append("rollbar")
-
-# Popular testing framework that allows logging to stdout while running unit tests
-TEST_RUNNER = "django_nose.NoseTestSuiteRunner"
 
 SWAGGER_SETTINGS = {
     "LOGIN_URL": "/login",
