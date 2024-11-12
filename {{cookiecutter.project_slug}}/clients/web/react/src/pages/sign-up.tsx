@@ -6,11 +6,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
+import { AccountForm, TAccountForm, AccountFormInputs } from 'src/services/user/forms'
 import { userApi } from 'src/services/user'
-import { AccountForm, AccountFormInputs, TAccountForm } from 'src/services/user/forms'
 import { isAxiosError } from 'axios'
 import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 import { useAuth } from 'src/stores/auth'
+import { PasswordInput } from 'src/components/password-input'
+import { AuthLayout } from 'src/components/auth-layout'
 
 function SignUpInner() {
   const [errors, setErrors] = useState<string[]>([])
@@ -57,80 +59,92 @@ function SignUpInner() {
   }
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center gap-3 bg-slate-800">
-      <header className="text-xl text-white">WELCOME</header>
-      <p className="text-md text-white">Enter your details below to create an account</p>
-      <form onSubmit={onSubmit} className="flex flex-col gap-3">
-        <div className="flex flex-col gap-3">
-          <div>
-            <Input
-              placeholder="First Name"
-              onChange={(e) => {
-                createFormFieldChangeHandler(form.firstName)(e.target.value)
-              }}
-            />
-            <ErrorsList errors={form.firstName.errors} />
+    <AuthLayout title="Sign Up">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form onSubmit={onSubmit} className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3">
+            <div>
+              <Input
+                placeholder="Enter first name..."
+                onChange={(e) => {
+                  createFormFieldChangeHandler(form.firstName)(e.target.value)
+                }}
+                label="First Name"
+                data-testid="first-name"
+              />
+              <ErrorsList errors={form.firstName.errors} />
+            </div>
+            <div>
+              <Input
+                placeholder="Enter last name..."
+                onChange={(e) => {
+                  createFormFieldChangeHandler(form.lastName)(e.target.value)
+                }}
+                label="Last Name"
+                data-testid="last-name"
+              />
+
+              <ErrorsList errors={form.lastName.errors} />
+            </div>
           </div>
           <div>
             <Input
-              placeholder="Last Name"
+              type="email"
+              placeholder="Enter email..."
               onChange={(e) => {
-                createFormFieldChangeHandler(form.lastName)(e.target.value)
+                createFormFieldChangeHandler(form.email)(e.target.value)
               }}
+              label="Email"
+              data-testid="email"
             />
-
-            <ErrorsList errors={form.lastName.errors} />
+            <ErrorsList errors={form.email.errors} />
           </div>
-        </div>
-        <div>
-          <Input
-            type="email"
-            placeholder="Email"
-            onChange={(e) => {
-              createFormFieldChangeHandler(form.email)(e.target.value)
-            }}
-          />
-          <ErrorsList errors={form.email.errors} />
-        </div>
 
-        <div>
-          <Input
-            placeholder="Password"
-            type="password"
+          <PasswordInput
+            placeholder="Enter password..."
             onChange={(e) => {
               createFormFieldChangeHandler(form.password)(e.target.value)
             }}
+            label="Password"
+            data-testid="password"
           />
           <ErrorsList errors={form.password.errors} />
-        </div>
-        <div>
-          <Input
+          <PasswordInput
             id="confirmPassword"
             placeholder="Confirm Password"
-            type="password"
             onChange={(e) => {
               createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
             }}
+            label="Confirm Password"
+            data-testid="confirm-password"
           />
           <ErrorsList errors={form.confirmPassword.errors} />
-        </div>
-        <Button type="submit">Sign Up</Button>
-      </form>
-      {errors.length
+          <Button
+            type="submit"
+            isLoading={isPending}
+            disabled={isPending || !form.isValid}
+            data-testid="submit"
+          >
+            Sign Up
+          </Button>
+          {errors.length
             ? errors.map((e, idx) => <ErrorMessage key={idx}>{e}</ErrorMessage>)
             : null}
-      <div className="flex flex-col gap-3">
-        <p className="text-xl font-semibold text-slate-200">Already have an account?</p>
-        <Link to="/log-in" className="text-center text-xl font-semibold text-teal-600">
-          Log in here
+        </form>
+      </div>
+      <div className="m-4 flex self-center text-sm">
+        <p className="mr-2">Already have an account?</p>
+
+        <Link to="/log-in" className="font-bold text-primary hover:underline">
+          Log in.
         </Link>
       </div>
-    </main>
+    </AuthLayout>
   )
 }
 const confirmPasswordValidator = {
   confirmPassword: new MustMatchValidator({
-    message: 'passwordsMustMatch',
+    message: 'Passwords must match',
     matcher: 'password',
   }),
 }

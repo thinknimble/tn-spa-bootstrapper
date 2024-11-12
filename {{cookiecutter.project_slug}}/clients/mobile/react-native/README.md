@@ -1,50 +1,60 @@
 ## Getting Started
 
-## General
+This app is bootstrapped with the TN-Bootsrapper, it uses Expo as a wrapper framework around React Native. Install and run with **Node v20**.
 
-This app is bootstrapped with the TN-Bootsrapper, it uses Expo as a wrapper framework around React Native
+## Installing and Running
 
-## Configuration and Bootstrapping
+FIRST: You must follow ALL of the "Configuration" steps below. Once configured, you can install the NodeJS dependencies and run the app.
+
+```bash
+cd mobile
+node install --include=dev  # Install NodeJS dependencies
+npm run start  # Source env variables and run dev server
+```
+
+Alternatively, if you want to use expo run command:
+
+```bash
+source .env && npx expo start
+```
+
+## Configuration
 
 After running the bootsrapper a mobile directory is created the following steps are needed to run and deploy the app
 
-## Running the app locally
-(Assuming you have already set up the app for the first time)
+### First, set up an Expo account
 
-User `npm run start` to run the app and source the env variables 
+Go to [expo.dev](https://expo.dev/), and set up an Expo organization.
 
-alternatively if you want to use expo run command 
+Select "Access Tokens" from the left sidebar:
 
-`source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME} npx expo start`
+1. Create an Expo Robot named, e.g. `CI/CD`
+2. Click "+ Creat Token" to create an API key for the robot named e.g. `GH_ACTIONS`
+3. Now go to your GitHub repo settings. Create a Repository Secret with the name `EXPO_TOKEN`, paste the API key you generated as the value, and save it.
+4. **Create an EAS Project**
 
-**When running the app locally and working against a local backend you will need to use a proxy**
+Back in Expo, click on "Projects" in the sidebar and create a new project. Give it the same name as your app.
 
-1. Download and install ngrok 
-2. Set up ngrok auth token (request an account from William Huster)
-3. run ngrok `~/.ngrok http 8000 --subdomain <a domain>`
-4. add your new subomain to the `.env` IN MOBILE DIR as BACKEND_DEV_SERVER 
-5. append your new subdomain to the `.env` in ROOT DIR to ALLOW_HOSTS e.g `ALLOW_HOSTS=[localhost:8080,<your domain>.ngrok.io]`
- 
+You will then be presented with these commands. Copy and run them in the `./mobile` directory:
 
+```bash
+npm install --global eas-cli
+eas init --id {eas_uuid}
+```
 
-### Set up external dependencies
+NOTE: This may require setting up Rollbar and Sentry first. If so, follow the instructions below and then come back to this.
 
-#### Expo
+### Set Up Error Logging and Crash Analytics
 
-Set up an expo organization
-Generate an expo robot and api key
-Set the env secret `EXPO_TOKEN` in GH secrets for the pipeline
-Set the `SENTRY_AUTH_TOKEN` in the Expo secrets see (Error Logging & Crash Analytics)
+Set up a [Rollbar](https://rollbar.com/) instance. We recommend setting up a single Heroku Rollbar add-on instance that is attached to the production environment.
 
-#### Error Logging and Crash Analytics
+In your Rollbar account, create a project for each environment and retrieve the `post_client_token`.
 
-Set up a rollbar instance (if using heroku 1 app in the production environment is recommended)
+Set up [Sentry](https://sentry.io/) for crash analytics and additional error logs. We use Sentry because it is pre-built to integrate with Expo.
 
-Create a project in your rollbar account for each project and retrieve the `post_client_token`
+Create a Sentry account and set up the projects for the various environments. This can also be attached to the prod instance on Heroku.
 
-Set up sentry for crash analytics and additional error logs (We use sentry because it is pre-built to integrate with expo)
-
-Create a sentry account and set up the projects for the various environments (this can also be added to the prod instance on heroku)
+Then go to `Settings` > `Developer Settings` > `Auth Tokens` and create a new token that you'll use in `Expo`
 
 Retrieve:
 
@@ -52,14 +62,31 @@ Retrieve:
 2. Sentry DSN for each project
 3. project-name
 
-### Environment Variables
+You should set the `SENTRY_AUTH_TOKEN` in Expo under `Secrets`.
+
+### Set Environment Variables
 
 For local run set environment variables in .env file (from [.env.example](./.env.example))
-For builds set env variables in eas.json
 
-### Eas Project Configuration
+For builds, environment variables should be set in [eas.json](./eas.json)
 
-in [app.config.js](./app.config.js) set the confiuration variables
+#### Use the helper script to enter variables
+
+You can fill in `eas.json` and `app.config.js` by hand, but we have also written a script to make it easier to quickly update those files with your variable values.
+
+Fill in [eas.vars.template.txt](./resources/eas.vars.template.txt) and [app.config.vars.template.txt](./resources/app.config.vars.template.txt).
+
+Then run these commands using the `setup_mobile_config.sh` helper script:
+
+```bash
+. scripts/setup_mobile_config.sh eas.json <FULL_PATH>/resources/eas.vars.txt
+
+. scripts/setup_mobile_config.sh app.config.js <FULL_PATH>/resources/app.config.vars.txt
+```
+
+### EAS Project Configuration
+
+In [app.config.js](./app.config.js) set the configuration variables
 
 - owner: this should match the organization in expo
 - slug: this should match the slug in expo
@@ -68,35 +95,43 @@ in [app.config.js](./app.config.js) set the confiuration variables
 - ios: bundleIdentifier: this should be created in the apple developer account
 - android: package: this should be created in the google play developer console
 
-To configure non-inetractive builds for the CI/CD pipeline you must run BUT you will be doing that after the next step: 
+To configure non-interactive builds for the CI/CD pipeline you must run BUT you will be doing that after the next step:
 
 `eas credentials`
 
-The recommended approach for managing credentials is through expo, in the selections you should see this as an option
+The recommended approach for managing credentials is through Expo, in the selections you should see this as an option
 
-|   Build Credentials: Manage everything needed to build your project
-    |   All: Set up all the required credentials to build your project
+| Build Credentials: Manage everything needed to build your project
+| All: Set up all the required credentials to build your project
 
+### Connecting to a Backend in Development
 
+Since Expo runs on a separate device, it cannot reach localhost on your computer, so you must use your computer's LAN **IP address** instead of localhost.
 
+OR, you can use a web proxy like [ngrok](https://ngrok.com/):
 
-**Apple**
+1. Download and install ngrok
+2. Set up ngrok auth token (request an account from William Huster)
+3. run ngrok `~/.ngrok http 8000 --subdomain <a domain>`
+4. add your new subomain to the `.env` IN MOBILE DIR as BACKEND_DEV_SERVER
+5. append your new subdomain to the `.env` in ROOT DIR to ALLOW_HOSTS e.g `ALLOW_HOSTS=[localhost:8080,<your domain>.ngrok.io]`
+
+## Set Up for the Apple App Store
 
 Head over to the (apple developer account)[https://developer.apple.com/account/resources/identifiers/bundleId/add/bundle] and set up a new bundle identifier <-- Only set up the bundle identifier not a complete app yet
 
 `eas credentials`
 
-|   Build Credentials: Manage everything needed to build your project
-    |   All: Set up all the required credentials to build your project
+| Build Credentials: Manage everything needed to build your project
+| All: Set up all the required credentials to build your project
 
 Return to the menu and also set up AppStore Connect API Key
 
 | App Store Connect: Manage your API Key
 
-If you need Push Notifications as well 
+If you need Push Notifications as well
 
 | Push Notifications: Manage your Apple Push Notifications Key
-
 
 Configure the submit environment in the [eas.json](./eas.json)
 
@@ -106,7 +141,7 @@ For internal builds to pass you must first register at least one testing device 
 
 `eas device:create`
 
-Select the option for URL and send the URL to each user who wants to test a  build.
+Select the option for URL and send the URL to each user who wants to test a build.
 
 Recreate the provisioning profile <- **this step is required in order for the user to be able to install the app**
 
@@ -114,11 +149,10 @@ Recreate the provisioning profile <- **this step is required in order for the us
 
 Rebuild the app <- **this step is required in order for the user to be able to install the app**
 
-
 You must run a first time production build to set up appstore connect keys to be managed by Expo
 
+## Set Up for the Google Play Store
 
-**Google**
 There is no required configuration for google in the eas.json however you must build and upload the apk for the first time before being able to automate.
 
 ### Deployments, Environments & Submissions
@@ -131,12 +165,12 @@ There is no required configuration for google in the eas.json however you must b
 
 **Local**
 
-*expo go*
+_expo go_
 To set env variables locally you may use the .env file and import the variables using `@env` eg in [Config.js](./Config.js), these variables are sourced in the npm run script
 If you need to use environment variables in the app.config.js you must declare the variables in the npm run script as well as the expo run occurs in a separate process
 
-*development build*
-the variables for this environment are set up in the eas.json under the development profile 
+_development build_
+the variables for this environment are set up in the eas.json under the development profile
 
 **Staging**
 
@@ -163,16 +197,15 @@ This is only temporary and should be resolved as soon as possible, the update is
 
 #### Native Builds VS Expo Runs
 
-##### Expo Runs #####
+##### Expo Runs
 
 There are two types of expo runs, the first is during local development, when we start our app with `npm run start` this will run the app in expo go, the second is when we release an update with `eas update`.
 
-We currently use `expo update` when building our staging app to get a quick and easy to use link for testing *review apps*
+We currently use `expo update` when building our staging app to get a quick and easy to use link for testing _review apps_
 
 There are certain situations when this may not be possible for example we are installing a package that does not currently have an expo extension (revenue cat for in-app purchases) or we are using a native package that expo does not have access to (face id)
 
-
-When mergning into main we deploy a new staging version that can be run in expo we also build a staging version of the app as a stand-alone native build that can be ran on a device. Staging versions will point to he staging backend defined in the [eas.json](./eas.json)
+When merging into main we deploy a new staging version that can be run in expo we also build a staging version of the app as a stand-alone native build that can be ran on a device. Staging versions will point to he staging backend defined in the [eas.json](./eas.json)
 
 Most internal testing should be sufficient on the expo staging build however you can also provide the link for testing with the native build. When installed this build will replace the version on your device.
 
@@ -208,7 +241,6 @@ From the `mobile/` folder run:
 1. Go to `Credentials` in the nav and see that you now have two, the old and the new.
 1. Download the old one before deleting
 1. Once you verify that builds are still working, you can delete your backup copy
-
 
 #### Design system
 
@@ -284,23 +316,17 @@ Run this workflow to deploy an emergency code related bugfix
 
 expo-emergency-prod-update.yml
 
-
 #### Important note about custom native modules and expo eject
 
-We can easily use our own native or non supported RN pacakges by checking if we are running an expo build or not, these will only work in expo builds not expo go. 
+We can easily use our own native or non supported RN pacakges by checking if we are running an expo build or not, these will only work in expo builds not expo go.
 When building for local testing/development we use the alternative builds in our eas.json
-Recently Expo has changed the `expo eject` command for `expo pre-build` this will create the iOS and Android folders and allow you to run your project in xcode or android studio as well you will need to activate your .env file since some vars are supplied from there. 
+Recently Expo has changed the `expo eject` command for `expo pre-build` this will create the iOS and Android folders and allow you to run your project in xcode or android studio as well you will need to activate your .env file since some vars are supplied from there.
 
 You can accomplish this with `npm run prebuild:local` this will ensure that your `.env` file is sourced!
 
 Expo will automatically change your package.json and add/remove/change the following
 
-- `"main"` entry will be removed 
+- `"main"` entry will be removed
 - `"start"`: `"expo start --dev-client"` will change to this <----
 
 therefore when running prebuild ensure not to commit these changes!
-
-
-
-
-

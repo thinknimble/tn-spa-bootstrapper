@@ -1,6 +1,7 @@
 import axios from 'axios'
-import store from '@/store'
+import { useUserStore } from '@/stores/user'
 import CSRF from '@/services/csrf'
+import qs from 'qs'
 
 /**
  *   Get the axios API client.
@@ -27,11 +28,15 @@ class ApiService {
       headers: {
         ...CSRF.getHeaders(),
       },
+      paramsSerializer: (params) => {
+        return qs.stringify(params, { arrayFormat: 'comma' })
+      },
     })
     ApiService.session.interceptors.request.use(
       async (config) => {
-        if (store.getters.isLoggedIn) {
-          config.headers['Authorization'] = `Token ${store.getters.token}`
+        const userStore = useUserStore()
+        if (userStore.isLoggedIn) {
+          config.headers['Authorization'] = `Token ${userStore.token}`
         }
         return config
       },

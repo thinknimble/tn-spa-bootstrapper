@@ -1,7 +1,7 @@
 from decouple import config
 
-from {{ cookiecutter.project_slug }}.settings import LOGGING
 from {{ cookiecutter.project_slug }}.settings import *  # noqa
+from {{ cookiecutter.project_slug }}.settings import LOGGING
 
 # Override staticfiles setting to avoid cache issues with whitenoise Manifest staticfiles storage
 # See: https://stackoverflow.com/a/69123932

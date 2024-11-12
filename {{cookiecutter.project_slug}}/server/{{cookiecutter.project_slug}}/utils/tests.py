@@ -37,4 +37,4 @@ def test_get_site_url_negative(settings, custom_settings):
 def test_password_reset_email_link(user):
     context = user.reset_password_context()
     html_body = get_html_body("registration/password_reset.html", context)
-    assert f"{ context['site_url'] }/password/reset/confirm/{ context['user'].id }/{ context['token'] }" in html_body
+    assert f"{context['site_url']}/password/reset/confirm/{context['user'].id}/{context['token']}" in html_body

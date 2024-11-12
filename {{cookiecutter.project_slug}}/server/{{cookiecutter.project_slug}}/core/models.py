@@ -11,10 +11,25 @@ from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
 logger = logging.getLogger(__name__)
 
 
+class UserQuerySet(models.QuerySet):
+    def for_user(self, user):
+        if not user or user.is_anonymous:
+            return self.none()
+        elif user.is_staff:
+            return self.all()
+        return self.filter(pk=user.pk)
+
+
 class UserManager(BaseUserManager):
     """Custom User model manager, eliminating the 'username' field."""
 
     use_in_migrations = True
+
+    def get_queryset(self):
+        return UserQuerySet(self.model, using=self.db)
+
+    def for_user(self, user):
+        return self.get_queryset().for_user(user)
 
     def _create_user(self, email, password, **extra_fields):
         """

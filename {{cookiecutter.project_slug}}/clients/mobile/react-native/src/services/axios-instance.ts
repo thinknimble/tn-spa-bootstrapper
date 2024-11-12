@@ -1,5 +1,6 @@
-import axios, { AxiosError } from 'axios'
 import { useAuth } from '@stores/auth'
+import axios, { AxiosError } from 'axios'
+import qs from 'qs'
 import Config from '../../Config'
 
 const baseUrl =
@@ -8,6 +9,9 @@ const baseUrl =
     : `${Config?.backendServerUrl}`
 export const axiosInstance = axios.create({
   baseURL: `${baseUrl}/api`,
+  paramsSerializer: (params) => {
+    return qs.stringify(params, { arrayFormat: 'comma' })
+  },
 })
 console.log('axiosInstance', `${baseUrl}/api`)
 axiosInstance.interceptors.request.use(

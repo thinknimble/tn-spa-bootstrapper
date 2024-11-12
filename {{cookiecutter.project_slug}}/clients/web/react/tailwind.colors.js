@@ -1,17 +1,9 @@
 export const colors = {
-  primary: {
-    DEFAULT: '#f0574f',
-    50: '#fef3f2',
-    100: '#fee3e2',
-    200: '#fecdca',
-    300: '#fca9a5',
-    400: '#f87871',
-    500: '#f0574f',
-    600: '#dc2f26',
-    700: '#b9241c',
-    800: '#99211b',
-    900: '#7f221d',
-    950: '#450d0a',
-  },
+  primary: '#042642',
+  primaryLight: '#183A56',
+  accent: '#d93a00',
+  success: '#4faf64',
+  warning: '#f4b942',
+  error: '#d72638',
   dark: '#2a2d2e',
 }

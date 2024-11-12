@@ -1,0 +1,59 @@
+name: E2E Tests
+on: [deployment_status]
+
+jobs:
+  Setup:
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pipx install pipenv
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          # Can't use cache because of https://github.com/actions/cache/issues/319
+          # cache: 'pipenv'
+      - name: Install bootstrapper dependencies
+        run: pipenv install --dev --deploy
+      - run: |
+          config_file=$(./scripts/vue_or_react.sh)
+          pipenv run cookiecutter . --config-file $config_file --no-input -f
+          cat $config_file
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my_project
+          path: my_project/
+          retention-days: 1
+  Playwright:
+    needs: Setup
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    if: github.event.deployment_status.state == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: my_project
+          path: my_project/
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: 📦 Install frontend dependencies
+        working-directory: ./my_project/client
+        run: npm install
+      - name: 🎭 Install Playwright
+        working-directory: ./my_project/client
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests against ${{ github.event.deployment_status.environment_url }}
+        working-directory: ./my_project/client
+        run: npx playwright test --reporter=html
+        env:
+          NPM_CONFIG_PRODUCTION: false
+          PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.environment_url }}
+          PLAYWRIGHT_TEST_USER_PASS: ${{ secrets.PLAYWRIGHT_TEST_USER_PASS }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: my_project/client/playwright-report/
+          retention-days: 30

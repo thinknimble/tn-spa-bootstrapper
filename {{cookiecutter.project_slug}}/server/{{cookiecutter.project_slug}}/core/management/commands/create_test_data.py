@@ -13,11 +13,11 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         logger.info(f"Starting management command {__name__}")
         superuser_password = config("DJANGO_SUPERUSER_PASSWORD")
-        cypress_password = config("CYPRESS_TEST_USER_PASS")
+        playwright_password = config("PLAYWRIGHT_TEST_USER_PASS")
         get_user_model().objects.create_superuser(
             email="admin@thinknimble.com", password=superuser_password, first_name="Admin", last_name="ThinkNimble"
         )
         get_user_model().objects.create_user(
-            email="cypress@example.com", password=cypress_password, first_name="Cypress", last_name="E2E_test"
+            email="playwright@thinknimble.com", password=playwright_password, first_name="Playwright", last_name="E2E_test"
         )
         logger.info(f"Finished management command {__name__}")

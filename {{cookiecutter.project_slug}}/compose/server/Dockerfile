@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM python:3.12-slim-bullseye
 
 # These environment values help with watching for file changes
 ENV PYTHONUNBUFFERED 1

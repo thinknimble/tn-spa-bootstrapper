@@ -1,5 +1,5 @@
 import secrets
-from os import remove, rename
+from os import remove
 from os.path import exists, join
 from shutil import copy2, move, rmtree
 
@@ -76,13 +76,20 @@ def move_web_client_to_root(client):
         rmtree("client")
     move(join(web_clients_path, client), join("client"))
     rmtree(join(web_clients_path))
-    env_path = join("client", ".env.local.example")
-    if exists(env_path):
-        rename(env_path, join("client", ".env.local"))
 
 
 def remove_mobile_client_files(client):
     rmtree(join(mobile_clients_path, client))
+
+
+def remove_special_mobile_files():
+    file_names = [join("scripts/setup_mobile_config.sh")]
+    directories = [join("resources")]
+    for file in file_names:
+        if exists(file):
+            remove(file)
+    for directory in directories:
+        rmtree(directory)
 
 
 def move_mobile_client_to_root(client):
@@ -122,15 +129,12 @@ def set_keys_in_envs(django_secret, postgres_secret):
     cookie_cutter_settings_path = join("app.json")
     postgres_init_file = join("scripts/init-db.sh")
     set_flag(env_file_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
+    set_flag(env_file_path, "!!!PLAYWRIGHT_SECRET_KEY!!!", django_secret)
     set_flag(pull_request_template_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
     set_flag(cookie_cutter_settings_path, "!!!DJANGO_SECRET_KEY!!!", django_secret)
     set_flag(env_file_path, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
     set_flag(postgres_init_file, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
     copy2(env_file_path, join(".env"))
-    cypress_example_file_dir = join(web_clients_path, "react")
-    cypress_example_file = join(cypress_example_file_dir, "cypress.example.env.json")
-    set_flag(cypress_example_file, "!!!POSTGRES_PASSWORD!!!", postgres_secret)
-    copy2(cypress_example_file, join(cypress_example_file_dir, "cypress.env.json"))
 
 
 def get_secrets():
@@ -171,6 +175,7 @@ def main():
         move_mobile_client_to_root("react-native")
     else:
         remove_expo_yaml_files()
+        remove_special_mobile_files()
 
     clean_up_clients_folder()
 

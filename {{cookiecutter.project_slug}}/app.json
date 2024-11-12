@@ -22,23 +22,17 @@
     "DJANGO_SUPERUSER_PASSWORD": {
       "value": "!!!DJANGO_SECRET_KEY!!!"
     },
-    "CYPRESS_TEST_USER_PASS": {
+    "PLAYWRIGHT_TEST_USER_PASS": {
       "value": "!!!DJANGO_SECRET_KEY!!!"
     },
     "SECRET_KEY": {
       "generator": "secret"
     }
   },
-  "addons": [
-    "heroku-postgresql:standard-0",
-    "papertrail:choklad"
-  ],
+  "addons": ["heroku-postgresql:standard-0", "papertrail:choklad"],
   "environments": {
     "review": {
-      "addons": [
-        "heroku-postgresql:essential-0",
-        "papertrail:choklad"
-      ]
+      "addons": ["heroku-postgresql:essential-0", "papertrail:choklad"]
     }
   },
   "buildpacks": [

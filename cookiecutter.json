@@ -4,7 +4,6 @@
   "email": "hello@thinknimble.com",
   "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
   "_extensions": [
-    "jinja2_time.TimeExtension",
     "cookiecutter.extensions.RandomStringExtension"
   ],
   "_copy_without_render": [
@@ -12,10 +11,11 @@
     "clients/web/vue3/src/components",
     "clients/web/react/src/components",
     "clients/web/react/src/pages/app-or-auth.tsx",
-    "clients/web/react/src/pages/home.tsx",
     "clients/web/react/src/pages/index.ts",
     "clients/web/react/src/pages/layout.tsx",
-    "*/swagger-ui.html"
+    "*/swagger-ui.html",
+    "clients/mobile/react-native/src/screens/settings/edit-profile.tsx",
+    "clients/mobile/react-native/src/screens/settings/main-settings.tsx"
   ],
   "mail_service": [
     "Mailgun",

@@ -14,7 +14,7 @@ else
 fi
 
 if [ "$rn_count" != 0 ]; then 
-  cp -r resources/ {{cookiecutter.project_slug}}/
+  cp -r resources/ {{cookiecutter.project_slug}}/resources/
   sed -i.bak 's/include_mobile: "n"/include_mobile: "y"/' $config_file_path
 fi
 

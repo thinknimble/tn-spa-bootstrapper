@@ -14,6 +14,7 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
+  fullName: z.string(),
   //TODO:add back `readonly` https://github.com/thinknimble/tn-models-fp/issues/161
   token: z.string().nullable(),
 }
@@ -38,3 +39,10 @@ export const loginShape = {
 }
 
 export type LoginShape = GetInferredFromRaw<typeof loginShape>
+
+export const fullNameZod = z.string().refine(
+  (value) => {
+    return value.split(' ').filter(Boolean).length >= 2
+  },
+  { message: 'Please provide a full name (first and last name)' },
+)
