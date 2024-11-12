@@ -117,6 +117,7 @@ def remove_expo_yaml_files():
         join(".github/workflows", "expo-teststore-build-android.yml"),
         join(".github/workflows", "expo-teststore-build-ios.yml"),
         join(".github/workflows", "expo-pr-app-build.yml"),
+        join(".github/workflows", "expo-build.yml"),
     ]
     for file_name in file_names:
         if exists(file_name):
