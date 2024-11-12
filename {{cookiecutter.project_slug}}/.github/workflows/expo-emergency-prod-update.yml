@@ -33,3 +33,9 @@ jobs:
 
       - name: 🚀 Publish preview
         run: cd mobile && eas update --branch=production --non-interactive --auto
+        env:
+          # Since expo update replaces code OTA these variables should match the environment variables in eas.json
+          EXPO_PUBLIC_BACKEND_SERVER_URL: ""
+          EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: "n"
+          SENTRY_DSN": ""

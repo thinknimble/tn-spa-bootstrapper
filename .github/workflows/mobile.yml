@@ -92,5 +92,6 @@ jobs:
           eas update --branch="${{ github.event.deployment_status.environment_url }}" --non-interactive --auto
           echo "${{ env.BACKEND_SERVER_URL }} and ${{ github.event.deployment_status.environment_url }}"
         env:
+          # TODO: Is SENTRY_PROJECT_NAME and SENTRY_DSN needed here?
           EXPO_PUBLIC_BACKEND_SERVER_URL: "${{ github.event.deployment_status.environment_url }}"
           EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: "1a19e5da05b2435b802d5a81aba2bbd7"
