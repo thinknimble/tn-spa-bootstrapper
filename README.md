@@ -19,8 +19,8 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 
 See: [Maintained Foundation fork]
 
-- For Django 3.1
-- Uses Python 3.10 by default
+- For Django 4.2.\*
+- Uses Python 3.12 by default
 - Renders Django projects with 100% starting test coverage
 - Secure by default. We believe in SSL.
 - Optimized development and production settings

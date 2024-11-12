@@ -9,7 +9,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pipenv"
       - run: pipenv install --dev --deploy
       - name: Run Black
@@ -21,7 +21,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pipenv"
       - run: pipenv install --dev --deploy
       - name: Run flake8
@@ -36,7 +36,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy
@@ -58,7 +58,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy
@@ -80,7 +80,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy
@@ -110,7 +110,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pipenv"
       - name: 🐍 Install python dependencies
         run: pipenv install --dev --deploy

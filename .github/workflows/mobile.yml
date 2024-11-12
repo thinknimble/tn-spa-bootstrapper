@@ -1,5 +1,5 @@
 name: Mobile Deployment
-on: [deployment_status,   workflow_dispatch]
+on: [deployment_status, workflow_dispatch]
 
 jobs:
   Setup:
@@ -10,7 +10,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.12"
           # Can't use cache because of https://github.com/actions/cache/issues/319
           # cache: 'pipenv'
       - name: Install bootstrapper dependencies
@@ -44,7 +44,6 @@ jobs:
             echo $(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)
             echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
           fi
-          
 
   publish:
     if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
