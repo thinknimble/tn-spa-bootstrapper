@@ -9,7 +9,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-        BUILD_MOBILE_APP: {{ "${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}" }}
+      BUILD_MOBILE_APP:
+        {{ "${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}" }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,14 +65,14 @@ jobs:
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform all --profile staging --non-interactive
-        env: 
+        env:
           SENTRY_PROJECT_NAME: "<REPLACE_WTIH_SENTRY_PROJECT_NAME>"
 
       - name: 🚀 Publish Staging Preview
         run: cd mobile && eas update --branch=staging --non-interactive --auto
         env:
-         # Since expo update replaces code OTA these variables should match the staging variables in eas.json
+          # Since expo update replaces code OTA these variables should match the staging variables in eas.json
           EXPO_PUBLIC_BACKEND_SERVER_URL: ""
           EXPO_PUBLIC_ROLLBAR_ACCESS_TOKEN: ""
-
-        
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
