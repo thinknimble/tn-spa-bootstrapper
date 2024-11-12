@@ -24,7 +24,7 @@ jobs:
         with:
           expo-version: latest
           eas-version: latest
-          token:  {{ "${{ secrets.EXPO_TOKEN }}" }}
+          token: {{ "${{ secrets.EXPO_TOKEN }}" }}
 
       - name: 📦 Install dependencies
         working-directory: ./mobile
@@ -32,5 +32,5 @@ jobs:
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform ios --profile production --non-interactive --auto-submit
-        env: 
-          SENTRY_PROJECT_NAME: "<REPLACE_WTIH_SENTRY_PROJECT_NAME>"
+        env:
+          SENTRY_PROJECT_NAME: "<REPLACE_WITH_SENTRY_PROJECT_NAME>"

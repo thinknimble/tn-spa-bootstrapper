@@ -31,6 +31,19 @@ on:
         default: false
         type: "boolean"
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+      - name: Set name for PR
+        if: success() && steps.findPr.outputs.number
+        run: echo "PR=pr-${PR}" >> $GITHUB_ENV
+        env:
+          PR: {{ "${{ steps.findPr.outputs.pr }}" }}
+    outputs:
+      PR: {{ "${{ env.PR }}" }}
+
   build:
     runs-on: ubuntu-latest
 
@@ -64,3 +77,11 @@ jobs:
             CLEAR_CACHE_FLAG="--clear-cache"
           fi
           eas build --profile {{ "${{ github.event.inputs.profile }}" }} --platform {{ "${{ github.event.inputs.platform }}" }} --non-interactive $CLEAR_CACHE_FLAG
+
+      - name: 🚀 Publish PR Preview
+        run: cd mobile && eas update --branch={{ "${{ needs.setup.outputs.PR }}" }} --non-interactive --auto
+        env:
+          BACKEND_SERVER_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
+          ROLLBAR_ACCESS_TOKEN: ""
+          SENTRY_PROJECT_NAME: ""
+          SENTRY_DSN: ""
