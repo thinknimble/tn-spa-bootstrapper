@@ -65,5 +65,4 @@ jobs:
           ROLLBAR_ACCESS_TOKEN: ""
           SENTRY_PROJECT_NAME: ""
           SENTRY_DSN: ""
-          SENTRY_AUTH_TOKEN: ""
-        
+
