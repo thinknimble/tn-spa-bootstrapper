@@ -10,7 +10,7 @@ jobs:
       - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           # Can't use cache because of https://github.com/actions/cache/issues/319
           # cache: 'pipenv'
       - name: Install bootstrapper dependencies
