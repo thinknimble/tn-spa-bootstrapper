@@ -43,10 +43,10 @@ const user = computed(() => userStore.user)
               >Home</router-link
             >
             <router-link
-              active-class="active"
+              active-class="border-accent"
               v-if="isLoggedIn"
               :to="{ name: 'Dashboard' }"
-              class="router"
+              class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent hover:cursor-pointer"
               >Dashboard</router-link
             >
           </div>
@@ -111,7 +111,7 @@ const user = computed(() => userStore.user)
         <router-link
           :to="{ name: 'Home' }"
           @click="mobileMenuOpen = false"
-          active-class="active--mobile"
+          active-class="border-l-4 border-accent text-accent"
           class="mobile-link--main"
         >
           Home
@@ -120,7 +120,7 @@ const user = computed(() => userStore.user)
           v-if="isLoggedIn"
           :to="{ name: 'Dashboard' }"
           @click="mobileMenuOpen = false"
-          active-class="active--mobile"
+          active-class="border-l-4 border-accent text-accent"
           class="mobile-link--main"
         >
           Dashboard
@@ -147,7 +147,7 @@ const user = computed(() => userStore.user)
             <router-link
               @click="mobileMenuOpen = false"
               :to="{ name: 'Signup' }"
-              active-class="active--mobile"
+              active-class="border-l-4 border-accent text-accent"
               class="mobile-link"
             >
               Signup
@@ -156,7 +156,7 @@ const user = computed(() => userStore.user)
               @click="mobileMenuOpen = false"
               :to="{ name: 'Login' }"
               data-cy="login"
-              active-class="active--mobile"
+              active-class="border-l-4 border-accent text-accent"
               class="mobile-link"
             >
               Login
