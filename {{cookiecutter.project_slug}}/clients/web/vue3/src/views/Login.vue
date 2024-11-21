@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Button from '@/components/Button.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import InputField from '@/components/inputs/InputField.vue'
 import { useUsers } from '@/composables/use-users'
@@ -71,7 +72,7 @@ const onSubmit = () => {
         </div>
 
         <div v-if="!loading">
-          <button type="submit" class="btn--primary bg-primary">Log in</button>
+          <Button type="submit" variant="primary" extend-class="w-full">Log in</Button>
         </div>
         <div v-else>
           <LoadingSpinner />

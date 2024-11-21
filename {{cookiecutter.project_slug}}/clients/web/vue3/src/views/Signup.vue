@@ -89,9 +89,9 @@ const onRegister = () => {
         </div>
         <div>
           <LoadingSpinner v-if="loading" />
-          <button v-else :disabled="!form.isValid" type="submit" class="btn--primary bg-primary">
+          <Button variant="primary" v-else :disabled="!form.isValid" type="submit">
             Sign up
-          </button>
+          </Button>
         </div>
       </form>
     </div>
