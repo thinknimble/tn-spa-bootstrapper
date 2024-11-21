@@ -1,5 +1,3 @@
-@import './headings.css';
-
 /* Router Active Link Styling */
 .router {
   @apply inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent;
