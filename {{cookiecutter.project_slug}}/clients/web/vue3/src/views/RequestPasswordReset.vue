@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useUsers } from '@/composables/use-users'
 import InputField from '@/components/inputs/InputField.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import Button from '@/components/Button.vue'
 
 const passwordResetSuccess = ref(false)
 
@@ -35,15 +36,15 @@ const makeRequest = async () => {
         />
 
         <LoadingSpinner v-if="loading" />
-        <button
+        <Button
           v-else-if="!loading && !passwordResetSuccess"
           type="submit"
           :disabled="loading || !form.email.isValid"
-          class="btn--primary bg-primary"
+          variant="primary"
           data-cy="submit"
         >
           Request Password Reset
-        </button>
+        </Button>
       </form>
       <template v-if="passwordResetSuccess">
         <p class="text-md" data-cy="submit-success">
@@ -56,11 +57,11 @@ const makeRequest = async () => {
           folder.
         </p>
         <div class="pt-6">
-          <button type="button" class="btn--primary bg-primary">
+          <Button type="button" variant="primary">
             <router-link :to="{ name: 'Login' }" class="" id="login-link">
               Return to Login
             </router-link>
-          </button>
+          </Button>
         </div>
       </template>
     </div>

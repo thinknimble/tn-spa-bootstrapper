@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { userApi } from '@/services/users'
 import { computed, ref } from 'vue'
-
 import { useUserStore } from '@/stores/user'
 import { isAxiosError } from 'axios'
 import { useRouter } from 'vue-router'
@@ -54,10 +53,17 @@ const user = computed(() => userStore.user)
         </div>
         <div class="hidden sm:ml-6 sm:flex sm:items-center">
           <template v-if="!isLoggedIn">
-            <router-link :to="{ name: 'Login' }" class="btn--primary bg-primary" data-cy="login"
+            <router-link
+              :to="{ name: 'Login' }"
+              class="flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm border-primary bg-primary text-white hover:bg-primaryLight"
+              data-cy="login"
               >Login</router-link
             >
-            <router-link :to="{ name: 'Signup' }" class="btn--secondary ml-6">Signup</router-link>
+            <router-link
+              :to="{ name: 'Signup' }"
+              class="flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-50 ml-6"
+              >Signup</router-link
+            >
           </template>
           <!-- Profile dropdown -->
           <div class="relative ml-3 focus:ring-2" v-if="isLoggedIn">

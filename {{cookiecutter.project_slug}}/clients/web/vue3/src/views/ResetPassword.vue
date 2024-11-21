@@ -47,9 +47,7 @@ const onResetPassword = () => {
           data-cy="confirm-password"
         />
 
-        <button class="btn--primary bg-primary" :disabled="!form.isValid" type="submit">
-          Reset Password
-        </button>
+        <Button variant="primary" :disabled="!form.isValid" type="submit"> Reset Password </Button>
       </form>
     </div>
   </div>
