@@ -1,5 +1,5 @@
 import { useAuth } from '@stores/auth'
-import axios, { AxiosError } from 'axios'
+import axios, { isAxiosError, AxiosError } from 'axios'
 import qs from 'qs'
 import Config from '../../Config'
 
@@ -39,14 +39,7 @@ axiosInstance.interceptors.response.use(
     return config
   },
   (err: unknown) => {
-    if (
-      err instanceof AxiosError &&
-      err.response &&
-      err.response.data &&
-      typeof err.response.data === 'object' &&
-      'detail' in err.response.data &&
-      err.response.data.detail === 'Invalid token.'
-    ) {
+    if (isAxiosError(err) && err.response?.data.detail === 'Invalid token.') {
       //token has become invalid, clear the store so the app recovers
       useAuth.getState().actions.clearAuth()
     }

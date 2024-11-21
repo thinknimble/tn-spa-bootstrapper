@@ -1,6 +1,6 @@
 import { useUserStore } from '@/stores/user'
 import { getCookie } from '@/utils/get-cookie'
-import axios, { AxiosError } from 'axios'
+import axios, { isAxiosError, AxiosError } from 'axios'
 import qs from 'qs'
 
 const baseURL = `${window.location.protocol}//${window.location.host}/api`
@@ -35,5 +35,19 @@ axiosInstance.interceptors.request.use(
   },
   (error: Error | AxiosError) => {
     return Promise.reject(error)
+  },
+)
+
+axiosInstance.interceptors.response.use(
+  async (config) => {
+    return config
+  },
+  (err: unknown) => {
+    if (isAxiosError(err) && err.response?.data.detail === 'Invalid token.') {
+      //token has become invalid, clear the store so the app recovers
+      useUserStore().clearUser()
+      window.location.replace('/')
+    }
+    return Promise.reject(err)
   },
 )
