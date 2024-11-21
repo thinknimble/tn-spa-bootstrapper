@@ -33,7 +33,7 @@ export const useLogout = () => {
     mutationFn: userApi.csc.logout,
     onSettled: () => {
       useAuth.getState().actions.clearAuth()
-      queryClient.invalidateQueries({ queryKey: userQueries.all() })
+      queryClient.removeQueries({ queryKey: userQueries.all() })
     },
   })
 }
