@@ -1,11 +1,12 @@
 import { useUserStore } from '@/stores/user'
+import { NavigationGuardWithThis } from 'vue-router'
 
 /**
  * Route Guard.
  * Only logged in users can access the route.
  * If not logged in, a user will be redirected to the login page.
  */
-export function requireAuth(to, from, next) {
+export const requireAuth: NavigationGuardWithThis<undefined> = (to, _, next) => {
   const userStore = useUserStore()
   if (!userStore.isLoggedIn) {
     next({
@@ -22,7 +23,7 @@ export function requireAuth(to, from, next) {
  * Only users NOT logged in can access the route.
  * If logged in, a user will be redirected to the dashboard page.
  */
-export function requireNoAuth(to, from, next) {
+export const requireNoAuth: NavigationGuardWithThis<undefined> = (_, __, next) => {
   const userStore = useUserStore()
   if (userStore.isLoggedIn) {
     next({

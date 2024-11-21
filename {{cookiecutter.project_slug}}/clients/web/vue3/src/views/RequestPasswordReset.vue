@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useUsers } from '@/composables/users-'
+import { useUsers } from '@/composables/use-users'
 import InputField from '@/components/inputs/InputField.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import InputField from '@/components/inputs/InputField.vue'
-import { useUsers } from '@/composables/users-'
+import { useUsers } from '@/composables/use-users'
 const { resetPasswordForm: form, resetPassword, getCodeUidFromRoute } = useUsers()
 const { uid, token } = getCodeUidFromRoute()
 

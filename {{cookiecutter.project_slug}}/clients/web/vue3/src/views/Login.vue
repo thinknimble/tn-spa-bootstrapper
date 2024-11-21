@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import InputField from '@/components/inputs/InputField.vue'
-import { useUsers } from '@/composables/users-'
+import { useUsers } from '@/composables/use-users'
 
 const { loginForm: form, loading, login } = useUsers()
 
