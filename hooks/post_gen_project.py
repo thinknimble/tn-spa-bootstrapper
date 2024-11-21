@@ -123,6 +123,22 @@ def remove_expo_yaml_files():
             remove(file_name)
 
 
+def add_fonts_to_web():
+    move(join("resources", "web", "fonts"), join("client", "src", "assets"))
+
+
+def clean_up_web_resources():
+    rmtree(join("resources", "web"))
+
+
+def add_fonts_to_mobile():
+    move(join("resources", "mobile", "fonts"), join("mobile", "assets"))
+
+
+def clean_up_mobile_resources():
+    rmtree(join("resources", "mobile"))
+
+
 def set_keys_in_envs(django_secret, postgres_secret):
     env_file_path = join(".env.example")
     pull_request_template_path = join(".github", "pull_request_template.md")
@@ -161,23 +177,30 @@ def get_secrets():
 def main():
     django_secret, postgres_secret = get_secrets()
     set_keys_in_envs(django_secret, postgres_secret)
-
+    has_web = "{{ cookiecutter.client_app }}".lower() == "vue3" or "{{ cookiecutter.client_app }}".lower() == "react"
     if "{{ cookiecutter.client_app }}".lower() == "none":
         rmtree(web_clients_path)
         remove(join("package.json"))
     elif "{{ cookiecutter.client_app }}".lower() == "vue3":
         remove_web_client_files("react")
         move_web_client_to_root("vue3")
+        # add_fonts_to_web()
     elif "{{ cookiecutter.client_app }}".lower() == "react":
         remove_web_client_files("vue3")
         move_web_client_to_root("react")
+        # add_fonts_to_web()
+    if has_web:
+        add_fonts_to_web()
     if "{{ cookiecutter.include_mobile }}".lower() == "y":
         move_mobile_client_to_root("react-native")
+        add_fonts_to_mobile()
     else:
         remove_expo_yaml_files()
         remove_special_mobile_files()
 
     clean_up_clients_folder()
+    clean_up_mobile_resources()
+    clean_up_web_resources()
 
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")

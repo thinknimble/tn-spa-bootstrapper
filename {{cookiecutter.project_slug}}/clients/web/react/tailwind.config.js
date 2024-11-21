@@ -1,4 +1,5 @@
 const { colors } = require('./tailwind.colors')
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -6,9 +7,8 @@ module.exports = {
   theme: {
     extend: {
       colors,
-      fontFamily: {
-        avenir: ['Avenir', 'Helvetica', 'Arial', 'sans-serif'],
-      },
+      //TODO: match font family from index.css @font-face directive
+      fontFamily: { sans: ['Montserrat', ...defaultTheme.fontFamily.sans] },
     },
     container: {
       padding: {
