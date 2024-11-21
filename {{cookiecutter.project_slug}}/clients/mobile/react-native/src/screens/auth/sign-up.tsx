@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@components/errors'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { BounceableWind } from '@components/styled'
 import { TextFormField } from '@components/text-form-field'
@@ -7,10 +8,13 @@ import { useAuth } from '@stores/auth'
 import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
+import { isAxiosError } from 'axios'
+import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { getNavio } from '../routes'
 
 const InnerForm = () => {
+  const [errors, setErrors] = useState<string[] | undefined>()
   const { form } = useTnForm<TAccountForm>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { mutate: createUser } = useMutation({
@@ -21,13 +25,19 @@ const InnerForm = () => {
       getNavio().stacks.push('MainStack')
     },
     onError(e: unknown) {
-      if (
-        e &&
-        typeof e === 'object' &&
-        'message' in e &&
-        e?.message === 'Please enter valid credentials'
-      ) {
-        console.log('invalid credentials')
+      if (isAxiosError(e)) {
+        const { data } = e?.response ?? {}
+        if (data) {
+          const isArrayOfStrings = Array.isArray(data) && data.length && typeof data[0] === 'string'
+          const isObjectOfErrors = Object.keys(data).every((key) => Array.isArray(data[key]))
+          setErrors(
+            (isArrayOfStrings
+              ? data
+              : isObjectOfErrors
+              ? Object.keys(data).map((key) => data[key])
+              : ['Something went wrong while creating the user']) as string[],
+          )
+        }
       }
     },
   })
@@ -52,6 +62,9 @@ const InnerForm = () => {
           <TextFormField field={form.email} containerClassName="pt-4" />
           <TextFormField field={form.password} containerClassName="pt-4" />
           <TextFormField field={form.confirmPassword} containerClassName="pt-4" />
+          {errors?.map((error, idx) => (
+            <ErrorMessage key={idx}>{error}</ErrorMessage>
+          ))}
         </ScrollView>
         <BounceableWind contentContainerClassName="w-full pt-5" onPress={onSubmit}>
           <View className="rounded-lg bg-[#042642] w-full items-center py-2">

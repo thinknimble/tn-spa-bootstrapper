@@ -1,30 +1,53 @@
+import { ErrorMessage } from '@components/errors'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { BounceableWind } from '@components/styled'
 import { TextFormField } from '@components/text-form-field'
 import { LoginForm, LoginFormInputs, TLoginForm, userApi } from '@services/user'
 import { useAuth } from '@stores/auth'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
+import { isAxiosError } from 'axios'
+import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { getNavio } from '../routes'
 
 const LoginInner = () => {
   const { form, overrideForm } = useTnForm<TLoginForm>()
   const { changeToken, changeUserId } = useAuth.use.actions()
+  const [errors, setErrors] = useState<string[] | undefined>()
+
   const handleSubmit = async () => {
-    //TODO:
     if (!form.isValid) {
       const newForm = form.replicate() as TLoginForm
       newForm.validate()
       overrideForm(newForm)
     } else {
       try {
-        // HACK FOR TN-Forms
-        const res = await userApi.csc.login(form.value as { email: string; password: string })
+        const res = await userApi.csc.login({
+          email: form.email.value ?? '',
+          password: form.password.value ?? '',
+        })
+        if (!res?.token) {
+          throw 'Missing token from response'
+        }
         changeUserId(res.id)
         changeToken(res.token)
         getNavio().stacks.push('MainStack')
       } catch (e) {
-        console.log(e)
+        if (isAxiosError(e)) {
+          const { data } = e?.response ?? {}
+          if (data) {
+            const isArrayOfStrings =
+              Array.isArray(data) && data.length && typeof data[0] === 'string'
+            const isObjectOfErrors = Object.keys(data).every((key) => Array.isArray(data[key]))
+            setErrors(
+              (isArrayOfStrings
+                ? data
+                : isObjectOfErrors
+                ? Object.keys(data).map((key) => data[key])
+                : ['Something went wrong']) as string[],
+            )
+          }
+        }
       }
     }
   }
@@ -35,6 +58,11 @@ const LoginInner = () => {
         <ScrollView className="w-full" contentContainerClassName="self-start w-full">
           <TextFormField field={form.email} keyboardType="email-address" autoCapitalize="none" />
           <TextFormField field={form.password} secureTextEntry containerClassName="pt-4" />
+          {errors?.map((error, idx) => (
+            <View className="py-3" key={idx}>
+              <ErrorMessage key={idx}>{error}</ErrorMessage>
+            </View>
+          ))}
         </ScrollView>
         <BounceableWind
           contentContainerClassName="w-full pt-5"
