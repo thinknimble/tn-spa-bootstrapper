@@ -2,6 +2,8 @@
 import InputField from '@/components/inputs/InputField.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useUsers } from '@/composables/use-users'
+import Button from '@/components/Button.vue'
+
 const { register, loading, registerForm: form } = useUsers()
 const onRegister = () => {
   const createAccountInput = {
@@ -89,7 +91,13 @@ const onRegister = () => {
         </div>
         <div>
           <LoadingSpinner v-if="loading" />
-          <Button variant="primary" v-else :disabled="!form.isValid" type="submit">
+          <Button
+            variant="primary"
+            v-else
+            :disabled="!form.isValid"
+            extend-class="w-full"
+            type="submit"
+          >
             Sign up
           </Button>
         </div>

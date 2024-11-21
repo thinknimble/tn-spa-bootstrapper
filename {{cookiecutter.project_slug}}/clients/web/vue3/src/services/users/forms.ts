@@ -131,14 +131,6 @@ export class ResetPasswordForm extends Form<ResetPasswordInput> {
     value: '',
     validators: [],
   })
-
-  static dynamicValidators = {
-    confirmPassword: [
-      new MustMatchValidator({
-        matcher: 'password',
-      }),
-    ],
-  }
 }
 
 export type TResetPasswordForm = ResetPasswordForm & ResetPasswordInput
