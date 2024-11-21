@@ -37,14 +37,14 @@ const val = useModelWrapper(props, emit, 'value')
     <slot name="input-label">
       <label
         v-if="label"
-        :for="id ? id : `${label} - field`"
+        :for="`${id ? id : label - 'field'}`"
         v-text="label"
-        class="input--label block text-sm font-medium text-primary"
+        class="mb-2 block text-sm font-medium text-primary"
       />
     </slot>
     <input
       :disabled="disabled"
-      :id="id ? id : `${label} - field`"
+      :id="`${id ? id : label - 'field'}`"
       :type="type"
       :placeholder="placeholder"
       spellcheck="false"
@@ -52,15 +52,15 @@ const val = useModelWrapper(props, emit, 'value')
       @input="$emit('input', $event)"
       @blur="$emit('blur')"
       @focus="$emit('focus', $event)"
-      class="input"
+      class="mb-2 border rounded p-2 text-gray-700 leading-tight w-full placeholder:text-grey-scale disabled:opacity-50 disabled:cursor-not-allowed focus-within:outline-none focus-within:ring-[2px] focus-within:ring-inset focus-within:ring-primary"
       :autocomplete="autocomplete"
     />
-    <ul v-if="errors?.length">
+    <ul v-if="errors.length">
       <li
         v-for="(error, index) in errors"
         :key="index"
         v-text="error.message"
-        class="input--error"
+        class="text-sm text-left text-red-400"
       />
     </ul>
   </div>
