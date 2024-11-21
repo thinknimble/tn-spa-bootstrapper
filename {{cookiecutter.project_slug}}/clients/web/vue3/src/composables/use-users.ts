@@ -18,6 +18,7 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAlert } from '@/composables/CommonAlerts'
+import { MustMatchValidator } from '@thinknimble/tn-forms'
 
 export function useUsers() {
   const userStore = useUserStore()
@@ -27,6 +28,13 @@ export function useUsers() {
   const forgotPasswordForm = reactive(new EmailForgotPasswordForm({}) as TEmailForgotPasswordForm)
   const resetPasswordForm = reactive(new ResetPasswordForm({}) as TResetPasswordForm)
   const registerForm = reactive(new AccountForm({}) as TAccountForm)
+  registerForm.addFormLevelValidator(
+    'confirmPassword',
+    new MustMatchValidator({
+      matcher: 'password',
+      message: 'Passwords must match',
+    }),
+  )
   const loading = ref(false)
   const { errorAlert, successAlert } = useAlert()
 
