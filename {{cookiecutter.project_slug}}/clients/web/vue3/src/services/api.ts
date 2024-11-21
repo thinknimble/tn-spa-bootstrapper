@@ -39,9 +39,8 @@ export function apiErrorHandler({
       let message = '<h2>Error...</h2>'
       const status = error.response?.status
       // Show error to user
+      // Handle 4xx errors (probably bad user input)
       if (status && status >= 400 && status < 500) {
-        // Handle 4xx errors (probably bad user input)
-        let message = '<h2>Error...</h2>'
         // Handle common error structures
         if (error.response?.data.detail) {
           message += `<h2>${error.response.data.detail}</h2>`
