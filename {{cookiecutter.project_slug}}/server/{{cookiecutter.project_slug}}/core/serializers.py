@@ -81,11 +81,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
-        value = value.lower()
+        value = parseaddr(value, strict=True)[1].lower()
         if settings.USE_EMAIL_ALLOWLIST and value not in settings.EMAIL_ALLOWLIST:
             raise ValidationError(detail="Invalid email")
-        # TODO - Test on new Python versions. It SHOULD raise validation errors
-        parseaddr(value)
+        if not all(c in value for c in [".", "@"])
+            raise ValidationError(detail="Invalid email")
+        if not any(value.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
+            logger.warning(f"Potentially risky email: {value}")
         return value
 
     def validate(self, data):
