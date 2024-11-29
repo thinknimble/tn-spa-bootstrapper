@@ -17,8 +17,8 @@ from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 from {{ cookiecutter.project_slug }}.utils.misc import random_pin_generator
 
 from .forms import PreviewTemplateForm
-from .permissions import HasUserPermissions
 from .models import User, UserResetPasswordCodeMessages
+from .permissions import HasUserPermissions
 from .serializers import (
     ResetPasswordSerializer,
     UserLoginSerializer,
