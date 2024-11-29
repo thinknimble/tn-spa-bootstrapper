@@ -29,7 +29,7 @@ const resetPassword = createCustomServiceCall({
   outputShape: userShape,
   cb: async ({ client, input, utils }) => {
     const { password } = utils.toApi(input)
-    const res = await client.post(`/password/reset/confirm/${input.uid}/${input.token}/`, {
+    const res = await client.post(`/password/reset/confirm/${input.email}/`, {
       password,
     })
     return utils.fromApi(res.data)

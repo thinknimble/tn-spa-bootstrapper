@@ -26,9 +26,9 @@ export function useUsers() {
   const loading = ref(false)
   const { errorAlert, successAlert } = useAlert()
 
-  const getCodeUidFromRoute = () => {
-    const { uid, token } = router.currentRoute.value.params
-    return { uid, token }
+  const getEmailFromRoute = () => {
+    const { email } = router.currentRoute.value.params
+    return { email }
   }
 
   const { data: user, mutate: login } = useMutation({
@@ -58,15 +58,17 @@ export function useUsers() {
   const { mutate: requestPasswordReset } = useMutation({
     mutationFn: async (email: string) => {
       await userApi.csc.requestPasswordReset({ email })
+      return email
     },
     onError: (error: Error) => {
       loading.value = false
       console.log(error)
     },
-    onSuccess: () => {
+    onSuccess: (email: string) => {
       loading.value = false
-      successAlert('Password reset link sent to your email')
+      successAlert('Password reset code to your email')
       qc.invalidateQueries({ queryKey: ['user'] })
+      router.push({ name: 'ResetPassword', params: { email } })
     },
   })
 
@@ -115,6 +117,6 @@ export function useUsers() {
     user,
     register,
     registerForm,
-    getCodeUidFromRoute,
+    getEmailFromRoute,
   }
 }

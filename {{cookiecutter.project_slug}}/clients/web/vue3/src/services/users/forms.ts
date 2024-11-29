@@ -90,24 +90,24 @@ export class EmailForgotPasswordForm extends Form<EmailForgotPasswordInput> {
 export type TEmailForgotPasswordForm = EmailForgotPasswordForm & EmailForgotPasswordInput
 
 export type ResetPasswordInput = {
-  uid: IFormField<string>
-  token: IFormField<string>
+  email: IFormField<string>
+  code: IFormField<string>
   password: IFormField<string>
   confirmPassword: IFormField<string>
 }
 
 export class ResetPasswordForm extends Form<ResetPasswordInput> {
-  static uid = new FormField({
-    label: 'UID',
-    placeholder: 'uid',
-    type: 'text',
-    validators: [new RequiredValidator({ message: 'Please enter a valid uid' })],
+  static email = FormField.create({
+    label: 'Email',
+    placeholder: 'Email',
+    type: 'email',
+    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
   })
-  static token = new FormField({
-    placeholder: 'Verification Token',
+  static code = new FormField({
+    placeholder: 'Verification Code',
     type: 'text',
     validators: [
-      new MinLengthValidator({ message: 'Please enter a valid 5 digit code', minLength: 5 }),
+      new MinLengthValidator({ message: 'Please enter a valid code', minLength: 5 }),
     ],
   })
   static password = FormField.create({
