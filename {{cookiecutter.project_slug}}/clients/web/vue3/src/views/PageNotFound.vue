@@ -1,3 +1,5 @@
+<script lang="ts" setup></script>
+
 <template>
   <main class="grid h-full flex-auto place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
     <div class="text-center">
@@ -14,9 +16,3 @@
     </div>
   </main>
 </template>
-
-<script>
-export default {
-  name: 'PageNotFound',
-}
-</script>
