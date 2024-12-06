@@ -118,8 +118,7 @@ def reset_password(request, *args, **kwargs):
     serializer.is_valid(raise_exception=True)
 
     code_from_db = serializer.context.get("code_from_db")
-    code_from_db.is_used = True
-    code_from_db.save()
+    code_from_db.delete()
 
     user.set_password(request.data.get("password"))
     user.save()

@@ -83,14 +83,6 @@ class User(AbstractUser, AbstractBaseModel):
     def __str__(self):
         return f"{self.full_name} <{self.email}>"
 
-    def reset_password_context(self):
-        return {
-            "user": self,
-            "site_url": get_site_url(),
-            "support_email": settings.STAFF_EMAIL,
-            "token": default_token_generator.make_token(self),
-        }
-
     class Meta:
         ordering = ["email"]
 
@@ -126,7 +118,6 @@ class UserResetPasswordCodeMessagesManager(models.Manager):
 class UserResetPasswordCodeMessages(AbstractBaseModel):
     user = models.ForeignKey("core.User", related_name="reset_password_codes", on_delete=models.CASCADE)
     code = models.CharField(max_length=255)
-    is_used = models.BooleanField(default=False)
     objects = UserResetPasswordCodeMessagesManager()
 
     def __str__(self):
@@ -134,7 +125,7 @@ class UserResetPasswordCodeMessages(AbstractBaseModel):
 
     @property
     def is_valid(self):
-        return not (self.is_used | (self.created > now() + timedelta(minutes=settings.RESET_PASSWORD_CODE_VALIDITY_MINUTES)))
+        return (self.created > now() + timedelta(minutes=settings.RESET_PASSWORD_CODE_VALIDITY_MINUTES))
 
     class Meta:
         ordering = ("-created",)
