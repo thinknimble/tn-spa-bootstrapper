@@ -125,7 +125,8 @@ class UserResetPasswordCodeMessages(AbstractBaseModel):
 
     @property
     def is_valid(self):
-        return (self.created > now() + timedelta(minutes=settings.RESET_PASSWORD_CODE_VALIDITY_MINUTES))
+        valid_until = self.created + timedelta(minutes=settings.RESET_PASSWORD_CODE_VALIDITY_MINUTES)
+        return now() <= valid_until
 
     class Meta:
         ordering = ("-created",)
