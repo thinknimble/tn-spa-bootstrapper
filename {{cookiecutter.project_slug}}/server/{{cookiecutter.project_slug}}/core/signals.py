@@ -10,7 +10,6 @@ from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 from .dispatchers import new_reset_password_code_created_ds
 
-# Logger
 logger = logging.getLogger(__name__)
 
 
