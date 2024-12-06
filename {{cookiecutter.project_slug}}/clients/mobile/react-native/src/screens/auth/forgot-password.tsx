@@ -1,6 +1,5 @@
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { BounceableWind } from '@components/styled'
-import { Text } from '@components/text'
 import { TextFormField } from '@components/text-form-field'
 import {
   ForgotPasswordInput,
@@ -9,7 +8,7 @@ import {
   userApi,
 } from '@services/user'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 import { getNavio } from '../routes'
 
 const ForgotPasswordInner = () => {
@@ -33,7 +32,7 @@ const ForgotPasswordInner = () => {
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
       <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">
-        <Text textClassName="text-black text-3xl" variant="bold">
+        <Text className="text-primary-bold text-black text-3xl">
           Reset Password
         </Text>
         <ScrollView className="w-full" contentContainerClassName="self-start w-full">
@@ -45,7 +44,7 @@ const ForgotPasswordInner = () => {
           disabled={!form.isValid}
         >
           <View className="rounded-lg bg-[#042642] w-full items-center py-2">
-            <Text textClassName="text-white text-lg" variant="bold">
+            <Text className="text-primary-bold text-white text-lg">
               Reset Password
             </Text>
           </View>
