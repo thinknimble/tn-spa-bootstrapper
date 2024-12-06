@@ -3,12 +3,10 @@ import logging
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.contrib.auth.tokens import default_token_generator
 from django.db import models
 from django.utils.timezone import now, timedelta
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
-from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
 
 from .dispatchers import new_reset_password_code_created_ds
 
