@@ -9,6 +9,16 @@
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
       <form @submit.prevent="resetPassword(form.value)">
         <InputField
+          v-model:value="form.code.value"
+          :errors="form.code.errors"
+          @blur="form.code.validate()"
+          type="string"
+          label="Code"
+          placeholder="Code"
+          :id="form.code.id"
+        />
+
+        <InputField
           v-model:value="form.password.value"
           :errors="form.password.errors"
           @blur="form.password.validate()"
@@ -48,11 +58,10 @@ export default {
     InputField,
   },
   setup() {
-    const { resetPasswordForm, loading, resetPassword, getCodeUidFromRoute } = useUsers()
-    const { uid, token } = getCodeUidFromRoute()
+    const { resetPasswordForm, loading, resetPassword, getEmailFromRoute } = useUsers()
+    const { email } = getEmailFromRoute()
 
-    resetPasswordForm.uid.value = uid
-    resetPasswordForm.token.value = token
+    resetPasswordForm.email.value = email
 
     return {
       form: resetPasswordForm,

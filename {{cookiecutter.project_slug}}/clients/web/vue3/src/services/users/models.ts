@@ -41,8 +41,8 @@ export const loginShape = {
 export type LoginShape = GetInferredFromRaw<typeof loginShape>
 
 export const resetPasswordShape = {
-  uid: z.string().uuid(),
-  token: z.string(),
+  email: z.string().email(),
+  code: z.string(),
   password: z.string(),
 }
 

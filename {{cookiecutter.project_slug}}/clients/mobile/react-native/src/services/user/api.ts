@@ -14,8 +14,8 @@ const login = createCustomServiceCall({
 
 const requestPasswordResetCode = createCustomServiceCall({
   inputShape: forgotPasswordShape,
-  cb: async ({ client, input }) => {
-    await client.get(`/password/reset/code/${input.email}/`)
+  cb: async ({ client, input, utils }) => {
+    await client.post(`/password/reset/`, utils.toApi(input))
   },
 })
 
@@ -25,7 +25,7 @@ const resetPassword = createCustomServiceCall({
   cb: async ({ client, input, utils }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { email, ...rest } = utils.toApi(input)
-    const res = await client.post(`/password/reset/code/confirm/${input.email}/`, rest)
+    const res = await client.post(`/password/reset/confirm/${input.email}/`, rest)
     return utils.fromApi(res.data)
   },
 })
