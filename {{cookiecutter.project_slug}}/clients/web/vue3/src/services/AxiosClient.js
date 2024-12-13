@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useUserStore } from '@/stores/user'
+import { useAuthStore } from '@/stores/auth'
 import CSRF from '@/services/csrf'
 import qs from 'qs'
 
@@ -34,9 +34,9 @@ class ApiService {
     })
     ApiService.session.interceptors.request.use(
       async (config) => {
-        const userStore = useUserStore()
-        if (userStore.isLoggedIn) {
-          config.headers['Authorization'] = `Token ${userStore.token}`
+        const { token, isLoggedIn } = useAuthStore()
+        if (isLoggedIn) {
+          config.headers['Authorization'] = `Token ${token}`
         }
         return config
       },

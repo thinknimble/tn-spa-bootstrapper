@@ -1,4 +1,4 @@
-import { useUserStore } from '@/stores/user'
+import { useAuthStore } from '@/stores/auth'
 
 /**
  * Route Guard.
@@ -6,8 +6,8 @@ import { useUserStore } from '@/stores/user'
  * If not logged in, a user will be redirected to the login page.
  */
 export function requireAuth(to, from, next) {
-  const userStore = useUserStore()
-  if (!userStore.isLoggedIn) {
+  const authStore = useAuthStore()
+  if (!authStore.isLoggedIn) {
     next({
       name: 'Login',
       query: { redirect: to.fullPath },
@@ -23,8 +23,8 @@ export function requireAuth(to, from, next) {
  * If logged in, a user will be redirected to the dashboard page.
  */
 export function requireNoAuth(to, from, next) {
-  const userStore = useUserStore()
-  if (userStore.isLoggedIn) {
+  const authStore = useAuthStore()
+  if (authStore.isLoggedIn) {
     next({
       name: 'Dashboard',
     })

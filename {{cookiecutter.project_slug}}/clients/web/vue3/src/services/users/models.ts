@@ -14,9 +14,13 @@ export const userShape = {
   email: z.string().email(),
   firstName: z.string(),
   lastName: z.string(),
-  //TODO:add back `readonly` https://github.com/thinknimble/tn-models-fp/issues/161
-  token: z.string().nullable(),
 }
+
+export const userWithTokenShape = {
+  ...userShape,
+  token: z.string(),
+}
+export type UserWithTokenShape = GetInferredFromRaw<typeof userWithTokenShape>
 export type UserShape = GetInferredFromRaw<typeof userShape>
 
 export const userCreateShape = {
