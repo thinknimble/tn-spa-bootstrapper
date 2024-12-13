@@ -96,7 +96,7 @@
               alt="Profile"
             />
           </div>
-          <div class="ml-3">
+          <div class="ml-3" v-if="!isUserLoading">
             <div class="text-base font-medium text-gray-800">
               {{ user.firstName }} {{ user.lastName }}
             </div>
@@ -134,15 +134,19 @@
 import { userApi } from '@/services/users'
 import { computed, ref } from 'vue'
 
+import { useUsers } from '@/composables/Users'
+import { useAuthStore } from '@/stores/auth'
+import { useQueryClient } from '@tanstack/vue-query'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
 
 export default {
   setup() {
-    const userStore = useUserStore()
+    const authStore = useAuthStore()
+    const { user, isUserLoading } = useUsers()
     const router = useRouter()
-    let mobileMenuOpen = ref(false)
-    let profileMenuOpen = ref(false)
+    const mobileMenuOpen = ref(false)
+    const profileMenuOpen = ref(false)
+    const queryClient = useQueryClient()
 
     async function logout() {
       try {
@@ -155,15 +159,17 @@ export default {
       } finally {
         profileMenuOpen.value = false
         mobileMenuOpen.value = false
-        userStore.clearUser()
+        authStore.clearStore()
+        queryClient.removeQueries() 
         router.push({ name: 'Home' })
       }
     }
 
     return {
       logout,
-      isLoggedIn: computed(() => userStore.isLoggedIn),
-      user: computed(() => userStore.user),
+      isLoggedIn: computed(() => authStore.isLoggedIn),
+      isUserLoading,
+      user,
       mobileMenuOpen,
       profileMenuOpen,
     }

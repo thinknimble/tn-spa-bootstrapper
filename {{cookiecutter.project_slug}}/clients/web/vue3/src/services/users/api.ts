@@ -6,11 +6,12 @@ import {
   resetPasswordShape,
   userCreateShape,
   userShape,
+  userWithTokenShape,
 } from './models'
 
 const login = createCustomServiceCall({
   inputShape: loginShape,
-  outputShape: userShape,
+  outputShape: userWithTokenShape,
   cb: async ({ client, input, utils }) => {
     const res = await client.post('/login/', utils.toApi(input))
     return utils.fromApi(res.data)
@@ -26,7 +27,7 @@ const requestPasswordReset = createCustomServiceCall({
 
 const resetPassword = createCustomServiceCall({
   inputShape: resetPasswordShape,
-  outputShape: userShape,
+  outputShape: userWithTokenShape,
   cb: async ({ client, input, utils }) => {
     const { password } = utils.toApi(input)
     const res = await client.post(`/password/reset/confirm/${input.uid}/${input.token}/`, {

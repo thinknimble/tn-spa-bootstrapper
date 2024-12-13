@@ -1,3 +1,4 @@
+import { useAlert } from '@/composables/CommonAlerts'
 import {
   AccountForm,
   EmailForgotPasswordForm,
@@ -5,18 +6,17 @@ import {
   LoginShape,
   ResetPasswordForm,
   ResetPasswordShape,
-  UserCreateShape,
-  UserShape,
+  UserWithTokenShape,
   userApi,
+  userQueries,
 } from '@/services/users'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useAuthStore } from '@/stores/auth'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { useAlert } from '@/composables/CommonAlerts'
 
 export function useUsers() {
-  const userStore = useUserStore()
+  const authStore = useAuthStore()
   const router = useRouter()
   const qc = useQueryClient()
   const loginForm = reactive(new LoginForm({}))
@@ -26,12 +26,14 @@ export function useUsers() {
   const loading = ref(false)
   const { errorAlert, successAlert } = useAlert()
 
+  const { data: user , isPending} = useQuery(userQueries.retrieve(authStore.userId ?? ''))
+
   const getCodeUidFromRoute = () => {
     const { uid, token } = router.currentRoute.value.params
     return { uid, token }
   }
 
-  const { data: user, mutate: login } = useMutation({
+  const { mutate: login } = useMutation({
     mutationFn: async (user: LoginShape) => {
       return await userApi.csc.login(user)
     },
@@ -43,16 +45,18 @@ export function useUsers() {
       console.log(error)
       errorAlert('Invalid email or password')
     },
-    onSuccess: (data: UserShape) => {
+    onSuccess: (data) => {
       loading.value = false
-      userStore.updateUser(data)
+      const { token, ...user } = data
+      authStore.updateAuth({ userId: user.id, token })
+      qc.setQueryData(userQueries.retrieve(user.id).queryKey, user)
+
       const redirectPath = router.currentRoute.value.query.redirect
       if (redirectPath) {
         router.push({ path: redirectPath as string })
       } else {
         router.push({ name: 'Dashboard' })
       }
-      qc.invalidateQueries({ queryKey: ['user'] })
     },
   })
   const { mutate: requestPasswordReset } = useMutation({
@@ -79,25 +83,26 @@ export function useUsers() {
       console.log(error)
       errorAlert('There was an error attempting to reset password')
     },
-    onSuccess: (data: UserShape) => {
+    onSuccess: (data) => {
       loading.value = false
-      userStore.updateUser(data)
+      const { token, ...user } = data
+      authStore.updateAuth({ userId: user.id, token })
+      qc.setQueryData(userQueries.retrieve(user.id).queryKey, user)
       router.push({ name: 'Dashboard' })
-      qc.invalidateQueries({ queryKey: ['user'] })
     },
   })
 
   const { mutate: register } = useMutation({
-    mutationFn: async (data: UserCreateShape) => {
-      return await userApi.create(data)
-    },
+    mutationFn: userApi.create,
     onError: (error: Error) => {
       loading.value = false
       console.log(error)
       errorAlert('There was an error attempting to register')
     },
-    onSuccess: (data: UserShape) => {
-      userStore.updateUser(data)
+    onSuccess: (data) => {
+      const { token, ...user } = data as UserWithTokenShape
+      authStore.updateAuth({ userId: user.id, token })
+      qc.setQueryData(userQueries.retrieve(user.id).queryKey, user)
       router.push({ name: 'Dashboard' })
       qc.invalidateQueries({ queryKey: ['user'] })
       loading.value = false
@@ -105,6 +110,8 @@ export function useUsers() {
   })
 
   return {
+    isUserLoading: isPending,
+    user,
     loginForm,
     forgotPasswordForm,
     resetPasswordForm,
@@ -112,7 +119,6 @@ export function useUsers() {
     login,
     requestPasswordReset,
     resetPassword,
-    user,
     register,
     registerForm,
     getCodeUidFromRoute,
