@@ -43,9 +43,11 @@ export function useUsers() {
       console.log(error)
       errorAlert('Invalid email or password')
     },
-    onSuccess: (data: UserShape) => {
+    onSuccess: (data) => {
       loading.value = false
-      userStore.updateUser(data)
+      const { token, ...userData } = data
+      userStore.updateUser(userData)
+      userStore.updateToken(token)
       const redirectPath = router.currentRoute.value.query.redirect
       if (redirectPath) {
         router.push({ path: redirectPath as string })
@@ -96,8 +98,10 @@ export function useUsers() {
       console.log(error)
       errorAlert('There was an error attempting to register')
     },
-    onSuccess: (data: UserShape) => {
-      userStore.updateUser(data)
+    onSuccess: (data) => {
+      const { token, ...userData } = data
+      userStore.updateUser(userData)
+      userStore.updateToken(token)
       router.push({ name: 'Dashboard' })
       qc.invalidateQueries({ queryKey: ['user'] })
       loading.value = false

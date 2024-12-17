@@ -11,7 +11,7 @@ import {
 
 const login = createCustomServiceCall({
   inputShape: loginShape,
-  outputShape: userShape,
+  outputShape: userShapeWithToken,
   cb: async ({ client, input, utils }) => {
     const res = await client.post('/login/', utils.toApi(input))
     return utils.fromApi(res.data)
