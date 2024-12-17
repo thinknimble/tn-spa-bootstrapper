@@ -20,9 +20,6 @@ const LoginInner = () => {
       try {
         // HACK FOR TN-Forms
         const res = await userApi.csc.login(form.value as { email: string; password: string })
-        if (!res?.token) {
-          throw 'Missing token from response'
-        }
         changeUserId(res.id)
         changeToken(res.token)
         getNavio().stacks.push('MainStack')
