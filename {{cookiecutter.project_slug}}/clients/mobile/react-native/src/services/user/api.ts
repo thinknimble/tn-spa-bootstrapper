@@ -53,7 +53,6 @@ export const userApi = createApi({
   client: axiosInstance,
   baseUri: '/users/',
   models: {
-    create: userCreateShape,
     entity: userShape,
   },
   customCalls: { login, requestPasswordResetCode, resetPassword, logout, signup },
