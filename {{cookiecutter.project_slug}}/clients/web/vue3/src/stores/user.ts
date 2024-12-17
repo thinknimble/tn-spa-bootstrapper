@@ -7,10 +7,12 @@ export const STORAGE_KEY = `{{ cookiecutter.project_slug }}-${STORAGE_HASH}`
 
 interface State {
   user: UserShape | null
+  token: string | null
 }
 
 export const useUserStore = defineStore('user', {
   state: (): State => ({
+    token: null,
     user: null,
   }),
   persist: {
@@ -20,13 +22,13 @@ export const useUserStore = defineStore('user', {
     isLoggedIn: (state) => {
       return !!state.user
     },
-    token: (state) => {
-      return state.user ? state.user.token : null
-    },
   },
   actions: {
     updateUser(payload: UserShape) {
       this.user = payload
+    },
+    updateToken(payload: string) {
+      this.token = payload
     },
     clearUser() {
       this.$reset()

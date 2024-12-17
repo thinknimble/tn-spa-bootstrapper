@@ -15,9 +15,16 @@ export const userShape = {
   firstName: z.string(),
   lastName: z.string(),
   fullName: z.string(),
-  //TODO:add back `readonly` https://github.com/thinknimble/tn-models-fp/issues/161
-  token: z.string().nullable(),
 }
+
+/**
+ * Only used during sign up - after this we shouldn't consider the user to have this token in any other request
+ */
+export const userShapeWithToken = {
+  ...userShape,
+  token: z.string().readonly(),
+}
+
 export type UserShape = GetInferredFromRaw<typeof userShape>
 
 export const userCreateShape = {
