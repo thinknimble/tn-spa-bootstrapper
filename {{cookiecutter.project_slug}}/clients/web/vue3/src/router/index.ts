@@ -1,8 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { requireAuth, requireNoAuth } from '@/services/auth'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '@/views/Home.vue'
+import { requireNoAuth } from '@/services/auth'
+import { requireAuth } from '@/services/auth'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
