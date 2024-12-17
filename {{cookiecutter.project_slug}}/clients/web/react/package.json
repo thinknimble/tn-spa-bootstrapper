@@ -19,14 +19,14 @@
     "@tanstack/react-query": "^5.15.0",
     "@thinknimble/tn-forms": "^3.1.8",
     "@thinknimble/tn-forms-react": "^1.0.3",
-    "@thinknimble/tn-models": "^3.0.0",
+    "@thinknimble/tn-models": "^4.0.0",
     "axios": "^1.5.0",
     "qs": "^6.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
     "react-router-dom": "^6.15.0",
-    "zod": "3.22.2",
+    "zod": "^3.24.1",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
