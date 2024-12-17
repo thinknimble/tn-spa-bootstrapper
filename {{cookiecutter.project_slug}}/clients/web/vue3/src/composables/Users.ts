@@ -89,7 +89,7 @@ export function useUsers() {
 
   const { mutate: register } = useMutation({
     mutationFn: async (data: UserCreateShape) => {
-      return await userApi.create(data)
+      return await userApi.csc.signup(data)
     },
     onError: (error: Error) => {
       loading.value = false

@@ -6,6 +6,7 @@ import {
   resetPasswordShape,
   userCreateShape,
   userShape,
+  userShapeWithToken,
 } from './models'
 
 const login = createCustomServiceCall({
@@ -13,6 +14,15 @@ const login = createCustomServiceCall({
   outputShape: userShape,
   cb: async ({ client, input, utils }) => {
     const res = await client.post('/login/', utils.toApi(input))
+    return utils.fromApi(res.data)
+  },
+})
+
+const signup = createCustomServiceCall({
+  inputShape: userCreateShape,
+  outputShape: userShapeWithToken,
+  cb: async ({ client, input, utils }) => {
+    const res = await client.post('/users/', utils.toApi(input))
     return utils.fromApi(res.data)
   },
 })
@@ -44,8 +54,7 @@ export const userApi = createApi({
   client: axiosInstance,
   baseUri: '/users/',
   models: {
-    create: userCreateShape,
     entity: userShape,
   },
-  customCalls: { login, requestPasswordReset, resetPassword, logout },
+  customCalls: { login, requestPasswordReset, resetPassword, logout, signup },
 })
