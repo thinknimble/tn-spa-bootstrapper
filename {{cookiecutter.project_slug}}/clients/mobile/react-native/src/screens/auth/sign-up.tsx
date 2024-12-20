@@ -11,13 +11,11 @@ import { ScrollView, Text, View } from 'react-native'
 import { getNavio } from '../routes'
 
 const InnerForm = () => {
-  //TODO: match bootstrapper style for signup and hit backend
   const { form } = useTnForm<TAccountForm>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { mutate: createUser } = useMutation({
-    mutationFn: userApi.create,
+    mutationFn: userApi.csc.signup,
     onSuccess: (data) => {
-      if (!data?.token) return
       changeToken(data.token)
       changeUserId(data.id)
       getNavio().stacks.push('MainStack')
