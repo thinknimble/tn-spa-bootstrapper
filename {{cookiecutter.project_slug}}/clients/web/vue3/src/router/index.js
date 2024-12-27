@@ -31,7 +31,7 @@ const routes = [
     beforeEnter: requireNoAuth,
   },
   {
-    path: '/password/reset/confirm/:uid/:token',
+    path: '/password/reset/confirm/:email',
     name: 'ResetPassword',
     component: () => import(/* webpackChunkName: "confirmreset" */ '../views/ResetPassword.vue'),
     beforeEnter: requireNoAuth,

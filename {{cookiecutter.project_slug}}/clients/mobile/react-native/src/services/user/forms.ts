@@ -106,7 +106,7 @@ import Form, {
       placeholder: 'Verification Code',
       type: 'number',
       validators: [
-        new MinLengthValidator({ message: 'Please enter a valid 5 digit code', minLength: 5 }),
+        new MinLengthValidator({ message: 'Please enter a valid 7 digit code', minLength: 7 }),
       ],
     })
     static password = FormField.create({
