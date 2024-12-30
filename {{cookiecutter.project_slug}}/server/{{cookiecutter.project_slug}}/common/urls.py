@@ -35,6 +35,15 @@ if settings.DEBUG:  # pragma: no cover
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += [path("api-auth/", include("rest_framework.urls"))]
 
+if settings.IN_REVIEW:
+    urlpatterns += [
+        path(
+            r".well-known/example.txt",
+            common_views.WellKnownExampleFile.as_view(),
+            name="well-known-example",
+        ),
+    ]
+
 urlpatterns += [
     path("", common_views.index),
     re_path(r".*/$", common_views.index),
