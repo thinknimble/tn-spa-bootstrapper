@@ -14,7 +14,7 @@ libpq-dev
 
 ##Pillow dependencies
 libtiff4-dev
-libjpeg8-dev
+libjpeg62-turbo-dev
 libfreetype6-dev
 liblcms1-dev
 libwebp-dev
