@@ -23,7 +23,7 @@ django-model-utils = "==4.1.1"
 django-multiselectfield = "==0.1.12"
 drf-writable-nested = "==0.6.3"
 python-slugify = "==5.0.2"
-Pillow = "==9.0"
+Pillow = "==10.4.0"
 django-currentuser = "==0.7.0"
 drf-nested-routers = "==0.93.3"
 django-anymail = "==8.4"  # https://github.com/anymail/django-anymail
