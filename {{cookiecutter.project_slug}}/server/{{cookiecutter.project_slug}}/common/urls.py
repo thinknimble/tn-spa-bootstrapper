@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -11,8 +13,6 @@ from rest_framework_nested import routers
 
 from {{ cookiecutter.project_slug }}.common import views as common_views
 from {{ cookiecutter.project_slug }}.core import urls as core_urls
-from django.contrib.staticfiles.storage import staticfiles_storage
-from django.views.generic.base import RedirectView
 
 router = routers.SimpleRouter()
 if settings.DEBUG:
