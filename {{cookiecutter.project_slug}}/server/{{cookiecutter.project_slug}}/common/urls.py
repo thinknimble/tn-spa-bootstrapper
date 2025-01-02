@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -34,6 +36,15 @@ if settings.DEBUG:  # pragma: no cover
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += [path("api-auth/", include("rest_framework.urls"))]
+
+if settings.IN_REVIEW:
+    urlpatterns += [
+        path(
+            r".well-known/example.txt",
+            RedirectView.as_view(url=staticfiles_storage.url("well-known-example/example.txt"), permanent=False),
+            name="well-known-example",
+        ),
+    ]
 
 urlpatterns += [
     path("", common_views.index),
