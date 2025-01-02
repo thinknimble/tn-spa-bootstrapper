@@ -61,6 +61,26 @@ if settings.IN_STAGING or settings.IN_PROD or settings.IN_REVIEW:
             name="apple-icon-180",
         ),
         path(
+            r"android-icon-36x36.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/android-icon-36x36.png"), permanent=False),
+        ),
+        path(
+            r"android-icon-48x48.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/android-icon-48x48.png"), permanent=False),
+        ),
+        path(
+            r"android-icon-72x72.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/android-icon-72x72.png"), permanent=False),
+        ),
+        path(
+            r"android-icon-96x96.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/android-icon-96x96.png"), permanent=False),
+        ),
+        path(
+            r"android-icon-144x144.png",
+            RedirectView.as_view(url=staticfiles_storage.url("favicons/android-icon-144x144.png"), permanent=False),
+        ),
+        path(
             r"android-icon-192x192.png",
             RedirectView.as_view(url=staticfiles_storage.url("favicons/android-icon-192x192.png"), permanent=False),
             name="apple-icon-192",
