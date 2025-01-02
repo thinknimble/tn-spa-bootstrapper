@@ -7,6 +7,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jwalton/gh-find-current-pr@master
         id: findPr
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
       - name: Set app_name for Staging
         run: echo "APP_NAME=tn-spa-bootstrapper-staging" >> $GITHUB_ENV
       - name: Set app_name for PR
