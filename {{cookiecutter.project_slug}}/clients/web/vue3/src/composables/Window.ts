@@ -27,6 +27,21 @@ export const useIsMobile = () => {
 }
 
 export const useElementSize = (element: Ref<HTMLElement | null>) => {
+    /**
+     * Usage 
+     *  ```html
+     *     <div ref="assetContainer" class="asset-container">
+     *   ```
+     *  const assetContainer = ref<HTMLElement | null>(null)
+     *  const { width, height, disconnect } = useElementSize(assetContainer)
+     *  const assetContainer = ref<HTMLElement | null>(null)
+     *  
+     * 
+     *  onBeforeUnmount(() => {
+     *  disconnect()
+     * })
+     * 
+     */
   const width = ref(0)
   const height = ref(0)
   let observer: ResizeObserver | null = null
@@ -54,8 +69,15 @@ export const useElementSize = (element: Ref<HTMLElement | null>) => {
   onUnmounted(() => {
     if (observer && element.value) {
       observer.disconnect()
+   
     }
   })
+  function disconnect() {
+    console.log(observer, element.value)
+    if (observer && element.value) {
+      observer.disconnect()
+    }
+  }
 
-  return { width, height }
+  return { width, height, observer, disconnect }
 }
