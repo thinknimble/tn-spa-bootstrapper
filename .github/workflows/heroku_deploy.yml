@@ -11,15 +11,19 @@ jobs:
         run: echo "APP_NAME=tn-spa-bootstrapper-staging" >> $GITHUB_ENV
       - name: Set app_name for PR
         if: success() && steps.findPr.outputs.number
-        run: echo "APP_NAME=tn-spa-bootstrapper-pr-${PR}" >> $GITHUB_ENV
-        env:
-          PR: ${{ steps.findPr.outputs.pr }}
+        run: echo "APP_NAME=tn-spa-bootstrapper-pr-${{ steps.findPr.outputs.number }}" >> $GITHUB_ENV
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - name: 🏗 Setup Heroku
+        run: npm install -g heroku
       - name: Update Heroku on what type of app to build next time (Vue or React)
         run: |
           config_file=$(./scripts/vue_or_react.sh)
           current_config=$(heroku config:get BUILDPACK_RUN --app=${{ env.APP_NAME }})
           echo "Configuration was set with ${config_file}"
-          if echo "$current_config" | grep -q "config_file"; then
+          if echo "$current_config" | grep -q "$config_file"; then
             echo "Keeping current config of $config_file"
           else
             echo "Switching Heroku to build with $config_file instead"
