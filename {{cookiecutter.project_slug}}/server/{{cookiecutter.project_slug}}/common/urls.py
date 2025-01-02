@@ -11,6 +11,8 @@ from rest_framework_nested import routers
 
 from {{ cookiecutter.project_slug }}.common import views as common_views
 from {{ cookiecutter.project_slug }}.core import urls as core_urls
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 router = routers.SimpleRouter()
 if settings.DEBUG:
@@ -39,7 +41,7 @@ if settings.IN_REVIEW:
     urlpatterns += [
         path(
             r".well-known/example.txt",
-            common_views.WellKnownExampleFile.as_view(),
+            RedirectView.as_view(url=staticfiles_storage.url("well-known-example/example.txt"), permanent=False),
             name="well-known-example",
         ),
     ]
