@@ -1,3 +1,21 @@
+<script lang="ts" setup>
+import InputField from '@/components/inputs/InputField.vue'
+import { useUsers } from '@/composables/use-users'
+const { resetPasswordForm: form, resetPassword, getCodeUidFromRoute } = useUsers()
+const { uid, token } = getCodeUidFromRoute()
+
+form.uid.value = uid as string
+form.token.value = token as string
+const onResetPassword = () => {
+  if (!form.isValid) return
+  resetPassword({
+    password: form.password.value ?? '',
+    uid: form.uid.value ?? '',
+    token: form.token.value ?? '',
+  })
+}
+</script>
+
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -7,7 +25,7 @@
       </h2>
     </div>
     <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form @submit.prevent="resetPassword(form.value)">
+      <form @submit.prevent="onResetPassword()">
         <InputField
           v-model:value="form.password.value"
           :errors="form.password.errors"
@@ -29,36 +47,8 @@
           data-cy="confirm-password"
         />
 
-        <button class="btn--primary bg-primary" :disabled="!form.isValid" type="submit">
-          Reset Password
-        </button>
+        <Button variant="primary" :disabled="!form.isValid" type="submit"> Reset Password </Button>
       </form>
     </div>
   </div>
 </template>
-
-<script>
-import { useUsers } from '@/composables/Users'
-
-import InputField from '@/components/inputs/InputField.vue'
-
-export default {
-  name: 'ResetPassword',
-  components: {
-    InputField,
-  },
-  setup() {
-    const { resetPasswordForm, loading, resetPassword, getCodeUidFromRoute } = useUsers()
-    const { uid, token } = getCodeUidFromRoute()
-
-    resetPasswordForm.uid.value = uid
-    resetPasswordForm.token.value = token
-
-    return {
-      form: resetPasswordForm,
-      loading,
-      resetPassword,
-    }
-  },
-}
-</script>

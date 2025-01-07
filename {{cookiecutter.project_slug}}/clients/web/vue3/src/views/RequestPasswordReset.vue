@@ -1,3 +1,20 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { useUsers } from '@/composables/use-users'
+import InputField from '@/components/inputs/InputField.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import Button from '@/components/Button.vue'
+
+const passwordResetSuccess = ref(false)
+
+const { forgotPasswordForm: form, loading, requestPasswordReset } = useUsers()
+
+const makeRequest = async () => {
+  await requestPasswordReset(form.email.value ?? '')
+  passwordResetSuccess.value = true
+}
+</script>
+
 <template>
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -19,9 +36,15 @@
         />
 
         <LoadingSpinner v-if="loading" />
-        <button v-else-if="!loading && !passwordResetSuccess" type="submit" :disabled="loading||!form.email.isValid" class="btn--primary bg-primary" data-cy="submit">
+        <Button
+          v-else-if="!loading && !passwordResetSuccess"
+          type="submit"
+          :disabled="loading || !form.email.isValid"
+          variant="primary"
+          data-cy="submit"
+        >
           Request Password Reset
-        </button>
+        </Button>
       </form>
       <template v-if="passwordResetSuccess">
         <p class="text-md" data-cy="submit-success">
@@ -34,46 +57,13 @@
           folder.
         </p>
         <div class="pt-6">
-          <button type="button" class="btn--primary bg-primary">
+          <Button type="button" variant="primary">
             <router-link :to="{ name: 'Login' }" class="" id="login-link">
               Return to Login
             </router-link>
-          </button>
+          </Button>
         </div>
       </template>
     </div>
   </div>
 </template>
-
-<script>
-import { ref } from 'vue'
-import { useUsers } from '@/composables/Users'
-import InputField from '@/components/inputs/InputField.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
-
-export default {
-  name: 'RequestPasswordReset',
-  components: {
-    InputField,
-    LoadingSpinner,
-  },
-  setup() {
-    const passwordResetSuccess = ref(false)
-
-    const { forgotPasswordForm, loading, requestPasswordReset } = useUsers()
-
-    const makeRequest = async () => {
-      await requestPasswordReset(forgotPasswordForm.email.value)
-      passwordResetSuccess.value = true
-    }
-
-    return {
-      form: forgotPasswordForm,
-      loading,
-      requestPasswordReset,
-      passwordResetSuccess,
-      makeRequest,
-    }
-  },
-}
-</script>

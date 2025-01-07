@@ -1,3 +1,35 @@
+<script lang="ts" setup>
+import { userApi } from '@/services/users'
+import { computed, ref } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { isAxiosError } from 'axios'
+import { useRouter } from 'vue-router'
+
+const userStore = useUserStore()
+const router = useRouter()
+let mobileMenuOpen = ref(false)
+let profileMenuOpen = ref(false)
+
+async function logout() {
+  try {
+    await userApi.csc.logout()
+  } catch (error) {
+    if (isAxiosError(error) && error.response && error.response.status === 401) {
+      console.error('User is not logged in')
+    }
+    console.log(error)
+  } finally {
+    profileMenuOpen.value = false
+    mobileMenuOpen.value = false
+    userStore.clearUser()
+    router.push({ name: 'Home' })
+  }
+}
+
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+const user = computed(() => userStore.user)
+</script>
+
 <template>
   <nav class="fixed top-0 z-10 w-full bg-white shadow">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -11,20 +43,27 @@
               >Home</router-link
             >
             <router-link
-              active-class="active"
+              active-class="border-accent"
               v-if="isLoggedIn"
               :to="{ name: 'Dashboard' }"
-              class="router"
+              class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 border-b-2 border-transparent hover:cursor-pointer"
               >Dashboard</router-link
             >
           </div>
         </div>
         <div class="hidden sm:ml-6 sm:flex sm:items-center">
           <template v-if="!isLoggedIn">
-            <router-link :to="{ name: 'Login' }" class="btn--primary bg-primary" data-cy="login"
+            <router-link
+              :to="{ name: 'Login' }"
+              class="flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm border-primary bg-primary text-white hover:bg-primaryLight"
+              data-cy="login"
               >Login</router-link
             >
-            <router-link :to="{ name: 'Signup' }" class="btn--secondary ml-6">Signup</router-link>
+            <router-link
+              :to="{ name: 'Signup' }"
+              class="flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-50 ml-6"
+              >Signup</router-link
+            >
           </template>
           <!-- Profile dropdown -->
           <div class="relative ml-3 focus:ring-2" v-if="isLoggedIn">
@@ -72,7 +111,7 @@
         <router-link
           :to="{ name: 'Home' }"
           @click="mobileMenuOpen = false"
-          active-class="active--mobile"
+          active-class="border-l-4 border-accent text-accent"
           class="mobile-link--main"
         >
           Home
@@ -81,7 +120,7 @@
           v-if="isLoggedIn"
           :to="{ name: 'Dashboard' }"
           @click="mobileMenuOpen = false"
-          active-class="active--mobile"
+          active-class="border-l-4 border-accent text-accent"
           class="mobile-link--main"
         >
           Dashboard
@@ -98,9 +137,9 @@
           </div>
           <div class="ml-3">
             <div class="text-base font-medium text-gray-800">
-              {{ user.firstName }} {{ user.lastName }}
+              {{ user?.firstName }} {{ user?.lastName }}
             </div>
-            <div class="text-sm font-medium text-gray-500">{{ user.email }}</div>
+            <div class="text-sm font-medium text-gray-500">{{ user?.email }}</div>
           </div>
         </div>
         <div class="mt-3 space-y-1">
@@ -108,7 +147,7 @@
             <router-link
               @click="mobileMenuOpen = false"
               :to="{ name: 'Signup' }"
-              active-class="active--mobile"
+              active-class="border-l-4 border-accent text-accent"
               class="mobile-link"
             >
               Signup
@@ -117,7 +156,7 @@
               @click="mobileMenuOpen = false"
               :to="{ name: 'Login' }"
               data-cy="login"
-              active-class="active--mobile"
+              active-class="border-l-4 border-accent text-accent"
               class="mobile-link"
             >
               Login
@@ -129,47 +168,6 @@
     </div>
   </nav>
 </template>
-
-<script>
-import { userApi } from '@/services/users'
-import { computed, ref } from 'vue'
-
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-
-export default {
-  setup() {
-    const userStore = useUserStore()
-    const router = useRouter()
-    let mobileMenuOpen = ref(false)
-    let profileMenuOpen = ref(false)
-
-    async function logout() {
-      try {
-        await userApi.csc.logout()
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          console.error('User is not logged in')
-        }
-        console.log(error)
-      } finally {
-        profileMenuOpen.value = false
-        mobileMenuOpen.value = false
-        userStore.clearUser()
-        router.push({ name: 'Home' })
-      }
-    }
-
-    return {
-      logout,
-      isLoggedIn: computed(() => userStore.isLoggedIn),
-      user: computed(() => userStore.user),
-      mobileMenuOpen,
-      profileMenuOpen,
-    }
-  },
-}
-</script>
 <style scoped>
 .mobile-link {
   @apply block cursor-pointer border-l-4 px-4 py-2 text-base font-medium hover:bg-gray-100 hover:text-gray-800;
