@@ -1,9 +1,12 @@
 import { inject } from 'vue'
 
 export function useAlert() {
-  const $alert = inject('$alert')
+  // casting because idk where this type comes from
+  const $alert = inject('$alert') as {
+    alert: (args: { type: string; message: string; timeout: number }) => void
+  }
 
-  const successAlert = (message) => {
+  const successAlert = (message: string) => {
     $alert.alert({
       type: 'success',
       message: `
@@ -13,7 +16,7 @@ export function useAlert() {
       timeout: 3000,
     })
   }
-  const errorAlert = (message) => {
+  const errorAlert = (message: string) => {
     $alert.alert({
       type: 'error',
       message: `
@@ -23,7 +26,7 @@ export function useAlert() {
       timeout: 3000,
     })
   }
-  const infoAlert = (message) => {
+  const infoAlert = (message: string) => {
     $alert.alert({
       type: 'info',
       message: `
@@ -33,7 +36,7 @@ export function useAlert() {
       timeout: 3000,
     })
   }
-  const warningAlert = (message) => {
+  const warningAlert = (message: string) => {
     $alert.alert({
       type: 'warning',
       message: `

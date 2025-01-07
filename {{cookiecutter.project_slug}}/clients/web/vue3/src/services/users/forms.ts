@@ -4,7 +4,6 @@ import Form, {
   IFormField,
   MinLengthValidator,
   RequiredValidator,
-  MustMatchValidator,
 } from '@thinknimble/tn-forms'
 
 export type AccountFormInputs = {
@@ -131,14 +130,6 @@ export class ResetPasswordForm extends Form<ResetPasswordInput> {
     value: '',
     validators: [],
   })
-
-  static dynamicValidators = {
-    confirmPassword: [
-      new MustMatchValidator({
-        matcher: 'password',
-      }),
-    ],
-  }
 }
 
 export type TResetPasswordForm = ResetPasswordForm & ResetPasswordInput
