@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/*TODO: Add your own custom fonts for the project. Make sure you also update the entry in tailwind.config.js to match the font family you use*/
 @layer base {
   @font-face {
     font-family: 'Montserrat';
