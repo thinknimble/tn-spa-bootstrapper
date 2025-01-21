@@ -38,7 +38,7 @@ const user = computed(() => userStore.user)
           <router-link :to="{ name: 'Home' }" class="flex flex-shrink-0 items-center">
             <img class="h-4" src="@/assets/icons/logo.svg" alt="ThinkNimble"
           /></router-link>
-          <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+          <div class="hidden sm:pl-6 sm:flex sm:space-x-8">
             <router-link :to="{ name: 'Home' }" class="router" active-class="active"
               >Home</router-link
             >
@@ -51,7 +51,7 @@ const user = computed(() => userStore.user)
             >
           </div>
         </div>
-        <div class="hidden sm:ml-6 sm:flex sm:items-center">
+        <div class="hidden sm:pl-6 sm:flex sm:items-center">
           <template v-if="!isLoggedIn">
             <router-link
               :to="{ name: 'Login' }"
@@ -59,14 +59,16 @@ const user = computed(() => userStore.user)
               data-cy="login"
               >Login</router-link
             >
-            <router-link
-              :to="{ name: 'Signup' }"
-              class="flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-50 ml-6"
-              >Signup</router-link
-            >
+            <div class="pl-6">
+              <router-link
+                :to="{ name: 'Signup' }"
+                class="flex w-full cursor-pointer items-center justify-center rounded-md border px-3 py-2 text-sm font-semibold shadow-sm hover:bg-gray-50"
+                >Signup</router-link
+              >
+            </div>
           </template>
           <!-- Profile dropdown -->
-          <div class="relative ml-3 focus:ring-2" v-if="isLoggedIn">
+          <div class="relative pl-3 focus:ring-2" v-if="isLoggedIn">
             <img
               @click="profileMenuOpen = !profileMenuOpen"
               class="h-8 w-8 cursor-pointer rounded-full"
@@ -76,7 +78,7 @@ const user = computed(() => userStore.user)
 
             <div
               v-if="profileMenuOpen"
-              class="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+              class="absolute right-0 z-10 pt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div class="block cursor-pointer px-4 py-2 text-sm text-gray-700" @click="logout()">
                 Log Out
@@ -84,7 +86,7 @@ const user = computed(() => userStore.user)
             </div>
           </div>
         </div>
-        <div class="-mr-2 flex items-center sm:hidden">
+        <div class="flex pr-2 items-center sm:hidden">
           <!-- Mobile menu button -->
           <div class="rounded-md p-2 hover:bg-gray-100 hover:text-gray-500 focus:outline-none">
             <img
@@ -135,14 +137,14 @@ const user = computed(() => userStore.user)
               alt="Profile"
             />
           </div>
-          <div class="ml-3">
+          <div class="pl-3">
             <div class="text-base font-medium text-gray-800">
               {{ user?.firstName }} {{ user?.lastName }}
             </div>
             <div class="text-sm font-medium text-gray-500">{{ user?.email }}</div>
           </div>
         </div>
-        <div class="mt-3 space-y-1">
+        <div class="pt-3 space-y-1">
           <template v-if="!isLoggedIn">
             <router-link
               @click="mobileMenuOpen = false"
