@@ -33,13 +33,13 @@ const val = useModelWrapper(props, emit, 'value')
 </script>
 
 <template>
-  <div class="mb-2 flex w-full flex-col items-start">
+  <div class="pb-2 flex w-full flex-col items-start">
     <slot name="input-label">
       <label
         v-if="label"
         :for="id ? id : `${label} - field`"
         v-text="label"
-        class="mb-2 block text-sm font-medium text-primary"
+        class="pb-2 block text-sm font-medium text-primary"
       />
     </slot>
     <input
@@ -52,7 +52,7 @@ const val = useModelWrapper(props, emit, 'value')
       @input="$emit('input', $event)"
       @blur="$emit('blur')"
       @focus="$emit('focus', $event)"
-      class="mb-2 border rounded p-2 text-gray-700 leading-tight w-full placeholder:text-grey-scale disabled:opacity-50 disabled:cursor-not-allowed focus-within:outline-none focus-within:ring-[2px] focus-within:ring-inset focus-within:ring-primary"
+      class="pb-2 border rounded p-2 text-gray-700 leading-tight w-full placeholder:text-grey-scale disabled:opacity-50 disabled:cursor-not-allowed focus-within:outline-none focus-within:ring-[2px] focus-within:ring-inset focus-within:ring-primary"
       :autocomplete="autocomplete"
     />
     <ul v-if="errors?.length">

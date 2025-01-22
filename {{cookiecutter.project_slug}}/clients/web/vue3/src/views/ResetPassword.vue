@@ -20,11 +20,11 @@ const onResetPassword = () => {
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
       <img class="mx-auto h-12 w-auto" src="@/assets/icons/glyph.svg" alt="ThinkNimble" />
-      <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
+      <h2 class="pt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
         Password Reset
       </h2>
     </div>
-    <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+    <div class="pt-6 sm:mx-auto sm:w-full sm:max-w-sm">
       <form @submit.prevent="onResetPassword()">
         <InputField
           v-model:value="form.password.value"

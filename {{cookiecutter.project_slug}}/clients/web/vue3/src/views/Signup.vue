@@ -21,15 +21,15 @@ const onRegister = () => {
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-10 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
       <img class="mx-auto h-12 w-auto" src="@/assets/icons/glyph.svg" alt="ThinkNimble" />
-      <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
+      <h2 class="pt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
         Sign up
       </h2>
     </div>
 
-    <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+    <div class="pt-6 sm:mx-auto sm:w-full sm:max-w-sm">
       <form @submit.prevent="onRegister()">
         <div>
-          <label class="mb-2 block text-left text-sm font-medium leading-6 text-primary"
+          <label class="pb-2 block text-left text-sm font-medium leading-6 text-primary"
             >First Name</label
           >
           <InputField
@@ -41,7 +41,7 @@ const onRegister = () => {
         </div>
 
         <div>
-          <label class="mb-2 block text-left text-sm font-medium leading-6 text-primary"
+          <label class="pb-2 block text-left text-sm font-medium leading-6 text-primary"
             >Last Name</label
           >
           <InputField
@@ -53,7 +53,7 @@ const onRegister = () => {
         </div>
 
         <div>
-          <label class="mb-2 block text-left text-sm font-medium leading-6 text-primary"
+          <label class="pb-2 block text-left text-sm font-medium leading-6 text-primary"
             >Email</label
           >
           <InputField
@@ -66,7 +66,7 @@ const onRegister = () => {
         </div>
 
         <div>
-          <label class="mb-2 block text-left text-sm font-medium leading-6 text-primary"
+          <label class="pb-2 block text-left text-sm font-medium leading-6 text-primary"
             >Password</label
           >
           <InputField
@@ -78,7 +78,7 @@ const onRegister = () => {
           />
         </div>
         <div>
-          <label class="mb-2 block text-left text-sm font-medium leading-6 text-primary"
+          <label class="pb-2 block text-left text-sm font-medium leading-6 text-primary"
             >Confirm Password</label
           >
           <InputField
@@ -103,8 +103,8 @@ const onRegister = () => {
         </div>
       </form>
     </div>
-    <div class="m-4 flex self-center text-sm">
-      <p class="mr-2">Already have an account?</p>
+    <div class="p-4 flex self-center text-sm">
+      <p class="p-2">Already have an account?</p>
       <router-link :to="{ name: 'Login' }" class="font-bold text-primary hover:underline">
         Log in.
       </router-link>
