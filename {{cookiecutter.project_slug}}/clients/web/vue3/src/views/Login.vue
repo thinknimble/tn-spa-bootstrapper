@@ -20,12 +20,12 @@ const onSubmit = () => {
   <div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
       <img class="mx-auto h-12 w-auto" src="@/assets/icons/glyph.svg" alt="ThinkNimble" />
-      <h2 class="mt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
+      <h2 class="pt-4 text-center text-2xl font-bold leading-9 tracking-tight text-primary">
         Log in
       </h2>
     </div>
 
-    <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+    <div class="pt-6 sm:mx-auto sm:w-full sm:max-w-sm">
       <form @submit.prevent="onSubmit()">
         <InputField
           v-model:value="form.email.value"
@@ -37,7 +37,7 @@ const onSubmit = () => {
           :id="form.email.id"
         />
         <div>
-          <div class="mt-2">
+          <div class="pt-2">
             <InputField
               v-model:value="form.password.value"
               :errors="form.password.errors"
@@ -79,8 +79,8 @@ const onSubmit = () => {
         </div>
       </form>
     </div>
-    <div class="m-4 flex self-center text-sm">
-      <p class="mr-2">Don't have an account?</p>
+    <div class="p-4 flex self-center text-sm">
+      <p class="pr-2">Don't have an account?</p>
       <router-link :to="{ name: 'Signup' }" class="font-bold text-primary hover:underline">
         Sign up.
       </router-link>
