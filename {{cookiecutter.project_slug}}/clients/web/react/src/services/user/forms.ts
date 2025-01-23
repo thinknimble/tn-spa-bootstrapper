@@ -1,4 +1,5 @@
-import Form, {
+import {
+  Form,
   EmailValidator,
   FormField,
   IFormField,
