@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{vue,js}'],
@@ -12,6 +14,8 @@ module.exports = {
         error: '#d72638',
       },
       fontFamily: {
+        //TODO: match font family from index.css @font-face directive
+        sans: ['Montserrat', ...defaultTheme.fontFamily.sans] ,
         avenir: ['Avenir', 'Helvetica', 'Arial', 'sans-serif'],
       },
     },

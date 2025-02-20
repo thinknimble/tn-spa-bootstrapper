@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*TODO: Add your own custom fonts for the project. Make sure you also update the entry in tailwind.config.js to match the font family you use*/
+@layer base {
+  @font-face {
+    font-family: 'Montserrat';
+    font-display: swap;
+    font-style: italic;
+    src:
+      url('assets/fonts/montserrat-italic-variable.woff2') format('woff2'),
+      url('assets/fonts/montserrat-italic-variable.woff') format('woff');
+  }
+
+  @font-face {
+    font-family: 'Montserrat';
+    font-display: swap;
+    font-style: normal;
+    src:
+      url('assets/fonts/montserrat-variable.woff2') format('woff2'),
+      url('assets/fonts/montserrat-variable.woff') format('woff');
+  }
+}
