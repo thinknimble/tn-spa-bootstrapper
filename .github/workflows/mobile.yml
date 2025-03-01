@@ -7,17 +7,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          # Can't use cache because of https://github.com/actions/cache/issues/319
-          # cache: 'pipenv'
-      - name: Install bootstrapper dependencies
-        run: pipenv install --dev --deploy
+      - name: Install uv
+        run: pipx install uv
+      - name: Setup uv cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+      - name: Install dependencies
+        run: uv pip install -e .
       - run: |
           config_file=$(./scripts/get_client_config.sh)
-          pipenv run cookiecutter . --config-file $config_file --no-input -f
+          uv run cookiecutter . --config-file $config_file --no-input -f
           cat $config_file
       - uses: actions/upload-artifact@v4
         with:

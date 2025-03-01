@@ -6,14 +6,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pipenv"
-      - run: pipenv install --dev --deploy
+      - name: Install uv
+        run: pipx install uv
+      - name: Setup uv cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+      - name: Install dependencies
+        run: uv pip install -e .
       - name: Test with pytest
-        run: pipenv run pytest
+        run: uv run pytest
   Pytest:
     runs-on: ubuntu-latest
     services:
@@ -32,13 +42,9 @@ jobs:
         fe_type: [react]
     steps:
       - uses: actions/checkout@v4
-      - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pipenv"
-      - name: Install bootstrapper dependencies
-        run: pipenv install --dev --deploy
       - name: Install uv
         run: pipx install uv
       - name: Setup uv cache
@@ -50,9 +56,11 @@ jobs:
           key: ${{ runner.os }}-uv-${{ hashFiles('my_project/server/requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-uv-
+      - name: Install bootstrapper dependencies
+        run: uv pip install -e .
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
-          pipenv run cookiecutter . --config-file $config_file --no-input -f
+          uv run cookiecutter . --config-file $config_file --no-input -f
       - name: Pytest, McCabe, and Coverage
         run: |
           cd my_project

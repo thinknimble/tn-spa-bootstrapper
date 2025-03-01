@@ -2,30 +2,30 @@ name: Linter
 on: [push]
 
 jobs:
-  Black_bootstrapper:
+  Ruff_bootstrapper:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pipenv"
-      - run: pipenv install --dev --deploy
-      - name: Run Black
-        run: pipenv run black --check --exclude \{\{cookiecutter .
-  flake8_bootstrapper:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: pipx install pipenv
-      - uses: actions/setup-python@v5
+      - name: Install uv
+        run: pipx install uv
+      - name: Setup uv cache
+        uses: actions/cache@v3
         with:
-          python-version: "3.12"
-          cache: "pipenv"
-      - run: pipenv install --dev --deploy
-      - name: Run flake8
-        run: pipenv run flake8 --extend-exclude server
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+      - name: Install dependencies
+        run: uv pip install -e .
+      - name: Run Ruff Lint Check
+        run: uv run ruff check --exclude "{{cookiecutter.*" .
+      - name: Run Ruff Format Check
+        run: uv run ruff format --check --exclude "{{cookiecutter.*" . -q
   Ruff:
     strategy:
       matrix:
@@ -33,20 +33,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pipenv"
-      - name: 🐍 Install python dependencies
-        run: pipenv install --dev --deploy
+      - name: Install uv
+        run: pipx install uv
+      - name: Setup uv cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+      - name: Install dependencies
+        run: uv pip install -e .
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
-          pipenv run cookiecutter . --config-file $config_file --no-input -f
+          uv run cookiecutter . --config-file $config_file --no-input -f
       - name: Run Ruff Lint Check
-        run: pipenv run ruff check --output-format=github my_project/server
+        run: uv run ruff check --output-format=github my_project/server
       - name: Run Ruff Format Check
-        run: pipenv run ruff format --check my_project/server -q
+        run: uv run ruff format --check my_project/server -q
   Lint_Web:
     strategy:
       matrix:
@@ -54,16 +63,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pipenv"
-      - name: 🐍 Install python dependencies
-        run: pipenv install --dev --deploy
+      - name: Install uv
+        run: pipx install uv
+      - name: Setup uv cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+      - name: Install dependencies
+        run: uv pip install -e .
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
-          pipenv run cookiecutter . --config-file $config_file --no-input -f
+          uv run cookiecutter . --config-file $config_file --no-input -f
       - uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -84,16 +102,25 @@ jobs:
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
-      - run: pipx install pipenv
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pipenv"
-      - name: 🐍 Install python dependencies
-        run: pipenv install --dev --deploy
+      - name: Install uv
+        run: pipx install uv
+      - name: Setup uv cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+      - name: Install dependencies
+        run: uv pip install -e .
       - run: |
           config_file="cookiecutter/rn_template.yaml"
-          pipenv run cookiecutter . --config-file $config_file --no-input -f
+          uv run cookiecutter . --config-file $config_file --no-input -f
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
