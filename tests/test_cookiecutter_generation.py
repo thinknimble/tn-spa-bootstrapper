@@ -20,12 +20,12 @@ def context():
         "domain_name": "example.com",
         "version": "0.1.0",
         "timezone": "UTC",
-        "client+app": "Vue3",
+        "client+app": "React",
     }
 
 
 SUPPORTED_COMBINATIONS = [
-    {"client_app": "Vue3"},
+    {"client_app": "React"},
     {"client_app": "None"},
     {"mail_service": "Mailgun"},
     {"mail_service": "Amazon SES"},
@@ -41,7 +41,11 @@ def _fixture_id(ctx):
 
 def build_files_list(root_dir):
     """Build a list containing absolute paths to the generated files."""
-    return [os.path.join(dirpath, file_path) for dirpath, subdirs, files in os.walk(root_dir) for file_path in files]
+    return [
+        os.path.join(dirpath, file_path)
+        for dirpath, subdirs, files in os.walk(root_dir)
+        for file_path in files
+    ]
 
 
 def check_paths(paths):

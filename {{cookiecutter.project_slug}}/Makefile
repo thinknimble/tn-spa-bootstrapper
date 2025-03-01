@@ -24,7 +24,7 @@
 #
 # These commands build and start running the client container. When they
 # are done, you should be able to visit localhost:8080 in your browser and
-# see the running Vue app.
+# see the running client app.
 #
 # You may wish to run commands inside of the container. For example, you
 # need to do this to install a new npm package:
