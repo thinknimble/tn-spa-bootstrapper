@@ -26,7 +26,7 @@ jobs:
       - run: pipenv install --dev --deploy
       - name: Run flake8
         run: pipenv run flake8 --extend-exclude server
-  Black:
+  Ruff:
     strategy:
       matrix:
         fe_type: [react]
@@ -43,33 +43,10 @@ jobs:
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
-      - name: Run Black
-        working-directory: ./my_project/server
-        run: |
-          pipenv install --dev --deploy
-          pipenv run black --check .
-  flake8:
-    strategy:
-      matrix:
-        fe_type: [react]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: pipx install pipenv
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: "pipenv"
-      - name: 🐍 Install python dependencies
-        run: pipenv install --dev --deploy
-      - run: |
-          config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
-          pipenv run cookiecutter . --config-file $config_file --no-input -f
-      - name: Run flake8
-        working-directory: ./my_project/server
-        run: |
-          pipenv install --dev --deploy
-          pipenv run flake8
+      - name: Run Ruff Lint Check
+        run: ruff check --output-format=github my_project/server
+      - name: Run Ruff Format Check
+        run: ruff format --check my_project/server -q
   Lint_Web:
     strategy:
       matrix:
