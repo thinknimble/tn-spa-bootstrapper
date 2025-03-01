@@ -25,6 +25,7 @@ dependencies = [
     "drf-nested-routers==0.93.3",
     "drf-spectacular>=0.28.0",
     "drf-writable-nested==0.6.3",
+    "gunicorn>=23.0.0",
     "openai>=1.65.0",
     "pre-commit==2.13.*",
     "premailer>=3.10.0",
