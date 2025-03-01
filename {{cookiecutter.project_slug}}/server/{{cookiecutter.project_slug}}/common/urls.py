@@ -28,7 +28,11 @@ SpectacularRedocView.permission_classes = (permissions.IsAuthenticated,)
 urlpatterns = urlpatterns + [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Optional UI:
-    path("api/swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
+    path(
+        "api/swagger/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger",
+    ),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
@@ -41,7 +45,10 @@ if settings.IN_REVIEW:
     urlpatterns += [
         path(
             r".well-known/example.txt",
-            RedirectView.as_view(url=staticfiles_storage.url("well-known-example/example.txt"), permanent=False),
+            RedirectView.as_view(
+                url=staticfiles_storage.url("well-known-example/example.txt"),
+                permanent=False,
+            ),
             name="well-known-example",
         ),
     ]

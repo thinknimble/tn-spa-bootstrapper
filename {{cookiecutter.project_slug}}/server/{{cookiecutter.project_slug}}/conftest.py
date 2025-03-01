@@ -30,7 +30,10 @@ def mock_requests(request):
     """
     if "use_requests" not in request.keywords:
         exception = Exception("Do not call the internet from a unit test")
-        with mock.patch("requests.get", side_effect=exception), mock.patch("requests.post", side_effect=exception):
+        with (
+            mock.patch("requests.get", side_effect=exception),
+            mock.patch("requests.post", side_effect=exception),
+        ):
             yield
     else:
         yield
@@ -38,7 +41,9 @@ def mock_requests(request):
 
 @pytest.fixture
 def user(db):
-    return User.objects.create(email="user@example.com", password="1234", first_name="test", last_name="user")
+    return User.objects.create(
+        email="user@example.com", password="1234", first_name="test", last_name="user"
+    )
 
 
 @pytest.fixture
