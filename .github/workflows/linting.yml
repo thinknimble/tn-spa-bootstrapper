@@ -10,7 +10,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install uv
-        run: pipx install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Setup uv cache
         uses: actions/cache@v3
         with:
@@ -21,7 +21,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-uv-
       - name: Install dependencies
-        run: uv pip install -e .
+        run: uv sync
       - name: Run Ruff Lint Check
         run: uv run ruff check --exclude "{{cookiecutter.*" .
       - name: Run Ruff Format Check
@@ -37,7 +37,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install uv
-        run: pipx install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Setup uv cache
         uses: actions/cache@v3
         with:
@@ -48,7 +48,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-uv-
       - name: Install dependencies
-        run: uv pip install -e .
+        run: uv sync
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           uv run cookiecutter . --config-file $config_file --no-input -f
@@ -67,7 +67,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install uv
-        run: pipx install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Setup uv cache
         uses: actions/cache@v3
         with:
@@ -78,7 +78,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-uv-
       - name: Install dependencies
-        run: uv pip install -e .
+        run: uv sync
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           uv run cookiecutter . --config-file $config_file --no-input -f
@@ -106,7 +106,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install uv
-        run: pipx install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Setup uv cache
         uses: actions/cache@v3
         with:
@@ -117,7 +117,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-uv-
       - name: Install dependencies
-        run: uv pip install -e .
+        run: uv sync
       - run: |
           config_file="cookiecutter/rn_template.yaml"
           uv run cookiecutter . --config-file $config_file --no-input -f

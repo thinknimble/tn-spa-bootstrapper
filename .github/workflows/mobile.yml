@@ -11,7 +11,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install uv
-        run: pipx install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: Setup uv cache
         uses: actions/cache@v3
         with:
@@ -22,7 +22,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-uv-
       - name: Install dependencies
-        run: uv pip install -e .
+        run: uv sync
       - run: |
           config_file=$(./scripts/get_client_config.sh)
           uv run cookiecutter . --config-file $config_file --no-input -f

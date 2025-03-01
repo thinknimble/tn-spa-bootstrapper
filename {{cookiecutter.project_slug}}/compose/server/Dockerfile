@@ -19,7 +19,7 @@ RUN apt-get update \
 WORKDIR /app
 
 # Install uv for dependency management
-RUN pip3 install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Copy server directory with pyproject.toml
 COPY ./server /app/
