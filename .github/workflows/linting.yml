@@ -44,9 +44,9 @@ jobs:
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
       - name: Run Ruff Lint Check
-        run: ruff check --output-format=github my_project/server
+        run: pipenv run ruff check --output-format=github my_project/server
       - name: Run Ruff Format Check
-        run: ruff format --check my_project/server -q
+        run: pipenv run ruff format --check my_project/server -q
   Lint_Web:
     strategy:
       matrix:
