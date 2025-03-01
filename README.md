@@ -22,7 +22,7 @@ See: [Maintained Foundation fork]
 - For Django 4.2.\*
 - Uses Python 3.12 by default
 - Renders Django projects with 100% starting test coverage
-- Secure by default. We believe in SSL.
+- Secure by default. SSL Everywhere.
 - Optimized development and production settings
 - Comes with custom user model ready to go
 - Optional basic ASGI setup for Websockets
