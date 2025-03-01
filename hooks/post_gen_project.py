@@ -179,19 +179,11 @@ def main():
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")
 
     project_slug = "{{ cookiecutter.project_slug }}"
-    print(
-        f"{INFO}To install missing system requirements see {project_slug}/scripts/install-reqs.sh{END}"
-    )
-    print(
-        f"{INFO}To initialize the database see {project_slug}/scripts/init-db.sh{END}"
-    )
+    print(f"{INFO}To install missing system requirements see {project_slug}/scripts/install-reqs.sh{END}")
+    print(f"{INFO}To initialize the database see {project_slug}/scripts/init-db.sh{END}")
     print(f"{INFO}To initialize the app see {project_slug}/scripts/init-app.sh{END}")
-    print(
-        f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}"
-    )
-    print(
-        f"{INFO}To push the project to github {project_slug}/scripts/init-github.sh{END}"
-    )
+    print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    print(f"{INFO}To push the project to github {project_slug}/scripts/init-github.sh{END}")
 
 
 if __name__ == "__main__":
