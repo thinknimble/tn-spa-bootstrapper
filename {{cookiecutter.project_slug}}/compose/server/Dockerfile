@@ -18,6 +18,7 @@ RUN apt-get update \
 # Set the name of the working directory inside the docker container
 WORKDIR /app
 
+# TODO: 2025-03-01 William Switch to us `uv` instead of `Pipenv`.
 # Install pipenv and create a virtual environment with it.
 COPY ./Pipfile /app/Pipfile
 COPY ./Pipfile.lock /app/Pipfile.lock
