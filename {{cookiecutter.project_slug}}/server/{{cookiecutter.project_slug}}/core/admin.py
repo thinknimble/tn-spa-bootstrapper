@@ -24,7 +24,13 @@ class CustomUserAdmin(UserAdmin):
                 )
             },
         ),
-        ("Admin Options", {"classes": ("collapse",), "fields": ("is_active", "is_staff", "is_superuser", "groups")}),
+        (
+            "Admin Options",
+            {
+                "classes": ("collapse",),
+                "fields": ("is_active", "is_staff", "is_superuser", "groups"),
+            },
+        ),
     )
     add_fieldsets = (
         (
