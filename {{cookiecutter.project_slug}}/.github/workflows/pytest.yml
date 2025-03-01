@@ -16,35 +16,35 @@ jobs:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        steps:
-          - uses: actions/checkout@v4
-          - uses: actions/setup-python@v5
-            with:
-              python-version: "3.12"
-          - name: Cache UV dependencies
-            uses: actions/cache@v4
-            with:
-              path: |
-                ~/.cache/uv
-                .venv
-              key: {{ "${{ runner.os }}" }}-uv-{{ "${{ hashFiles('**/uv.lock') }}" }}
-              restore-keys: |
-                {{ "${{ runner.os }}" }}-uv-
-          - name: Install uv
-            run: curl -LsSf https://astral.sh/uv/install.sh | sh
-          - name: Install dependencies
-            run: |
-              uv sync
-              uv sync --group dev
-          - name: "Create env file"
-            run: |
-              touch .env
-              cat .env.example > .env
-              cat .env
-          - run: mkdir -p client/dist/static
-          - name: Run tests and checks
-            run: |
-              source .venv/bin/activate
-              python server/manage.py collectstatic
-              pytest --mccabe --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
-              coverage report --fail-under=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Cache UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: {{ "${{ runner.os }}" }}-uv-{{ "${{ hashFiles('**/uv.lock') }}" }}
+          restore-keys: |
+            {{ "${{ runner.os }}" }}-uv-
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Install dependencies
+        run: |
+          uv sync
+          uv sync --group dev
+      - name: "Create env file"
+        run: |
+          touch .env
+          cat .env.example > .env
+          cat .env
+      - run: mkdir -p client/dist/static
+      - name: Run tests and checks
+        run: |
+          source .venv/bin/activate
+          python server/manage.py collectstatic
+          pytest --mccabe --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
+          coverage report --fail-under=20
