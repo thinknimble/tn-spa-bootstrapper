@@ -5,7 +5,7 @@
       "value": ".herokuapp.com"
     },
     "BUILDPACK_RUN": {
-      "value": "pipenv run cookiecutter . --config-file cookiecutter/vue_template.yaml --no-input -f"
+      "value": "pipenv run cookiecutter . --config-file cookiecutter/react_template.yaml --no-input -f"
     },
     "DEBUG": {
       "value": "True"
