@@ -25,3 +25,6 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
+exclude = [
+    "[{][{]cookiecutter.project_slug[}][}]",
+]

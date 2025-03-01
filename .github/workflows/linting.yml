@@ -23,9 +23,9 @@ jobs:
       - name: Install dependencies
         run: uv sync
       - name: Run Ruff Lint Check
-        run: uv run ruff check --exclude "./{{*,}}*/**/*" .
+        run: uv run ruff check .
       - name: Run Ruff Format Check
-        run: uv run ruff format --check --exclude "./{{*,}}*/**/*" . -q
+        run: uv run ruff format --check . -q
   Ruff:
     strategy:
       matrix:
