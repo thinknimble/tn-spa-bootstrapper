@@ -11,7 +11,9 @@ ENVIRONMENT = config("ENVIRONMENT", default="development")
 IN_DEV = ENVIRONMENT == "development"
 IN_STAGING = ENVIRONMENT == "staging"
 IN_PROD = ENVIRONMENT == "production"
-IS_REVIEW_APP = config("HEROKU_PR_NUMBER", default=0)  # 0 here will result in false PR numbers start 1+
+IS_REVIEW_APP = config(
+    "HEROKU_PR_NUMBER", default=0
+)  # 0 here will result in false PR numbers start 1+
 IN_REVIEW = ENVIRONMENT == "review" or IS_REVIEW_APP
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -93,7 +95,9 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             os.path.join(BASE_DIR, "..", "client", "dist"),
-            os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
+            os.path.join(
+                BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"
+            ),  # Swagger template override
         ],
         "APP_DIRS": True,  # this setting must come after "DIRS"!
         "OPTIONS": {

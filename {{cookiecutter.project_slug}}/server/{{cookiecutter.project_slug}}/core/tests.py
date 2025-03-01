@@ -14,7 +14,9 @@ from .views import PreviewTemplateView, request_reset_link
 
 @pytest.mark.django_db
 def test_create_user():
-    user = User.objects.create_user(email="test@example.com", password="password", first_name="Leslie", last_name="Burke")
+    user = User.objects.create_user(
+        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
+    )
 
     assert user.email == "test@example.com"
     assert user.password
@@ -37,14 +39,21 @@ def test_create_user():
 
 @pytest.mark.django_db
 def test_create_user_api(api_client):
-    data = {"email": "example@example.com", "password": "password", "first_name": "Test", "last_name": "User"}
+    data = {
+        "email": "example@example.com",
+        "password": "password",
+        "first_name": "Test",
+        "last_name": "User",
+    }
     res = api_client.post("/api/users/", data, format="json")
     assert res.status_code == status.HTTP_201_CREATED, res.data
 
 
 @pytest.mark.django_db
 def test_create_superuser():
-    superuser = User.objects.create_superuser(email="test@example.com", password="password", first_name="Leslie", last_name="Burke")
+    superuser = User.objects.create_superuser(
+        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
+    )
 
     assert superuser.is_superuser
     assert superuser.last_name == "Burke"
@@ -57,19 +66,25 @@ def test_create_user_from_factory(sample_user):
 
 @pytest.mark.django_db
 def test_user_can_login(api_client, sample_user):
-    res = api_client.post("/api/login/", {"email": sample_user.email, "password": "password"}, format="json")
+    res = api_client.post(
+        "/api/login/", {"email": sample_user.email, "password": "password"}, format="json"
+    )
     assert res.status_code == status.HTTP_200_OK
 
 
 @pytest.mark.django_db
 def test_wrong_email(api_client, sample_user):
-    res = api_client.post("/api/login/", {"email": "wrong@example.com", "password": "password"}, format="json")
+    res = api_client.post(
+        "/api/login/", {"email": "wrong@example.com", "password": "password"}, format="json"
+    )
     assert res.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.django_db
 def test_wrong_password(api_client, sample_user):
-    res = api_client.post("/api/login/", {"email": sample_user.email, "password": "wrong"}, format="json")
+    res = api_client.post(
+        "/api/login/", {"email": sample_user.email, "password": "wrong"}, format="json"
+    )
     assert res.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -94,7 +109,12 @@ def test_get_other_user(api_client, sample_user, user_factory):
 def test_update_user(api_client, sample_user):
     existing_email = sample_user.email
     api_client.force_authenticate(sample_user)
-    data = {"email": "example@example.com", "password": "password", "first_name": "Test", "last_name": "User"}
+    data = {
+        "email": "example@example.com",
+        "password": "password",
+        "first_name": "Test",
+        "last_name": "User",
+    }
     res = api_client.put(f"/api/users/{sample_user.pk}/", data, format="json")
     assert res.status_code == status.HTTP_200_OK
     sample_user.refresh_from_db()
@@ -163,7 +183,10 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_invalid_template_provided(self, client):
-        response = client.post(f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST", data={"_send_to": "someone@example.com"})
+        response = client.post(
+            f"{self.url}?template=SOME_TEMPLATE/WHICH_DOES_NOT/EXIST",
+            data={"_send_to": "someone@example.com"},
+        )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert any("Invalid template name" in e for e in response.json())
 
@@ -189,7 +212,14 @@ class TestPreviewTemplateView:
     def test_fill_context_from_params(self):
         context = {}
         PreviewTemplateView().fill_context_from_params(
-            context, {"key": 0, "parent__child": 1, "parent__other_child": 2, "parent__multi_nested__child": 3, "parent_field": 4}
+            context,
+            {
+                "key": 0,
+                "parent__child": 1,
+                "parent__other_child": 2,
+                "parent__multi_nested__child": 3,
+                "parent_field": 4,
+            },
         )
         assert context["key"] == 0
         assert context["parent"] == {"child": 1, "other_child": 2, "multi_nested": {"child": 3}}

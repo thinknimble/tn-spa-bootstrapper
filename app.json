@@ -5,7 +5,7 @@
       "value": ".herokuapp.com"
     },
     "BUILDPACK_RUN": {
-      "value": "pipenv run cookiecutter . --config-file cookiecutter/react_template.yaml --no-input -f"
+      "value": "uv cookiecutter . --config-file cookiecutter/react_template.yaml --no-input -f"
     },
     "DEBUG": {
       "value": "True"
@@ -37,6 +37,9 @@
   },
   "buildpacks": [
     {
+      "url": "https://github.com/dropseed/heroku-buildpack-uv.git"
+    },
+    {
       "url": "heroku/python"
     },
     {
@@ -47,6 +50,9 @@
     },
     {
       "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/dropseed/heroku-buildpack-uv.git"
     },
     {
       "url": "heroku/python"

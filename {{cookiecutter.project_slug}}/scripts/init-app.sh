@@ -8,7 +8,6 @@
 # Generating client app
 npm install --prefix client && npm run build --prefix client
 {%- endif %}
-pipenv install
-pipenv run python server/manage.py makemigrations && pipenv run python server/manage.py migrate 
-pipenv shell "server/runserver.sh"
-
+uv sync
+uv run python server/manage.py makemigrations && uv run python server/manage.py migrate
+source .venv/bin/activate && ./server/runserver.sh

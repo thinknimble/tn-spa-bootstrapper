@@ -15,9 +15,15 @@ class Command(BaseCommand):
         superuser_password = config("DJANGO_SUPERUSER_PASSWORD")
         playwright_password = config("PLAYWRIGHT_TEST_USER_PASS")
         get_user_model().objects.create_superuser(
-            email="admin@thinknimble.com", password=superuser_password, first_name="Admin", last_name="ThinkNimble"
+            email="admin@thinknimble.com",
+            password=superuser_password,
+            first_name="Admin",
+            last_name="ThinkNimble",
         )
         get_user_model().objects.create_user(
-            email="playwright@thinknimble.com", password=playwright_password, first_name="Playwright", last_name="E2E_test"
+            email="playwright@thinknimble.com",
+            password=playwright_password,
+            first_name="Playwright",
+            last_name="E2E_test",
         )
         logger.info(f"Finished management command {__name__}")

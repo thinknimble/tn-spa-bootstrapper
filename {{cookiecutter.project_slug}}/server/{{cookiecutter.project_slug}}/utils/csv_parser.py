@@ -41,6 +41,7 @@ More advanced example of calling code:
             ...
 
 """
+
 import csv
 import io
 
@@ -150,14 +151,15 @@ class CSVParser:
                 self._col_lookup[header]
             except KeyError:
                 required_headers = ", ".join(self.required_headers)
-                raise ValidationError(detail=f"CSV missing one of required columns ({required_headers}).")
+                raise ValidationError(
+                    detail=f"CSV missing one of required columns ({required_headers})."
+                )
 
     def _parse_csv(self):
         """
         Parse CSV and create a dictionary of valid rows.
         """
         for row_num, row in enumerate(self._rows):
-
             # Skip ahead until we're past the header
             if row_num <= self._header_row_number:
                 continue
@@ -214,7 +216,9 @@ class CSVParser:
         """
         # Validate this header is a header we're expecting
         if header.upper() not in self.duplicate_headers:
-            raise ValidationError(detail=f"Duplicate header {header} not in specified duplicate headers.")
+            raise ValidationError(
+                detail=f"Duplicate header {header} not in specified duplicate headers."
+            )
 
         # Look up locations of columns
         return self._dup_col_lookup[header.upper()]

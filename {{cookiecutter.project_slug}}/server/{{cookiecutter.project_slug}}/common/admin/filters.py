@@ -17,7 +17,13 @@ class AutocompleteFilter(RelatedFieldListFilter):
     parameter_name = None
 
     def __init__(
-        self, field: ForeignKey, request: HttpRequest, params: Dict[str, str], model: Model, model_admin: admin.ModelAdmin, field_path: str
+        self,
+        field: ForeignKey,
+        request: HttpRequest,
+        params: Dict[str, str],
+        model: Model,
+        model_admin: admin.ModelAdmin,
+        field_path: str,
     ):
         self.parameter_name = self.parameter_name or field_path
         super().__init__(field, request, params, model, model_admin, field_path)
