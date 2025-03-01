@@ -39,6 +39,17 @@ jobs:
           cache: "pipenv"
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
+      - name: Install uv
+        run: pipx install uv
+      - name: Setup uv cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/uv
+            ~/.local/share/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('my_project/server/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           pipenv run cookiecutter . --config-file $config_file --no-input -f
