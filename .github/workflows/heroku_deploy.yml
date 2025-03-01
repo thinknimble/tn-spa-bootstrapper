@@ -28,7 +28,7 @@ jobs:
             echo "Switching Heroku to build with $config_file instead"
             heroku plugins:install heroku-builds
             heroku builds:cache:purge --app=${{ env.APP_NAME }} --confirm=${{ env.APP_NAME }}
-            heroku config:set BUILDPACK_RUN="uv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ env.APP_NAME }}
+            heroku config:set BUILDPACK_RUN="curl -LsSf https://astral.sh/uv/install.sh | sh && uvx cookiecutter . --config-file cookiecutter/react_template.yaml --no-input -f" --app=${{ env.APP_NAME }}
           fi
           cat $config_file
         env:
