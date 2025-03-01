@@ -171,9 +171,7 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
-        with mock.patch(
-            "{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()
-        ) as mocked_render:
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
             client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
 
