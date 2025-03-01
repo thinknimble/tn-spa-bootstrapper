@@ -19,7 +19,7 @@ jobs:
           PR: ${{ steps.findPr.outputs.pr }}
       - name: Update Heroku on what type of app to build next time (Vue or React)
         run: |
-          config_file=$(./scripts/vue_or_react.sh)
+          config_file=$(./scripts/get_client_config.sh)
           current_config=$(heroku config:get BUILDPACK_RUN --app=${{ env.APP_NAME }})
           echo "Configuration was set with ${config_file}"
           if echo "$current_config" | grep -q "$config_file"; then

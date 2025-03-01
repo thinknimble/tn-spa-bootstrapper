@@ -1,4 +1,4 @@
-# Thinknimble SPA Bootstrapper (Django | Vue | React)
+# Thinknimble SPA Bootstrapper (uv | Django | React)
 
 A production-ready Django SPA app on Heroku in 20-min or less!
 
@@ -22,12 +22,12 @@ See: [Maintained Foundation fork]
 - For Django 4.2.\*
 - Uses Python 3.12 by default
 - Renders Django projects with 100% starting test coverage
-- Secure by default. We believe in SSL.
+- Secure by default. SSL Everywhere.
 - Optimized development and production settings
 - Comes with custom user model ready to go
 - Optional basic ASGI setup for Websockets
 - Optional basic Django channel setup for Websockets
-- Optional client side applications Vue or React
+- Optional client side applications in React
 - Send emails using [Mailgun] by default or Amazon SES if AWS is selected cloud provider.
 - Media storage using Amazon S3 or Google Cloud Storage
 - [Procfile] for deploying to Heroku
@@ -61,11 +61,6 @@ Answer the prompts with your own desired options. For example:
     2 - Amazon SES
     3 - Custom SMTP
     Choose from 1, 2, 3 [1]: 1
-    Select client_app:
-    1 - Vue3
-    2 - React
-    3 - None
-    Choose from 1, 2, 3 [1]: 1
     Error: "my_project" directory already exists
     william@Williams-MacBook-Pro thinknimble % rm -rf my_project
     william@Williams-MacBook-Pro thinknimble % cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git --checkout cleanup
@@ -79,10 +74,6 @@ Answer the prompts with your own desired options. For example:
     2 - Amazon SES
     3 - Custom SMTP
     Choose from 1, 2, 3 [1]:
-    Select client_app:
-    1 - Vue3
-    2 - None
-    Choose from 1, 2 [1]:
 
 Create a git repo and push it there::
 

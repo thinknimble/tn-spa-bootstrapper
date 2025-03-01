@@ -202,12 +202,7 @@ STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
 {%- if cookiecutter.client_app != 'None' %}
-{%- if cookiecutter.client_app == 'Vue3' %}
-# Django will look for client-side build files in this directory
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "..", "client", "dist", "static"),
-]
-{% elif cookiecutter.client_app == 'React' %}
+{% if cookiecutter.client_app == 'React' %}
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "..", "client", "dist"),

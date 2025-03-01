@@ -165,11 +165,7 @@ def main():
     if "{{ cookiecutter.client_app }}".lower() == "none":
         rmtree(web_clients_path)
         remove(join("package.json"))
-    elif "{{ cookiecutter.client_app }}".lower() == "vue3":
-        remove_web_client_files("react")
-        move_web_client_to_root("vue3")
     elif "{{ cookiecutter.client_app }}".lower() == "react":
-        remove_web_client_files("vue3")
         move_web_client_to_root("react")
     if "{{ cookiecutter.include_mobile }}".lower() == "y":
         move_mobile_client_to_root("react-native")

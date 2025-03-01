@@ -29,7 +29,7 @@ jobs:
   Black:
     strategy:
       matrix:
-        fe_type: [react, vue]
+        fe_type: [react]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
   flake8:
     strategy:
       matrix:
-        fe_type: [react, vue]
+        fe_type: [react]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -73,7 +73,7 @@ jobs:
   Lint_Web:
     strategy:
       matrix:
-        fe_type: [react, vue]
+        fe_type: [react]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

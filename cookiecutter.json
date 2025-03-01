@@ -3,12 +3,8 @@
   "author_name": "ThinkNimble",
   "email": "hello@thinknimble.com",
   "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
-  "_extensions": [
-    "cookiecutter.extensions.RandomStringExtension"
-  ],
+  "_extensions": ["cookiecutter.extensions.RandomStringExtension"],
   "_copy_without_render": [
-    "clients/web/vue3/src/views/dashboard",
-    "clients/web/vue3/src/components",
     "clients/web/react/src/components",
     "clients/web/react/src/pages/app-or-auth.tsx",
     "clients/web/react/src/pages/index.ts",
@@ -17,15 +13,7 @@
     "clients/mobile/react-native/src/screens/settings/edit-profile.tsx",
     "clients/mobile/react-native/src/screens/settings/main-settings.tsx"
   ],
-  "mail_service": [
-    "Mailgun",
-    "Amazon SES",
-    "Custom SMTP"
-  ],
-  "client_app": [
-    "Vue3",
-    "React",
-    "None"
-  ],
+  "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
+  "client_app": ["React", "None"],
   "include_mobile": "n"
 }

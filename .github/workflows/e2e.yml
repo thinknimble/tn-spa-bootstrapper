@@ -16,7 +16,7 @@ jobs:
       - name: Install bootstrapper dependencies
         run: pipenv install --dev --deploy
       - run: |
-          config_file=$(./scripts/vue_or_react.sh)
+          config_file=$(./scripts/get_client_config.sh)
           pipenv run cookiecutter . --config-file $config_file --no-input -f
           cat $config_file
       - uses: actions/upload-artifact@v4

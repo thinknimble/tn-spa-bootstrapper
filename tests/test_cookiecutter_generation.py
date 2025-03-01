@@ -20,12 +20,12 @@ def context():
         "domain_name": "example.com",
         "version": "0.1.0",
         "timezone": "UTC",
-        "client+app": "Vue3",
+        "client+app": "React",
     }
 
 
 SUPPORTED_COMBINATIONS = [
-    {"client_app": "Vue3"},
+    {"client_app": "React"},
     {"client_app": "None"},
     {"mail_service": "Mailgun"},
     {"mail_service": "Amazon SES"},
