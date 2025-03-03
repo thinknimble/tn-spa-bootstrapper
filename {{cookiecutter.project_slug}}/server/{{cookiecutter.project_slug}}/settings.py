@@ -428,3 +428,8 @@ SWAGGER_SETTINGS = {
 SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,  # Needed for file upload to work
 }
+
+#
+# OpenAI Configuration
+#
+OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
