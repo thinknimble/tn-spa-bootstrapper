@@ -160,7 +160,7 @@ export const ChatInterface = () => {
                   }`}
                 >
                   <div
-                    className={`rounded-lg p-3 max-w-[80%] ${
+                    className={`rounded-lg p-3 max-w-[80%] text-left ${
                       message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'
                     }`}
                   >

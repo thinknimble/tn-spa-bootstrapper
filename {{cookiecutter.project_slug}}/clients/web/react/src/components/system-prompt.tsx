@@ -31,7 +31,7 @@ export const SystemPrompt = () => {
 
   return (
     <>
-      <div className="mt-2 border-t border-gray-200 pt-2">
+      <div className="mt-2 border-t border-gray-200 pt-2 text-left">
         <a
           href={getAdminUrl()}
           target="_blank"
@@ -41,8 +41,8 @@ export const SystemPrompt = () => {
           ✎ Edit in Django
         </a>
       </div>
-      <div className="rounded-lg bg-gray-50 p-3">
-        <pre className={`whitespace-pre-wrap text-sm ${error ? 'text-red-600' : ''}`}>
+      <div className="rounded-lg bg-gray-50 p-3 text-left">
+        <pre className={`whitespace-pre-wrap text-sm text-left ${error ? 'text-red-600' : ''}`}>
           {error || prompt}
         </pre>
       </div>
