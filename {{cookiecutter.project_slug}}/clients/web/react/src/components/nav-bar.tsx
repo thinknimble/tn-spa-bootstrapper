@@ -71,6 +71,14 @@ export const NavBar = () => {
                 >
                   Dashboard
                 </NavLink>
+                <NavLink
+                  to="/chat"
+                  className={({ isActive }) =>
+                    `inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-900 hover:cursor-pointer ${isActive && 'border-accent'}`
+                  }
+                >
+                  Chat Demo
+                </NavLink>
               )}
             </div>
           </div>
@@ -158,6 +166,15 @@ export const NavBar = () => {
                 onClick={toggleMobileMenu}
               >
                 Dashboard
+              </NavLink>
+              <NavLink
+                to="/chat"
+                className={({ isActive }) =>
+                  `block border-l-4 py-2 pl-3 pr-4 text-base font-medium hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 ${isActive && 'border-l-4 border-accent text-accent'}`
+                }
+                onClick={toggleMobileMenu}
+              >
+                Chat Demo
               </NavLink>
             )}
           </div>
