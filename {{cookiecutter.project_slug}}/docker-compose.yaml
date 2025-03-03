@@ -20,6 +20,11 @@ services:
       - local_postgres_data:/var/lib/postgresql/data/
       - local_postgres_data_backups:/backups
 
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+
   server:
     build:
       context: .
