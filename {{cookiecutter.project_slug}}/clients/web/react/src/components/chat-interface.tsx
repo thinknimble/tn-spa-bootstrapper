@@ -155,11 +155,17 @@ export const ChatInterface = () => {
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`mb-4 rounded-lg p-3 ${
-                    message.role === 'user' ? 'ml-[20%] bg-blue-50' : 'mr-[20%] bg-gray-50'
+                  className={`mb-4 flex ${
+                    message.role === 'user' ? 'justify-end' : 'justify-start'
                   }`}
                 >
-                  {message.content}
+                  <div
+                    className={`rounded-lg p-3 max-w-[80%] ${
+                      message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'
+                    }`}
+                  >
+                    {message.content}
+                  </div>
                 </div>
               ))}
             </div>
