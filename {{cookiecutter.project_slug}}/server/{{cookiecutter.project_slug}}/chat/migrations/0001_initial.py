@@ -8,60 +8,170 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Fingerprint',
+            name="Fingerprint",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('last_edited', models.DateTimeField(auto_now=True)),
-                ('name', models.TextField(help_text="Name of this fingerprint pattern (e.g., 'Imposter Syndrome', 'Not Connecting with Employees')")),
-                ('example_dialogue', models.TextField(help_text='Example dialogue demonstrating this pattern in conversation')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("last_edited", models.DateTimeField(auto_now=True)),
+                (
+                    "name",
+                    models.TextField(
+                        help_text="Name of this fingerprint pattern (e.g., 'Imposter Syndrome', 'Not Connecting with Employees')"
+                    ),
+                ),
+                (
+                    "example_dialogue",
+                    models.TextField(
+                        help_text="Example dialogue demonstrating this pattern in conversation"
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='PromptTemplate',
+            name="PromptTemplate",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('last_edited', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(help_text='Short descriptive name for this template', max_length=255)),
-                ('content', models.TextField(help_text='The template content. Supported placeholders are {fingerprint_dialogue_examples} like {categories}')),
-                ('description', models.TextField(blank=True, help_text='Description of how this template should be used')),
-                ('order', models.PositiveIntegerField(default=0, help_text='Order in which this template will appear in the system prompt')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("last_edited", models.DateTimeField(auto_now=True)),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Short descriptive name for this template",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "content",
+                    models.TextField(
+                        help_text="The template content. Supported placeholders are {fingerprint_dialogue_examples} like {categories}"
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        help_text="Description of how this template should be used",
+                    ),
+                ),
+                (
+                    "order",
+                    models.PositiveIntegerField(
+                        default=0,
+                        help_text="Order in which this template will appear in the system prompt",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Prompt Template',
-                'verbose_name_plural': 'Prompt Templates',
-                'ordering': ['order'],
+                "verbose_name": "Prompt Template",
+                "verbose_name_plural": "Prompt Templates",
+                "ordering": ["order"],
             },
         ),
         migrations.CreateModel(
-            name='Feedback',
+            name="Feedback",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('last_edited', models.DateTimeField(auto_now=True)),
-                ('feedback_type', models.CharField(choices=[('GOOD', 'Good Response'), ('NEUTRAL', 'Neutral Response'), ('BAD', 'Bad Response')], help_text="Quality rating of the LLM's response", max_length=10)),
-                ('messages', django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), help_text='List of all messages in the conversation up to this point', size=None)),
-                ('original_response', models.TextField(blank=True, help_text='The response originally generated by the LLM', null=True)),
-                ('corrected_response', models.TextField(blank=True, help_text='Feedback about how the LLM could have responded better', null=True)),
-                ('notes', models.TextField(blank=True, help_text='Additional notes about why this response was good/bad', null=True)),
-                ('detected_pattern', models.ForeignKey(blank=True, help_text='The conversation pattern that was detected, if any', null=True, on_delete=django.db.models.deletion.SET_NULL, to='chat.fingerprint')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("last_edited", models.DateTimeField(auto_now=True)),
+                (
+                    "feedback_type",
+                    models.CharField(
+                        choices=[
+                            ("GOOD", "Good Response"),
+                            ("NEUTRAL", "Neutral Response"),
+                            ("BAD", "Bad Response"),
+                        ],
+                        help_text="Quality rating of the LLM's response",
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "messages",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.TextField(),
+                        help_text="List of all messages in the conversation up to this point",
+                        size=None,
+                    ),
+                ),
+                (
+                    "original_response",
+                    models.TextField(
+                        blank=True,
+                        help_text="The response originally generated by the LLM",
+                        null=True,
+                    ),
+                ),
+                (
+                    "corrected_response",
+                    models.TextField(
+                        blank=True,
+                        help_text="Feedback about how the LLM could have responded better",
+                        null=True,
+                    ),
+                ),
+                (
+                    "notes",
+                    models.TextField(
+                        blank=True,
+                        help_text="Additional notes about why this response was good/bad",
+                        null=True,
+                    ),
+                ),
+                (
+                    "detected_pattern",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="The conversation pattern that was detected, if any",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="chat.fingerprint",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Feedback',
-                'ordering': ['-created'],
-                'indexes': [models.Index(fields=['feedback_type'], name='chat_feedba_feedbac_9e88d9_idx'), models.Index(fields=['created'], name='chat_feedba_created_5cb4e5_idx')],
+                "verbose_name_plural": "Feedback",
+                "ordering": ["-created"],
+                "indexes": [
+                    models.Index(
+                        fields=["feedback_type"], name="chat_feedba_feedbac_9e88d9_idx"
+                    ),
+                    models.Index(
+                        fields=["created"], name="chat_feedba_created_5cb4e5_idx"
+                    ),
+                ],
             },
         ),
     ]
