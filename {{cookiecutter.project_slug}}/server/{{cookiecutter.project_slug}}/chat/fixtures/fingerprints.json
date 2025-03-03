@@ -1,0 +1,83 @@
+[
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Visual Learner",
+      "example_dialogue": "User: I find it hard to follow long lectures without any visuals.\nConsultant: Can you tell me more about how you prefer to study?\nUser: I like to use charts, diagrams, and color-coding my notes.\nConsultant: Do you remember information better when it's presented visually?\nUser: Definitely. I can recall where information was on a page much better than if someone just told me.\nConsultant: When you need to learn something new, do you prefer videos or written instructions?\nUser: Videos are great, especially if they show step-by-step examples with diagrams.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Auditory Learner",
+      "example_dialogue": "User: I prefer listening to podcasts rather than reading articles.\nConsultant: How do you typically review information for exams or important projects?\nUser: I often record myself reading notes and then listen to them later.\nConsultant: How do you feel about group discussions versus silent reading?\nUser: I get way more out of discussing topics with others. Reading silently sometimes doesn't stick as well.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Reading/Writing Learner",
+      "example_dialogue": "User: I need to write things down to remember them.\nConsultant: What's your approach when learning new material?\nUser: I take extensive notes and then rewrite them in my own words.\nConsultant: How do you feel about textbooks compared to videos?\nUser: Textbooks are usually better for me. I can highlight important points and refer back to specific passages.\nConsultant: When attending lectures, what helps you retain information?\nUser: Taking detailed notes. If I don't write it down, it's like it never happened.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Kinesthetic Learner",
+      "example_dialogue": "User: I get restless in long lectures.\nConsultant: How do you prefer to practice new skills?\nUser: I need to actually do things hands-on. Just reading instructions doesn't work for me.\nConsultant: Do you find yourself fidgeting or moving while studying?\nUser: Yes, I often pace around when thinking or need to take frequent breaks.\nConsultant: How well do you remember activities versus lectures?\nUser: I remember activities so much better. If I've done something once, I can usually repeat it, but lectures go in one ear and out the other.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Social Learner",
+      "example_dialogue": "User: I learn best when I can talk through concepts with others.\nConsultant: How do you feel about group projects?\nUser: I usually enjoy them. Discussing ideas with others helps me understand better.\nConsultant: What about studying alone versus in a study group?\nUser: Study groups work better for me, as long as we stay on track. I can test my understanding by explaining things to others.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Solitary Learner",
+      "example_dialogue": "User: I get distracted in group settings and prefer studying alone.\nConsultant: How do you approach learning new material?\nUser: I like to plan my own study schedule and work through things at my pace without interruptions.\nConsultant: Do you find class discussions helpful?\nUser: Sometimes, but I need to process information on my own afterward to really understand it.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Logical-Mathematical Learner",
+      "example_dialogue": "User: I need to understand why something works, not just how to do it.\nConsultant: How do you approach complex problems?\nUser: I like to break them down into logical steps and understand the underlying principles.\nConsultant: Do you enjoy subjects with clear rules and structures?\nUser: Yes, I prefer when there's a systematic approach to follow. I like identifying patterns and relationships between concepts.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Verbal Learner",
+      "example_dialogue": "User: I remember things better when I can put them into words.\nConsultant: How do you review or study new information?\nUser: I like to explain concepts out loud, even if I'm alone.\nConsultant: What about writing versus speaking?\nUser: Both work well for me. I enjoy discussions, debates, and writing essays helps me organize my thoughts.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  },
+  {
+    "model": "chat.fingerprint",
+    "fields": {
+      "name": "Global Learner",
+      "example_dialogue": "User: I get frustrated when teachers go step by step. I prefer seeing the big picture first.\nConsultant: How do you approach reading a textbook chapter?\nUser: I often skim the whole thing first to get the main idea before diving into details.\nConsultant: Do you find it easy to connect concepts from different subjects?\nUser: Yes, that's one of my strengths. I like seeing how everything fits together rather than isolated facts.",
+      "created": "2024-02-27T00:00:00Z",
+      "last_edited": "2024-02-27T00:00:00Z"
+    }
+  }
+]

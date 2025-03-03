@@ -46,9 +46,11 @@ CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     # Local
     "{{ cookiecutter.project_slug }}.common",
     "{{ cookiecutter.project_slug }}.core",
+    "{{ cookiecutter.project_slug }}.chat",
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
@@ -67,6 +69,7 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "django_extensions",
+    "background_task",
 ]
 
 MIDDLEWARE = [
@@ -111,7 +114,30 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
+ASGI_APPLICATION = "{{ cookiecutter.project_slug }}.asgi.application"
+
+REDIS_HOST = config("REDIS_HOST", default="localhost")
+REDIS_PORT = config("REDIS_PORT", default=6379)
+hosts = [(REDIS_HOST, REDIS_PORT)]
+
+# Use REDIS_URL on Heroku
+REDIS_URL = config("REDIS_URL", default=None)
+if REDIS_URL:
+    hosts = [
+        {
+            "address": REDIS_URL,
+            "ssl_cert_reqs": None,
+        }
+    ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": hosts,
+        },
+    },
+}
 
 # Database
 """There are two ways to specifiy the database connection
@@ -402,3 +428,8 @@ SWAGGER_SETTINGS = {
 SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,  # Needed for file upload to work
 }
+
+#
+# OpenAI Configuration
+#
+OPENAI_API_KEY = config("OPENAI_API_KEY", default="")

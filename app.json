@@ -5,7 +5,7 @@
       "value": ".herokuapp.com"
     },
     "BUILDPACK_RUN": {
-      "value": "uv cookiecutter . --config-file cookiecutter/react_template.yaml --no-input -f"
+      "value": "./scripts/buildpack_run.sh"
     },
     "DEBUG": {
       "value": "True"
@@ -29,10 +29,10 @@
       "generator": "secret"
     }
   },
-  "addons": ["heroku-postgresql:standard-0"],
+  "addons": ["heroku-postgresql:standard-0", "heroku-redis:mini"],
   "environments": {
     "review": {
-      "addons": ["heroku-postgresql:essential-0"]
+      "addons": ["heroku-postgresql:essential-0", "heroku-redis:mini"]
     }
   },
   "buildpacks": [

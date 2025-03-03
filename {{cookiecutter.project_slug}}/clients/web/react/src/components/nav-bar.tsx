@@ -72,6 +72,16 @@ export const NavBar = () => {
                   Dashboard
                 </NavLink>
               )}
+              {isAuth && (
+                <NavLink
+                  to="/chat"
+                  className={({ isActive }) =>
+                    `inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-900 hover:cursor-pointer ${isActive && 'border-accent'}`
+                  }
+                >
+                  Chat Demo
+                </NavLink>
+              )}
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -150,15 +160,26 @@ export const NavBar = () => {
               Home
             </NavLink>
             {isAuth && (
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                  `block border-l-4 py-2 pl-3 pr-4 text-base font-medium hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 ${isActive && 'border-l-4 border-accent text-accent'}`
-                }
-                onClick={toggleMobileMenu}
-              >
-                Dashboard
-              </NavLink>
+                <NavLink
+                  to="/dashboard"
+                  className={({ isActive }) =>
+                    `block border-l-4 py-2 pl-3 pr-4 text-base font-medium hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 ${isActive && 'border-l-4 border-accent text-accent'}`
+                  }
+                  onClick={toggleMobileMenu}
+                >
+                  Dashboard
+                </NavLink>
+            )}
+            {isAuth && (
+                <NavLink
+                  to="/chat"
+                  className={({ isActive }) =>
+                    `block border-l-4 py-2 pl-3 pr-4 text-base font-medium hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 ${isActive && 'border-l-4 border-accent text-accent'}`
+                  }
+                  onClick={toggleMobileMenu}
+                >
+                  Chat Demo
+                </NavLink>
             )}
           </div>
           <div className="border-t border-gray-200 pb-3 pt-4">
