@@ -165,12 +165,8 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "Feedback",
                 "ordering": ["-created"],
                 "indexes": [
-                    models.Index(
-                        fields=["feedback_type"], name="chat_feedba_feedbac_9e88d9_idx"
-                    ),
-                    models.Index(
-                        fields=["created"], name="chat_feedba_created_5cb4e5_idx"
-                    ),
+                    models.Index(fields=["feedback_type"], name="chat_feedba_feedbac_9e88d9_idx"),
+                    models.Index(fields=["created"], name="chat_feedba_created_5cb4e5_idx"),
                 ],
             },
         ),
