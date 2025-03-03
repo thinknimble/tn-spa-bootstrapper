@@ -46,9 +46,11 @@ CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     # Local
     "{{ cookiecutter.project_slug }}.common",
     "{{ cookiecutter.project_slug }}.core",
+    "{{ cookiecutter.project_slug }}.chat",
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
@@ -67,6 +69,7 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "django_extensions",
+    "background_task",
 ]
 
 MIDDLEWARE = [
