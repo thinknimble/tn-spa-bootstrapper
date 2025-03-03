@@ -7,6 +7,10 @@ from channels.exceptions import AcceptConnection, DenyConnection, StopConsumer
 logger = logging.getLogger(__name__)
 
 
+class BadTemplateException(Exception):
+    pass
+
+
 def catch_exceptions(consumer_class):
     for method_name, method in list(consumer_class.__dict__.items()):
         if iscoroutinefunction(method):  # an async method
