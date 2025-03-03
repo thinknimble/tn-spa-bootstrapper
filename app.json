@@ -5,7 +5,7 @@
       "value": ".herokuapp.com"
     },
     "BUILDPACK_RUN": {
-      "value": "uv cookiecutter . --config-file cookiecutter/react_template.yaml --no-input -f"
+      "value": "./scripts/buildpack_run.sh"
     },
     "DEBUG": {
       "value": "True"
