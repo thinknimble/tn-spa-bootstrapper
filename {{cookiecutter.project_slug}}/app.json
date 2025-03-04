@@ -48,6 +48,9 @@
       "url": "heroku/nodejs"
     },
     {
+      "url": "https://github.com/dropseed/heroku-buildpack-uv.git"
+    },
+    {
       "url": "heroku/python"
     }
   ],
