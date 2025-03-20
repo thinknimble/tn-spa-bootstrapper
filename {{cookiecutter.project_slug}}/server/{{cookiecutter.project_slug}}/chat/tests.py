@@ -1,6 +1,6 @@
 import pytest
 
-from rapa.chat.models import PromptTemplate
+from .models import PromptTemplate
 
 
 @pytest.mark.django_db
