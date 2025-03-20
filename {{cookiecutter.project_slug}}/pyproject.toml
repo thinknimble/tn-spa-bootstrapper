@@ -52,6 +52,9 @@ dev = [
 
 [tool.ruff]
 line-length = 100
+exclude = [
+    "server/migrations"
+]
 
 [tool.ruff.lint]
 extend-select = ["I"]
