@@ -4,7 +4,9 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-[ -d "/app/client/dist" ] && python3 server/manage.py collectstatic --noinput || echo "Client Folder not built skipping collect static"
+source .venv/bin/activate
 
-python3 server/manage.py migrate
-python3 server/manage.py runserver 0.0.0.0:8000
+[ -d "/app/client/dist" ] && python server/manage.py collectstatic --noinput || echo "Client Folder not built skipping collect static"
+
+python server/manage.py migrate
+python server/manage.py runserver 0.0.0.0:8000
