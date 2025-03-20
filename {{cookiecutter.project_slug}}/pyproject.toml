@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "boto3==1.18.26",
+    "boto3==1.37.15",
     "channels==4.2.*",
     "channels-redis==4.2",
     "daphne>=4.1.2",
@@ -52,3 +52,10 @@ dev = [
 
 [tool.ruff]
 line-length = 100
+exclude = [
+    "**/migrations/*"
+]
+
+
+[tool.ruff.lint]
+extend-select = ["I"]

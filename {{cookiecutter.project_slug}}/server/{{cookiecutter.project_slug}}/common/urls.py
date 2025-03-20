@@ -12,20 +12,17 @@ from rest_framework import permissions
 from rest_framework_nested import routers
 
 from {{ cookiecutter.project_slug }}.common import views as common_views
-from {{ cookiecutter.project_slug }}.core import urls as core_urls
 
 router = routers.SimpleRouter()
 if settings.DEBUG:
     router = routers.DefaultRouter()
 
-# extend url patterns here
-urlpatterns = [*core_urls.urlpatterns]
 
 SpectacularAPIView.permission_classes = (permissions.IsAuthenticated,)
 SpectacularSwaggerView.permission_classes = (permissions.IsAuthenticated,)
 SpectacularRedocView.permission_classes = (permissions.IsAuthenticated,)
 
-urlpatterns = urlpatterns + [
+urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Optional UI:
     path(

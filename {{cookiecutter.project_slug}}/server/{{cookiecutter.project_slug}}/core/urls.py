@@ -3,7 +3,6 @@ from django.conf import settings
 from django.urls import include, path
 from rest_framework_nested import routers
 
-from {{ cookiecutter.project_slug }}.chat.views import get_current_system_prompt
 from {{ cookiecutter.project_slug }}.core import views as core_views
 
 router = routers.SimpleRouter()
@@ -24,5 +23,4 @@ urlpatterns = [
     path(r"api/password/reset/", core_views.request_reset_link),
     path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
     path(r"api/template_preview/", core_views.PreviewTemplateView.as_view()),
-    path("api/system-prompt/", get_current_system_prompt, name="system-prompt"),
 ]
