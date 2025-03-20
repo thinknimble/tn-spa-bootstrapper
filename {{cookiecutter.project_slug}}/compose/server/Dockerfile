@@ -18,9 +18,11 @@ RUN apt-get update \
 # Set the name of the working directory inside the docker container
 WORKDIR /app
 
-# Install uv for dependency management
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY ./pyproject.toml /app/
+COPY ./uv.lock /app/
 
+RUN uv --version
 # Copy server directory with pyproject.toml
 COPY ./server /app/
 
