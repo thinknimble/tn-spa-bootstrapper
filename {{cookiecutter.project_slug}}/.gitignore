@@ -2,8 +2,8 @@
 
 # project specific
 node_modules/
-server/static/
-server/media-files/
+static/
+media-files/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
