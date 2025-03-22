@@ -4,6 +4,7 @@ volumes:
 
 services:
   postgres:
+    container_name: {{cookiecutter.project_slug}}_postgres
     restart: always
     image: postgres:16
     ports:
@@ -19,11 +20,13 @@ services:
       - local_postgres_data_backups:/backups
 
   redis:
+    container_name: {{cookiecutter.project_slug}}_redis
     image: "redis:latest"
     ports:
       - "6379:6379"
 
   server:
+    container_name: {{cookiecutter.project_slug}}_server
     build:
       context: .
       dockerfile: ./compose/server/Dockerfile
@@ -42,7 +45,7 @@ services:
     user: ${DOCKER_UID}
 
   client:
-    container_name: client
+    container_name: {{cookiecutter.project_slug}}_client
     build:
       context: .
       dockerfile: ./compose/client/Dockerfile
