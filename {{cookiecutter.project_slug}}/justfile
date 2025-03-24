@@ -1,0 +1,119 @@
+# Project Development Commands
+# ----------------------------------
+
+# Define common variables
+docker_compose := "docker compose"
+
+# Set default recipe to list commands
+default:
+    @just --list
+
+# Client commands
+[group('client')]
+client-serve:
+    cd client && npm run serve
+    @echo "🚀 Client ready at localhost"
+
+[group('client')]
+client-build:
+    cd client && npm run build
+
+[group('client')]
+client-lint:
+    cd client && npm run eslint && npm run tslint
+
+[group('client')]
+client-format:
+    cd client && npm run format:write
+
+[group('client')]
+client-test:
+    cd client && npm run test
+
+[group('client')]
+client-test-single TESTPATH:
+    cd client && npm run test:single {{TESTPATH}}
+
+[group('client')]
+client-test-e2e:
+    cd client && npm run test:e2e
+
+# Server commands
+[group('server')]
+server-run:
+    ./server/runserver.sh
+    @echo "🚀 Backend ready at http://localhost:8000"
+
+[group('server')]
+server-test:
+    uv run pytest server
+
+[group('server')]
+server-format:
+    uv run ruff format server
+
+[group('server')]
+server-lint:
+    uv run ruff check server
+
+[group('server')]
+server-legacy-format:
+    uv run black server && uv run isort server
+
+# Docker commands
+[group('docker')]
+docker-stop-all:
+    docker stop $(docker ps -q)
+
+[group('docker')]
+docker-postgres-redis:
+    {{ docker_compose }} up -d postgres redis
+
+[group('docker')]
+docker-run-all:
+    {{ docker_compose }} up -d
+
+[group('docker')]
+docker-restart-all:
+    {{ docker_compose }} down
+    {{ docker_compose }} up -d
+
+# Django commands
+[group('django')]
+create-test-data:
+    cd server && python manage.py create_test_data
+
+[group('django')]
+django-makemigrations name="":
+    cd server && python manage.py makemigrations {{ name }}
+
+[group('django')]
+django-migrate:
+    cd server && python manage.py migrate
+
+[group('django')]
+django-shell:
+    cd server && python manage.py shell_plus
+
+[group('django')]
+django-runserver:
+    cd server && python manage.py runserver 0.0.0.0:8000
+    @echo "🚀 Backend ready at http://localhost:8000"
+
+# Combined commands
+[group('all')]
+format: server-format client-format
+    @echo "✅ All formatting complete"
+
+[group('all')]
+lint: server-lint client-lint
+    @echo "✅ All linting complete"
+
+[group('all')]
+test: server-test client-test
+    @echo "✅ All tests complete"
+
+# Project setup
+[group('setup')]
+setup-dev: docker-postgres-redis django-migrate create-test-data
+    @echo "✅ Development environment ready"
