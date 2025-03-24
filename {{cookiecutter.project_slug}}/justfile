@@ -32,7 +32,7 @@ client-test:
 
 [group('client')]
 client-test-single TESTPATH:
-    cd client && npm run test:single {{TESTPATH}}
+    cd client && npm run test:single {{ "{{TESTPATH}}" }}
 
 [group('client')]
 client-test-e2e:
@@ -67,20 +67,20 @@ docker-stop-all:
 
 [group('docker')]
 docker-postgres-redis:
-    {{ docker_compose }} up -d postgres redis
+    {{ "{{ docker_compose }}" }} up -d postgres redis
 
 [group('docker')]
 docker-run-all:
-    {{ docker_compose }} up -d
+    {{ "{{ docker_compose }}" }} up -d
 
 [group('docker')]
 docker-restart-all:
-    {{ docker_compose }} down
-    {{ docker_compose }} up -d
+    {{ "{{ docker_compose }}" }} down
+    {{ "{{ docker_compose }}" }} up -d
 
 [group('docker')]
 docker-logs:
-    {{ docker_compose }} logs -f
+    {{ "{{ docker_compose }}" }} logs -f
 
 # Django commands
 [group('django')]
@@ -89,7 +89,7 @@ create-test-data:
 
 [group('django')]
 django-makemigrations name="":
-    cd server && python manage.py makemigrations {{ name }}
+    cd server && python manage.py makemigrations {{ "{{ name }}" }}
 
 [group('django')]
 django-migrate:
