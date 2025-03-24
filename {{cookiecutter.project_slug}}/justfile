@@ -78,6 +78,10 @@ docker-restart-all:
     {{ docker_compose }} down
     {{ docker_compose }} up -d
 
+[group('docker')]
+docker-logs:
+    {{ docker_compose }} logs -f
+
 # Django commands
 [group('django')]
 create-test-data:
