@@ -26,8 +26,12 @@ RUN uv --version
 # Copy server directory with pyproject.toml
 COPY ./server /app/
 
+
+ENV UV_PROJECT_ENVIRONMENT=/usr/local
+
 # Install Python packages using uv sync
 RUN uv sync
+
 
 # Move the 'start' shell script to the root
 # and alter line endings for compatibility.
