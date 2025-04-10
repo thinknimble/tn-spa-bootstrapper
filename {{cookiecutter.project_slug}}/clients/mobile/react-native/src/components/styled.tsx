@@ -6,4 +6,4 @@ cssInterop(Bounceable, {
   contentContainerClassName: 'contentContainerStyle',
 })
 
-export const BounceableWind = Bounceable  as FC<ExtendedBounceableProps>
+export const BounceableWind = Bounceable as FC<ExtendedBounceableProps>

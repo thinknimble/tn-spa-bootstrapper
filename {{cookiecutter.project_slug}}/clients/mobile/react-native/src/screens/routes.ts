@@ -30,7 +30,17 @@ export const tabDefaultOptions = (): BottomTabNavigationOptions => ({
 })
 // NAVIO
 export const navio = Navio.build({
-  screens: { Auth, Login, SignUp, Main, DashboardScreen, ComponentsPreview, Settings, ContactUs, EditProfile },
+  screens: {
+    Auth,
+    Login,
+    SignUp,
+    Main,
+    DashboardScreen,
+    ComponentsPreview,
+    Settings,
+    ContactUs,
+    EditProfile,
+  },
   stacks: {
     AuthStack: ['Auth'],
     MainStack: ['DashboardScreen'],
@@ -39,7 +49,6 @@ export const navio = Navio.build({
      * Set me as the root to see the components preview
      */
     PreviewStack: ['ComponentsPreview'],
-
   },
   root: 'AuthStack',
   defaultOptions: {
@@ -52,5 +61,5 @@ export const getNavio = () => navio
 export const AppRoot = navio.App
 
 export type MyNavio = typeof navio
-export type AppScreens = Parameters<typeof navio['push']>[0]
-export type AppStacks = Parameters<typeof navio['stacks']['push']>[0]
+export type AppScreens = Parameters<(typeof navio)['push']>[0]
+export type AppStacks = Parameters<(typeof navio)['stacks']['push']>[0]

@@ -24,7 +24,6 @@ export const useUser = () => {
   return query
 }
 
-
 /**
  * To use directly in components
  */
