@@ -108,13 +108,17 @@ class UserResetPasswordCodeMessagesManager(models.Manager):
         hashed_code = make_password(str(code))
         obj = self.model(user=user, code=hashed_code)
         obj.save(using=self._db)
-        new_reset_password_code_created_ds.send(sender="reset_passoword_code_generator", code=code, instance=obj, created=True)
+        new_reset_password_code_created_ds.send(
+            sender="reset_password_code_generator", code=code, instance=obj, created=True
+        )
 
         return obj
 
 
 class UserResetPasswordCodeMessages(AbstractBaseModel):
-    user = models.ForeignKey("core.User", related_name="reset_password_codes", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        "core.User", related_name="reset_password_codes", on_delete=models.CASCADE
+    )
     code = models.CharField(max_length=255)
     objects = UserResetPasswordCodeMessagesManager()
 
@@ -123,7 +127,9 @@ class UserResetPasswordCodeMessages(AbstractBaseModel):
 
     @property
     def is_valid(self):
-        valid_until = self.created + timedelta(minutes=settings.RESET_PASSWORD_CODE_VALIDITY_MINUTES)
+        valid_until = self.created + timedelta(
+            minutes=settings.RESET_PASSWORD_CODE_VALIDITY_MINUTES
+        )
         return now() <= valid_until
 
     class Meta:

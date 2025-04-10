@@ -22,7 +22,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-SERVER_EMAIL = config("DEFAULT_FROM_EMAIL", default="{{ cookiecutter.project_name }} <noreply@{{ cookiecutter.project_slug }}.com>")
+SERVER_EMAIL = config("DEFAULT_FROM_EMAIL", default="{{ cookiecutter.project_name }} <noreply@{{ cookiecutter.project_name }}.com>")
 
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
@@ -32,7 +32,7 @@ STAFF_EMAIL = config("STAFF_EMAIL", default="no-reply@thinknimble.com")
 #
 # Domain Configuration
 #
-HEROKU_APP_NAME = config("HEROKU_APP_NAME", default="{{ cookiecutter.project_slug }}-staging")
+HEROKU_APP_NAME = config("HEROKU_APP_NAME", default="{{ cookiecutter.project_name }}-staging")
 CURRENT_DOMAIN = config("CURRENT_DOMAIN", default=f"{HEROKU_APP_NAME}.herokuapp.com")
 CURRENT_PORT = config("CURRENT_PORT", default="")
 ALLOWED_HOSTS = []
@@ -430,7 +430,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Reset password expiration time in minutes
-RESET_PASSWORD_CODE_VALIDITY_MINUTES = config("RESET_PASSWORD_CODE_VALIDITY_MINUTES", default=5, cast=int)
+RESET_PASSWORD_CODE_VALIDITY_MINUTES = config(
+    "RESET_PASSWORD_CODE_VALIDITY_MINUTES", default=5, cast=int
+)
 #
 # OpenAI Configuration
 #

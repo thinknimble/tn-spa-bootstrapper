@@ -102,7 +102,11 @@ def request_reset_code(request, *args, **kwargs):
     email = request.data.get("email")
     user = User.objects.filter(email=email).first()
     if not user:
-        raise ValidationError(detail={"non_field_errors": ["There was an error resetting your password. Try again later"]})
+        raise ValidationError(
+            detail={
+                "non_field_errors": ["There was an error resetting your password. Try again later"]
+            }
+        )
     UserResetPasswordCodeMessages.objects.create_code(user=user, code=random_pin_generator(count=7))
 
     return Response(status=status.HTTP_204_NO_CONTENT)
@@ -115,7 +119,11 @@ def reset_password(request, *args, **kwargs):
     email = kwargs.get("email")
     user = User.objects.filter(email=email).first()
     if not user:
-        raise ValidationError(detail={"non_field_errors": ["There was an error resetting your password. Try again later"]})
+        raise ValidationError(
+            detail={
+                "non_field_errors": ["There was an error resetting your password. Try again later"]
+            }
+        )
     serializer = ResetPasswordSerializer(data=request.data, context={"user": user})
     serializer.is_valid(raise_exception=True)
 

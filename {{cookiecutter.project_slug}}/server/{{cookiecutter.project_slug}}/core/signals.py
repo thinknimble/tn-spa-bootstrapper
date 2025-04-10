@@ -32,4 +32,6 @@ def generate_reset_password_code(sender, code=None, instance=None, created=None,
                 context=reset_context,
             )
         except Exception as e:
-            logger.error(f"Failed to send message to user with id {str(instance.user.id)}, due to {e}")
+            logger.error(
+                f"Failed to send message to user with id {str(instance.user.id)}, due to {e}"
+            )
