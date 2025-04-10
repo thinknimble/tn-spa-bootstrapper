@@ -36,7 +36,7 @@ const requestPasswordResetCode = createCustomServiceCall({
 
 const resetPassword = createCustomServiceCall({
   inputShape: { email: z.string().email(), code: z.string(), password: z.string() },
-  outputShape: userShape,
+  outputShape: userShapeWithToken,
   cb: async ({ client, input, utils }) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { email, ...rest } = utils.toApi(input)
