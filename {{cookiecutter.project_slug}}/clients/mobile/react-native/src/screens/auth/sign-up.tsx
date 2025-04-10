@@ -1,6 +1,6 @@
+import { BButton } from '@components/Button'
 import { ErrorMessage } from '@components/errors'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
-import { BounceableWind } from '@components/styled'
 import { TextFormField } from '@components/text-form-field'
 import { userApi } from '@services/user'
 import { AccountForm, TAccountForm } from '@services/user/forms'
@@ -12,7 +12,6 @@ import { isAxiosError } from 'axios'
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { getNavio } from '../routes'
-import { BButton } from '@components/Button'
 
 const InnerForm = () => {
   const [errors, setErrors] = useState<string[] | undefined>()
