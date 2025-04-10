@@ -1,5 +1,6 @@
 import pytest
 
+from {{ cookiecutter.project_slug }}.utils.emails import get_html_body
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
 
 
