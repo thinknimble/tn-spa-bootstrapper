@@ -1,6 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react'
 import { Link, LinkProps } from 'react-router-dom'
 import { Spinner } from './spinner'
+import { cn } from 'src/utils/style'
 
 type ButtonVariant =
   | 'primary'
@@ -21,7 +22,6 @@ const buttonVariantMap: Record<ButtonVariant, string> = {
 
 type CommonButtonProps = {
   variant?: ButtonVariant
-  extendClassName?: string
   icon?: ReactNode
 }
 
@@ -35,12 +35,17 @@ const Button = forwardRef<
           children: ReactNode
         }
     )
->(({ extendClassName = 'py-2 px-4', children, variant = 'primary', icon, ...props }, ref) => {
+>(({ children, variant = 'primary', icon, ...props }, ref) => {
   if ('link' in props && props.link) {
     return (
       <Link
-        className={`flex items-center rounded-lg transition-transform hover:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none ${buttonVariantMap[variant]} ${extendClassName}`}
         {...props.link}
+        className={cn([
+          'flex items-center rounded-lg transition-transform hover:scale-[0.98]',
+          'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none',
+          buttonVariantMap[variant],
+          props.link.className,
+        ])}
       >
         {children}
         {icon && (
@@ -54,7 +59,12 @@ const Button = forwardRef<
       <button
         {...rest}
         ref={ref}
-        className={`flex items-center justify-center rounded-lg transition-transform hover:scale-[0.98] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none ${buttonVariantMap[variant]} ${extendClassName}`}
+        className={cn([
+          'flex items-center justify-center rounded-lg transition-transform hover:scale-[0.98] hover:shadow-lg',
+          'disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:transform-none',
+          buttonVariantMap[variant],
+          props.className,
+        ])}
         disabled={props.disabled || isLoading}
       >
         {isLoading ? <Spinner size="xs" /> : children}

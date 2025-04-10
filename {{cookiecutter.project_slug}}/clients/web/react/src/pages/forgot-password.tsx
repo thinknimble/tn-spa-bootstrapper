@@ -71,7 +71,7 @@ export const ForgotPasswordInner = () => {
           <Input
             value={form.email.value}
             onChange={onEmailChange}
-            extendClassName="w-full"
+            className="w-full"
             placeholder="Email"
           />
           <ErrorsList errors={form.email.errors} />

@@ -1,23 +1,23 @@
 import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
+import { isAxiosError } from 'axios'
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { AuthLayout } from 'src/components/auth-layout'
 import { Button } from 'src/components/button'
 import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { AccountForm, TAccountForm, AccountFormInputs } from 'src/services/user/forms'
-import { userApi } from 'src/services/user'
-import { isAxiosError } from 'axios'
-import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
-import { useAuth } from 'src/stores/auth'
 import { PasswordInput } from 'src/components/password-input'
-import { AuthLayout } from 'src/components/auth-layout'
+import { userApi } from 'src/services/user'
+import { AccountForm, AccountFormInputs, TAccountForm } from 'src/services/user/forms'
+import { useAuth } from 'src/stores/auth'
+import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 
 function SignUpInner() {
   const [errors, setErrors] = useState<string[]>([])
   const { changeToken, changeUserId } = useAuth.use.actions()
-  const { form, createFormFieldChangeHandler, validate } = useTnForm<TAccountForm>()
+  const { form, createFormFieldChangeHandler } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
   const { mutate: createUser, isPending } = useMutation({

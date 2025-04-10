@@ -22,7 +22,7 @@ export const RequestPasswordResetInner = () => {
 
   const { mutate: requestReset } = useMutation({
     mutationFn: userApi.csc.requestPasswordReset,
-    onSuccess: (data) => {
+    onSuccess: () => {
       setErrorMessage(undefined)
       setResetLinkSent(true)
     },
@@ -84,11 +84,7 @@ export const RequestPasswordResetInner = () => {
               <div className="mb-2">
                 <ErrorMessage>{errorMessage}</ErrorMessage>
               </div>
-              <Button
-                onClick={handleRequest}
-                disabled={!form.isValid}
-                variant={form.isValid ? 'primary' : 'disabled'}
-              >
+              <Button onClick={handleRequest} disabled={!form.isValid} variant={'primary'}>
                 Request Password Reset
               </Button>
             </form>
