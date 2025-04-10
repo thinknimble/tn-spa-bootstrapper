@@ -44,7 +44,8 @@ function LogInInner() {
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
   if (isAuth) {
-    return <Navigate to={'/'} state={{ from: followupRoute }} />
+    const state = {from: followupRoute}
+    return <Navigate to={'/'} state={state} />
   }
 
   return (
