@@ -7,6 +7,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jwalton/gh-find-current-pr@master
         id: findPr
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
       - name: Set app_name for Staging
         run: echo "APP_NAME=tn-spa-bootstrapper-staging" >> $GITHUB_ENV
       - name: Set app_name for PR
@@ -16,16 +19,16 @@ jobs:
           PR: ${{ steps.findPr.outputs.pr }}
       - name: Update Heroku on what type of app to build next time (Vue or React)
         run: |
-          config_file=$(./scripts/vue_or_react.sh)
+          config_file=$(./scripts/get_client_config.sh)
           current_config=$(heroku config:get BUILDPACK_RUN --app=${{ env.APP_NAME }})
           echo "Configuration was set with ${config_file}"
-          if echo "$current_config" | grep -q "config_file"; then
+          if echo "$current_config" | grep -q "$config_file"; then
             echo "Keeping current config of $config_file"
           else
             echo "Switching Heroku to build with $config_file instead"
             heroku plugins:install heroku-builds
             heroku builds:cache:purge --app=${{ env.APP_NAME }} --confirm=${{ env.APP_NAME }}
-            heroku config:set BUILDPACK_RUN="pipenv run cookiecutter . --config-file $config_file --no-input -f" --app=${{ env.APP_NAME }}
+            heroku config:set BUILDPACK_RUN="./scripts/buildpack_run.sh" --app=${{ env.APP_NAME }}
           fi
           cat $config_file
         env:

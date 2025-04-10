@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -19,11 +18,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="User",
             fields=[
-                ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
                 ("created", models.DateTimeField(auto_now_add=True)),
                 ("last_edited", models.DateTimeField(auto_now=True)),
                 ("password", models.CharField(max_length=128, verbose_name="password")),
-                ("last_login", models.DateTimeField(blank=True, null=True, verbose_name="last login")),
+                (
+                    "last_login",
+                    models.DateTimeField(blank=True, null=True, verbose_name="last login"),
+                ),
                 (
                     "is_superuser",
                     models.BooleanField(
@@ -35,7 +42,9 @@ class Migration(migrations.Migration):
                 (
                     "is_staff",
                     models.BooleanField(
-                        default=False, help_text="Designates whether the user can log into this admin site.", verbose_name="staff status"
+                        default=False,
+                        help_text="Designates whether the user can log into this admin site.",
+                        verbose_name="staff status",
                     ),
                 ),
                 (
@@ -46,7 +55,12 @@ class Migration(migrations.Migration):
                         verbose_name="active",
                     ),
                 ),
-                ("date_joined", models.DateTimeField(default=django.utils.timezone.now, verbose_name="date joined")),
+                (
+                    "date_joined",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="date joined"
+                    ),
+                ),
                 ("email", models.EmailField(max_length=254, unique=True)),
                 ("first_name", models.CharField(blank=True, max_length=255)),
                 ("last_name", models.CharField(blank=True, max_length=255)),
@@ -78,7 +92,7 @@ class Migration(migrations.Migration):
                 "ordering": ["email"],
             },
             managers=[
-                ("objects", {{ cookiecutter.project_slug }}.core.models.UserManager()),
+                ("objects", {{cookiecutter.project_slug}}.core.models.UserManager()),
             ],
         ),
     ]

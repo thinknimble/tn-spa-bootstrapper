@@ -2,9 +2,10 @@
 
 # project specific
 node_modules/
-server/static/
-server/media-files/
-
+static/*
+media-files/*
+!client/**/static/
+!server/**/static/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -62,9 +63,6 @@ coverage.xml
 
 # PyBuilder
 target/
-
-# pyenv
-.python-version
 
 # celery beat schedule file
 celerybeat-schedule

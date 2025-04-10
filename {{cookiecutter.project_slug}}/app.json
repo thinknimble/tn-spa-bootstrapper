@@ -29,15 +29,26 @@
       "generator": "secret"
     }
   },
-  "addons": ["heroku-postgresql:standard-0", "papertrail:choklad"],
+  "addons": [
+    "heroku-postgresql:standard-0",
+    "papertrail:choklad",
+    "heroku-redis:mini"
+  ],
   "environments": {
     "review": {
-      "addons": ["heroku-postgresql:essential-0", "papertrail:choklad"]
+      "addons": [
+        "heroku-postgresql:essential-0",
+        "papertrail:choklad",
+        "heroku-redis:mini"
+      ]
     }
   },
   "buildpacks": [
     {
       "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/dropseed/heroku-buildpack-uv.git"
     },
     {
       "url": "heroku/python"

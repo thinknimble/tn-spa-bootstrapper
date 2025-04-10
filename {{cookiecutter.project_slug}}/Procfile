@@ -1,5 +1,5 @@
 # Main webapp process
-web: gunicorn {{ cookiecutter.project_slug }}.wsgi --chdir=server --log-file -
+web: PYTHONPATH=./server daphne -b 0.0.0.0 -p $PORT {{ cookiecutter.project_slug }}.asgi:application
 
 # Update DB schema for any changes
 release: python server/manage.py migrate --noinput

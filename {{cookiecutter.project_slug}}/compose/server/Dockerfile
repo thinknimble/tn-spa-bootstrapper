@@ -18,14 +18,20 @@ RUN apt-get update \
 # Set the name of the working directory inside the docker container
 WORKDIR /app
 
-# Install pipenv and create a virtual environment with it.
-COPY ./Pipfile /app/Pipfile
-COPY ./Pipfile.lock /app/Pipfile.lock
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY ./pyproject.toml /app/
+COPY ./uv.lock /app/
 
-# Install Python packages from the Pipfile at the system level,
-# since virtual environments are not needed in containers.
-RUN pip3 install pipenv \
-    && pipenv install  --dev --system --deploy --ignore-pipfile
+RUN uv --version
+# Copy server directory with pyproject.toml
+COPY ./server /app/
+
+
+ENV UV_PROJECT_ENVIRONMENT=/usr/local
+
+# Install Python packages using uv sync
+RUN uv sync
+
 
 # Move the 'start' shell script to the root
 # and alter line endings for compatibility.

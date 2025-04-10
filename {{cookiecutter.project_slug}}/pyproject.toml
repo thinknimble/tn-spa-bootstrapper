@@ -1,8 +1,61 @@
-[tool.black]
-line-length = 140
-target-version = ["py39"]
-exclude = "migrations"
+[project]
+name = "{{ cookiecutter.project_slug }}"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3==1.37.15",
+    "channels==4.2.*",
+    "channels-redis==4.2",
+    "daphne>=4.1.2",
+    "dj-database-url==0.5.0",
+    "dj-rest-auth==7.0.*",
+    "django==4.2.*",
+    "django-anymail==8.4",
+    "django-cors-headers==3.8.0",
+    "django-currentuser==0.7.0",
+    "django-extensions==3.2.*",
+    "django-filter==2.4.*",
+    "django-model-utils==4.1.1",
+    "django-multiselectfield==0.1.12",
+    "django-storages==1.11.1",
+    "django4-background-tasks>=1.2.10",
+    "djangorestframework==3.15.*",
+    "drf-nested-routers==0.93.3",
+    "drf-spectacular>=0.28.0",
+    "drf-writable-nested==0.6.3",
+    "gunicorn>=23.0.0",
+    "openai>=1.65.0",
+    "pre-commit==2.13.*",
+    "premailer>=3.10.0",
+    "psycopg2-binary==2.9.*",
+    "pytest-cov>=6.0.0",
+    "pytest-django==4.5.*",
+    "pytest-factoryboy==2.7.*",
+    "pytest-mccabe>=2.0",
+    "python-decouple>=3.8",
+    "python-slugify==5.0.2",
+    "pytz==2021.1",
+    "requests==2.*",
+    "rollbar>=1.2.0",
+    "twilio>=9.4.6",
+    "whitenoise==5.3.0",
+]
 
-[tool.isort]
-profile="black"
-extend_skip = "migrations"
+[dependency-groups]
+dev = [
+    "ruff>=0.9.8",
+    "pytest==7.1.*",
+    "factory-boy==3.2.*",
+]
+
+[tool.ruff]
+line-length = 100
+exclude = [
+    "**/migrations/*"
+]
+
+
+[tool.ruff.lint]
+extend-select = ["I"]

@@ -46,7 +46,9 @@ class UserLoginView(generics.GenericAPIView):
         # Get the user entity, from which we can get (or create) the auth token
         user = authenticate(**serializer.validated_data)
         if user is None:
-            raise ValidationError(detail="Incorrect email and password combination. Please try again.")
+            raise ValidationError(
+                detail="Incorrect email and password combination. Please try again."
+            )
 
         response_data = UserLoginSerializer.login(user, request)
         return Response(response_data)
@@ -147,7 +149,11 @@ class PreviewTemplateView(views.APIView):
                 if not form.is_valid():
                     raise ValidationError(form.errors)
                 send_html_email(
-                    "Template Preview", context["template"], settings.DEFAULT_FROM_EMAIL, form.cleaned_data["_send_to"], context=context
+                    "Template Preview",
+                    context["template"],
+                    settings.DEFAULT_FROM_EMAIL,
+                    form.cleaned_data["_send_to"],
+                    context=context,
                 )
                 return Response(status=204)
             context["email_form"] = form

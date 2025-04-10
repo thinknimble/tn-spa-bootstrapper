@@ -11,7 +11,9 @@ ENVIRONMENT = config("ENVIRONMENT", default="development")
 IN_DEV = ENVIRONMENT == "development"
 IN_STAGING = ENVIRONMENT == "staging"
 IN_PROD = ENVIRONMENT == "production"
-IS_REVIEW_APP = config("HEROKU_PR_NUMBER", default=0)  # 0 here will result in false PR numbers start 1+
+IS_REVIEW_APP = config(
+    "HEROKU_PR_NUMBER", default=0
+)  # 0 here will result in false PR numbers start 1+
 IN_REVIEW = ENVIRONMENT == "review" or IS_REVIEW_APP
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -44,9 +46,11 @@ CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     # Local
     "{{ cookiecutter.project_slug }}.common",
     "{{ cookiecutter.project_slug }}.core",
+    "{{ cookiecutter.project_slug }}.chat",
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
@@ -65,6 +69,7 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "django_filters",
     "django_extensions",
+    "background_task",
 ]
 
 MIDDLEWARE = [
@@ -93,7 +98,9 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             os.path.join(BASE_DIR, "..", "client", "dist"),
-            os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
+            os.path.join(
+                BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"
+            ),  # Swagger template override
         ],
         "APP_DIRS": True,  # this setting must come after "DIRS"!
         "OPTIONS": {
@@ -107,7 +114,30 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "{{ cookiecutter.project_slug }}.wsgi.application"
+ASGI_APPLICATION = "{{ cookiecutter.project_slug }}.asgi.application"
+
+REDIS_HOST = config("REDIS_HOST", default="localhost")
+REDIS_PORT = config("REDIS_PORT", default=6379)
+hosts = [(REDIS_HOST, REDIS_PORT)]
+
+# Use REDIS_URL on Heroku
+REDIS_URL = config("REDIS_URL", default=None)
+if REDIS_URL:
+    hosts = [
+        {
+            "address": REDIS_URL,
+            "ssl_cert_reqs": None,
+        }
+    ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": hosts,
+        },
+    },
+}
 
 # Database
 """There are two ways to specifiy the database connection
@@ -202,12 +232,7 @@ STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
 {%- if cookiecutter.client_app != 'None' %}
-{%- if cookiecutter.client_app == 'Vue3' %}
-# Django will look for client-side build files in this directory
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "..", "client", "dist", "static"),
-]
-{% elif cookiecutter.client_app == 'React' %}
+{% if cookiecutter.client_app == 'React' %}
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "..", "client", "dist"),
@@ -406,3 +431,7 @@ SPECTACULAR_SETTINGS = {
 
 # Reset password expiration time in minutes
 RESET_PASSWORD_CODE_VALIDITY_MINUTES = config("RESET_PASSWORD_CODE_VALIDITY_MINUTES", default=5, cast=int)
+#
+# OpenAI Configuration
+#
+OPENAI_API_KEY = config("OPENAI_API_KEY", default="")

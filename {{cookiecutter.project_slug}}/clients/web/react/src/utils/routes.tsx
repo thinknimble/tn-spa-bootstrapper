@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
 import { Home, Layout, LogIn, SignUp } from 'src/pages'
 import { Dashboard } from 'src/pages/dashboard'
+import { ChatDemo } from 'src/pages/chat-demo'
 import { PageNotFound } from 'src/pages/page-not-found'
 import { RequestPasswordReset } from 'src/pages/request-password-reset'
 import { ResetPassword } from 'src/pages/reset-password'
@@ -10,7 +11,7 @@ const PrivateRoutes = () => {
   return (
     <>
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/private" element={<div>Hello from private</div>} />
+      <Route path="/chat" element={<ChatDemo />} />
     </>
   )
 }

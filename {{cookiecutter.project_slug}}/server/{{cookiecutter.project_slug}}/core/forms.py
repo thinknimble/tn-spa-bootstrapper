@@ -7,11 +7,15 @@ User = get_user_model()
 
 
 class PreviewTemplateForm(forms.Form):
-    _send_to = forms.EmailField(label="Send by email to", widget=forms.EmailInput(attrs={"size": 60}))
+    _send_to = forms.EmailField(
+        label="Send by email to", widget=forms.EmailInput(attrs={"size": 60})
+    )
 
 
 class GroupAdminForm(forms.ModelForm):
-    users = forms.ModelMultipleChoiceField(queryset=User.objects.all(), required=False, widget=FilteredSelectMultiple("users", False))
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(), required=False, widget=FilteredSelectMultiple("users", False)
+    )
 
     def __init__(self, *args, **kwargs):
         super(GroupAdminForm, self).__init__(*args, **kwargs)
