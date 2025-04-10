@@ -12,12 +12,13 @@ import { isAxiosError } from 'axios'
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { getNavio } from '../routes'
+import { BButton } from '@components/Button'
 
 const InnerForm = () => {
   const [errors, setErrors] = useState<string[] | undefined>()
   const { form } = useTnForm<TAccountForm>()
   const { changeToken, changeUserId } = useAuth.use.actions()
-  const { mutate: createUser } = useMutation({
+  const { mutate: createUser, isPending: isSigningUp } = useMutation({
     mutationFn: userApi.csc.signup,
     onSuccess: (data) => {
       changeToken(data.token)
@@ -59,18 +60,41 @@ const InnerForm = () => {
         <ScrollView className="w-full" contentContainerClassName="self-start w-full">
           <TextFormField field={form.firstName} />
           <TextFormField field={form.lastName} containerClassName="pt-4" />
-          <TextFormField field={form.email} containerClassName="pt-4" />
-          <TextFormField field={form.password} containerClassName="pt-4" />
-          <TextFormField field={form.confirmPassword} containerClassName="pt-4" />
+          <TextFormField
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoCapitalize="none"
+            field={form.email}
+            containerClassName="pt-4"
+          />
+          <TextFormField
+            autoCapitalize="none"
+            textContentType="newPassword"
+            secureTextEntry
+            field={form.password}
+            containerClassName="pt-4"
+          />
+          <TextFormField
+            autoCapitalize="none"
+            secureTextEntry
+            field={form.confirmPassword}
+            containerClassName="pt-4"
+            textContentType="newPassword"
+          />
           {errors?.map((error, idx) => (
             <ErrorMessage key={idx}>{error}</ErrorMessage>
           ))}
         </ScrollView>
-        <BounceableWind contentContainerClassName="w-full pt-5" onPress={onSubmit}>
-          <View className="rounded-lg bg-[#042642] w-full items-center py-2">
-            <Text className="text-white text-lg font-primary-bold">Sign Up</Text>
-          </View>
-        </BounceableWind>
+
+        <View className="w-full pt-4">
+          <BButton
+            label="Sign Up"
+            onPress={onSubmit}
+            buttonProps={{ disabled: !form.isValid }}
+            isLoading={isSigningUp}
+            textClassName="font-primary-bold"
+          />
+        </View>
       </View>
     </MultiPlatformSafeAreaView>
   )
