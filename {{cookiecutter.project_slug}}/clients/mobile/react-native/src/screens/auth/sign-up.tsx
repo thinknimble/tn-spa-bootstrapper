@@ -52,6 +52,9 @@ const InnerForm = () => {
     createUser(input)
   }
 
+  const buttonProps = {
+    disabled: !form.isValid,
+  }
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
       <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">
@@ -89,7 +92,7 @@ const InnerForm = () => {
           <BButton
             label="Sign Up"
             onPress={onSubmit}
-            buttonProps={{ disabled: !form.isValid }}
+            buttonProps={buttonProps}
             isLoading={isSigningUp}
             textClassName="font-primary-bold"
           />

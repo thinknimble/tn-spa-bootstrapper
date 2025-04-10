@@ -63,6 +63,9 @@ const LoginInner = () => {
     })
   }
 
+  const buttonProps = {
+    disabled: !form.isValid,
+  }
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
       <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">
@@ -80,9 +83,7 @@ const LoginInner = () => {
           <BButton
             label="Log In"
             onPress={handleSubmit}
-            buttonProps={{
-              disabled: !form.isValid,
-            }}
+            buttonProps={buttonProps}
             isLoading={isLoggingIn}
             textClassName="font-primary-bold"
           />
