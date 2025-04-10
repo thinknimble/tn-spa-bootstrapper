@@ -2,7 +2,7 @@
 
 import { ScrollViewProps } from 'react-native'
 import { BounceableProps } from 'rn-bounceable'
-import { CustomActionSheetProps } from '@components/sheets/custom-action-sheet'
+import { CustomActionSheetProps } from '@components/sheets'
 import { SheetDefinition } from 'react-native-actions-sheet'
 declare global {
   // Extend the existing BounceableProps type
