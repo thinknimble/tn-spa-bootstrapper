@@ -1,20 +1,19 @@
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Button } from 'src/components/button'
 import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { Input } from 'src/components/input'
-import { LoginForm, TLoginForm, LoginFormInputs, userApi } from 'src/services/user'
+import { LoginForm, LoginFormInputs, TLoginForm, userApi } from 'src/services/user'
 
-import { useFollowupRoute } from 'src/utils/auth'
-import { useAuth } from 'src/stores/auth'
-import { PasswordInput } from 'src/components/password-input'
-import { getErrorMessages } from 'src/utils/errors'
 import { AuthLayout } from 'src/components/auth-layout'
+import { PasswordInput } from 'src/components/password-input'
+import { useAuth } from 'src/stores/auth'
+import { useFollowupRoute } from 'src/utils/auth'
+import { getErrorMessages } from 'src/utils/errors'
 
 function LogInInner() {
-  const params = useLocation()
   const [errorMessage, setErrorMessage] = useState<string[] | undefined>()
   const { changeToken, changeUserId } = useAuth.use.actions()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
@@ -45,13 +44,14 @@ function LogInInner() {
   const isAuth = Boolean(token)
   const followupRoute = useFollowupRoute()
   if (isAuth) {
-    return <Navigate to={'/'} state={{'{{'}} from: followupRoute {{ '}}' }} />
+    const state = {from: followupRoute}
+    return <Navigate to={'/'} state={state} />
   }
 
   return (
     <AuthLayout title="Log In">
       <section className="mt-6 flex flex-col gap-3 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form
+        <form
           onSubmit={(e) => {
             e.preventDefault()
           }}

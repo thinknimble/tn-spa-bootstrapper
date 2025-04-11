@@ -12,7 +12,7 @@ export const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('')
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [_, setStreamingContent] = useState('')
+  const [, setStreamingContent] = useState('')
   const chatHistoryRef = useRef<HTMLDivElement>(null)
   const token = useAuth.use.token()
 
@@ -160,7 +160,7 @@ export const ChatInterface = () => {
                   }`}
                 >
                   <div
-                    className={`rounded-lg p-3 max-w-[80%] text-left ${
+                    className={`max-w-[80%] rounded-lg p-3 text-left ${
                       message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'
                     }`}
                   >

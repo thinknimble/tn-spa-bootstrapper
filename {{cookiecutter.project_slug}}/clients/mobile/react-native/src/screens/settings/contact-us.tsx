@@ -21,9 +21,7 @@ export const ContactUs = () => {
         >
           <Ionicons size={26} name="chevron-back" color={colors.grey[280]} />
         </BounceableWind>
-        <Text className="text-xl font-primary-medium">
-          Contact Us
-        </Text>
+        <Text className="text-xl font-primary-medium">Contact Us</Text>
       </View>
       <View className="flex-grow items-center justify-center">
         <View className="pt-10">

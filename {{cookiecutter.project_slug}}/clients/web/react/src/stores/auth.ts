@@ -43,7 +43,7 @@ export const useAuth = createSelectors(
   create<AuthState>()(
     // This is a middleware that will auto-persist our changes in the store to the local storage. So anything that is within the store we will save into LocalStorage automagically.If there are any fields in this store that you don't want here you can customize the `partialize` callback further down
     persist(
-      (set, get) => ({
+      (set) => ({
         hasHydrated,
         ...defaultValues,
         actions: {
@@ -77,6 +77,7 @@ export const useAuth = createSelectors(
           state.actions.hydrate()
         },
         partialize(state) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { actions: _, ...rest } = state
           return rest
         },

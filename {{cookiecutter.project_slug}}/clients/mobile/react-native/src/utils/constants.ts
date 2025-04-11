@@ -1,7 +1,7 @@
-import {Dimensions} from 'react-native';
+import { Dimensions } from 'react-native'
 
 export const useConstants = () => {
-  const dim = Dimensions.get('screen');
+  const dim = Dimensions.get('screen')
 
   return {
     dim,
@@ -10,5 +10,5 @@ export const useConstants = () => {
       website: 'https://github.com/kanzitelli/expo-starter',
     },
     supportEmail: 'hello@thinknimble.com',
-  };
-};
+  }
+}
