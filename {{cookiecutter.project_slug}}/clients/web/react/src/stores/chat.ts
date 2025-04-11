@@ -1,4 +1,4 @@
-import { wsProtocolEnum } from 'src/utils/socket'
+import { getSocketProtocol, wsProtocolEnum } from 'src/utils/socket'
 import { createStore } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import {
@@ -13,6 +13,10 @@ type Message = {
   content: string
   role: 'user' | 'assistant'
 }
+
+const HOST = import.meta.env.DEV ? window.location.host : window.location.host
+const SOCKET_PROTOCOL =
+  window.location.protocol === 'https:' ? wsProtocolEnum.wss : wsProtocolEnum.ws
 
 export type ChatState = ExtendBaseSocketState<{
   messages: Message[]
@@ -93,7 +97,7 @@ export const createChatStore = (token: string, slug: string) => {
             )
           },
           registerListeners(ws) {
-            const { appendMessage, updateMessages, streamToLastMessage } = get().actions
+            const { appendMessage, updateMessages, streamToLastMessage, reconnect } = get().actions
             ws.onopen = () => {
               console.log('WebSocket connected')
               const connectionMessage =
@@ -162,16 +166,34 @@ export const createChatStore = (token: string, slug: string) => {
                         type: connectionMessageTypeEnum.error,
                       }
               set({ connectionStatus: connectionStatusEnum.disconnected, connectionMessage })
+              reconnect({
+                token,
+                host: HOST,
+                socketProtocol: SOCKET_PROTOCOL,
+              })
             }
           },
         },
       }
     }),
   )
+  const getConnectionVars = () => {
+    const devBackendURL = import.meta.env.VITE_DEV_BACKEND_URL
+    if (import.meta.env.DEV && devBackendURL) {
+      const url = new URL(devBackendURL)
+      return {
+        host: url.host,
+        socketProtocol: getSocketProtocol(url),
+      }
+    }
+    return {
+      host: window.location.host,
+      socketProtocol: getSocketProtocol(window.location),
+    }
+  }
   chatStore.getState().actions.connect({
-    host: import.meta.env.DEV ? window.location.host : window.location.host,
+    ...getConnectionVars(),
     slug,
-    socketProtocol: window.location.protocol === 'https:' ? wsProtocolEnum.wss : wsProtocolEnum.ws,
     token,
   })
 

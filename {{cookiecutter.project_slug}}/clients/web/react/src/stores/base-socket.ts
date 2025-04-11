@@ -101,11 +101,12 @@ export const createBaseSocketActions = <T extends BaseSocketState>({
     /**
      * Connects to the websocket and sets up the event listeners.
      */
-    connect({ host, slug: connectSlug, socketProtocol }) {
+    connect({ host, slug: connectSlug, socketProtocol, token }) {
       const ws = connectSocket({
         host,
         slug: connectSlug,
         socketProtocol,
+        token,
       })
       get().actions.updateSocket(ws)
       get().actions.registerListeners(ws)
