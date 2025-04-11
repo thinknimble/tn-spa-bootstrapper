@@ -1,5 +1,5 @@
 {
-  "name": "{{ cookiecutter.project_slug }}",
+  "name": "tnbschat",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,14 +21,17 @@
     "@thinknimble/tn-forms-react": "^1.0.3",
     "@thinknimble/tn-models": "^4.0.0",
     "axios": "^1.5.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jotai": "^2.12.2",
+    "lucide-react": "^0.487.0",
     "qs": "^6.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
     "react-router-dom": "^6.15.0",
     "tailwind-merge": "^3.2.0",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.24.1",
     "zustand": "^4.4.0"
   },
