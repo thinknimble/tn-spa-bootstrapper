@@ -48,6 +48,9 @@ export type BaseSocketState = {
   }
 }
 
+/**
+ * Wrap the specific store with this type util to get the base socket state and actions embedded in it.
+ */
 export type ExtendBaseSocketState<T extends { actions: object }> = Omit<T, 'actions'> &
   Omit<BaseSocketState, 'actions'> & {
     actions: T['actions'] & BaseSocketState['actions']
@@ -60,6 +63,14 @@ export const defaultBaseSocketValues: Omit<BaseSocketState, 'actions'> = {
   websocket: null,
 }
 
+/**
+ * Provides the basic actions for handling the socket connection. This allows to extend a store and make it socket-aware.
+ *
+ * Some considerations:
+ * - In these base actions the `registerEventListeners` is not implemented as it depends on the specific store that will be extending the base socket store. Thus, the user will have to implement it, a type error would show indicating that the function is not implemented.
+ *
+ * - `connectionStatus` on this store only updates the reconnecting status. For `onopen` or `onclose` you should set the connection status when registering these events in the `registerEventListeners` implementation.
+ */
 export const createBaseSocketActions = <T extends BaseSocketState>({
   get,
   set,
@@ -151,8 +162,6 @@ export const createBaseSocketActions = <T extends BaseSocketState>({
       get().actions.registerListeners(newWS)
     },
   }
-  //HACK: defining it directly in the above object as Omit<T['actions'], 'registerListeners'> wouldn't work.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { registerListeners: _, ...actionsWithoutListeners } = actions
   return actionsWithoutListeners
 }

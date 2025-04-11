@@ -2,6 +2,8 @@ import { wsProtocolEnum } from 'src/utils/socket'
 import { createStore } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import {
+  connectionMessageTypeEnum,
+  connectionStatusEnum,
   createBaseSocketActions,
   defaultBaseSocketValues,
   ExtendBaseSocketState,
@@ -94,6 +96,17 @@ export const createChatStore = (token: string, slug: string) => {
             const { appendMessage, updateMessages, streamToLastMessage } = get().actions
             ws.onopen = () => {
               console.log('WebSocket connected')
+              const connectionMessage =
+                get().connectionStatus === connectionStatusEnum.reconnecting
+                  ? {
+                      message: 'Back online',
+                      type: connectionMessageTypeEnum.success,
+                    }
+                  : {
+                      message: 'Connected',
+                      type: connectionMessageTypeEnum.success,
+                    }
+              set({ connectionStatus: connectionStatusEnum.connected, connectionMessage })
             }
 
             ws.onerror = (error) => {
@@ -132,6 +145,23 @@ export const createChatStore = (token: string, slug: string) => {
                 // Handle authentication failure
                 console.error('WebSocket authentication failed')
               }
+              const currentConnectionStatus = get().connectionStatus
+              const connectionMessage =
+                currentConnectionStatus === connectionStatusEnum.connected
+                  ? {
+                      message: 'Lost connection. Will try to reconnect soon...',
+                      type: connectionMessageTypeEnum.warning,
+                    }
+                  : currentConnectionStatus === connectionStatusEnum.reconnecting
+                    ? {
+                        message: 'Failed to reconnect. Will try again soon...',
+                        type: connectionMessageTypeEnum.error,
+                      }
+                    : {
+                        message: 'Disconnected',
+                        type: connectionMessageTypeEnum.error,
+                      }
+              set({ connectionStatus: connectionStatusEnum.disconnected, connectionMessage })
             }
           },
         },

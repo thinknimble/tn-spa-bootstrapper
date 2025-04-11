@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SidebarSection } from './sidebar-section'
 import { SystemPrompt } from './system-prompt'
+import { X } from 'lucide-react'
 
 type SidebarProps = {
   isOpen: boolean
@@ -35,20 +36,11 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex h-full flex-col">
+        <div className="relative flex h-full flex-col pt-8">
           {/* Sidebar Header */}
-          <div className="border-b border-gray-200 p-4">
-            <button onClick={onClose} className="absolute right-4 top-4 text-gray-500 lg:hidden">
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+          <button onClick={onClose} className="absolute right-4 top-4 text-gray-500 lg:hidden">
+            <X />
+          </button>
 
           {/* Sidebar Content - Scrollable */}
           <div className="flex-1 overflow-y-auto p-4">
