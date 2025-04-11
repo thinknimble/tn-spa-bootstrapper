@@ -22,6 +22,10 @@ export const DashboardScreen = () => {
     })
   }
 
+  const onGoToChat = () => {
+    navio?.push('ChatScreen')
+  }
+
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="flex-1">
       <View className="flex-grow items-center">
@@ -53,6 +57,7 @@ export const DashboardScreen = () => {
           />
         </View>
         <BButton label="Open sheet" onPress={onOpenSheet} variant="primary" />
+        <BButton label="Chat Demo" onPress={onGoToChat} variant="primary" />
       </View>
     </MultiPlatformSafeAreaView>
   )

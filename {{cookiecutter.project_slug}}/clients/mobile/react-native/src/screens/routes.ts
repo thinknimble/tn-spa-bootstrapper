@@ -8,6 +8,7 @@ import { Auth } from '@screens/auth/auth'
 import { DashboardScreen } from '@screens/dashboard'
 import { ComponentsPreview } from '@screens/ComponentsPreview'
 import { ContactUs, EditProfile, Settings } from '@screens/settings'
+import { ChatScreen } from '@screens/chat'
 
 // Default options - forcing a mobile trigger
 export const screenDefaultOptions = (): NativeStackNavigationOptions => ({
@@ -40,10 +41,11 @@ export const navio = Navio.build({
     Settings,
     ContactUs,
     EditProfile,
+    ChatScreen,
   },
   stacks: {
     AuthStack: ['Auth'],
-    MainStack: ['DashboardScreen'],
+    MainStack: ['DashboardScreen', 'ChatScreen'],
     SettingsStack: ['Settings', 'ContactUs', 'EditProfile'],
     /**
      * Set me as the root to see the components preview
