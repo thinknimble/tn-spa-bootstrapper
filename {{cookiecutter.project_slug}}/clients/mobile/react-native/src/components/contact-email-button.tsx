@@ -15,9 +15,7 @@ export const ContactEmailButton = () => {
   }
   return (
     <Bounceable onPress={handleSendMail}>
-      <Text className="text-lg text-center font-primary-bold">
-        {supportEmail}
-      </Text>
+      <Text className="text-lg text-center font-primary-bold">{supportEmail}</Text>
     </Bounceable>
   )
 }

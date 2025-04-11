@@ -78,7 +78,7 @@ export const ResetPasswordInner = () => {
             <PasswordInput
               value={form.password.value}
               onChange={(e) => createFormFieldChangeHandler(form.password)(e.target.value)}
-              extendClassName="w-full"
+              className="w-full"
               placeholder={form.password.placeholder}
               tabIndex={1}
               iconTabIndex={4}
@@ -91,7 +91,7 @@ export const ResetPasswordInner = () => {
               onChange={(e) => {
                 createFormFieldChangeHandler(form.confirmPassword)(e.target.value)
               }}
-              extendClassName="w-full"
+              className="w-full"
               placeholder={form.confirmPassword.placeholder}
               tabIndex={2}
               iconTabIndex={5}

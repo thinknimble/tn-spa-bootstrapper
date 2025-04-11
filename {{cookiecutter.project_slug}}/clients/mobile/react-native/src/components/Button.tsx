@@ -1,4 +1,5 @@
 import colors from '@utils/colors'
+import { cn } from '@utils/style'
 import React, { useMemo } from 'react'
 import {
   ActivityIndicator,
@@ -83,11 +84,13 @@ export const BButton: React.FC<Props> = ({
   return (
     <TouchComponent {...buttonProps} onPress={onPress}>
       <View
-        className={`flex items-center justify-center rounded-full px-5 py-3 ${
-          containerClassName ?? ''
-        } ${!buttonContainerStyle ? 'p-2' : ''} ${variantStyle.background} ${
-          buttonProps?.disabled ? variantStyle.disabled : ''
-        }`}
+        className={cn([
+          `flex items-center justify-center rounded-lg px-5 py-3`,
+          containerClassName,
+          !buttonContainerStyle ? 'p-2' : '',
+          variantStyle.background,
+          buttonProps?.disabled ? variantStyle.disabled : '',
+        ])}
         style={[buttonContainerStyle ?? {}]}
       >
         {isLoading ? (
@@ -97,7 +100,7 @@ export const BButton: React.FC<Props> = ({
         ) : (
           <View className="flex flex-row justify-between gap-2">
             {leftIcon}
-            <Text className={`${variantStyle.text} ${textClassName}`}>{label}</Text>
+            <Text className={cn([variantStyle.text, textClassName])}>{label}</Text>
             {rightIcon}
           </View>
         )}

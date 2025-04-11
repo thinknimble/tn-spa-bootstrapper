@@ -21,7 +21,7 @@ export const RequestPasswordResetInner = () => {
 
   const { mutate: requestReset } = useMutation({
     mutationFn: userApi.csc.requestPasswordReset,
-    onSuccess: (data) => {
+    onSuccess: () => {
       setErrorMessage(undefined)
       navigate('/password/reset/confirm/' + form.email.value)
     },

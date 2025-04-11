@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios, { isAxiosError, AxiosError } from 'axios'
 import qs from 'qs'
 import { useAuth } from 'src/stores/auth'
 import { getCookie } from 'src/utils/get-cookie'
@@ -35,5 +35,19 @@ axiosInstance.interceptors.request.use(
   },
   (error: Error | AxiosError) => {
     return Promise.reject(error)
+  },
+)
+
+axiosInstance.interceptors.response.use(
+  async (config) => {
+    return config
+  },
+  (err: unknown) => {
+    if (isAxiosError(err) && err.response?.data.detail === 'Invalid token.') {
+      //token has become invalid, clear the store so the app recovers
+      useAuth.getState().actions.clearAuth()
+      window.location.replace('/')
+    }
+    return Promise.reject(err)
   },
 )

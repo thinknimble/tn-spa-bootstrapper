@@ -124,7 +124,9 @@ export const EditProfile = () => {
   }
 
   if (!user) return <></> //never
-
+  const buttonProps = {
+    disabled: isDeleting || isLoggingOut || isSaving,
+  }
   return (
     <Container>
       <View className="items-center justify-between flex-row">
@@ -198,9 +200,7 @@ export const EditProfile = () => {
         onPress={showWarningAlert}
         containerClassName="mb-7"
         isLoading={isDeleting || isLoggingOut || isSaving}
-        buttonProps={{
-          disabled: isDeleting || isLoggingOut || isSaving,
-        }}
+        buttonProps={buttonProps}
       />
     </Container>
   )

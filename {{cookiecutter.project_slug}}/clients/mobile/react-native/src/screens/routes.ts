@@ -1,13 +1,13 @@
+import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
+import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
+import { ForgotPassword, Login, ResetPassword, SignUp } from '@screens/auth'
+import { Auth } from '@screens/auth/auth'
+import { ComponentsPreview } from '@screens/ComponentsPreview'
+import { DashboardScreen } from '@screens/dashboard'
+import { Main } from '@screens/main'
+import { ContactUs, EditProfile, Settings } from '@screens/settings'
 import { Platform } from 'react-native'
 import { Navio } from 'rn-navio'
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
-import { ForgotPassword, Login, ResetPassword, SignUp } from '@screens/auth'
-import { Main } from '@screens/main'
-import { Auth } from '@screens/auth/auth'
-import { DashboardScreen } from '@screens/dashboard'
-import { ComponentsPreview } from '@screens/ComponentsPreview'
-import { ContactUs, EditProfile, Settings } from '@screens/settings'
 
 // Default options - forcing a mobile trigger
 export const screenDefaultOptions = (): NativeStackNavigationOptions => ({
@@ -53,7 +53,6 @@ export const navio = Navio.build({
      * Set me as the root to see the components preview
      */
     PreviewStack: ['ComponentsPreview'],
-
   },
   root: 'AuthStack',
   defaultOptions: {
@@ -66,5 +65,5 @@ export const getNavio = () => navio
 export const AppRoot = navio.App
 
 export type MyNavio = typeof navio
-export type AppScreens = Parameters<typeof navio['push']>[0]
-export type AppStacks = Parameters<typeof navio['stacks']['push']>[0]
+export type AppScreens = Parameters<(typeof navio)['push']>[0]
+export type AppStacks = Parameters<(typeof navio)['stacks']['push']>[0]
