@@ -1,15 +1,41 @@
+import { LoadingRedirect, LoadingScreen } from '@components/loading'
+import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import {
   createMaterialTopTabNavigator,
   MaterialTopTabBarProps,
 } from '@react-navigation/material-top-tabs'
 import { NavigationContainer } from '@react-navigation/native'
-import { Fragment } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
-import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
-import { Main } from '@screens/main'
 import { Login } from '@screens/auth/login'
 import { SignUp } from '@screens/auth/sign-up'
+import { Main } from '@screens/main'
+import { useUser } from '@services/user'
+import { useAuth } from '@stores/auth'
+import { navioAtom } from '@stores/navigation'
+import { HttpStatusCode, isAxiosError } from 'axios'
+import { useAtomValue } from 'jotai'
+import { FC, Fragment, ReactNode, useCallback, useEffect } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
+
+const useUnauthUserOnError = () => {
+  const query = useUser()
+  const { clearAuth } = useAuth.use.actions()
+
+  const navio = useAtomValue(navioAtom)
+
+  useEffect(() => {
+    if (query.error) {
+      if (
+        isAxiosError(query.error) &&
+        (query.error.response?.status === HttpStatusCode.Unauthorized ||
+          query.error.response?.status === HttpStatusCode.NotFound)
+      ) {
+        clearAuth()
+        navio?.stacks.setRoot('AuthStack')
+      }
+    }
+  })
+}
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -47,6 +73,30 @@ const TopTab = ({ navigation, state }: MaterialTopTabBarProps) => {
   )
 }
 
+export const AuthUX: FC<{ children: ReactNode }> = ({ children }) => {
+  const isAuth = useAuth((s) => Boolean(s.token))
+  const user = useAuth.use.user()
+  useUnauthUserOnError()
+  const navio = useAtomValue(navioAtom)
+
+  /**
+   * This only happens if the user is authenticated
+   */
+  const onAuthRedirect = useCallback(() => {
+    //if the user is logged in, set the root to be dashboard instead of main screen
+    navio?.stacks.setRoot('MainStack')
+  }, [navio])
+
+  if (!isAuth) {
+    return <>{children}</>
+  }
+  if (!user) {
+    return <LoadingScreen />
+  }
+
+  return <LoadingRedirect onRedirect={onAuthRedirect} />
+}
+
 const styles = StyleSheet.create({
   paddingH20: {
     paddingHorizontal: 20,
@@ -55,14 +105,16 @@ const styles = StyleSheet.create({
 
 export const Auth = () => {
   return (
-    <MultiPlatformSafeAreaView safeAreaClassName="flex-1 flex-grow">
-      <NavigationContainer independent>
-        <Tab.Navigator tabBar={TopTab} sceneContainerStyle={styles.paddingH20}>
-          {tabs.map((t, idx) => (
-            <Tab.Screen name={t.name} component={t.component} key={idx} />
-          ))}
-        </Tab.Navigator>
-      </NavigationContainer>
-    </MultiPlatformSafeAreaView>
+    <AuthUX>
+      <MultiPlatformSafeAreaView safeAreaClassName="flex-1 flex-grow">
+        <NavigationContainer independent>
+          <Tab.Navigator tabBar={TopTab} sceneContainerStyle={styles.paddingH20}>
+            {tabs.map((t, idx) => (
+              <Tab.Screen name={t.name} component={t.component} key={idx} />
+            ))}
+          </Tab.Navigator>
+        </NavigationContainer>
+      </MultiPlatformSafeAreaView>
+    </AuthUX>
   )
 }
