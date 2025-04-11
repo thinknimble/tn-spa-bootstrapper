@@ -22,6 +22,7 @@
     "@thinknimble/tn-models": "^4.0.0",
     "axios": "^1.5.0",
     "clsx": "^2.1.1",
+    "jotai": "^2.12.2",
     "qs": "^6.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

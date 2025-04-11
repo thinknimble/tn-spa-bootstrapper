@@ -1,6 +1,7 @@
 import { useState, useRef, FormEvent, useEffect } from 'react'
 import { useAuth } from 'src/stores/auth'
 import { Sidebar } from './sidebar'
+import { useChatStore } from './chat-store-provider'
 
 type Message = {
   content: string
@@ -8,76 +9,13 @@ type Message = {
 }
 
 export const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([])
+  const messages = useChatStore((s) => s.messages)
+  const { sendMessage } = useChatStore((s) => s.actions)
   const [inputMessage, setInputMessage] = useState('')
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [, setStreamingContent] = useState('')
   const chatHistoryRef = useRef<HTMLDivElement>(null)
   const token = useAuth.use.token()
-
-  useEffect(() => {
-    // Create WebSocket connection with auth token
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const host = import.meta.env.DEV ? window.location.host : window.location.host
-    const ws = new WebSocket(`${protocol}//${host}/ws/chat/?token=${token}`)
-
-    ws.onopen = () => {
-      console.log('WebSocket connected')
-    }
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-
-      if (data.error) {
-        setMessages((prev) => {
-          const newMessages = [...prev]
-          const lastMessage = newMessages[newMessages.length - 1]
-          if (lastMessage?.role === 'assistant') {
-            lastMessage.content += `\nError: ${data.error}`
-          }
-          return newMessages
-        })
-        return
-      }
-
-      if (data.delta) {
-        // Handling streaming response
-        if (data.delta.content) {
-          setStreamingContent((prev) => {
-            const newContent = prev + data.delta.content
-            setMessages((messages) => {
-              const newMessages = [...messages]
-              newMessages[newMessages.length - 1].content = newContent
-              return newMessages
-            })
-            return newContent
-          })
-        }
-      } else if (data.message) {
-        // Handling regular response
-        setMessages((prev) => [...prev, { content: data.message.content, role: 'assistant' }])
-      }
-    }
-
-    ws.onclose = (event) => {
-      console.log('WebSocket connection closed:', event.code, event.reason)
-      if (event.code === 4003) {
-        // Handle authentication failure
-        console.error('WebSocket authentication failed')
-      }
-    }
-
-    setSocket(ws)
-
-    return () => {
-      ws.close()
-    }
-  }, [token])
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -88,23 +26,12 @@ export const ChatInterface = () => {
     e.preventDefault()
     const content = inputMessage.trim()
     if (!content || !socket) return
-
     // Add user message to conversation
     const userMessage: Message = { content, role: 'user' }
-    setMessages((prev) => [...prev, userMessage])
+    sendMessage(userMessage)
     setInputMessage('')
-    setStreamingContent('')
-
     // Add empty assistant message that will be updated
-    setMessages((prev) => [...prev, { content: '', role: 'assistant' }])
-
-    // Send full conversation history through WebSocket
-    socket.send(
-      JSON.stringify({
-        messages: [...messages, userMessage], // Include previous messages plus new user message
-        stream: true,
-      }),
-    )
+    // setMessages((prev) => [...prev, { content: '', role: 'assistant' }])
   }
 
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
