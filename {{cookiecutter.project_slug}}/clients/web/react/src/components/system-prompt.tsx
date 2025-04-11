@@ -42,7 +42,7 @@ export const SystemPrompt = () => {
         </a>
       </div>
       <div className="rounded-lg bg-gray-50 p-3 text-left">
-        <pre className={`whitespace-pre-wrap text-sm text-left ${error ? 'text-red-600' : ''}`}>
+        <pre className={`whitespace-pre-wrap text-left text-sm ${error ? 'text-red-600' : ''}`}>
           {error || prompt}
         </pre>
       </div>
