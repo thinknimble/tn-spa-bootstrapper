@@ -10,6 +10,7 @@ import { Main } from '@screens/main'
 import { Login } from '@screens/auth/login'
 import { SignUp } from '@screens/auth/sign-up'
 import { Bounceable } from 'rn-bounceable'
+import { ForgotPassword } from './forgot-password'
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -17,6 +18,7 @@ const tabs = [
   { name: 'home', label: 'Home', component: Main },
   { name: 'login', label: 'Login', component: Login },
   { name: 'signup', label: 'Signup', component: SignUp },
+  { name: 'forgot-password', label: 'Forgot Password', component: ForgotPassword },
 ]
 
 const TopTab = ({ navigation, state }: MaterialTopTabBarProps) => {
