@@ -98,9 +98,7 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             os.path.join(BASE_DIR, "..", "client", "dist"),
-            os.path.join(
-                BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"
-            ),  # Swagger template override
+            os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),  # Swagger template override
         ],
         "APP_DIRS": True,  # this setting must come after "DIRS"!
         "OPTIONS": {

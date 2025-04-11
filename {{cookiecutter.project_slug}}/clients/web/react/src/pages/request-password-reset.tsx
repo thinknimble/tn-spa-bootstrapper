@@ -62,7 +62,7 @@ export const RequestPasswordResetInner = () => {
           <Button
             onClick={handleRequest}
             disabled={!form.isValid}
-            variant={form.isValid ? 'primary' : 'disabled'}
+            variant={'primary'}
           >
             Request Password Reset
           </Button>
