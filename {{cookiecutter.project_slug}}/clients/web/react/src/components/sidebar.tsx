@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { SystemPrompt } from './system-prompt'
 import { SidebarSection } from './sidebar-section'
+import { SystemPrompt } from './system-prompt'
 
 type SidebarProps = {
   isOpen: boolean
