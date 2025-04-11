@@ -1,6 +1,7 @@
-import { getSocketProtocol, wsProtocolEnum } from '@utils/socket'
+import { getSocketProtocol } from '@utils/socket'
 import { createStore } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
+import Config from '../../Config'
 import {
   connectionMessageTypeEnum,
   connectionStatusEnum,
@@ -8,7 +9,6 @@ import {
   defaultBaseSocketValues,
   ExtendBaseSocketState,
 } from './base-socket'
-import Config from '../../Config'
 
 const backendUrlEnv = Config.backendServerUrl
 const host = new URL(backendUrlEnv).host
