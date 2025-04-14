@@ -14,7 +14,7 @@ import { useAtomValue } from 'jotai'
 import { FC, Fragment, ReactNode, useCallback, useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
-import { LogIn } from './login'
+import { Login } from './login'
 import { SignUp } from './sign-up'
 
 const useUnauthUserOnError = () => {
@@ -41,7 +41,7 @@ const Tab = createMaterialTopTabNavigator()
 
 const tabs = [
   { name: 'home', label: 'Home', component: Main },
-  { name: 'login', label: 'Login', component: LogIn },
+  { name: 'login', label: 'Login', component: Login },
   { name: 'signup', label: 'Signup', component: SignUp },
 ]
 

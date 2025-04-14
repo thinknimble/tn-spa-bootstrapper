@@ -171,7 +171,7 @@ export const createBaseSocketActions = <T extends BaseSocketState>({
       get().actions.registerListeners(newWS)
     },
   }
-  //@eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { registerListeners: _, ...actionsWithoutListeners } = actions
   return actionsWithoutListeners
 }

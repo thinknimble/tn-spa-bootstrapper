@@ -7,7 +7,7 @@ import { Main } from '@screens/main'
 import { ContactUs, EditProfile, Settings } from '@screens/settings'
 import { Platform } from 'react-native'
 import { Navio } from 'rn-navio'
-import { LogIn, SignUp } from './auth'
+import { Login, SignUp } from './auth'
 import { ChatScreen } from './chat'
 
 // Default options - forcing a mobile trigger
@@ -33,7 +33,7 @@ export const tabDefaultOptions = (): BottomTabNavigationOptions => ({
 export const navio = Navio.build({
   screens: {
     Auth,
-    LogIn,
+    Login,
     SignUp,
     Main,
     DashboardScreen,
