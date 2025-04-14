@@ -5,8 +5,6 @@ import {
   MaterialTopTabBarProps,
 } from '@react-navigation/material-top-tabs'
 import { NavigationContainer } from '@react-navigation/native'
-import { Login } from '@screens/auth/login'
-import { SignUp } from '@screens/auth/sign-up'
 import { Main } from '@screens/main'
 import { useUser } from '@services/user'
 import { useAuth } from '@stores/auth'
@@ -16,6 +14,8 @@ import { useAtomValue } from 'jotai'
 import { FC, Fragment, ReactNode, useCallback, useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Bounceable } from 'rn-bounceable'
+import { LogIn } from './login'
+import { SignUp } from './sign-up'
 
 const useUnauthUserOnError = () => {
   const query = useUser()
@@ -41,7 +41,7 @@ const Tab = createMaterialTopTabNavigator()
 
 const tabs = [
   { name: 'home', label: 'Home', component: Main },
-  { name: 'login', label: 'Login', component: Login },
+  { name: 'login', label: 'Login', component: LogIn },
   { name: 'signup', label: 'Signup', component: SignUp },
 ]
 

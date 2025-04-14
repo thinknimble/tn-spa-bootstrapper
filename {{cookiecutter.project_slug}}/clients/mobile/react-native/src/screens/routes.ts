@@ -1,14 +1,14 @@
+import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
+import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
+import { Auth } from '@screens/auth/auth'
+import { ComponentsPreview } from '@screens/ComponentsPreview'
+import { DashboardScreen } from '@screens/dashboard'
+import { Main } from '@screens/main'
+import { ContactUs, EditProfile, Settings } from '@screens/settings'
 import { Platform } from 'react-native'
 import { Navio } from 'rn-navio'
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack'
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
-import { Login, SignUp } from '@screens/auth'
-import { Main } from '@screens/main'
-import { Auth } from '@screens/auth/auth'
-import { DashboardScreen } from '@screens/dashboard'
-import { ComponentsPreview } from '@screens/ComponentsPreview'
-import { ContactUs, EditProfile, Settings } from '@screens/settings'
-import { ChatScreen } from '@screens/chat'
+import { LogIn, SignUp } from './auth'
+import { ChatScreen } from './chat'
 
 // Default options - forcing a mobile trigger
 export const screenDefaultOptions = (): NativeStackNavigationOptions => ({
@@ -33,7 +33,7 @@ export const tabDefaultOptions = (): BottomTabNavigationOptions => ({
 export const navio = Navio.build({
   screens: {
     Auth,
-    Login,
+    LogIn,
     SignUp,
     Main,
     DashboardScreen,

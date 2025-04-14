@@ -3,10 +3,10 @@ import { BounceableWind } from '@components/styled'
 import { Ionicons } from '@expo/vector-icons'
 import { useEffect, useRef, useState } from 'react'
 import { FlatList, Text, TextInput, View } from 'react-native'
-import { ChatProvider, useChatStore } from './chat-provider'
-import { ConnectionStatusIndicator } from './connection-status-indicator'
 import { useAtomValue } from 'jotai'
 import { navioAtom } from '@stores/navigation'
+import { ChatProvider, useChatStore } from '@components/chat-provider'
+import { ConnectionStatusIndicator } from '@components/connection-status-indicator'
 
 const ChatInner = () => {
   const messages = useChatStore((s) => s.messages)
