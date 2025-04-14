@@ -1,2 +1,3 @@
-export { Login } from './login'
-export { SignUp } from './sign-up'
+export * from './sign-up'
+export * from './login'
+export * from './auth'
