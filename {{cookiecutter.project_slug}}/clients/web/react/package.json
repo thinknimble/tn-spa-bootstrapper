@@ -34,6 +34,7 @@
     "react-icons": "^4.10.1",
     "react-resizable-panels": "^4.6.1",
     "react-router-dom": "^6.15.0",
+    "react-use-websocket": "^4.13.0",
     "tailwind-merge": "^3.2.0",
     "zod": "^3.24.1",
     "zustand": "^4.4.0"
