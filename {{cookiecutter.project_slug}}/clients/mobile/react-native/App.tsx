@@ -14,7 +14,7 @@ import { StatusBar } from 'expo-status-bar'
 import { useSetAtom } from 'jotai'
 import React, { useCallback, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { LogBox, StyleSheet } from 'react-native'
+import { KeyboardAvoidingView, LogBox, Platform, StyleSheet } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useFonts } from 'expo-font'
@@ -39,6 +39,8 @@ const styles = StyleSheet.create({
 })
 
 SplashScreen.preventAutoHideAsync()
+
+const keyboardBehavior = Platform.OS === 'ios' ? 'padding' : undefined
 
 export default Sentry.wrap((): JSX.Element => {
   const [ready, setReady] = useState(false)
@@ -66,7 +68,9 @@ export default Sentry.wrap((): JSX.Element => {
       <QueryClientProvider client={queryClient}>
         <SheetProvider>
           <StatusBar style="dark" />
-          <AppRoot />
+          <KeyboardAvoidingView behavior={keyboardBehavior} style={styles.flex}>
+            <AppRoot />
+          </KeyboardAvoidingView>
         </SheetProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

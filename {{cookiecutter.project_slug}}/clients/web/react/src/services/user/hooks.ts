@@ -12,7 +12,7 @@ export const useUser = () => {
   const userId = useAuth.use.userId()
   const { writeUserInStorage } = useAuth.use.actions()
   const navigate = useNavigate()
-  
+
   const query = useQuery(userQueries.retrieve(userId))
 
   useEffect(() => {
