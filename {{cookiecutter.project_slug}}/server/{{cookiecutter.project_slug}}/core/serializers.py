@@ -1,3 +1,6 @@
+from email.utils import parseaddr
+
+from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -61,10 +64,35 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             "last_name": {"required": True},
         }
 
+    def _validate_name(self, value):
+        """
+        There are MANY unique names out there, so let users input whatever they want.
+        BUT...alert the devs if we see something odd.
+        """
+        if not "".join(a.split()).isalpha():
+            logger.warning(f"User signup with non-alphabetic characters in their name: {value}")
+
+    def validate_first_name(self, value):
+        self._validate_name(value)
+        return value
+
+    def validate_last_name(self, value):
+        self._validate_name(value)
+        return value
+
+    def validate_email(self, value):
+        value = parseaddr(value, strict=True)[1].lower()
+        if settings.USE_EMAIL_ALLOWLIST and value not in settings.EMAIL_ALLOWLIST:
+            raise ValidationError(detail="Invalid email")
+        if not all(c in value for c in [".", "@"])
+            raise ValidationError(detail="Invalid email")
+        if not any(value.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
+            logger.warning(f"Potentially risky email: {value}")
+        return value
+
     def validate(self, data):
         password = data.get("password")
         validate_password(password)
-
         return data
 
     def create(self, validated_data):
