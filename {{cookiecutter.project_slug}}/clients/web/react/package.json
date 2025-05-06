@@ -45,6 +45,7 @@
     "@playwright/test": "^1.46.0",
     "@tanstack/eslint-plugin-query": "^5.86.0",
     "@testing-library/jest-dom": "^6.2.0",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.4.3",
     "@types/node": "^22.1.0",
