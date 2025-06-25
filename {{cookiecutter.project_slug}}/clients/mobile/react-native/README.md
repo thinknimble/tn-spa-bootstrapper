@@ -186,12 +186,12 @@ Prod includes testflight and teststore testing on these should not pollute the p
 To deploy to the test stores you can use the two GH actions:
 You must remember to update the version number in [app.config.js](./app.config.js)
 
-[expo-teststore-build-android.yml](/sample_app/.github/workflows/expo-teststore-build-android.yml)
-[expo-teststore-build-ios.yml](/sample_app/.github/workflows/expo-teststore-build-ios.yml)
+[expo-teststore-build-android.yml](/{{ cookiecutter.project_slug }}/.github/workflows/expo-teststore-build-android.yml)
+[expo-teststore-build-ios.yml](/{{ cookiecutter.project_slug }}/.github/workflows/expo-teststore-build-ios.yml)
 
 In case of a bug you can also use expo-updates to quickly push a temporary fix using:
 
-[expo-teststore-build-ios.yml](/sample_app/.github/workflows/expo-teststore-build-ios.yml)
+[expo-teststore-build-ios.yml](/{{ cookiecutter.project_slug }}/.github/workflows/expo-teststore-build-ios.yml)
 
 This is only temporary and should be resolved as soon as possible, the update is only available to users with the app already any new downloads will need another push to update (users will also have to close and reopen the app).
 
