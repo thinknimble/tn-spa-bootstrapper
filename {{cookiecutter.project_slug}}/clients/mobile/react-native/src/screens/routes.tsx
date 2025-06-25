@@ -112,18 +112,18 @@ const RootNavigator = () => (
     <RootStack.Screen
       name="AuthStack"
       component={AuthStackScreen}
-      options={{ headerShown: false }}
+      options={{ {{ headerShown: false }} }}
     />
     <RootStack.Screen name="MainStack" component={TabNavigator} options={{ headerShown: false }} />
     <RootStack.Screen
       name="SettingsStack"
       component={SettingsStackScreen}
-      options={{ headerShown: false }}
+      options={{ {{ headerShown: false }} }}
     />
     <RootStack.Screen
       name="PreviewStack"
       component={PreviewStackScreen}
-      options={{ headerShown: false }}
+      options={{ {{ headerShown: false }} }}
     />
   </RootStack.Navigator>
 )
