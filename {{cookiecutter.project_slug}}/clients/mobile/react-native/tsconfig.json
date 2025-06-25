@@ -17,17 +17,13 @@
       "@components/*": ["./src/components/*"],
       "@screens/*": ["./src/screens/*"],
       "@stores/*": ["./src/stores/*"],
+      "@hooks/*": ["./src/hooks/*"],
       "@assets/*": ["./assets/*"],
       "@services/*": ["./src/services/*"],
       "@utils/*": ["./src/utils/*"],
       "@src/*": ["./src/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js",
-    "jest.config.js",
-  ],
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"],
   "extends": "expo/tsconfig.base"
 }

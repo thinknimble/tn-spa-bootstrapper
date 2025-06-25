@@ -8,7 +8,7 @@ import React from 'react'
 import { Alert, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Bounceable } from 'rn-bounceable'
-import { AppScreens, getNavio } from '..'
+import { useNavigation } from '@hooks/useNavigation'
 import colors from '@utils/colors'
 import { Container } from '@components/container'
 
@@ -16,10 +16,10 @@ import { BounceableWind } from '@components/styled'
 
 type SectionChild = {
   title: string
-  icon: JSX.Element
+  icon: React.JSX.Element
   args:
     | {
-        screenName: AppScreens
+        screenName: any
         screenProps?: Record<string, boolean>
       }
     | { link: string }
@@ -60,11 +60,12 @@ const sections: Section[] = [
 ]
 
 const UserCard = () => {
-  const { data: user } = useUser()
-  const navio = getNavio()
+  const { userQuery: query } = useUser()
+  const { data: user } = query
+  const { push } = useNavigation()
 
   const handlePress = () => {
-    navio.push('EditProfile')
+    push('EditProfile')
   }
   if (!user) return <></>
 
@@ -93,7 +94,7 @@ const UserCard = () => {
 }
 
 const SectionList = () => {
-  const navio = getNavio()
+  const { push } = useNavigation()
   return (
     <ScrollView contentContainerClassName="pb-3">
       {sections.map((s, sIdx) => {
@@ -107,10 +108,10 @@ const SectionList = () => {
                 <Bounceable
                   onPress={() => {
                     if ('screenName' in sc.args) {
-                      navio.push(
-                        sc.args.screenName,
-                        'screenProps' in sc.args ? sc.args.screenProps : undefined,
-                      )
+                      push('SettingsStack', {
+                        screen: sc.args.screenName,
+                        params: 'screenProps' in sc.args ? sc.args.screenProps : undefined,
+                      })
                       return
                     } else if ('link' in sc.args) {
                       openBrowserAsync(sc.args.link)
@@ -140,14 +141,14 @@ const SectionList = () => {
 }
 
 export const Settings = () => {
-  const navio = getNavio()
+  const { goBack, stacks } = useNavigation()
   const { bottom } = useSafeAreaInsets()
   const { mutate: logout, isPending: isLoggingOut } = useLogout()
 
   const handleLogout = () => {
     logout(undefined, {
       onSettled: () => {
-        navio?.setRoot('stacks', 'AuthStack')
+        stacks.goToAuth()
       },
     })
   }
@@ -167,7 +168,7 @@ export const Settings = () => {
       <View className="items-center">
         <BounceableWind
           onPress={() => {
-            navio.goBack()
+            goBack()
           }}
           contentContainerClassName="absolute left-0 top-0"
         >
