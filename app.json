@@ -37,15 +37,6 @@
   },
   "buildpacks": [
     {
-      "url": "heroku/python"
-    },
-    {
-      "url": "https://github.com/weibeld/heroku-buildpack-run.git"
-    },
-    {
-      "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
-    },
-    {
       "url": "heroku/nodejs"
     },
     {
