@@ -7,7 +7,7 @@ on:
         required: false
         default: ''
       gfolder_id:
-        description: 'Google Doc ID to update (leave blank to create new)'
+        description: 'Google Drive Folder ID to create the doc in (leave blank to use root)'
         required: false
         default: ''
   push:
@@ -47,7 +47,7 @@ jobs:
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
           file-path: 'merged.txt'
-          folder-id: ${{ github.event.inputs.gfolder_id }} # Get this from the URL of your Google Drive folder
+          folder-id: ${{ github.event.inputs.gfolder_id }}
           document-title: 'Git Changes Summary'
           document-id: ${{ github.event.inputs.gdoc_id }}
 

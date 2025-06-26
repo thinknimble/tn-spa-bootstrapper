@@ -5,7 +5,7 @@ jobs:
     if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - name:  Setup repo
+      - name: Setup repo
         uses: actions/checkout@v4
 
       - uses: actions/cache@v4
@@ -13,19 +13,19 @@ jobs:
           path: "**/node_modules"
           key: "${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}"
 
-      - name:  Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name:  Setup Expo and EAS
+      - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
           token: "${{ secrets.EXPO_TOKEN }}"
 
-      - name:  Install dependencies
+      - name: Install dependencies
         run: npm install && npm install --workspace=tn-golf-vision
 
       - name: Build custom module
