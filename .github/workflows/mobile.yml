@@ -1,4 +1,4 @@
-name: Mobile Deployment
+name: Expo Mobile PUBLISH
 on: [deployment_status, workflow_dispatch]
 
 jobs:

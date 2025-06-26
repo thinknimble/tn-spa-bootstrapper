@@ -1,4 +1,4 @@
-name: Expo Publish PR
+name: Expo Mobile BUILD
 on: [deployment_status, workflow_dispatch]
 jobs:
   publish:
