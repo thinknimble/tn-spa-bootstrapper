@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "module": "esnext",
+    // "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": false,
@@ -18,14 +19,5 @@
       "@hooks/*": ["./src/hooks/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js",
-    "jest.config.js"
-  ]
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }
-
-
-
-
