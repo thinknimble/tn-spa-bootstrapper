@@ -1,0 +1,53 @@
+name: Git Changes Summary
+on:
+  workflow_dispatch:
+    inputs:
+      gdoc_id:
+        description: 'Google Doc ID to update (leave blank to create new)'
+        required: false
+        default: ''
+      gfolder_id:
+        description: 'Google Doc ID to update (leave blank to create new)'
+        required: false
+        default: ''
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get raw diff of merged changes
+        run: |
+          echo "Diff between ${{ github.event.before }} and ${{ github.sha }}"
+          git fetch origin ${{ github.ref }}
+          git diff ${{ github.event.before }} ${{ github.sha }} > merged.txt
+          cat merged.txt
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-changes-summary
+          path: merged.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install @actions/core googleapis
+
+      - name: Upload to Google Docs
+        uses: ./.github/actions/upload-to-google-docs
+        with:
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          file-path: 'merged.txt'
+          folder-id: ${{ github.event.inputs.gfolder_id }} # Get this from the URL of your Google Drive folder
+          document-title: 'Git Changes Summary'
+          document-id: ${{ github.event.inputs.gdoc_id }}
+
