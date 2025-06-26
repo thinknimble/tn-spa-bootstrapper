@@ -1,31 +1,31 @@
-name: Expo Publish PR
+name: Expo Mobile BUILD
 on: [deployment_status, workflow_dispatch]
 jobs:
   publish:
     if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - name:  Setup repo
+      - name: Setup repo
         uses: actions/checkout@v4
 
       - uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: "${{ '{{' }} runner.os }}-modules-${{ '{{' }} hashFiles('**/package-lock.json') }}"
+          key: "${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}"
 
-      - name:  Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name:  Setup Expo and EAS
+      - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
-          token: "${{ '{{' }} secrets.EXPO_TOKEN }}"
+          token: "${{ secrets.EXPO_TOKEN }}"
 
-      - name:  Install dependencies
+      - name: Install dependencies
         run: npm install && npm install --workspace=tn-golf-vision
 
       - name: Build custom module
@@ -34,10 +34,10 @@ jobs:
       - name: Set Variables
         id: set-vars
         run: |
-          echo "backend_url=${{ '{{' }} github.event.deployment_status.environment_url || 'https://default-backend-url.com' }}" >> $GITHUB_ENV
-          echo "PR_NUMBER=$(echo ${{ '{{' }} github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\\d+')" >> $GITHUB_ENV
-          echo "REPO_NAME=$(echo ${{ '{{' }} github.repository }} | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
-          echo "EXPO_CHANNEL=$(echo ${{ '{{' }} github.repository }}-$(echo ${{ '{{' }} github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\\d+') | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
+          echo "backend_url=${{ github.event.deployment_status.environment_url || 'https://default-backend-url.com' }}" >> $GITHUB_ENV
+          echo "PR_NUMBER=$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\\d+')" >> $GITHUB_ENV
+          echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
+          echo "EXPO_CHANNEL=$(echo ${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\\d+') | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
 
       - name: Update EAS Config
         working-directory: ./mobile
@@ -48,7 +48,7 @@ jobs:
               "distribution": "internal",
               "channel": $expo_channel,
               "env": {
-            "BACKEND_SERVER_URL": "${{ '{{' }} github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
+            "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
             "ROLLBAR_ACCESS_TOKEN": "9943cd80b73c426d8d6e3fba6caf46f9",
             "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
             "SENTRY_PROJECT_NAME": "tn-bootsrapper-rn"
@@ -59,7 +59,7 @@ jobs:
             "distribution": "internal",
             "channel": ($expo_channel + "_dc"),
             "env": {
-          "BACKEND_SERVER_URL": "${{ '{{' }} github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
+          "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
           "ROLLBAR_ACCESS_TOKEN": "9943cd80b73c426d8d6e3fba6caf46f9",
           "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
           "SENTRY_PROJECT_NAME": "tn-bootsrapper-rn"
@@ -75,10 +75,10 @@ jobs:
       - name:  Build review app (BUILD)
         working-directory: ./mobile
         run: |
-          eas build --platform ios --profile "review_${{ '{{' }} env.PR_NUMBER }}" --non-interactive
+          eas build --platform ios --profile "review_${{ env.PR_NUMBER }}" --non-interactive
 
       - name:  Build review app (development BUILD)
         working-directory: ./mobile
         run: |
-          eas build --platform ios --profile "review_${{ '{{' }} env.PR_NUMBER }}_dc" --non-interactive
+          eas build --platform ios --profile "review_${{ env.PR_NUMBER }}_dc" --non-interactive
 
