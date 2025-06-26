@@ -11,12 +11,12 @@ export const useNavigation = <TParams = object>() => {
   const route = useRoute()
 
   const navigate = (screenName: string, params?: TParams) => {
-    //@eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     navigation.navigate(screenName as any, params)
   }
 
   const push = (screenName: string, params?: TParams) => {
-    //@eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     navigation.push(screenName as any, params)
   }
 
@@ -30,18 +30,20 @@ export const useNavigation = <TParams = object>() => {
     navigation.popToTop()
   }
 
-  //@eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const reset = (state: any) => {
     navigation.reset(state)
   }
 
   // Navigate to a stack (helper for main navigation)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const navigateToStack = (stackName: keyof RootStackParamList, params?: any) => {
     navigation.navigate(stackName, params)
   }
 
   // Stack-specific navigation helpers
   const stacks = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     push: (stackName: keyof RootStackParamList, params?: any) => {
       navigation.navigate(stackName, params)
     },
