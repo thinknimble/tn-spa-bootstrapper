@@ -10,7 +10,8 @@
       "@assets/*": ["./assets/*"],
       "@services/*": ["./src/services/*"],
       "@utils/*": ["./src/utils/*"],
-      "@src/*": ["./src/*"]
+      "@src/*": ["./src/*"],
+      "@hooks/*": ["./src/hooks/*"],
     }
   },
   "exclude": [
