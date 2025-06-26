@@ -19,6 +19,7 @@ type SectionChild = {
   icon: React.JSX.Element
   args:
     | {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         screenName: any
         screenProps?: Record<string, boolean>
       }

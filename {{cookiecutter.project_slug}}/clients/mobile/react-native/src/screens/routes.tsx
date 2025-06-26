@@ -132,7 +132,7 @@ const RootNavigator = () => (
 
 // App Root Component with navigation ref
 export const AppRoot = () => {
-  //@eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const navigationRef = React.useRef<any>(null)
 
   React.useEffect(() => {

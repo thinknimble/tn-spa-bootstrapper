@@ -10,8 +10,10 @@ export const setNavigationRef = (ref: NavigationContainerRef<RootStackParamList>
 }
 
 // Utility functions for navigation outside of components
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const navigate = (name: keyof RootStackParamList, params?: any) => {
   if (navigationRef?.isReady()) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     navigationRef.navigate(name as any, params)
   }
 }
@@ -21,7 +23,7 @@ export const goBack = () => {
     navigationRef.goBack()
   }
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const reset = (state: any) => {
   if (navigationRef?.isReady()) {
     navigationRef.reset(state)
