@@ -107,26 +107,28 @@ const TabNavigator = () => (
 )
 
 // 3. Use TabNavigator in your RootNavigator or wherever you want the bottom tabs
+{% raw %}
 const RootNavigator = () => (
   <RootStack.Navigator initialRouteName="AuthStack" screenOptions={screenDefaultOptions}>
     <RootStack.Screen
       name="AuthStack"
       component={AuthStackScreen}
-      options={{ {{ headerShown: false }} }}
+      options={{ headerShown: false }}
     />
     <RootStack.Screen name="MainStack" component={TabNavigator} options={{ headerShown: false }} />
     <RootStack.Screen
       name="SettingsStack"
       component={SettingsStackScreen}
-      options={{ {{ headerShown: false }} }}
+      options={{ headerShown: false }}
     />
     <RootStack.Screen
       name="PreviewStack"
       component={PreviewStackScreen}
-      options={{ {{ headerShown: false }} }}
+      options={{ headerShown: false }}
     />
   </RootStack.Navigator>
 )
+{% endraw %}
 
 // App Root Component with navigation ref
 export const AppRoot = () => {
