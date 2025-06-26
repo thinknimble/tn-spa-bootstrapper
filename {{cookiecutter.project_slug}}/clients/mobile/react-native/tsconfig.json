@@ -1,7 +1,12 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
     "module": "esnext",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "resolveJsonModule": true,
     "paths": {
       "@components/*": ["./src/components/*"],
       "@screens/*": ["./src/screens/*"],
@@ -10,7 +15,7 @@
       "@services/*": ["./src/services/*"],
       "@utils/*": ["./src/utils/*"],
       "@src/*": ["./src/*"],
-      "@hooks/*": ["./src/hooks/*"],
+      "@hooks/*": ["./src/hooks/*"]
     }
   },
   "exclude": [
@@ -18,8 +23,7 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
-  ],
-  "extends": "expo/tsconfig.base",
+  ]
 }
 
 
