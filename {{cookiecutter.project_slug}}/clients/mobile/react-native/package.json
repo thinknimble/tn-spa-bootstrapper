@@ -7,6 +7,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "npm run start:nc",
+    "start:docker": "expo start -c --lan --dev-client",
     "start:nc": "expo start -c --go",
     "start:prod": "expo start --no-dev --minify",
     "start:android": "expo start --android",
