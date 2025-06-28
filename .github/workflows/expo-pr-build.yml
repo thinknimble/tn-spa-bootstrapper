@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./mobile
+        working-directory: ./my_project/mobile
 
 
       - name: Set Variables
@@ -39,7 +39,7 @@ jobs:
           echo "EXPO_CHANNEL=$(echo ${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\\d+') | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
 
       - name: Update EAS Config
-        working-directory: ./mobile
+        working-directory: ./my_project/mobile
         run: |
           jq --arg pr_number "$PR_NUMBER" --arg expo_channel "$EXPO_CHANNEL" '
             .build["review_" + $pr_number] = {
@@ -67,17 +67,17 @@ jobs:
           ' eas.json > tmp.$$.json && mv tmp.$$.json eas.json
 
       - name: Display Updated EAS Config
-        working-directory: ./mobile
+        working-directory: ./my_project/mobile
         run: cat eas.json
 
       # note: you will need to register your device first using eas device:create & eas credentials to test this
       - name: Build review app (BUILD)
-        working-directory: ./mobile
+        working-directory: ./my_project/mobile
         run: |
           eas build --platform ios --profile "review_${{ env.PR_NUMBER }}" --non-interactive
 
       - name: Build review app (Simulator BUILD)
-        working-directory: ./mobile
+        working-directory: ./my_project/mobile
         run: |
           eas build --platform ios --profile "review_${{ env.PR_NUMBER }}_dc" --non-interactive
 

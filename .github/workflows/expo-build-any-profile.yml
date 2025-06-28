@@ -53,12 +53,12 @@ jobs:
           token: "${{ secrets.EXPO_TOKEN }}"
 
       - name: 📦 Install dependencies
-        working-directory: ./mobile
+        working-directory: ./my_project/mobile
         run: npm install
 
       - name: 🚀 Build app
         run: |
-          cd mobile
+          cd ./my_project/mobile
           CLEAR_CACHE_FLAG=""
           if [[ {{ "${{ github.event.inputs.clear_cache }}" }} ]]; then
             CLEAR_CACHE_FLAG="--clear-cache"
