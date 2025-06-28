@@ -1,0 +1,66 @@
+# Manually triggered workflow for creating a build
+name: Expo Build with given profile
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Build profile"
+        required: true
+        default: "development"
+        type: choice
+        # Should match the ones in `eas.json`
+        options:
+          - development
+          - development_simulator
+          - development_review
+          - staging
+          - production
+      platform:
+        description: "Platform"
+        required: true
+        default: "ios"
+        type: choice
+        options:
+          - android
+          - ios
+          - all
+      clear_cache:
+        description: "Clear cache"
+        required: true
+        default: false
+        type: "boolean"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: npm
+          cache-dependency-path: ./mobile/package-lock.json
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: "${{ secrets.EXPO_TOKEN }}"
+
+      - name: 📦 Install dependencies
+        working-directory: ./mobile
+        run: npm install
+
+      - name: 🚀 Build app
+        run: |
+          cd mobile
+          CLEAR_CACHE_FLAG=""
+          if [[ {{ "${{ github.event.inputs.clear_cache }}" }} ]]; then
+            CLEAR_CACHE_FLAG="--clear-cache"
+          fi
+          eas build --profile {{ "${{ github.event.inputs.profile }}" }} --platform {{ "${{ github.event.inputs.platform }}" }} --non-interactive $CLEAR_CACHE_FLAG

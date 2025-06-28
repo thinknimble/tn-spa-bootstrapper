@@ -26,10 +26,9 @@ jobs:
           token: "${{ secrets.EXPO_TOKEN }}"
 
       - name: Install dependencies
-        run: npm install && npm install --workspace=tn-golf-vision
+        run: npm install
+        working-directory: ./mobile
 
-      - name: Build custom module
-        run: npm run build:vision
 
       - name: Set Variables
         id: set-vars
@@ -72,12 +71,12 @@ jobs:
         run: cat eas.json
 
       # note: you will need to register your device first using eas device:create & eas credentials to test this
-      - name:  Build review app (BUILD)
+      - name: Build review app (BUILD)
         working-directory: ./mobile
         run: |
           eas build --platform ios --profile "review_${{ env.PR_NUMBER }}" --non-interactive
 
-      - name:  Build review app (development BUILD)
+      - name: Build review app (Simulator BUILD)
         working-directory: ./mobile
         run: |
           eas build --platform ios --profile "review_${{ env.PR_NUMBER }}_dc" --non-interactive
