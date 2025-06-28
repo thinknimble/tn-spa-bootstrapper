@@ -2,6 +2,10 @@ name: Git Changes Summary
 on:
   workflow_dispatch:
     inputs:
+      pr_number:
+        description: 'PR number to summarize (for manual testing)'
+        required: false
+        default: ''
       gdoc_id:
         description: 'Google Doc ID to update (leave blank to create new)'
         required: false
@@ -21,18 +25,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get raw diff of merged changes
-        run: |
-          echo "Diff between ${{ github.event.before }} and ${{ github.sha }}"
-          git fetch origin ${{ github.ref }}
-          git diff ${{ github.event.before }} ${{ github.sha }} > merged.txt
-          cat merged.txt
+      - name: Get PR changed files and diffs (manual or auto)
+        id: files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = process.env.PR_NUMBER || (context.payload.pull_request && context.payload.pull_request.number);
+            if (!pr) throw new Error('No PR number provided or found.');
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr,
+              per_page: 100
+            });
+            let summary = `# PR #${pr} - Files Changed and Diffs\n\n`;
+            for (const file of files) {
+              summary += `## ${file.filename} (${file.status})\n`;
+              if (file.patch) {
+                summary += '```diff\n' + file.patch + '\n```\n';
+              } else {
+                summary += '_No diff available (binary or too large)_\n';
+              }
+              summary += '\n';
+            }
+            require('fs').writeFileSync('pr-summary.txt', summary);
+            return summary;
+        env:
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: git-changes-summary
-          path: merged.txt
+          name: pr-changes-summary
+          path: pr-summary.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -46,8 +71,63 @@ jobs:
         uses: ./.github/actions/upload-to-google-docs
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
-          file-path: 'merged.txt'
+          file-path: 'pr-summary.txt'
           folder-id: ${{ github.event.inputs.gfolder_id }}
-          document-title: 'Git Changes Summary'
+          document-title: 'PR Change Summary'
           document-id: ${{ github.event.inputs.gdoc_id }}
 
+# name: PR Merge Change Summary
+
+# on:
+#   pull_request:
+#     types: [closed]
+
+# jobs:
+#   summarize:
+#     if: github.event.pull_request.merged == true
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Get PR changed files
+#         id: files
+#         uses: actions/github-script@v7
+#         with:
+#           script: |
+#             const pr = context.payload.pull_request.number;
+#             const { data: files } = await github.rest.pulls.listFiles({
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#               pull_number: pr,
+#               per_page: 100
+#             });
+#             let summary = `# PR #${pr} - Files Changed\\n\\n`;
+#             for (const file of files) {
+#               summary += `- ${file.filename} (${file.status})\\n`;
+#             }
+#             require('fs').writeFileSync('pr-summary.txt', summary);
+#             return summary;
+
+#       - name: Upload Artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: pr-changes-summary
+#           path: pr-summary.txt
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18'
+
+#       - name: Install dependencies
+#         run: npm install @actions/core googleapis
+
+#       - name: Upload to Google Docs
+#         uses: ./.github/actions/upload-to-google-docs
+#         with:
+#           credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+#           file-path: 'pr-summary.txt'
+#           folder-id: ${{ github.event.inputs.gfolder_id }}
+#           document-title: 'PR Change Summary'
+#           document-id: ${{ github.event.inputs.gdoc_id }}
