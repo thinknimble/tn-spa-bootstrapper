@@ -22,12 +22,12 @@ const config = {
   },
   'expo_build':{
     'staging':{
-      backendServerUrl: backendServerUrl || BACKEND_SERVER_URL || 'https://{{ cookiecutter.project_slug }}-staging.herokuapp.com',
+      backendServerUrl: backendServerUrl || BACKEND_SERVER_URL || 'https://sample_app-staging.herokuapp.com',
       rollbarAccessToken: isAndroid ? null : rollbarAccessToken || ROLLBAR_ACCESS_TOKEN || "<REPLACE_WITH_STAGING_ROLLBAR_TOKEN>",
       sentryDSN: sentryDSN || SENTRY_DSN || "<REPLACE_WITH_STAGING_SENTRY_DSN>",
     },
     'production':{
-      backendServerUrl: backendServerUrl || BACKEND_SERVER_URL || 'https://{{ cookiecutter.project_slug }}-staging.herokuapp.com',
+      backendServerUrl: backendServerUrl || BACKEND_SERVER_URL || 'https://sample_app-staging.herokuapp.com',
       rollbarAccessToken: isAndroid ? null : rollbarAccessToken || ROLLBAR_ACCESS_TOKEN || "<REPLACE_WITH_PROD_ROLLBAR_TOKEN>",
       sentryDSN: sentryDSN || SENTRY_DSN || "<REPLACE_WITH_PROD_SENTRY_DSN>",
     }
@@ -46,10 +46,10 @@ const ENV = () => {
      * 2024-05-08
      */
       if (Updates.channel === 'staging') {
-        const logger = new Logger(config.expo_build.staging.rollbarAccessToken).logger
+        const logger = new Logger().logger
         return {...config.expo_build.staging, logger}
       }else if(Updates.channel === 'production'){
-        const logger = new Logger(config.expo_build.production.rollbarAccessToken).logger
+        const logger = new Logger().logger
         return {...config.expo_build.production, logger}
       }
       
@@ -62,7 +62,7 @@ const ENV = () => {
   }
 
  
-  const logger = new Logger(config['expo-go'].rollbarAccessToken).logger
+  const logger = new Logger().logger
 
   return {
     backendServerUrl: BACKEND_SERVER_URL,

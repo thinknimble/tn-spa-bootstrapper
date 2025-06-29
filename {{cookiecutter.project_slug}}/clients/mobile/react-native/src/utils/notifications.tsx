@@ -13,8 +13,12 @@ import { useEffect, useRef } from 'react'
 import { Alert, Platform } from 'react-native'
 
 export const useListenLogNotification = () => {
-  const notificationListener = useRef<ReturnType<typeof addNotificationReceivedListener>>()
-  const responseListener = useRef<ReturnType<typeof addNotificationResponseReceivedListener>>()
+  const notificationListener = useRef<ReturnType<typeof addNotificationReceivedListener> | null>(
+    null,
+  )
+  const responseListener = useRef<ReturnType<
+    typeof addNotificationResponseReceivedListener
+  > | null>(null)
 
   useEffect(() => {
     notificationListener.current = addNotificationReceivedListener((notification) => {

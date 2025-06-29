@@ -11,7 +11,7 @@ import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { isAxiosError } from 'axios'
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
-import { getNavio } from '../routes'
+import { goToMain } from '@stores/navigation'
 
 const InnerForm = () => {
   const [errors, setErrors] = useState<string[] | undefined>()
@@ -22,7 +22,7 @@ const InnerForm = () => {
     onSuccess: (data) => {
       changeToken(data.token)
       changeUserId(data.id)
-      getNavio().stacks.push('MainStack')
+      goToMain()
     },
     onError(e: unknown) {
       if (isAxiosError(e)) {
