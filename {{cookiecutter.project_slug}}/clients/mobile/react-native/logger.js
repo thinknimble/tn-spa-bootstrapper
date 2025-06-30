@@ -1,12 +1,7 @@
 export default class Logger {
   constructor() {
   }
-  static create() {
-    return new Logger()
-  }
-  get client() {
-    return null
-  }
+ 
   get logger() {
     const logger = {}
     logger.info = this.client ? this.client.info : console.log
