@@ -1,18 +1,10 @@
-import { Client } from 'rollbar-react-native'
-
-const [PROD, STAGING, DEV, REVIEW] = ['production', 'staging', 'development', 'review']
-
 export default class Logger {
-  constructor(token = null) {
-    this.token = token
+  constructor() {
   }
-  static create(token = null) {
-    return new Logger(token)
+  static create() {
+    return new Logger()
   }
   get client() {
-    if (this.token) {
-      return new Client(this.token)
-    }
     return null
   }
   get logger() {
