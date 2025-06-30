@@ -3,7 +3,7 @@
  *
  */
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@stores/auth'
 import { queryClient } from '@utils/query-client'
@@ -21,7 +21,12 @@ export const useUser = () => {
     }
   }, [query.data, query.isSuccess, writeUserInStorage])
 
-  return query
+  return useMemo(
+    () => ({
+      userQuery: query,
+    }),
+    [query],
+  )
 }
 
 /**

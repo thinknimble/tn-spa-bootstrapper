@@ -5,7 +5,7 @@ import { Bounceable } from 'rn-bounceable'
 import { Container } from '@components/container'
 import { UserShape, fullNameZod, useLogout, useUser, userApi } from '@services/user'
 import { userQueries } from '@services/user/queries'
-import { getNavio } from '..'
+import { useNavigation } from '@hooks/useNavigation'
 import { ErrorMessage } from '@components/errors'
 import { Ionicons } from '@expo/vector-icons'
 import colors from '@utils/colors'
@@ -22,11 +22,12 @@ const Separator = () => {
 }
 
 export const EditProfile = () => {
-  const navio = getNavio()
+  const { goBack, stacks } = useNavigation()
   const onCancel = () => {
-    navio.goBack()
+    goBack()
   }
-  const { data: user } = useUser()
+  const { userQuery: query } = useUser()
+  const { data: user } = query
   const { userId } = useAuth()
   const [fullName, setFullName] = useState(user?.fullName ?? '')
   const [errors, setErrors] = useState<string[] | undefined>()
@@ -86,7 +87,7 @@ export const EditProfile = () => {
     mutationFn: userApi.remove,
     onSuccess: () => {
       logout()
-      navio.stacks.setRoot('AuthStack')
+      stacks.goToAuth()
     },
     onError: () => {
       Alert.alert('Error', "Couldn't delete your account. Please try again later.", [
