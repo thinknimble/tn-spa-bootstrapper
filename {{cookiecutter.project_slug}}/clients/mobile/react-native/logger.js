@@ -1,10 +1,5 @@
-
-
-const [PROD, STAGING, DEV, REVIEW] = ['production', 'staging', 'development', 'review']
-
 export default class Logger {
   constructor() {
-  
   }
  
   get logger() {
