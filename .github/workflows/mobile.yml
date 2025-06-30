@@ -124,7 +124,7 @@ jobs:
             "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
             "ROLLBAR_ACCESS_TOKEN": "9943cd80b73c426d8d6e3fba6caf46f9",
             "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
-            "SENTRY_PROJECT_NAME": "tn-bootsrapper-rn"
+            "SENTRY_PROJECT_NAME": "tn-spa-prod"
               }
           } |
           .build["review_" + $pr_number + "_dc"] = {
@@ -135,7 +135,7 @@ jobs:
           "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
           "ROLLBAR_ACCESS_TOKEN": "9943cd80b73c426d8d6e3fba6caf46f9",
           "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
-          "SENTRY_PROJECT_NAME": "tn-bootsrapper-rn"
+          "SENTRY_PROJECT_NAME": "tn-spa-prod"
             }
           } 
           ' eas.json > tmp.$$.json && mv tmp.$$.json eas.json
