@@ -47,6 +47,7 @@ export const DatePickerModal: React.FC<Props> = ({
             }}
             minDate={formattedMinDate}
             maxDate={formattedMaxDate}
+            {% raw %}
             theme={{
               todayTextColor: `${colors['primary']}`,
               selectedDayTextColor: '#ffffff',
@@ -58,6 +59,7 @@ export const DatePickerModal: React.FC<Props> = ({
               textDayFontSize: 16,
               textMonthFontSize: 18,
             }}
+            {% endraw %}
           />
           <View className="flex-row justify-end mt-4 gap-4">
             <Pressable onPress={onClose}>
