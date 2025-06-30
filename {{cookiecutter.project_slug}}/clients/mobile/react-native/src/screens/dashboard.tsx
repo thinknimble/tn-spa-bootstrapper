@@ -2,8 +2,7 @@ import { BButton } from '@components/Button'
 import { MultiPlatformSafeAreaView } from '@components/multi-platform-safe-area-view'
 import { SHEET_NAMES } from '@components/sheets'
 import { useLogout } from '@services/user'
-import { navioAtom } from '@stores/navigation'
-import { useAtomValue } from 'jotai'
+import { useNavigation } from '@hooks/useNavigation'
 import React from 'react'
 import { Text, View } from 'react-native'
 import { SheetManager } from 'react-native-actions-sheet'
@@ -11,7 +10,7 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { BounceableWind } from '@components/styled'
 
 export const DashboardScreen = () => {
-  const navio = useAtomValue(navioAtom)
+  const { stacks } = useNavigation()
   const { mutate: logout } = useLogout()
 
   const onOpenSheet = () => {
@@ -28,7 +27,7 @@ export const DashboardScreen = () => {
         <View className="flex-row justify-end items-center w-full px-10">
           <BounceableWind
             contentContainerClassName="flex-row items-center gap-2"
-            onPress={() => navio?.stacks.push('SettingsStack')}
+            onPress={() => stacks.push('SettingsStack')}
           >
             <Text>Settings</Text>
             <Ionicons name="settings-outline" size={32} color="black" />
@@ -45,7 +44,7 @@ export const DashboardScreen = () => {
             onPress={() => {
               logout(undefined, {
                 onSettled: () => {
-                  navio?.setRoot('stacks', 'AuthStack')
+                  stacks.goToAuth()
                 },
               })
             }}

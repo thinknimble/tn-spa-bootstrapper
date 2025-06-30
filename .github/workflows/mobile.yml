@@ -108,9 +108,9 @@ jobs:
         id: set-vars
         run: |
           echo "backend_url=${{ github.event.deployment_status.environment_url || 'https://default-backend-url.com' }}" >> $GITHUB_ENV
-          echo "PR_NUMBER=$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\\d+')" >> $GITHUB_ENV
+          echo "PR_NUMBER=$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+')" >> $GITHUB_ENV
           echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
-          echo "EXPO_CHANNEL=$(echo ${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\\d+') | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
+          echo "EXPO_CHANNEL=$(echo ${{ github.repository }}-$(echo ${{ github.event.deployment_status.environment_url }} | grep -oP '(?<=pr-)\d+') | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
 
       - name: Update EAS Config
         working-directory: ./my_project/mobile
@@ -124,7 +124,7 @@ jobs:
             "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
             "ROLLBAR_ACCESS_TOKEN": "9943cd80b73c426d8d6e3fba6caf46f9",
             "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
-            "SENTRY_PROJECT_NAME": "tn-bootsrapper-rn"
+            "SENTRY_PROJECT_NAME": "tn-spa-prod"
               }
           } |
           .build["review_" + $pr_number + "_dc"] = {
@@ -135,7 +135,7 @@ jobs:
           "BACKEND_SERVER_URL": "${{ github.event.deployment_status.environment_url  || 'https://default-backend-url.com' }}",
           "ROLLBAR_ACCESS_TOKEN": "9943cd80b73c426d8d6e3fba6caf46f9",
           "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
-          "SENTRY_PROJECT_NAME": "tn-bootsrapper-rn"
+          "SENTRY_PROJECT_NAME": "tn-spa-prod"
             }
           } 
           ' eas.json > tmp.$$.json && mv tmp.$$.json eas.json
