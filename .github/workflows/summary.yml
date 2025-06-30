@@ -9,23 +9,28 @@ on:
       gfolder_id:
         description: 'Google Drive Folder ID to create the doc in (leave blank to use root)'
         required: false
-        default: ''
-  push:
-    branches:
-      - main
+        default: '1hH7b4TOGbNv7LXl3lrzztMv4YBowGvRL'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  publish:
+  extract-changes:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Get raw diff of merged changes
+      - name: Get raw diff of changes
         run: |
-          echo "Diff between ${{ github.event.before }} and ${{ github.sha }}"
-          git fetch origin ${{ github.ref }}
-          git diff ${{ github.event.before }} ${{ github.sha }} > merged.txt
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Diff for PR ${{ github.event.pull_request.number }}"
+            git diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > merged.txt
+          else
+            echo "Diff for manual workflow run"
+            git diff origin/main HEAD > merged.txt
+          fi
           cat merged.txt
 
       - name: Upload Artifact
@@ -42,12 +47,34 @@ jobs:
       - name: Install dependencies
         run: npm install @actions/core googleapis
 
+      - name: Set Document Title
+        id: set_title
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "title=PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+          else
+            echo "title=Git Changes Summary" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set Folder ID
+        run: |
+          if [ -n "${{ github.event.inputs.gfolder_id }}" ]; then
+            echo "DOCS_FOLDER_ID=${{ github.event.inputs.gfolder_id }}" >> $GITHUB_ENV
+          else
+            echo "DOCS_FOLDER_ID=1hH7b4TOGbNv7LXl3lrzztMv4YBowGvRL" >> $GITHUB_ENV
+          fi
+
       - name: Upload to Google Docs
+        id: upload_gdoc
         uses: ./.github/actions/upload-to-google-docs
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
           file-path: 'merged.txt'
-          folder-id: ${{ github.event.inputs.gfolder_id }}
-          document-title: 'Git Changes Summary'
+          folder-id: ${{ env.DOCS_FOLDER_ID }}
+          document-title: ${{ steps.set_title.outputs.title }}
           document-id: ${{ github.event.inputs.gdoc_id }}
+
+      - name: Output Google Doc Link
+        run: |
+          echo "Google Doc Link: ${{ steps.upload_gdoc.outputs.webViewLink }}"
 
