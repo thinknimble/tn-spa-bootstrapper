@@ -41,7 +41,7 @@
     "@shopify/flash-list": "1.7.6",
     "@tanstack/react-query": "^5.15.0",
     "@thinknimble/tn-forms": "^3.3.4",
-    "@thinknimble/tn-forms-react": "^1.0.7",
+    "@thinknimble/tn-forms-react": "^1.0.8",
     "@thinknimble/tn-models": "^4.0.0",
     "axios": "^1.3.2",
     "clsx": "^2.1.1",
