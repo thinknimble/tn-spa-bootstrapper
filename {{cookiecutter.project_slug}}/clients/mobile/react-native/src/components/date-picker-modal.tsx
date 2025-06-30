@@ -3,7 +3,6 @@ import { Modal, View, Text, Pressable } from 'react-native'
 import { Calendar, DateData } from 'react-native-calendars'
 import { format } from 'date-fns'
 import { parseDateLocal } from '../utils/help'
-import { colors } from '../utils/colors'
 
 type Props = {
   visible: boolean
@@ -43,15 +42,15 @@ export const DatePickerModal: React.FC<Props> = ({
             markedDates={{
               [selected]: {
                 selected: true,
-                selectedColor: `${colors['primary']}`,
+                selectedColor: "#F68F58",
               },
             }}
             minDate={formattedMinDate}
             maxDate={formattedMaxDate}
             theme={{
-              todayTextColor: `${colors['primary']}`,
+              todayTextColor: "#F68F58",
               selectedDayTextColor: '#ffffff',
-              selectedDayBackgroundColor: `${colors['primary']}`,
+              selectedDayBackgroundColor: "#F68F58",
               arrowColor: '#2563EB',
               monthTextColor: '#111827',
               textDayFontWeight: '500',
