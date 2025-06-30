@@ -9,10 +9,10 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "BACKEND_SERVER_URL": "https://tn-spa-bootstrapper-production.herokuapp.com",
+        "BACKEND_SERVER_URL": "<REPLACE_WITH_LOCAL_BACKEND_SERVER_URL>",
         "BUILD_ENV": "development",
-        "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
-        "SENTRY_DSN": "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
+        "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_LOCAL_ROLLBAR_TOKEN>",
+        "SENTRY_DSN": "<REPLACE_WITH_LOCAL_SENTRY_DSN>"
       }
     },
     "development_review": {
@@ -20,11 +20,11 @@
       "distribution": "internal",
       "channel": "review",
       "env": {
-        "BACKEND_SERVER_URL": "https://tn-spa-bootstrapper-production.herokuapp.com",
+        "BACKEND_SERVER_URL": "<REPLACE_WITH_REVIEW_APP_BACKEND_SERVER_URL>",
         "BUILD_ENV": "review",
-        "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
-        "SENTRY_PROJECT_NAME": "tn-bootsrapper-rn",
-        "SENTRY_DSN": "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
+        "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_REVIEW_APP_ROLLBAR_TOKEN>",
+        "SENTRY_PROJECT_NAME": "<REPLACE_WITH_REVIEW_APP_SENTRY_PROJECT_NAME>",
+        "SENTRY_DSN": "<REPLACE_WITH_REVIEW_APP_SENTRY_DSN>"
       }
     },
     "development_simulator": {
@@ -32,10 +32,10 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "BACKEND_SERVER_URL": "https://tn-spa-bootstrapper-production.herokuapp.com",
+        "BACKEND_SERVER_URL": "<REPLACE_WITH_LOCAL_BACKEND_SERVER_URL>",
         "BUILD_ENV": "development",
-        "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
-        "SENTRY_DSN": "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
+        "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_LOCAL_ROLLBAR_TOKEN>",
+        "SENTRY_DSN": "<REPLACE_WITH_LOCAL_SENTRY_DSN>"
       },
       "ios": {
         "simulator": true
@@ -45,30 +45,30 @@
       "distribution": "internal",
       "channel": "staging",
       "env": {
-        "BACKEND_SERVER_URL": "https://tn-spa-bootstrapper-production.herokuapp.com",
+        "BACKEND_SERVER_URL": "<REPLACE_WITH_STAGING_BACKEND_SERVER_URL>",
         "BUILD_ENV": "staging",
-        "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
-        "SENTRY_DSN": "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
+        "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_STAGING_ROLLBAR_TOKEN>",
+        "SENTRY_DSN": "<REPLACE_WITH_STAGING_SENTRY_DSN>"
       }
     },
     "production": {
       "channel": "production",
       "autoIncrement": true,
       "env": {
-        "BACKEND_SERVER_URL": "https://tn-spa-bootstrapper-production.herokuapp.com",
+        "BACKEND_SERVER_URL": "<REPLACE_WITH_PRODUCTION_BACKEND_SERVER_URL>",
         "BUILD_ENV": "production",
-        "ROLLBAR_ACCESS_TOKEN": "1a19e5da05b2435b802d5a81aba2bbd7",
-        "SENTRY_DSN": "https://a7cea97f07ac42fa9e28800b037997c9@o4504899535962112.ingest.sentry.io/4504906332897280"
+        "ROLLBAR_ACCESS_TOKEN": "<REPLACE_WITH_PRODUCTION_ROLLBAR_TOKEN>",
+        "SENTRY_DSN": "<REPLACE_WITH_PRODUCTION_SENTRY_DSN>"
       }
     }
   },
 "submit": {
   "production": {
     "ios": {
-      "appName": "TN Bootsrapper RN",
-      "appleId": "pari@thinknimble.com",
-      "appleTeamId": "6BNA6HFF6B",
-      "ascAppId": "6446805695"
+      "appName": "<REPLACE_WITH_APPSTORE_CONNECT_APP_NAME>",
+      "appleId": "<REPLACE_WITH_APPLE_ID_EMAIL_SIGNING_APP>",
+      "appleTeamId": "<REPLACE_WITH_APPLE_TEAM_ID>",
+      "ascAppId": "<REPLACE_WITH_APPLESTORE_CONNECT_ID>"
     }
   }
 }
