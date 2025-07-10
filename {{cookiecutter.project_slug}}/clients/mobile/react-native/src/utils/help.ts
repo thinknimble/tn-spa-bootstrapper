@@ -18,3 +18,8 @@ export const getNameInitials = (fullName: string, defaultValue = '??') =>
         .map((n) => n.charAt(0))
         .join('')
     : defaultValue
+
+export const parseDateLocal = (dateString: string): Date => {
+  const [year, month, day] = dateString.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}

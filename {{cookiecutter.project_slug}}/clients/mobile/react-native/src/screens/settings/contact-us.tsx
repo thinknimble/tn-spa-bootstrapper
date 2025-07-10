@@ -1,21 +1,21 @@
 import { Text, View } from 'react-native'
 import { BButton } from '@components/Button'
 import { Container } from '@components/container'
-import { getNavio } from '..'
+import { useNavigation } from '@hooks/useNavigation'
 import { ContactEmailButton } from '@components/contact-email-button'
 import { Ionicons } from '@expo/vector-icons'
 import colors from '@utils/colors'
 import { BounceableWind } from '@components/styled'
 
 export const ContactUs = () => {
-  const navio = getNavio()
+  const { goBack } = useNavigation()
 
   return (
     <Container>
       <View className="items-center">
         <BounceableWind
           onPress={() => {
-            navio.goBack()
+            goBack()
           }}
           contentContainerClassName="absolute left-0 top-0"
         >
@@ -39,7 +39,7 @@ export const ContactUs = () => {
           label="BACK TO SETTINGS"
           variant="primary"
           onPress={() => {
-            navio.goBack()
+            goBack()
           }}
         />
       </View>
