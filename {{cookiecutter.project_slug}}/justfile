@@ -82,6 +82,10 @@ docker-restart-all:
 docker-logs:
     {{ "{{ docker_compose }}" }} logs -f
 
+[group('docker')]
+docker-create-test-data:
+	docker compose run server python server/manage.py create_test_data
+
 # Django commands
 [group('django')]
 create-test-data:
