@@ -43,6 +43,8 @@ if CURRENT_DOMAIN not in ALLOWED_HOSTS:
 # Used by the corsheaders app/middleware (django-cors-headers) to allow multiple domains to access the backend
 CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
 
+CSRF_TRUSTED_ORIGINS = [f"http://{host}" for host in ALLOWED_HOSTS] + [f"https://{host}" for host in ALLOWED_HOSTS]
+
 # Application definition
 
 INSTALLED_APPS = [
