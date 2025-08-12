@@ -4,7 +4,7 @@ from asgiref.sync import sync_to_async
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
-from test_agents.common.models import AbstractBaseModel
+from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 
 from .exceptions import BadTemplateException
 
