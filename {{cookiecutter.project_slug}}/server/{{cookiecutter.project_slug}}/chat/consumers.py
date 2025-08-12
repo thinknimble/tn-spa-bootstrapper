@@ -17,7 +17,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
         # Generate a fresh system prompt for this connection using async version
-        self.system_prompt = await PromptTemplate.objects.aget_assembled_prompt()
+        self.system_prompt = await PromptTemplate.objects.aget_assembled_prompt(
+            agent=PromptTemplate.AgentType.CHAT
+        )
         await self.accept()
         self.groups = ["chat"]
 

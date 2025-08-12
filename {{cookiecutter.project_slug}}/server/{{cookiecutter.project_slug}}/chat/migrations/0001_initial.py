@@ -85,6 +85,20 @@ class Migration(migrations.Migration):
                         help_text="Order in which this template will appear in the system prompt",
                     ),
                 ),
+                (
+                    "agent_types",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=models.CharField(
+                            choices=[
+                                ("CHAT", "Chat"),
+                            ]
+                        ),
+                        blank=True,
+                        default=list,
+                        help_text="List of agent types this template is for. Leave empty for none.",
+                        size=None,
+                    ),
+                ),
             ],
             options={
                 "verbose_name": "Prompt Template",

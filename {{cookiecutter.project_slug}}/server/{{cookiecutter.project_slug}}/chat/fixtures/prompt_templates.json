@@ -7,7 +7,8 @@
       "description": "Initial prompt that sets up the consultant's role and personality",
       "order": 0,
       "created": "2024-02-27T00:00:00Z",
-      "last_edited": "2024-02-27T00:00:00Z"
+      "last_edited": "2024-02-27T00:00:00Z",
+      "agent_types": ["CHAT"]
     }
   },
   {
@@ -18,7 +19,8 @@
       "description": "Concluding instructions and special commands",
       "order": 999,
       "created": "2024-02-27T00:00:00Z",
-      "last_edited": "2024-02-27T00:00:00Z"
+      "last_edited": "2024-02-27T00:00:00Z",
+      "agent_types": ["CHAT"]	
     }
   }
 ]
