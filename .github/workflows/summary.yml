@@ -2,6 +2,10 @@ name: Git Changes Summary
 on:
   workflow_dispatch:
     inputs:
+      pr_number:
+        description: 'PR number to summarize (for manual testing)'
+        required: false
+        default: ''
       gdoc_id:
         description: 'Google Doc ID to update (leave blank to create new)'
         required: false
@@ -36,8 +40,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: git-changes-summary
-          path: merged.txt
+          name: pr-changes-summary
+          path: pr-summary.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
