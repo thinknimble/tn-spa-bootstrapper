@@ -11,7 +11,7 @@ import pytest
 from django.core.management import call_command
 from django.utils import timezone
 
-from {{ cookiecutter.project_slug }}.core.models import User
+from {{ cookiecutter.project_slug }}.core.models import User  # noqa: I001
 
 
 @pytest.mark.django_db
