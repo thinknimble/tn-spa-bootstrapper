@@ -1,5 +1,4 @@
 import logging
-from email.utils import parseaddr
 
 import rollbar
 from django.conf import settings
@@ -89,27 +88,25 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
-        # Parse and normalize the email
-        parsed_email = parseaddr(value)[1].lower()
-        if not parsed_email:
-            raise ValidationError("Invalid email format")
+        # Normalize the email to lowercase
+        email = value.lower()
         
         # Check allowlist if enabled
-        if settings.USE_EMAIL_ALLOWLIST and parsed_email not in settings.EMAIL_ALLOWLIST:
+        if settings.USE_EMAIL_ALLOWLIST and email not in settings.EMAIL_ALLOWLIST:
             raise ValidationError("Invalid email")
         
         # Basic validation - ensure @ and . in domain part
-        if "@" not in parsed_email or "." not in parsed_email.split("@")[-1]:
+        if "@" not in email or "." not in email.split("@")[-1]:
             raise ValidationError("Invalid email format")
         
         # Warn about suspicious domains but don't block
-        if not any(parsed_email.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
-            message = f"Potentially risky email: {parsed_email}"
+        if not any(email.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
+            message = f"Potentially risky email: {email}"
             logger.warning(message)
             if settings.ROLLBAR_ACCESS_TOKEN:
                 rollbar.report_message(message, 'warning')
         
-        return parsed_email
+        return email
 
     def validate(self, data):
         password = data.get("password")
