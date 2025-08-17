@@ -1,9 +1,16 @@
+import logging
+
+import rollbar
+from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 
 from .models import User
+
+logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -61,10 +68,49 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             "last_name": {"required": True},
         }
 
+    def _validate_name(self, value):
+        """
+        There are MANY unique names out there, so let users input whatever they want.
+        BUT...alert the devs if we see something odd.
+        """
+        if not "".join(value.split()).isalpha():
+            message = f"User signup with non-alphabetic characters in their name: {value}"
+            logger.warning(message)
+            if settings.ROLLBAR_ACCESS_TOKEN:
+                rollbar.report_message(message, 'warning')
+
+    def validate_first_name(self, value):
+        self._validate_name(value)
+        return value
+
+    def validate_last_name(self, value):
+        self._validate_name(value)
+        return value
+
+    def validate_email(self, value):
+        # Normalize the email to lowercase
+        email = value.lower()
+        
+        # Check allowlist if enabled
+        if settings.USE_EMAIL_ALLOWLIST and email not in settings.EMAIL_ALLOWLIST:
+            raise ValidationError("Invalid email")
+        
+        # Basic validation - ensure @ and . in domain part
+        if "@" not in email or "." not in email.split("@")[-1]:
+            raise ValidationError("Invalid email format")
+        
+        # Warn about suspicious domains but don't block
+        if not any(email.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
+            message = f"Potentially risky email: {email}"
+            logger.warning(message)
+            if settings.ROLLBAR_ACCESS_TOKEN:
+                rollbar.report_message(message, 'warning')
+        
+        return email
+
     def validate(self, data):
         password = data.get("password")
         validate_password(password)
-
         return data
 
     def create(self, validated_data):
