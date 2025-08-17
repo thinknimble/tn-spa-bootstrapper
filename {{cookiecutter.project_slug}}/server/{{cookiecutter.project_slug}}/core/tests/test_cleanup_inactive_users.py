@@ -103,6 +103,7 @@ class TestUserManagerCleanupMethods:
 
         # Mock delete to fail for user1 but succeed for user2
         original_delete = User.delete
+
         def mock_delete(self):
             if self.email == "user1@example.com":
                 raise Exception("Database error")

@@ -105,12 +105,21 @@ for config in "${TEST_CONFIGS[@]}"; do
                 ruff check server/ --fix --diff 2>/dev/null || true
             fi
 
-            # Check for issues
+            # Check for linting issues
             if [ "$VERBOSE" = true ]; then
-                ruff check server/ || RUFF_EXIT_CODE=$?
+                ruff check server/ || RUFF_LINT_EXIT=$?
             else
-                ruff check server/ --quiet || RUFF_EXIT_CODE=$?
+                ruff check server/ --quiet || RUFF_LINT_EXIT=$?
             fi
+
+            # Check for formatting issues
+            if [ "$VERBOSE" = true ]; then
+                ruff format --check server/ || RUFF_FORMAT_EXIT=$?
+            else
+                ruff format --check server/ --quiet || RUFF_FORMAT_EXIT=$?
+            fi
+
+            RUFF_EXIT_CODE=$((${RUFF_LINT_EXIT:-0} + ${RUFF_FORMAT_EXIT:-0}))
 
             if [ "${RUFF_EXIT_CODE:-0}" -ne 0 ]; then
                 ISSUES_FOUND=true
