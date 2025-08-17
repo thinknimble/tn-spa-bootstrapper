@@ -1,9 +1,11 @@
 import logging
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
+from django.utils import timezone
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
@@ -70,9 +72,6 @@ class UserManager(BaseUserManager):
                 - deleted_users: List of email addresses successfully deleted
                 - failed_deletions: List of tuples (email, error_message) for failed deletions
         """
-        from datetime import timedelta
-        from django.utils import timezone
-        
         cutoff_date = timezone.now() - timedelta(days=days)
         
         # Find inactive users who were marked inactive more than X days ago
@@ -107,9 +106,6 @@ class UserManager(BaseUserManager):
         Returns:
             QuerySet of inactive users
         """
-        from datetime import timedelta
-        from django.utils import timezone
-        
         cutoff_date = timezone.now() - timedelta(days=days)
         return self.filter(
             is_active=False,

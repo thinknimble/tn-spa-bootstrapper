@@ -1,21 +1,32 @@
 name: Git Changes Summary
 on:
+  # Temporarily disabled due to Google Drive quota issues
+  # To re-enable:
+  # 1. Uncomment the workflow_dispatch and pull_request sections below
+  # 2. Ensure Google Drive has sufficient storage quota
   workflow_dispatch:
     inputs:
-      gdoc_id:
-        description: 'Google Doc ID to update (leave blank to create new)'
+      disabled:
+        description: 'This workflow is temporarily disabled'
         required: false
-        default: ''
-      gfolder_id:
-        description: 'Google Drive Folder ID to create the doc in (leave blank to use root)'
-        required: false
-        default: '1hH7b4TOGbNv7LXl3lrzztMv4YBowGvRL'
-  pull_request:
-    types: [opened, synchronize, reopened]
+        default: 'true'
+  # workflow_dispatch:
+  #   inputs:
+  #     gdoc_id:
+  #       description: 'Google Doc ID to update (leave blank to create new)'
+  #       required: false
+  #       default: ''
+  #     gfolder_id:
+  #       description: 'Google Drive Folder ID to create the doc in (leave blank to use root)'
+  #       required: false
+  #       default: '1hH7b4TOGbNv7LXl3lrzztMv4YBowGvRL'
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
 
 jobs:
   extract-changes:
     runs-on: ubuntu-latest
+    if: false  # Workflow disabled - remove this line to re-enable
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
