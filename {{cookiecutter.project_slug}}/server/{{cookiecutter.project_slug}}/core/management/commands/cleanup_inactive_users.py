@@ -42,21 +42,15 @@ class Command(BaseCommand):
             user_count = inactive_users.count()
 
             if user_count == 0:
-                self.stdout.write(
-                    self.style.SUCCESS("No inactive users found for deletion.")
-                )
+                self.stdout.write(self.style.SUCCESS("No inactive users found for deletion."))
                 return
 
             self.stdout.write(
-                self.style.WARNING(
-                    f"DRY RUN: Would delete {user_count} inactive user(s):"
-                )
+                self.style.WARNING(f"DRY RUN: Would delete {user_count} inactive user(s):")
             )
             for user in inactive_users:
                 days_inactive = (timezone.now() - user.last_edited).days
-                self.stdout.write(
-                    f"  - {user.email} (inactive for {days_inactive} days)"
-                )
+                self.stdout.write(f"  - {user.email} (inactive for {days_inactive} days)")
         else:
             # Perform actual cleanup
             deleted_users, failed_deletions = User.objects.cleanup_inactive_users(days=days)
@@ -64,26 +58,18 @@ class Command(BaseCommand):
             total_count = len(deleted_users) + len(failed_deletions)
 
             if total_count == 0:
-                self.stdout.write(
-                    self.style.SUCCESS("No inactive users found for deletion.")
-                )
+                self.stdout.write(self.style.SUCCESS("No inactive users found for deletion."))
                 return
 
-            self.stdout.write(
-                self.style.WARNING(f"Processing {total_count} inactive user(s)...")
-            )
+            self.stdout.write(self.style.WARNING(f"Processing {total_count} inactive user(s)..."))
 
             # Report successful deletions
             for email in deleted_users:
-                self.stdout.write(
-                    self.style.SUCCESS(f"  Deleted {email}")
-                )
+                self.stdout.write(self.style.SUCCESS(f"  Deleted {email}"))
 
             # Report failed deletions
             for email, error in failed_deletions:
-                self.stdout.write(
-                    self.style.ERROR(f"  Failed to delete {email}: {error}")
-                )
+                self.stdout.write(self.style.ERROR(f"  Failed to delete {email}: {error}"))
 
             # Summary
             self.stdout.write(

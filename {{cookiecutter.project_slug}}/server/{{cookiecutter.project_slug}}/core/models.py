@@ -75,10 +75,7 @@ class UserManager(BaseUserManager):
         cutoff_date = timezone.now() - timedelta(days=days)
 
         # Find inactive users who were marked inactive more than X days ago
-        inactive_users = self.filter(
-            is_active=False,
-            last_edited__lt=cutoff_date
-        )
+        inactive_users = self.filter(is_active=False, last_edited__lt=cutoff_date)
 
         deleted_users = []
         failed_deletions = []
@@ -107,10 +104,7 @@ class UserManager(BaseUserManager):
             QuerySet of inactive users
         """
         cutoff_date = timezone.now() - timedelta(days=days)
-        return self.filter(
-            is_active=False,
-            last_edited__lt=cutoff_date
-        )
+        return self.filter(is_active=False, last_edited__lt=cutoff_date)
 
     class Meta:
         ordering = ("id",)
