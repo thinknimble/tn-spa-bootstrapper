@@ -26,3 +26,6 @@ if config("CI", False):
 # Enabling it here so pytest caplog fixture can be used to inspect them
 LOGGING["loggers"]["django"]["propagate"] = True
 LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["propagate"] = True
+
+# Disable email allowlist by default in tests unless explicitly testing it
+USE_EMAIL_ALLOWLIST = False
