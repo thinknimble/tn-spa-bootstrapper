@@ -118,7 +118,7 @@ class PromptTemplateManager(models.Manager):
 
     async def aget_assembled_prompt(self, agent: str | None = None):
         """Async version of get_assembled_prompt"""
-        return await sync_to_async(self.get_assembled_prompt)()
+        return await sync_to_async(self.get_assembled_prompt)(agent=agent)
 
 
 class PromptTemplate(AbstractBaseModel):
