@@ -1,0 +1,68 @@
+repos:
+  # Python linting with ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^server/
+      - id: ruff-format
+        files: ^server/
+
+  # Frontend linting and formatting for React web client
+  - repo: local
+    hooks:
+      - id: web-prettier
+        name: Web Client Prettier Format
+        entry: sh -c 'cd clients/web/react && npm run format'
+        language: system
+        files: ^clients/web/react/.*\.(js|jsx|ts|tsx|css|scss|json|md)$
+        pass_filenames: false
+
+      - id: web-lint
+        name: Web Client ESLint
+        entry: sh -c 'cd clients/web/react && npm run lint'
+        language: system
+        files: ^clients/web/react/.*\.(js|jsx|ts|tsx)$
+        pass_filenames: false
+
+      - id: web-typecheck
+        name: Web Client TypeScript Check
+        entry: sh -c 'cd clients/web/react && npm run typecheck'
+        language: system
+        files: ^clients/web/react/.*\.(ts|tsx)$
+        pass_filenames: false
+{% if cookiecutter.include_mobile != 'n' %}
+  # Mobile client linting for React Native
+      - id: mobile-prettier
+        name: Mobile Client Prettier Format
+        entry: sh -c 'cd clients/mobile/react-native && npm run format'
+        language: system
+        files: ^clients/mobile/react-native/.*\.(js|jsx|ts|tsx)$
+        pass_filenames: false
+
+      - id: mobile-lint
+        name: Mobile Client ESLint
+        entry: sh -c 'cd clients/mobile/react-native && npm run lint'
+        language: system
+        files: ^clients/mobile/react-native/.*\.(js|jsx|ts|tsx)$
+        pass_filenames: false
+
+      - id: mobile-typecheck
+        name: Mobile Client TypeScript Check
+        entry: sh -c 'cd clients/mobile/react-native && npm run typecheck'
+        language: system
+        files: ^clients/mobile/react-native/.*\.(ts|tsx)$
+        pass_filenames: false
+{% endif %}
+  # General hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
