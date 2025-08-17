@@ -79,7 +79,7 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
           # cache: npm
           # cache-dependency-path: ./mobile/package-lock.json
 
@@ -137,7 +137,7 @@ jobs:
           "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
           "SENTRY_PROJECT_NAME": "tn-spa-prod"
             }
-          } 
+          }
           ' eas.json > tmp.$$.json && mv tmp.$$.json eas.json
 
       - name: Display Updated EAS Config
@@ -154,4 +154,3 @@ jobs:
         working-directory: ./my_project/mobile
         run: |
           eas build --platform ios --profile "review_${{ env.PR_NUMBER }}_dc" --non-interactive
-

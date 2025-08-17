@@ -30,7 +30,7 @@
       "generator": "secret"
     },
     "USE_EMAIL_ALLOWLIST": {
-      "value": "True"
+      "value": "False"
     },
     "EMAIL_ALLOWLIST": {
       "value": "[\"admin@thinknimble.com\"]"

@@ -7,4 +7,3 @@ COPY ./client/package.json /app/client/package.json
 RUN npm i
 
 CMD ["npm", "run", "serve"]
-

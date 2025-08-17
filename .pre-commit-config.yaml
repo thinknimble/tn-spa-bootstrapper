@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: "{{cookiecutter.project_slug}}/"
+      - id: check-added-large-files
+      - id: check-json
+        exclude: "{{cookiecutter.project_slug}}/|\\.vscode/launch\\.json$"
+      - id: check-merge-conflict
+      - id: debug-statements
+        language_version: python3
+        exclude: "{{cookiecutter.project_slug}}/"
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        exclude: "{{cookiecutter.project_slug}}/"
+      - id: ruff-format
+        exclude: "{{cookiecutter.project_slug}}/"
+
+  - repo: local
+    hooks:
+      - id: test-template-linting
+        name: Test cookiecutter template linting
+        entry: ./scripts/test-template-linting.sh --strict
+        language: script
+        pass_filenames: false
+        always_run: true
+        verbose: true
+        stages: [pre-commit]

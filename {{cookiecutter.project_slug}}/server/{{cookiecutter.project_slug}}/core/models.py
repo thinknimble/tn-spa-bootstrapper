@@ -63,26 +63,23 @@ class UserManager(BaseUserManager):
     def cleanup_inactive_users(self, days=30):
         """
         Delete users who have been inactive for more than the specified number of days.
-        
+
         Args:
             days: Number of days a user must be inactive before deletion (default: 30)
-            
+
         Returns:
             tuple: (deleted_users, failed_deletions)
                 - deleted_users: List of email addresses successfully deleted
                 - failed_deletions: List of tuples (email, error_message) for failed deletions
         """
         cutoff_date = timezone.now() - timedelta(days=days)
-        
+
         # Find inactive users who were marked inactive more than X days ago
-        inactive_users = self.filter(
-            is_active=False,
-            last_edited__lt=cutoff_date
-        )
-        
+        inactive_users = self.filter(is_active=False, last_edited__lt=cutoff_date)
+
         deleted_users = []
         failed_deletions = []
-        
+
         for user in inactive_users:
             email = user.email
             try:
@@ -93,24 +90,21 @@ class UserManager(BaseUserManager):
                 error_msg = str(e)
                 failed_deletions.append((email, error_msg))
                 logger.error(f"Failed to delete inactive user {email}: {error_msg}")
-        
+
         return deleted_users, failed_deletions
 
     def get_inactive_users(self, days=30):
         """
         Get users who have been inactive for more than the specified number of days.
-        
+
         Args:
             days: Number of days a user must be inactive before being considered for deletion
-            
+
         Returns:
             QuerySet of inactive users
         """
         cutoff_date = timezone.now() - timedelta(days=days)
-        return self.filter(
-            is_active=False,
-            last_edited__lt=cutoff_date
-        )
+        return self.filter(is_active=False, last_edited__lt=cutoff_date)
 
     class Meta:
         ordering = ("id",)

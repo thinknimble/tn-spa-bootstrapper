@@ -24,7 +24,7 @@ The application supports restricting user signups to specific email addresses th
 - `USE_EMAIL_ALLOWLIST` (boolean, default: `False`): Enable/disable email allowlist feature
   - When `True`, only emails in the allowlist can register
   - When `False`, any valid email can register
-  
+
 - `EMAIL_ALLOWLIST` (JSON array, default: `[]`): List of allowed email addresses
   - Format: `'["email1@example.com", "email2@example.com"]'`
   - Example: `EMAIL_ALLOWLIST='["admin@thinknimble.com", "user@thinknimble.com"]'`
@@ -44,7 +44,7 @@ EMAIL_ALLOWLIST='["admin@thinknimble.com", "developer@thinknimble.com"]'
 - The EMAIL_ALLOWLIST must be provided as a JSON string in environment variables
 - When disabled, the system logs warnings for potentially risky email domains
 
-## Linting 
+## Linting
 [WIP]
 
 `ruff format`

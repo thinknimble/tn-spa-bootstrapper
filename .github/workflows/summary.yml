@@ -53,7 +53,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install @actions/core googleapis
@@ -88,4 +88,3 @@ jobs:
       - name: Output Google Doc Link
         run: |
           echo "Google Doc Link: ${{ steps.upload_gdoc.outputs.webViewLink }}"
-
