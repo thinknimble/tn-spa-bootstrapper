@@ -1,13 +1,15 @@
 import logging
 
-from decouple import config
-from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+from django.db.models import Count
 
 from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
 
 logger = logging.getLogger(__name__)
+
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -25,6 +27,8 @@ class Command(BaseCommand):
         context = {
             "content": email_content
         }
-        send_html_email(title, "core/metrics.html", settings.DEFAULT_FROM_EMAIL, [settings.STAFF_EMAIL], context=context)
+        # TODO: Add STAFF_EMAIL to settings or use a default
+        staff_email = getattr(settings, 'STAFF_EMAIL', settings.DEFAULT_FROM_EMAIL)
+        send_html_email(title, "core/metrics.html", settings.DEFAULT_FROM_EMAIL, [staff_email], context=context)
 
         logger.info(f"Finished management command {__name__}")

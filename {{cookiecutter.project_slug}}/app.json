@@ -33,7 +33,7 @@
       "value": "True"
     },
     "EMAIL_ALLOWLIST": {
-      "value": ["admin@thinknimble.com"]
+      "value": "[\"admin@thinknimble.com\"]"
     }
   },
   "addons": [

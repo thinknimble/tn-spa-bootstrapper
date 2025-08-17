@@ -1,12 +1,16 @@
+import logging
 from email.utils import parseaddr
 
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
 
 from .models import User
+
+logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -81,11 +85,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
-        value = parseaddr(value, strict=True)[1].lower()
+        value = parseaddr(value)[1].lower()
         if settings.USE_EMAIL_ALLOWLIST and value not in settings.EMAIL_ALLOWLIST:
-            raise ValidationError(detail="Invalid email")
-        if not all(c in value for c in [".", "@"])
-            raise ValidationError(detail="Invalid email")
+            raise ValidationError("Invalid email")
+        if not all(c in value for c in [".", "@"]):
+            raise ValidationError("Invalid email")
         if not any(value.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
             logger.warning(f"Potentially risky email: {value}")
         return value
