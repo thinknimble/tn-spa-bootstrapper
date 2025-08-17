@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .models import User
-from .serializers import UserLoginSerializer
+from .serializers import UserLoginSerializer, UserRegistrationSerializer
 from .views import PreviewTemplateView, request_reset_link
 
 
@@ -158,6 +158,95 @@ def test_password_reset(caplog, api_client, sample_user):
 @pytest.mark.django_db
 def test_user_token_gets_created_from_signal(sample_user):
     assert sample_user.auth_token
+
+
+@pytest.mark.django_db
+class TestEmailValidation:
+    """Test email validation and allowlist functionality"""
+    
+    def test_email_validation_basic(self):
+        """Test basic email validation"""
+        serializer = UserRegistrationSerializer(data={
+            "email": "valid@example.com",
+            "password": "strongpassword123",
+            "first_name": "Test",
+            "last_name": "User"
+        })
+        assert serializer.is_valid()
+    
+    def test_email_validation_invalid_format(self):
+        """Test email validation with invalid format"""
+        serializer = UserRegistrationSerializer(data={
+            "email": "invalidemail",
+            "password": "strongpassword123",
+            "first_name": "Test",
+            "last_name": "User"
+        })
+        assert not serializer.is_valid()
+        assert "email" in serializer.errors
+    
+    @override_settings(USE_EMAIL_ALLOWLIST=True, EMAIL_ALLOWLIST=["allowed@example.com"])
+    def test_email_allowlist_allowed(self):
+        """Test email allowlist with allowed email"""
+        serializer = UserRegistrationSerializer(data={
+            "email": "allowed@example.com",
+            "password": "strongpassword123",
+            "first_name": "Test",
+            "last_name": "User"
+        })
+        assert serializer.is_valid()
+    
+    @override_settings(USE_EMAIL_ALLOWLIST=True, EMAIL_ALLOWLIST=["allowed@example.com"])
+    def test_email_allowlist_blocked(self):
+        """Test email allowlist with blocked email"""
+        serializer = UserRegistrationSerializer(data={
+            "email": "notallowed@example.com",
+            "password": "strongpassword123",
+            "first_name": "Test",
+            "last_name": "User"
+        })
+        assert not serializer.is_valid()
+        assert "email" in serializer.errors
+    
+    @override_settings(USE_EMAIL_ALLOWLIST=False)
+    def test_email_allowlist_disabled(self):
+        """Test that allowlist is properly disabled when USE_EMAIL_ALLOWLIST is False"""
+        serializer = UserRegistrationSerializer(data={
+            "email": "any@example.com",
+            "password": "strongpassword123",
+            "first_name": "Test",
+            "last_name": "User"
+        })
+        assert serializer.is_valid()
+    
+    @mock.patch('{{ cookiecutter.project_slug }}.core.serializers.logger')
+    @mock.patch('{{ cookiecutter.project_slug }}.core.serializers.rollbar')
+    def test_suspicious_email_warning(self, mock_rollbar, mock_logger):
+        """Test that suspicious emails trigger warnings"""
+        serializer = UserRegistrationSerializer(data={
+            "email": "test@suspicious.xyz",
+            "password": "strongpassword123",
+            "first_name": "Test",
+            "last_name": "User"
+        })
+        serializer.is_valid()
+        mock_logger.warning.assert_called_once()
+        assert "Potentially risky email" in str(mock_logger.warning.call_args)
+    
+    @mock.patch('{{ cookiecutter.project_slug }}.core.serializers.logger')
+    @mock.patch('{{ cookiecutter.project_slug }}.core.serializers.rollbar')
+    def test_name_validation_warning(self, mock_rollbar, mock_logger):
+        """Test that non-alphabetic names trigger warnings"""
+        serializer = UserRegistrationSerializer(data={
+            "email": "test@example.com",
+            "password": "strongpassword123",
+            "first_name": "Test123",
+            "last_name": "User!@#"
+        })
+        serializer.is_valid()
+        # Should be called twice - once for first_name, once for last_name
+        assert mock_logger.warning.call_count == 2
+        assert "non-alphabetic characters" in str(mock_logger.warning.call_args_list[0])
 
 
 @pytest.mark.django_db

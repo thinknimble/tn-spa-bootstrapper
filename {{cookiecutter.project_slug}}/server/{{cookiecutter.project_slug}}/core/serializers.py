@@ -1,6 +1,7 @@
 import logging
 from email.utils import parseaddr
 
+import rollbar
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.password_validation import validate_password
@@ -73,8 +74,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         There are MANY unique names out there, so let users input whatever they want.
         BUT...alert the devs if we see something odd.
         """
-        if not "".join(a.split()).isalpha():
-            logger.warning(f"User signup with non-alphabetic characters in their name: {value}")
+        if not "".join(value.split()).isalpha():
+            message = f"User signup with non-alphabetic characters in their name: {value}"
+            logger.warning(message)
+            if settings.ROLLBAR_ACCESS_TOKEN:
+                rollbar.report_message(message, 'warning')
 
     def validate_first_name(self, value):
         self._validate_name(value)
@@ -91,7 +95,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if not all(c in value for c in [".", "@"]):
             raise ValidationError("Invalid email")
         if not any(value.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
-            logger.warning(f"Potentially risky email: {value}")
+            message = f"Potentially risky email: {value}"
+            logger.warning(message)
+            if settings.ROLLBAR_ACCESS_TOKEN:
+                rollbar.report_message(message, 'warning')
         return value
 
     def validate(self, data):
