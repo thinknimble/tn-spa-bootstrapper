@@ -89,17 +89,27 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return value
 
     def validate_email(self, value):
-        value = parseaddr(value)[1].lower()
-        if settings.USE_EMAIL_ALLOWLIST and value not in settings.EMAIL_ALLOWLIST:
+        # Parse and normalize the email
+        parsed_email = parseaddr(value)[1].lower()
+        if not parsed_email:
+            raise ValidationError("Invalid email format")
+        
+        # Check allowlist if enabled
+        if settings.USE_EMAIL_ALLOWLIST and parsed_email not in settings.EMAIL_ALLOWLIST:
             raise ValidationError("Invalid email")
-        if not all(c in value for c in [".", "@"]):
-            raise ValidationError("Invalid email")
-        if not any(value.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
-            message = f"Potentially risky email: {value}"
+        
+        # Basic validation - ensure @ and . in domain part
+        if "@" not in parsed_email or "." not in parsed_email.split("@")[-1]:
+            raise ValidationError("Invalid email format")
+        
+        # Warn about suspicious domains but don't block
+        if not any(parsed_email.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
+            message = f"Potentially risky email: {parsed_email}"
             logger.warning(message)
             if settings.ROLLBAR_ACCESS_TOKEN:
                 rollbar.report_message(message, 'warning')
-        return value
+        
+        return parsed_email
 
     def validate(self, data):
         password = data.get("password")
