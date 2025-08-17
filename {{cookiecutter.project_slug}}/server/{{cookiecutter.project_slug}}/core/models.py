@@ -1,9 +1,11 @@
 import logging
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.tokens import default_token_generator
 from django.db import models
+from django.utils import timezone
 
 from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
@@ -57,6 +59,58 @@ class UserManager(BaseUserManager):
         extra_fields["is_superuser"] = True
         extra_fields["has_reset_password"] = True
         return self._create_user(email, password, **extra_fields)
+
+    def cleanup_inactive_users(self, days=30):
+        """
+        Delete users who have been inactive for more than the specified number of days.
+        
+        Args:
+            days: Number of days a user must be inactive before deletion (default: 30)
+            
+        Returns:
+            tuple: (deleted_users, failed_deletions)
+                - deleted_users: List of email addresses successfully deleted
+                - failed_deletions: List of tuples (email, error_message) for failed deletions
+        """
+        cutoff_date = timezone.now() - timedelta(days=days)
+        
+        # Find inactive users who were marked inactive more than X days ago
+        inactive_users = self.filter(
+            is_active=False,
+            last_edited__lt=cutoff_date
+        )
+        
+        deleted_users = []
+        failed_deletions = []
+        
+        for user in inactive_users:
+            email = user.email
+            try:
+                user.delete()
+                deleted_users.append(email)
+                logger.info(f"Permanently deleted inactive user: {email}")
+            except Exception as e:
+                error_msg = str(e)
+                failed_deletions.append((email, error_msg))
+                logger.error(f"Failed to delete inactive user {email}: {error_msg}")
+        
+        return deleted_users, failed_deletions
+
+    def get_inactive_users(self, days=30):
+        """
+        Get users who have been inactive for more than the specified number of days.
+        
+        Args:
+            days: Number of days a user must be inactive before being considered for deletion
+            
+        Returns:
+            QuerySet of inactive users
+        """
+        cutoff_date = timezone.now() - timedelta(days=days)
+        return self.filter(
+            is_active=False,
+            last_edited__lt=cutoff_date
+        )
 
     class Meta:
         ordering = ("id",)
