@@ -27,7 +27,7 @@ module.exports = {
         ],
         'expo-build-properties',
         'expo-localization',
-        'expo-font',  
+        'expo-font',
       ],
       ios: {
         supportsTablet: true,
@@ -61,4 +61,3 @@ module.exports = {
       },
     },
   }
-  

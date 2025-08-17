@@ -74,4 +74,3 @@ fi
 echo "##### Giving user permission to the database"
 sudo -u $sudo_p_user psql -c "GRANT ALL PRIVILEGES ON DATABASE $db_name to $db_user;"
 sudo -u $sudo_p_user psql -c "ALTER DATABASE $db_name OWNER TO $db_user;"
-

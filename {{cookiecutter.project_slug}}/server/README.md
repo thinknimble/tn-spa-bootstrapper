@@ -15,7 +15,7 @@ Once db credentials are set:
 1. `python manage.py runserver` to run the Django API (default - localhost:8000/admin)
 
 
-## Linting 
+## Linting
 [WIP]
 
 `ruff format`

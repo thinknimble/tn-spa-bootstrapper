@@ -8,4 +8,3 @@ const config = getSentryExpoConfig(__dirname, { isCSSEnabled: true })
 
 
 module.exports = wrapWithReanimatedMetroConfig(withNativeWind(config, { input: './global.css' }))
-

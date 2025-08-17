@@ -28,4 +28,3 @@ declare module 'react-native-actions-sheet' {
     }>
   }
 }
-  

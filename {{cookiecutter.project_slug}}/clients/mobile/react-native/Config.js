@@ -16,7 +16,7 @@ const config = {
   'expo-go':{
     backendServerUrl: BACKEND_SERVER_URL,
     sentryDSN: SENTRY_DSN,
-  
+
   },
   'expo_build':{
     'staging':{
@@ -27,7 +27,7 @@ const config = {
       backendServerUrl: backendServerUrl || BACKEND_SERVER_URL || 'https://{{ cookiecutter.project_slug }}-staging.herokuapp.com',
       sentryDSN: sentryDSN || SENTRY_DSN || "<REPLACE_WITH_PROD_SENTRY_DSN>",
     }
-    
+
   }
 
 }
@@ -36,7 +36,7 @@ const config = {
 const ENV = () => {
   if (!isExpoGo) {
     /**
-     * 
+     *
      * Temporary manual hack to set variables, due to an issue we are facing with expo-updates
      * Pari Baker
      * 2024-05-08
@@ -48,7 +48,7 @@ const ENV = () => {
         const logger = new Logger().logger
         return {...config.expo_build.production, logger}
       }
-      
+
     return {
       backendServerUrl,
       logger,
@@ -57,7 +57,7 @@ const ENV = () => {
     }
   }
 
- 
+
   const logger = new Logger().logger
 
   return {
