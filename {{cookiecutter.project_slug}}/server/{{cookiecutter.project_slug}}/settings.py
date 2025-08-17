@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -287,6 +288,9 @@ if ENABLE_EMAILS:
     {% endif %}
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+USE_EMAIL_ALLOWLIST = config("USE_EMAIL_ALLOWLIST", cast=bool, default=False)
+EMAIL_ALLOWLIST = json.loads(config("EMAIL_ALLOWLIST", default="[]"))
 
 # STORAGES
 # ----------------------------------------------------------------------------
