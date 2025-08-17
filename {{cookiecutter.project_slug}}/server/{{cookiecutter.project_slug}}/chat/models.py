@@ -75,12 +75,16 @@ class Feedback(AbstractBaseModel):
 
 
 class PromptTemplateManager(models.Manager):
-    def get_assembled_prompt(self):
+    def get_assembled_prompt(self, agent: str | None = None):
         """Returns the assembled system prompt using all templates and fingerprints"""
         from .models import Fingerprint  # Local import to avoid circular dependency
 
         # Get active templates ordered by order field
         templates = self.get_queryset().order_by("order")
+
+        # Filter by agent if specified
+        if agent:
+            templates = templates.filter(agent_types__contains=[agent])
 
         # Get all fingerprints and sort by name
         fingerprints = Fingerprint.objects.all().order_by("name")
@@ -112,12 +116,15 @@ class PromptTemplateManager(models.Manager):
 
         return "\n\n".join(formatted_templates)
 
-    async def aget_assembled_prompt(self):
+    async def aget_assembled_prompt(self, agent: str | None = None):
         """Async version of get_assembled_prompt"""
-        return await sync_to_async(self.get_assembled_prompt)()
+        return await sync_to_async(self.get_assembled_prompt)(agent=agent)
 
 
 class PromptTemplate(AbstractBaseModel):
+    class AgentType(models.TextChoices):
+        CHAT = "CHAT", "Chat"
+
     name = models.CharField(max_length=255, help_text="Short descriptive name for this template")
     content = models.TextField(
         help_text="The template content. Supported placeholders are {fingerprint_dialogue_examples} like {categories}"
@@ -127,6 +134,12 @@ class PromptTemplate(AbstractBaseModel):
     )
     order = models.PositiveIntegerField(
         default=0, help_text="Order in which this template will appear in the system prompt"
+    )
+    agent_types = ArrayField(
+        models.CharField(choices=AgentType.choices),
+        default=list,
+        blank=True,
+        help_text="List of agent types this template is for. Leave empty for none.",
     )
 
     objects = PromptTemplateManager()
