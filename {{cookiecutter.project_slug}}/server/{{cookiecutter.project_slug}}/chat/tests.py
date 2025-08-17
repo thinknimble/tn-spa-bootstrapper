@@ -19,14 +19,14 @@ def test_prompt_template_agent_type_filtering():
         name="Chat Template",
         content="This is a chat template",
         agent_types=[PromptTemplate.AgentType.CHAT],
-        order=1
+        order=1,
     )
 
     PromptTemplate.objects.create(
         name="No Agent Template",
         content="This template has no agent types",
         agent_types=[],
-        order=2
+        order=2,
     )
 
     # Test filtering by CHAT agent type
@@ -52,7 +52,7 @@ async def test_prompt_template_async_agent_filtering():
         name="Async Chat Template",
         content="Async chat content",
         agent_types=[PromptTemplate.AgentType.CHAT],
-        order=1
+        order=1,
     )
 
     # Create a template without agent types
@@ -60,7 +60,7 @@ async def test_prompt_template_async_agent_filtering():
         name="Async General Template",
         content="General content",
         agent_types=[],
-        order=2
+        order=2,
     )
 
     # Test async filtering with agent parameter
