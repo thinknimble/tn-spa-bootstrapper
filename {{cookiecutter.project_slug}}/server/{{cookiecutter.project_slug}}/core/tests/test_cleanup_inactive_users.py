@@ -4,7 +4,7 @@ Tests for the cleanup_inactive_users functionality.
 
 from datetime import timedelta
 from io import StringIO
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from django.core.management import call_command
