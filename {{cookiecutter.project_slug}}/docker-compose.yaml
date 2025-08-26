@@ -39,6 +39,7 @@ services:
       - DB_HOST=postgres
     ports:
       - "8000:8000"
+      - "5678:5678"
     user: ${DOCKER_UID}
 
   client:
