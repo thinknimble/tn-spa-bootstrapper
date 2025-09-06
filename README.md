@@ -1,10 +1,8 @@
-<div align="center">
+<p align="center">
   <a href="https://thinknimble.com">
-    <picture>
-      <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png" alt="ThinkNimble Logo" width="300" style="background: white; padding: 20px; border-radius: 10px;">
-    </picture>
+    <img src="assets/thinknimble-logo.png" alt="ThinkNimble Logo" width="300">
   </a>
-</div>
+</p>
 
 <h1 align="center">ThinkNimble Bootstrapper</h1>
 
@@ -37,6 +35,7 @@
 <td width="50%" valign="top">
 
 ### Backend (Django)
+
 - **Django 4.2** with custom user model
 - **Comprehensive test suite** included
 - **API-first architecture** with Django REST Framework
@@ -50,6 +49,7 @@
 <td width="50%" valign="top">
 
 ### Frontend (React)
+
 - **React 18** with TypeScript
 - **Tailwind CSS** for styling
 - **Vite** for lightning-fast builds
@@ -64,11 +64,13 @@
 </table>
 
 ### Deploy Anywhere
+
 - **Heroku** - Production-ready with Procfile included
 - **Docker** - Fully containerized for any cloud platform
 - **Flexible** - Deploy to AWS, Google Cloud, or any Docker-compatible host
 
 ### Enterprise-Ready
+
 - Pre-commit hooks for code quality
 - GitHub Actions CI/CD pipelines
 - Error tracking with Rollbar/Sentry
@@ -123,6 +125,7 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 ## Features
 
 ### Authentication & User Management
+
 - **Custom user model** with email-based authentication
 - **Token-based authentication** using Django REST Framework
 - **Password reset flows** with email verification
@@ -130,6 +133,7 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 - **User profile management** endpoints
 
 ### Developer Experience
+
 - **Hot module reloading** for React development with Vite
 - **Pre-configured linting** with Ruff for Python, ESLint and Prettier for JavaScript
 - **Pre-commit hooks** for code quality enforcement
@@ -139,6 +143,7 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 - **Docker development environment** with PostgreSQL and Redis
 
 ### Production Ready
+
 - **Environment-based settings** for dev/staging/production
 - **Security headers** configured (CORS, CSP, HSTS)
 - **Error tracking** with Sentry integration (mobile) and Rollbar support
@@ -149,13 +154,13 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 - **File storage** with S3 or Google Cloud Storage support
 
 ### Built-in Features
+
 - **WebSocket support** with Django Channels for real-time features
 - **Redis integration** for caching and channel layers
 - **GitHub Actions** workflows for CI/CD
 - **Heroku deployment** configuration with Procfile
 - **PostgreSQL** as default database
 - **Mobile app support** with React Native template
-
 
 ## Usage
 
