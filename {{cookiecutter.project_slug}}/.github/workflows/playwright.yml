@@ -1,27 +1,44 @@
 name: Playwright Tests
 on:
   deployment_status:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Base URL to test against'
+        required: false
+        default: ''
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    if: github.event.deployment_status.state == 'success'
+    container:
+      image: mcr.microsoft.com/playwright:v1.49.1-noble
+    if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
+        with:
+          # For deployment_status events, we need to explicitly checkout the deployment's ref
+          ref: {{ "${{ github.event.deployment.sha || github.ref }}" }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: ./client/package-lock.json
       - name: Install dependencies
         working-directory: ./client
-        run: npm install
-      - name: Install Playwright
+        run: npm ci
+      # Browsers are pre-installed in the Playwright Docker image
+      # No need to install them again!
+      - name: Create .env file for Playwright
         working-directory: ./client
-        run: npx playwright install --with-deps
+        run: |
+          echo "PLAYWRIGHT_TEST_USER_PASS={{ "${{ secrets.PLAYWRIGHT_TEST_USER_PASS }}" }}" > .env
       - name: Run Playwright tests
         working-directory: ./client
         run: npx playwright test --reporter=html
         env:
-          PLAYWRIGHT_TEST_BASE_URL: {{ "${{ github.event.deployment_status.environment_url }}" }}
+          HOME: /root  # Required for Firefox to run in the container
+          PLAYWRIGHT_TEST_BASE_URL: {{ "${{ github.event.deployment_status.environment_url || github.event.inputs.base_url }}" }}
           PLAYWRIGHT_TEST_USER_PASS: {{ "${{ secrets.PLAYWRIGHT_TEST_USER_PASS }}" }}
       - uses: actions/upload-artifact@v4
         if: failure()
