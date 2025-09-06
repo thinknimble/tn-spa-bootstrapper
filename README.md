@@ -1,10 +1,15 @@
 <div align="center">
   <a href="https://thinknimble.com">
-    <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png" alt="ThinkNimble Logo" width="300">
+    <picture>
+      <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png#gh-light-mode-only" alt="ThinkNimble Logo" width="300">
+      <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png#gh-dark-mode-only" alt="ThinkNimble Logo" width="300" style="background: white; padding: 20px; border-radius: 10px;">
+    </picture>
   </a>
 </div>
 
-# ThinkNimble Bootstrapper
+<h1 align="center">ThinkNimble Bootstrapper</h1>
+
+<div align="center">
 
 [![Build Status](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml)
 [![Linting](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml)
@@ -14,9 +19,19 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)](https://www.typescriptlang.org/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4)](https://tailwindcss.com/)
 
-> **Ship production-ready full-stack apps in minutes, not months**
+</div>
 
-The ThinkNimble Bootstrapper is a battle-tested cookiecutter template that generates a complete, production-ready Django + React application with authentication, payments, email, and deployment configurations—all following industry best practices.
+<p align="center">
+  <b>Ship production-ready full-stack apps in minutes, not months</b>
+</p>
+
+<p align="center">
+  The ThinkNimble Bootstrapper is a battle-tested cookiecutter template that generates a complete,<br>
+  production-ready Django + React application with authentication, payments, email,<br>
+  and deployment configurations—all following industry best practices.
+</p>
+
+---
 
 ## What You Get
 
