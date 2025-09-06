@@ -1,8 +1,10 @@
-<div align="center">
+<p align="center">
   <a href="https://thinknimble.com">
-    <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png" alt="ThinkNimble Logo" width="300" style="background: white; padding: 20px; border-radius: 10px;">
+    <kbd>
+      <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png" alt="ThinkNimble Logo" width="300">
+    </kbd>
   </a>
-</div>
+</p>
 
 <h1 align="center">ThinkNimble Bootstrapper</h1>
 
