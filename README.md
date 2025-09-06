@@ -1,12 +1,18 @@
+<div align="center">
+  <a href="https://thinknimble.com">
+    <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png" alt="ThinkNimble Logo" width="300">
+  </a>
+</div>
+
 # ThinkNimble Bootstrapper
 
 [![Build Status](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml)
 [![Linting](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/Django-4.2-092E20?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-4.2-092E20)](https://www.djangoproject.com/)
+[![React](https://img.shields.io/badge/React-18-61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4)](https://tailwindcss.com/)
 
 > **Ship production-ready full-stack apps in minutes, not months**
 
