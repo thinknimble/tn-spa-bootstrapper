@@ -1,5 +1,7 @@
 # ThinkNimble Bootstrapper
 
+[![Build Status](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml)
+[![Linting](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-4.2-092E20?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
@@ -18,7 +20,7 @@ The ThinkNimble Bootstrapper is a battle-tested cookiecutter template that gener
 
 ### Backend (Django)
 - **Django 4.2** with custom user model
-- **100% test coverage** out of the box
+- **Comprehensive test suite** included
 - **API-first architecture** with Django REST Framework
 - **Secure by default** - SSL, CORS, CSP headers configured
 - **Email ready** - Mailgun, AWS SES, or SMTP
@@ -106,7 +108,7 @@ See: [Maintained Foundation fork]
 
 - For Django 4.2.\*
 - Uses Python 3.12 by default
-- Renders Django projects with 100% starting test coverage
+- Renders Django projects with comprehensive test suite
 - Secure by default. SSL Everywhere.
 - Optimized development and production settings
 - Comes with custom user model ready to go
