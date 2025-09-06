@@ -22,8 +22,10 @@
 
 <p align="center">
   The ThinkNimble Bootstrapper is a battle-tested cookiecutter template that generates a complete,<br>
-  production-ready Django + React application with authentication, payments, email,<br>
-  and deployment configurations—all following industry best practices.
+  production-ready Django + React application with <b>AI-powered chat demo</b>, authentication,<br>
+  email, and deployment configurations—all following industry best practices.<br>
+  <br>
+  <em>🤖 Includes a fully-functional OpenAI chat demo with streaming responses and prompt management</em>
 </p>
 
 ---
@@ -37,13 +39,14 @@
 ### Backend (Django)
 
 - **Django 4.2** with custom user model
+- **OpenAI Chat Demo** with streaming responses
 - **Comprehensive test suite** included
 - **API-first architecture** with Django REST Framework
 - **Secure by default** - SSL, CORS, CSP headers configured
 - **Email ready** - Mailgun, AWS SES, or SMTP
-- **File storage** - S3, GCS, or local
-- **Background tasks** with Celery (optional)
-- **WebSockets** with Django Channels (optional)
+- **File storage** - AWS S3 Ready
+- **Background tasks** with Django Background Tasks
+- **WebSockets** with Django Channels for real-time AI chat
 
 </td>
 <td width="50%" valign="top">
@@ -51,6 +54,7 @@
 ### Frontend (React)
 
 - **React 18** with TypeScript
+- **AI Chat Demo UI** - Complete chat interface component
 - **Tailwind CSS** for styling
 - **Vite** for lightning-fast builds
 - **React Router** for navigation
@@ -78,6 +82,19 @@
 - GDPR compliance helpers
 - Comprehensive documentation
 
+### 🤖 AI Chat Demo Included
+
+Experience AI integration from day one with our fully-functional demo:
+
+- **Working OpenAI Chat** - Pre-configured demo app with GPT-3.5/4 (just add your API key)
+- **Real-time Streaming** - See WebSocket-based streaming responses in action
+- **Prompt Management** - Example of dynamic prompt templates with variable substitution
+- **Conversation Analytics** - Demo pattern detection and conversation categorization
+- **Feedback System** - Example rating system for improving AI responses
+- **Admin Interface** - Full Django admin for managing the demo's AI configuration
+- **Multiple Agent Types** - Demonstrates configurable AI agent roles
+- **Learning Style Assessment** - Complete demo showcasing an educational chatbot
+
 ---
 
 ## See It In Action
@@ -90,7 +107,8 @@ Check out a live deployment: **[Demo App](https://tn-spa-bootstrapper-staging.he
 
 **Stop reinventing the wheel.** Every new project shouldn't start from scratch. The ThinkNimble Bootstrapper gives you a production-quality foundation so you can focus on what makes your app unique.
 
-- **Save weeks of setup time** - Authentication, payments, emails, deployment—it's all there
+- **Save weeks of setup time** - Authentication, emails, deployment, and AI demo—it's all there
+- **AI-Ready from Day One** - Skip the AI integration learning curve with our working OpenAI demo
 - **Best practices built-in** - 10+ years of production experience distilled into one template
 - **Fully customizable** - Not a framework, just a starting point you own completely
 - **Active community** - Regular updates and responsive support
