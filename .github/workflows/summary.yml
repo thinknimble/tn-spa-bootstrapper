@@ -6,8 +6,8 @@ on:
   # 2. Ensure Google Drive has sufficient storage quota
   workflow_dispatch:
     inputs:
-      disabled:
-        description: 'This workflow is temporarily disabled'
+      gdoc_id:
+        description: 'Google Doc ID to update (leave blank to create new)'
         required: false
         default: 'true'
   # workflow_dispatch:
@@ -37,18 +37,18 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "Diff for PR ${{ github.event.pull_request.number }}"
-            git diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > merged.txt
+            git diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > pr-summary.txt
           else
             echo "Diff for manual workflow run"
-            git diff origin/main HEAD > merged.txt
+            git diff origin/main HEAD > pr-summary.txt
           fi
-          cat merged.txt
+          catpr-summary.txt
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: git-changes-summary
-          path: merged.txt
+          name: pr-changes-summary
+          path: pr-summary.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -80,7 +80,7 @@ jobs:
         uses: ./.github/actions/upload-to-google-docs
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
-          file-path: 'merged.txt'
+          file-path: 'merged-prs.txt'
           folder-id: ${{ env.DOCS_FOLDER_ID }}
           document-title: ${{ steps.set_title.outputs.title }}
           document-id: ${{ github.event.inputs.gdoc_id }}
