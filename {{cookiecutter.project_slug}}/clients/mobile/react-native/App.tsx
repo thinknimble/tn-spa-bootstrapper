@@ -50,7 +50,7 @@ export default Sentry.wrap((): React.JSX.Element => {
   const start = useCallback(async () => {
     await hasLocalStorageHydratedState
     await SplashScreen.hideAsync()
-  
+
     flushSync(() => {
       setReady(true)
     })

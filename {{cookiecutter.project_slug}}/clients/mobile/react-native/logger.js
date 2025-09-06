@@ -1,7 +1,7 @@
 export default class Logger {
   constructor() {
   }
- 
+
   get logger() {
     const logger = {}
     logger.info = this.client ? this.client.info : console.log

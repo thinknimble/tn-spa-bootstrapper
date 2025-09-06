@@ -1,6 +1,6 @@
 ## What this does
 
-Add a description of what feature/page this PR intends to add or change. 
+Add a description of what feature/page this PR intends to add or change.
 
 ## Checklist
 - [ ] Todo 1

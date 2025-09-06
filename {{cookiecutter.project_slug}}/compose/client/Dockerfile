@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
 WORKDIR /app/client
 
@@ -7,4 +7,3 @@ COPY ./client/package.json /app/client/package.json
 RUN npm i
 
 CMD ["npm", "run", "serve"]
-

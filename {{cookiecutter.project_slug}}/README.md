@@ -31,6 +31,21 @@ See the [backend README](server/README.md)
 If not using Docker...
 See the [frontend README](client/README.md)
 
+## Pre-commit Hooks
+
+This project uses pre-commit hooks to ensure code quality and consistency. The hooks will automatically run before each commit to check for issues.
+
+### Setup
+
+1. Install pre-commit hooks: `uv run pre-commit install`
+2. (Optional) Run hooks manually on all files: `uv run pre-commit run --all-files`
+
+The pre-commit configuration includes:
+- Python linting and formatting with Ruff
+- Frontend linting with ESLint and Prettier
+- TypeScript type checking
+- General checks (trailing whitespace, YAML/JSON validation, etc.)
+
 ## Testing & Linting Locally
 
 1. `uv sync`

@@ -1,5 +1,6 @@
 {
   "name": "{{ cookiecutter.project_name }}",
+  "stack": "heroku-24",
   "env": {
     "ALLOWED_HOSTS": {
       "value": ".herokuapp.com"
@@ -27,6 +28,12 @@
     },
     "SECRET_KEY": {
       "generator": "secret"
+    },
+    "USE_EMAIL_ALLOWLIST": {
+      "value": "False"
+    },
+    "EMAIL_ALLOWLIST": {
+      "value": "[\"admin@thinknimble.com\"]"
     }
   },
   "addons": [
