@@ -8,7 +8,7 @@ export const SystemPrompt = () => {
   useEffect(() => {
     const fetchPrompt = async () => {
       try {
-        const response = await axios.get('/api/system-prompt/')
+        const response = await axios.get('/api/chat/system-prompt/')
         setPrompt(response.data.content)
         setError(null)
       } catch (error) {

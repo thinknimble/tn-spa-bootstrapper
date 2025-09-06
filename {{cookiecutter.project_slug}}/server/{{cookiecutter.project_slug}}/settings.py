@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -42,6 +43,10 @@ if CURRENT_DOMAIN not in ALLOWED_HOSTS:
 
 # Used by the corsheaders app/middleware (django-cors-headers) to allow multiple domains to access the backend
 CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
+
+CSRF_TRUSTED_ORIGINS = [f"http://{host}" for host in ALLOWED_HOSTS] + [
+    f"https://{host}" for host in ALLOWED_HOSTS
+]
 
 # Application definition
 
@@ -283,6 +288,9 @@ if ENABLE_EMAILS:
     {% endif %}
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+USE_EMAIL_ALLOWLIST = config("USE_EMAIL_ALLOWLIST", cast=bool, default=False)
+EMAIL_ALLOWLIST = json.loads(config("EMAIL_ALLOWLIST", default="[]"))
 
 # STORAGES
 # ----------------------------------------------------------------------------

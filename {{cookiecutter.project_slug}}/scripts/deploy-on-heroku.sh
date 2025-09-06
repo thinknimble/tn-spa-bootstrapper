@@ -2,7 +2,7 @@
 
 # Deploy {{cookiecutter.project_name}} To heroku
 # NOTE: This script is intended to deploy the app for the first time to heroku
-# if you run it again make and the app is aleady created on heroku make sure to comment lines 6:29 
+# if you run it again make and the app is aleady created on heroku make sure to comment lines 6:29
 APP_NAME={{ cookiecutter.project_slug|replace('_', '-') }}-staging.herokuapp.com
 heroku login --interactive
 heroku create $APP_NAME --buildpack heroku/python
@@ -23,10 +23,10 @@ heroku config:set ALLOWED_HOSTS="$APP_NAME.herokuapp.com,localhost" --app $APP_N
 heroku config:set NPM_CONFIG_PRODUCTION=false --app $APP_NAME
 heroku config:set ROLLBAR_ACCESS_TOKEN=$ROLLBAR_ACCSESS_TOKEN --app $APP_NAME
 
-git init 
+git init
 heroku git:remote --app $APP_NAME
 git branch -M main
-git add . 
+git add .
 git commit -m "Initial heroku commit"
 git push heroku main
 heroku open --app $APP_NAME

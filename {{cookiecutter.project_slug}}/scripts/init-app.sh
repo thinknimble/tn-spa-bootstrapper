@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# {{cookiecutter.project_name}} Intialization  
+# {{cookiecutter.project_name}} Intialization
 #
 
 # Applying the migrations

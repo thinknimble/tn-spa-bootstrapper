@@ -9,7 +9,7 @@ import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { isAxiosError } from 'axios'
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
-import { getNavio } from '../routes'
+import { goToMain } from '@stores/navigation'
 
 const LoginInner = () => {
   const { form, overrideForm } = useTnForm<TLoginForm>()
@@ -31,7 +31,7 @@ const LoginInner = () => {
       }
       changeUserId(data.id)
       changeToken(data.token)
-      getNavio().stacks.push('MainStack')
+      goToMain()
     },
     onError(e) {
       if (isAxiosError(e)) {

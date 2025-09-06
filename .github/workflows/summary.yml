@@ -1,0 +1,90 @@
+name: Git Changes Summary
+on:
+  # Temporarily disabled due to Google Drive quota issues
+  # To re-enable:
+  # 1. Uncomment the workflow_dispatch and pull_request sections below
+  # 2. Ensure Google Drive has sufficient storage quota
+  workflow_dispatch:
+    inputs:
+      disabled:
+        description: 'This workflow is temporarily disabled'
+        required: false
+        default: 'true'
+  # workflow_dispatch:
+  #   inputs:
+  #     gdoc_id:
+  #       description: 'Google Doc ID to update (leave blank to create new)'
+  #       required: false
+  #       default: ''
+  #     gfolder_id:
+  #       description: 'Google Drive Folder ID to create the doc in (leave blank to use root)'
+  #       required: false
+  #       default: '1hH7b4TOGbNv7LXl3lrzztMv4YBowGvRL'
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+
+jobs:
+  extract-changes:
+    runs-on: ubuntu-latest
+    if: false  # Workflow disabled - remove this line to re-enable
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get raw diff of changes
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Diff for PR ${{ github.event.pull_request.number }}"
+            git diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > merged.txt
+          else
+            echo "Diff for manual workflow run"
+            git diff origin/main HEAD > merged.txt
+          fi
+          cat merged.txt
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-changes-summary
+          path: merged.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install @actions/core googleapis
+
+      - name: Set Document Title
+        id: set_title
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "title=PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+          else
+            echo "title=Git Changes Summary" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set Folder ID
+        run: |
+          if [ -n "${{ github.event.inputs.gfolder_id }}" ]; then
+            echo "DOCS_FOLDER_ID=${{ github.event.inputs.gfolder_id }}" >> $GITHUB_ENV
+          else
+            echo "DOCS_FOLDER_ID=1hH7b4TOGbNv7LXl3lrzztMv4YBowGvRL" >> $GITHUB_ENV
+          fi
+
+      - name: Upload to Google Docs
+        id: upload_gdoc
+        uses: ./.github/actions/upload-to-google-docs
+        with:
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          file-path: 'merged.txt'
+          folder-id: ${{ env.DOCS_FOLDER_ID }}
+          document-title: ${{ steps.set_title.outputs.title }}
+          document-id: ${{ github.event.inputs.gdoc_id }}
+
+      - name: Output Google Doc Link
+        run: |
+          echo "Google Doc Link: ${{ steps.upload_gdoc.outputs.webViewLink }}"

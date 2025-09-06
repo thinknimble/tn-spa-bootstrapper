@@ -11,7 +11,6 @@
             "cwd": "${workspaceFolder}",
             "program": "${command:SelectScriptName}",
             "args": ["eas.json",".eas-json-values"]
-        },
-
+        }
     ]
 }

@@ -103,6 +103,49 @@ const styles = StyleSheet.create({
   },
 })
 
+const useUnauthUserOnError = () => {
+  const { userQuery: query } = useUser()
+  const { clearAuth } = useAuth.use.actions()
+
+  const { stacks } = useNavigation()
+
+  useEffect(() => {
+    if (query.error) {
+      if (
+        isAxiosError(query.error) &&
+        (query.error.response?.status === HttpStatusCode.Unauthorized ||
+          query.error.response?.status === HttpStatusCode.NotFound)
+      ) {
+        clearAuth()
+        stacks.goToAuth()
+      }
+    }
+  })
+}
+
+export const AuthUX: FC<{ children: ReactNode }> = ({ children }) => {
+  const isAuth = useAuth((s) => Boolean(s.token))
+  const user = useAuth.use.user()
+  useUnauthUserOnError()
+  const { stacks } = useNavigation()
+
+  const onAuthRedirect = useCallback(() => {
+    // if the user is logged in, redirect to dashboard
+    if (user) {
+      stacks.goToMain()
+    }
+  }, [user, stacks])
+
+  if (!isAuth) {
+    return <>{children}</>
+  }
+  if (!user) {
+    return <LoadingScreen />
+  }
+
+  return <LoadingRedirect onRedirect={onAuthRedirect} />
+}
+
 export const Auth = () => {
   return (
     <AuthUX>

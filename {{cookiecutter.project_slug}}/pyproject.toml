@@ -45,6 +45,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "debugpy>=1.8.0",
     "ruff>=0.9.8",
     "pytest==7.1.*",
     "factory-boy==3.2.*",

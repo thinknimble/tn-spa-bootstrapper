@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 const PASSWORD = 'PASSWORD'
 
 function generateUniqueEmail() {
-  const timestamp = Date.now().toString(); 
+  const timestamp = Date.now().toString();
   return `playwright-${timestamp}@thinknimble.com`;
 }
 

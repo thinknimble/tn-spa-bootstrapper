@@ -9,7 +9,8 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const backendUrl = env.VITE_DEV_BACKEND_URL || 'http://localhost:8000'
+  // NOTE: For docker you must comment out the VITE_DEV_BACKEND_URL or use http://server:8000 in mobile/.env
+  const backendUrl = env.VITE_DEV_BACKEND_URL || 'http://server:8000'
 
   return {
     plugins: [react(), tsconfigPaths()],
@@ -33,7 +34,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
         '/ws': {
-          target: backendUrl.replace('http://', 'ws://'),
+          target: backendUrl.replace(/^http/, 'ws'),
           ws: true,
           changeOrigin: true,
           secure: false,
