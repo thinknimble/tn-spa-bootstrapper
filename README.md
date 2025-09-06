@@ -123,38 +123,38 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 ## Features
 
 ### Authentication & User Management
-- **Custom user model** configured and ready to extend
-- **JWT-based authentication** with secure token handling
-- **Social authentication** ready (OAuth2 support)
-- **Email verification** and password reset flows
-- **User profile management** with avatar support
+- **Custom user model** with email-based authentication
+- **Token-based authentication** using Django REST Framework
+- **Password reset flows** with email verification
+- **User registration** with email confirmation
+- **User profile management** endpoints
 
 ### Developer Experience
-- **Hot module reloading** for both frontend and backend
-- **Pre-configured linting** with Ruff, ESLint, and Prettier
+- **Hot module reloading** for React development with Vite
+- **Pre-configured linting** with Ruff for Python, ESLint and Prettier for JavaScript
 - **Pre-commit hooks** for code quality enforcement
-- **Comprehensive test suite** with pytest and React Testing Library
-- **Type safety** with TypeScript and Python type hints
-- **API documentation** with Swagger/OpenAPI
-- **Debug toolbar** for development insights
+- **Test suite** with pytest for Django and testing setup for React
+- **Type safety** with TypeScript for frontend
+- **API documentation** with Swagger/OpenAPI via drf-spectacular
+- **Docker development environment** with PostgreSQL and Redis
 
 ### Production Ready
 - **Environment-based settings** for dev/staging/production
 - **Security headers** configured (CORS, CSP, HSTS)
-- **Error tracking** with Rollbar or Sentry integration
-- **Performance monitoring** and logging
-- **Database migrations** and backup strategies
-- **Static file handling** with WhiteNoise or CDN support
+- **Error tracking** with Sentry integration (mobile) and Rollbar support
+- **Comprehensive logging** configuration
+- **Database migrations** with Django's migration system
+- **Static file handling** with WhiteNoise
 - **Email services** via Mailgun, AWS SES, or custom SMTP
-- **File storage** with S3, Google Cloud Storage, or local
+- **File storage** with S3 or Google Cloud Storage support
 
-### Optional Add-ons
-- **WebSocket support** with Django Channels and ASGI
-- **Background tasks** with Celery and Redis
-- **Payment processing** with Stripe integration
-- **Multi-tenancy** support
-- **GraphQL API** with Graphene
-- **Internationalization** (i18n) ready
+### Built-in Features
+- **WebSocket support** with Django Channels for real-time features
+- **Redis integration** for caching and channel layers
+- **GitHub Actions** workflows for CI/CD
+- **Heroku deployment** configuration with Procfile
+- **PostgreSQL** as default database
+- **Mobile app support** with React Native template
 
 
 ## Usage
