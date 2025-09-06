@@ -1,24 +1,20 @@
-<p align="center">
+<div align="center">
   <a href="https://thinknimble.com">
-    <kbd>
-      <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png" alt="ThinkNimble Logo" width="300">
-    </kbd>
+    <img src="https://images.squarespace-cdn.com/content/v1/5fa085940154ad57199d527c/e9075780-7f4f-47cf-abc3-147db5547c95/Group+1370+%281%29.png#gh-dark-mode-only" alt="ThinkNimble Logo" width="300" style="background: white; padding: 20px; border-radius: 10px;">
   </a>
-</p>
+</div>
 
 <h1 align="center">ThinkNimble Bootstrapper</h1>
 
-<div align="center">
-
-[![Build Status](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml)
-[![Linting](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml/badge.svg)](https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/Django-4.2-092E20)](https://www.djangoproject.com/)
-[![React](https://img.shields.io/badge/React-18-61DAFB)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6)](https://www.typescriptlang.org/)
-[![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4)](https://tailwindcss.com/)
-
-</div>
+<p align="center">
+  <a href="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml"><img src="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml/badge.svg" alt="Build Status"></a>
+  <a href="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml"><img src="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml/badge.svg" alt="Linting"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.12-3776AB" alt="Python"></a>
+  <a href="https://www.djangoproject.com/"><img src="https://img.shields.io/badge/Django-4.2-092E20" alt="Django"></a>
+  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18-61DAFB" alt="React"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5-3178C6" alt="TypeScript"></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-3-06B6D4" alt="Tailwind"></a>
+</p>
 
 <p align="center">
   <b>Ship production-ready full-stack apps in minutes, not months</b>
