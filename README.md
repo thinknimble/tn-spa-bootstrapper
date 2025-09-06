@@ -1,14 +1,99 @@
-# Thinknimble SPA Bootstrapper (uv | Django | React)
+# ThinkNimble Bootstrapper
 
-A production-ready Django SPA app on Heroku in 20-min or less!
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-4.2-092E20?style=for-the-badge&logo=django)](https://www.djangoproject.com/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-[Example deployment (main branch)]
+> **Ship production-ready full-stack apps in minutes, not months**
+
+The ThinkNimble Bootstrapper is a battle-tested cookiecutter template that generates a complete, production-ready Django + React application with authentication, payments, email, and deployment configurations—all following industry best practices.
+
+## What You Get
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Backend (Django)
+- **Django 4.2** with custom user model
+- **100% test coverage** out of the box
+- **API-first architecture** with Django REST Framework
+- **Secure by default** - SSL, CORS, CSP headers configured
+- **Email ready** - Mailgun, AWS SES, or SMTP
+- **File storage** - S3, GCS, or local
+- **Background tasks** with Celery (optional)
+- **WebSockets** with Django Channels (optional)
+
+</td>
+<td width="50%" valign="top">
+
+### Frontend (React)
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **Vite** for lightning-fast builds
+- **React Router** for navigation
+- **API integration** with Axios
+- **Form handling** with react-hook-form
+- **State management** ready
+- **Mobile responsive** from day one
+
+</td>
+</tr>
+</table>
+
+### Deploy Anywhere
+- **Heroku** - Production-ready with Procfile included
+- **Docker** - Fully containerized for any cloud platform
+- **Flexible** - Deploy to AWS, Google Cloud, or any Docker-compatible host
+
+### Enterprise-Ready
+- Pre-commit hooks for code quality
+- GitHub Actions CI/CD pipelines
+- Error tracking with Rollbar/Sentry
+- Performance monitoring
+- GDPR compliance helpers
+- Comprehensive documentation
+
+---
+
+## See It In Action
+
+Check out a live deployment: **[Demo App](https://tn-spa-bootstrapper-staging.herokuapp.com/)**
+
+---
+
+## Why ThinkNimble?
+
+**Stop reinventing the wheel.** Every new project shouldn't start from scratch. The ThinkNimble Bootstrapper gives you a production-quality foundation so you can focus on what makes your app unique.
+
+- **Save weeks of setup time** - Authentication, payments, emails, deployment—it's all there
+- **Best practices built-in** - 10+ years of production experience distilled into one template
+- **Fully customizable** - Not a framework, just a starting point you own completely
+- **Active community** - Regular updates and responsive support
+
+---
 
 ## Quick Start
 
-First, get `pipx` for your system, if you don't already have it [installing pipx](https://pipx.pypa.io/stable/installation/#installing-pipx).
+### Fastest Way - Using [tn-cli](https://github.com/thinknimble/tn-cli)
 
-Adn run the following command:
+Get up and running in seconds with the ThinkNimble CLI:
+
+```bash
+# Install tn-cli (one-time setup)
+curl -fsSL https://nimbl.sh/install | bash
+
+# Create your project
+tn new-project
+# or use the alias
+tn bootstrap
+```
+
+### Alternative - Using Cookiecutter Directly
+
+First, install `pipx` if you don't have it ([installation guide](https://pipx.pypa.io/stable/installation/#installing-pipx)):
 
 ```bash
 pipx install cookiecutter
