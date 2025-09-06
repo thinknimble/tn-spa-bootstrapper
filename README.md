@@ -104,30 +104,40 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 
 ## Features
 
-See: [Maintained Foundation fork]
+### Authentication & User Management
+- **Custom user model** configured and ready to extend
+- **JWT-based authentication** with secure token handling
+- **Social authentication** ready (OAuth2 support)
+- **Email verification** and password reset flows
+- **User profile management** with avatar support
 
-- For Django 4.2.\*
-- Uses Python 3.12 by default
-- Renders Django projects with comprehensive test suite
-- Secure by default. SSL Everywhere.
-- Optimized development and production settings
-- Comes with custom user model ready to go
-- Optional basic ASGI setup for Websockets
-- Optional basic Django channel setup for Websockets
-- Optional client side applications in React
-- Send emails using [Mailgun] by default or Amazon SES if AWS is selected cloud provider.
-- Media storage using Amazon S3 or Google Cloud Storage
-- [Procfile] for deploying to Heroku
-- Run tests with unittest or pytest
-- Default integration with [pre-commit] for identifying simple issues before submission to code review
-- Integration with [Rollbar] for error logging
+### Developer Experience
+- **Hot module reloading** for both frontend and backend
+- **Pre-configured linting** with Ruff, ESLint, and Prettier
+- **Pre-commit hooks** for code quality enforcement
+- **Comprehensive test suite** with pytest and React Testing Library
+- **Type safety** with TypeScript and Python type hints
+- **API documentation** with Swagger/OpenAPI
+- **Debug toolbar** for development insights
 
-## Optional Integrations
+### Production Ready
+- **Environment-based settings** for dev/staging/production
+- **Security headers** configured (CORS, CSP, HSTS)
+- **Error tracking** with Rollbar or Sentry integration
+- **Performance monitoring** and logging
+- **Database migrations** and backup strategies
+- **Static file handling** with WhiteNoise or CDN support
+- **Email services** via Mailgun, AWS SES, or custom SMTP
+- **File storage** with S3, Google Cloud Storage, or local
 
-These features can be enabled after initial project setup:
+### Optional Add-ons
+- **WebSocket support** with Django Channels and ASGI
+- **Background tasks** with Celery and Redis
+- **Payment processing** with Stripe integration
+- **Multi-tenancy** support
+- **GraphQL API** with Graphene
+- **Internationalization** (i18n) ready
 
-- Serve static files from Amazon S3 or Whitenoise
-- Integration with [MailHog] for local email testing
 
 ## Usage
 
@@ -179,11 +189,3 @@ Now take a look at your repo. Don't forget to carefully look at the generated RE
 See the [CONTRIBUTING] file for information about reporting issues, setting up your dev environment, running tests, and making pull requests.
 
 [CONTRIBUTING]: ./CONTRIBUTING.md
-[Procfile]: https://devcenter.heroku.com/articles/procfile
-[Mailgun]: http://www.mailgun.com/
-[Whitenoise]: https://whitenoise.readthedocs.io/
-[MailHog]: https://github.com/mailhog/MailHog
-[Rollbar]: https://docs.rollbar.com/docs
-[pre-commit]: https://github.com/pre-commit/pre-commit
-[Maintained Foundation Fork]: https://github.com/Parbhat/cookiecutter-django-foundation
-[Example deployment (main branch)]: https://tn-spa-bootstrapper-staging.herokuapp.com/
