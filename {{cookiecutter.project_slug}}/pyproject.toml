@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "boto3==1.37.15",
+    "boto3==1.39.17",
     "channels==4.2.*",
     "channels-redis==4.2",
     "daphne>=4.1.2",
