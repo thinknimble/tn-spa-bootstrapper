@@ -1,7 +1,7 @@
 name: Expo Publish PR
-concurrency:
-  group: pr-deploy-${{ github.event.number }}
-  cancel-in-progress: true
+# concurrency:
+#   group: pr-deploy-${{ github.event.number }}
+#   cancel-in-progress: true
 
 on: [deployment_status]
 jobs:
