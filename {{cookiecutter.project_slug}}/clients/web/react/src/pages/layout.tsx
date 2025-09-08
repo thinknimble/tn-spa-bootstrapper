@@ -3,7 +3,7 @@ import { NavBar } from 'src/components/nav-bar'
 
 export const Layout = () => {
   return (
-    <div className="font-avenir text-primary flex min-h-screen flex-col pt-16 text-center antialiased">
+    <div className="flex min-h-screen flex-col pt-16 text-center font-avenir text-primary antialiased">
       <NavBar />
       <Outlet />
     </div>

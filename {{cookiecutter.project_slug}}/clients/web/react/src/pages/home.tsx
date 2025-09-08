@@ -12,8 +12,8 @@ export const Home = () => {
           Welcome to {{ cookiecutter.project_name }}!
         </h1>
         <p className="mt-6 text-lg leading-8 text-gray-600">
-          Here&apos;s some information about {{ cookiecutter.project_name }}. Please update and
-          expand on this text. This text is the first thing that users will see on the home page.
+          Here&apos;s some information about {{ cookiecutter.project_name }}. Please update and expand on this text. This
+          text is the first thing that users will see on the home page.
         </p>
         {isAuth && (
           <div className="mt-10 flex items-center justify-center gap-x-6">

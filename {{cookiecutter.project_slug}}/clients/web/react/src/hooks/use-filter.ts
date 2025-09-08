@@ -8,8 +8,8 @@ export type UiFilterState<T> = {
   [K in keyof T]: T[K] extends string | undefined | null
     ? SelectOption[] // For single-select, we still use an array because react-dropdown-select does. It will have 0 or 1 items.
     : T[K] extends string[] | undefined | null
-    ? SelectOption[] // For multi-select, it's an array.
-    : T[K]
+      ? SelectOption[] // For multi-select, it's an array.
+      : T[K]
 }
 
 // Helper to create the initial UI state.
