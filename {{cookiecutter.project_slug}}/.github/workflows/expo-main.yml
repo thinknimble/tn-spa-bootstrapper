@@ -1,7 +1,7 @@
 name: Expo Publish Main
-concurrency:
-  group: main-${{ github.event.number }}
-  cancel-in-progress: true
+# concurrency:
+#   group: main-${{ github.event.number }}
+#   cancel-in-progress: true
 
 on:
   push:
