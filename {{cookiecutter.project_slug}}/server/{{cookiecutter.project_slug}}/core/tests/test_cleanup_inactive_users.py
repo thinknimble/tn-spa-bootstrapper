@@ -7,7 +7,7 @@ from io import StringIO
 from unittest.mock import patch
 
 import pytest
-from dipiti.core.models import User
+from {{ cookiecutter.project_slug }}.core.models import User
 from django.core.management import call_command
 from django.utils import timezone
 
