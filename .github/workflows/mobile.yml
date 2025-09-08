@@ -1,4 +1,8 @@
 name: Expo Mobile PUBLISH
+concurrency:
+  group: pr-deploy-${{ github.event.number }}
+  cancel-in-progress: true
+
 on: [deployment_status, workflow_dispatch]
 
 jobs:
