@@ -13,6 +13,7 @@ import { goToMain } from '@stores/navigation'
 
 const LoginInner = () => {
   const { form, overrideForm } = useTnForm<TLoginForm>()
+
   const { changeToken, changeUserId } = useAuth.use.actions()
   const [errors, setErrors] = useState<string[] | undefined>()
 
@@ -66,6 +67,7 @@ const LoginInner = () => {
   const buttonProps = {
     disabled: !form.isValid,
   }
+
   return (
     <MultiPlatformSafeAreaView safeAreaClassName="h-full mt-5">
       <View className="w-full content-center mx-auto py-10 bg-slate-200 rounded-lg items-center px-4">

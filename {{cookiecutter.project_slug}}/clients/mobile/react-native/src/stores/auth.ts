@@ -6,7 +6,7 @@ import { createSelectors } from '@stores/utils'
 
 type AuthState = {
   token: string
-  hasHydrated: Promise<boolean>
+  hasHydrated: boolean
   userId: string
   expoToken: string
   /**
@@ -26,14 +26,9 @@ type AuthState = {
   }
 }
 
-let resolveHydrationValue: (value: boolean) => void
-const hasHydrated = new Promise<boolean>((res) => {
-  resolveHydrationValue = res
-})
-
 const defaultState: Omit<AuthState, 'actions'> = {
   expoToken: '',
-  hasHydrated,
+  hasHydrated: false,
   token: '',
   userId: '',
   user: null,
@@ -52,7 +47,9 @@ export const useAuth = createSelectors(
             set({ userId: id })
           },
           hydrate() {
-            resolveHydrationValue(true)
+            set({
+              hasHydrated: true,
+            })
           },
           clearAuth() {
             set({
@@ -72,11 +69,16 @@ export const useAuth = createSelectors(
       {
         name: 'auth',
         onRehydrateStorage: () => (state) => {
-          if (!state) {
-            return
-          }
           // we're going to store this store in local storage so we must make sure that hydration succeeds
-          state.actions.hydrate()
+          AsyncStorage.getItem('auth').then((data) => {
+            if (!data) {
+              // If there's no data, there's no real hydration to happen so this can be skipped
+              state?.actions.hydrate()
+            }
+          })
+          return () => {
+            state?.actions.hydrate()
+          }
         },
         storage: createJSONStorage(() => AsyncStorage),
         partialize(state) {
