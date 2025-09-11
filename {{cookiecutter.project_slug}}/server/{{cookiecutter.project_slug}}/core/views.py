@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+import django_filters
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -9,6 +10,7 @@ from django.db import transaction
 from django.http import Http404
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, mixins, permissions, status, views, viewsets
 from rest_framework.decorators import (
     api_view,
@@ -17,8 +19,6 @@ from rest_framework.decorators import (
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-import django_filters
 
 from {{cookiecutter.project_slug}}.common.filters import MultiValueModelFilter
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email

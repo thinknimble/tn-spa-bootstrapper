@@ -7,10 +7,10 @@ from django.test.client import RequestFactory
 from rest_framework import status
 from rest_framework.response import Response
 
+from .factories import GroupFactory, UserFactory
 from .models import User
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 from .views import PreviewTemplateView, request_reset_link
-from .factories import UserFactory, GroupFactory
 
 
 @pytest.mark.django_db
