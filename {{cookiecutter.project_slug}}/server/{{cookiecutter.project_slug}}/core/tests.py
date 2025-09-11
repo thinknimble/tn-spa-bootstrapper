@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from .models import User
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 from .views import PreviewTemplateView, request_reset_link
+from .factories import UserFactory, GroupFactory
 
 
 @pytest.mark.django_db
@@ -229,8 +230,8 @@ class TestEmailValidation:
         )
         assert serializer.is_valid()
 
-    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.logger")
-    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.rollbar")
+    @mock.patch("group_filter_test.core.serializers.logger")
+    @mock.patch("group_filter_test.core.serializers.rollbar")
     def test_suspicious_email_warning(self, mock_rollbar, mock_logger):
         """Test that suspicious emails trigger warnings"""
         serializer = UserRegistrationSerializer(
@@ -245,8 +246,8 @@ class TestEmailValidation:
         mock_logger.warning.assert_called_once()
         assert "Potentially risky email" in str(mock_logger.warning.call_args)
 
-    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.logger")
-    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.rollbar")
+    @mock.patch("group_filter_test.core.serializers.logger")
+    @mock.patch("group_filter_test.core.serializers.rollbar")
     def test_name_validation_warning(self, mock_rollbar, mock_logger):
         """Test that non-alphabetic names trigger warnings"""
         serializer = UserRegistrationSerializer(
@@ -274,7 +275,9 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
-        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
+        with mock.patch(
+            "group_filter_test.core.views.render", return_value=Response()
+        ) as mocked_render:
             client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
 
@@ -305,7 +308,7 @@ class TestPreviewTemplateView:
         assert PreviewTemplateView.parse_value("some__key", "value") == ("some__key", "value")
 
     def test_parse_value_with_model(self):
-        with mock.patch("{{ cookiecutter.project_slug }}.core.views.apps") as mock_apps:
+        with mock.patch("group_filter_test.core.views.apps") as mock_apps:
             PreviewTemplateView.parse_value("some_key:from_model", "core.User:PK")
             assert mock_apps.get_model.call_count == 1
             assert mock_apps.get_model.call_args[0][0] == "core.User"
@@ -327,3 +330,139 @@ class TestPreviewTemplateView:
         assert context["key"] == 0
         assert context["parent"] == {"child": 1, "other_child": 2, "multi_nested": {"child": 3}}
         assert context["parent_field"] == 4
+
+
+@pytest.mark.django_db
+class TestUserViewSetGroupFiltering:
+    """Test the UserViewSet group filtering functionality."""
+
+    def test_staff_can_list_all_users(self, api_client):
+        """Test that staff users can list all users."""
+        # Create a staff user
+        staff_user = UserFactory.create_staff_user()
+
+        # Create some regular users
+        UserFactory()
+        UserFactory()
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get("/api/users/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["results"]) == 3  # staff_user + 2 regular users
+
+    def test_regular_user_cannot_list_users(self, api_client):
+        """Test that regular users cannot list users."""
+        regular_user = UserFactory()
+        UserFactory()  # Another user
+
+        api_client.force_authenticate(regular_user)
+        response = api_client.get("/api/users/")
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_filter_users_by_single_group(self, api_client):
+        """Test filtering users by a single group."""
+        # Create groups
+        group1 = GroupFactory(name="Editors")
+        group2 = GroupFactory(name="Viewers")
+
+        # Create users with different groups
+        user1 = UserFactory(groups=[group1])
+        user2 = UserFactory(groups=[group2])
+        user3 = UserFactory(groups=[group1, group2])
+        user4 = UserFactory()  # No groups
+
+        staff_user = UserFactory.create_staff_user()
+        api_client.force_authenticate(staff_user)
+
+        # Filter by group1
+        response = api_client.get(f"/api/users/?groups={group1.id}")
+
+        assert response.status_code == status.HTTP_200_OK
+        user_ids = [str(user["id"]) for user in response.data["results"]]
+        assert str(user1.id) in user_ids
+        assert str(user3.id) in user_ids
+        assert str(user2.id) not in user_ids
+        assert str(user4.id) not in user_ids
+
+    def test_filter_users_by_multiple_groups(self, api_client):
+        """Test filtering users by multiple groups."""
+        # Create groups
+        group1 = GroupFactory(name="Editors")
+        group2 = GroupFactory(name="Viewers")
+        group3 = GroupFactory(name="Admins")
+
+        # Create users with different groups
+        user1 = UserFactory(groups=[group1])
+        user2 = UserFactory(groups=[group2])
+        user3 = UserFactory(groups=[group1, group2])
+        user4 = UserFactory(groups=[group3])
+        user5 = UserFactory()  # No groups
+
+        staff_user = UserFactory.create_staff_user()
+        api_client.force_authenticate(staff_user)
+
+        # Filter by group1 and group2
+        response = api_client.get(f"/api/users/?groups={group1.id},{group2.id}")
+
+        assert response.status_code == status.HTTP_200_OK
+        user_ids = [str(user["id"]) for user in response.data["results"]]
+        assert str(user1.id) in user_ids
+        assert str(user2.id) in user_ids
+        assert str(user3.id) in user_ids
+        assert str(user4.id) not in user_ids
+        assert str(user5.id) not in user_ids
+
+    def test_filter_users_by_nonexistent_group(self, api_client):
+        """Test filtering users by a nonexistent group."""
+        staff_user = UserFactory.create_staff_user()
+        UserFactory()  # Create a user
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get("/api/users/?groups=99999")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["results"]) == 0
+
+    def test_filter_users_by_empty_groups(self, api_client):
+        """Test filtering users with empty groups parameter."""
+        staff_user = UserFactory.create_staff_user()
+        UserFactory()
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get("/api/users/?groups=")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["results"]) == 2  # staff_user + created user
+
+    def test_regular_user_can_still_access_own_data(self, api_client):
+        """Test that regular users can still access their own data."""
+        regular_user = UserFactory()
+
+        api_client.force_authenticate(regular_user)
+        response = api_client.get(f"/api/users/{regular_user.id}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["email"] == regular_user.email
+
+    def test_regular_user_cannot_access_other_user_data(self, api_client):
+        """Test that regular users cannot access other users' data."""
+        regular_user = UserFactory()
+        other_user = UserFactory()
+
+        api_client.force_authenticate(regular_user)
+        response = api_client.get(f"/api/users/{other_user.id}/")
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_staff_can_access_any_user_data(self, api_client):
+        """Test that staff users can access any user's data."""
+        staff_user = UserFactory.create_staff_user()
+        other_user = UserFactory()
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get(f"/api/users/{other_user.id}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["email"] == other_user.email

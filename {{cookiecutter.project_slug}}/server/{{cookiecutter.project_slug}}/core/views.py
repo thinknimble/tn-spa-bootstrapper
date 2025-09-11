@@ -17,15 +17,28 @@ from rest_framework.decorators import (
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+import django_filters
 
-from {{ cookiecutter.project_slug }}.utils.emails import send_html_email
+from {{cookiecutter.project_slug}}.utils.emails import send_html_email
+from {{cookiecutter.project_slug}}.common.filters import MultiValueModelFilter
 
 from .forms import PreviewTemplateForm
 from .models import User
-from .permissions import HasUserPermissions
+from .permissions import HasUserPermissions, IsStaffOrReadOnly
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
 logger = logging.getLogger(__name__)
+
+
+class UserFilterSet(django_filters.FilterSet):
+    """FilterSet for User model with groups filtering."""
+
+    groups = MultiValueModelFilter(field_name="groups__id")
+
+    class Meta:
+        model = User
+        fields = ["groups"]
 
 
 class UserLoginView(generics.GenericAPIView):
@@ -52,18 +65,22 @@ class UserLoginView(generics.GenericAPIView):
         return Response(response_data)
 
 
-class UserViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+class UserViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     queryset = User.objects
     serializer_class = UserSerializer
+    filterset_class = UserFilterSet
+    filter_backends = [DjangoFilterBackend]
 
     # No auth required to create user
-    # Auth required for all other actions
-    permission_classes = (HasUserPermissions,)
+    # Staff required for list, auth required for all other actions
+    permission_classes = (IsStaffOrReadOnly, HasUserPermissions)
 
     def get_queryset(self):
         """
-        Users should only find themselves by default
+        Users should only find themselves by default, except for staff who can see all users
         """
+        if self.action == "list" and self.request.user.is_staff:
+            return super().get_queryset().all()
         return super().get_queryset().for_user(self.request.user)
 
     @transaction.atomic
@@ -104,7 +121,7 @@ def request_reset_link(request, *args, **kwargs):
     reset_context = user.reset_password_context()
 
     send_html_email(
-        "Password reset for {{ cookiecutter.project_name }}",
+        "Password reset for group_filter_test",
         "registration/password_reset.html",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
