@@ -230,8 +230,8 @@ class TestEmailValidation:
         )
         assert serializer.is_valid()
 
-    @mock.patch("group_filter_test.core.serializers.logger")
-    @mock.patch("group_filter_test.core.serializers.rollbar")
+    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.logger")
+    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.rollbar")
     def test_suspicious_email_warning(self, mock_rollbar, mock_logger):
         """Test that suspicious emails trigger warnings"""
         serializer = UserRegistrationSerializer(
@@ -246,8 +246,8 @@ class TestEmailValidation:
         mock_logger.warning.assert_called_once()
         assert "Potentially risky email" in str(mock_logger.warning.call_args)
 
-    @mock.patch("group_filter_test.core.serializers.logger")
-    @mock.patch("group_filter_test.core.serializers.rollbar")
+    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.logger")
+    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.rollbar")
     def test_name_validation_warning(self, mock_rollbar, mock_logger):
         """Test that non-alphabetic names trigger warnings"""
         serializer = UserRegistrationSerializer(
@@ -276,7 +276,7 @@ class TestPreviewTemplateView:
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
         with mock.patch(
-            "group_filter_test.core.views.render", return_value=Response()
+            "{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()
         ) as mocked_render:
             client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
@@ -308,7 +308,7 @@ class TestPreviewTemplateView:
         assert PreviewTemplateView.parse_value("some__key", "value") == ("some__key", "value")
 
     def test_parse_value_with_model(self):
-        with mock.patch("group_filter_test.core.views.apps") as mock_apps:
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.apps") as mock_apps:
             PreviewTemplateView.parse_value("some_key:from_model", "core.User:PK")
             assert mock_apps.get_model.call_count == 1
             assert mock_apps.get_model.call_args[0][0] == "core.User"

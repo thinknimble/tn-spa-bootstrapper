@@ -20,8 +20,8 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 import django_filters
 
-from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 from {{cookiecutter.project_slug}}.common.filters import MultiValueModelFilter
+from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 
 from .forms import PreviewTemplateForm
 from .models import User
@@ -121,7 +121,7 @@ def request_reset_link(request, *args, **kwargs):
     reset_context = user.reset_password_context()
 
     send_html_email(
-        "Password reset for group_filter_test",
+        "Password reset for {{ cookiecutter.project_slug }}",
         "registration/password_reset.html",
         settings.DEFAULT_FROM_EMAIL,
         [user.email],
