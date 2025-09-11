@@ -16,7 +16,10 @@ from .views import PreviewTemplateView, request_reset_link
 @pytest.mark.django_db
 def test_create_user():
     user = User.objects.create_user(
-        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
+        email="test@example.com",
+        password="password",
+        first_name="Leslie",
+        last_name="Burke",
     )
 
     assert user.email == "test@example.com"
@@ -53,7 +56,10 @@ def test_create_user_api(api_client):
 @pytest.mark.django_db
 def test_create_superuser():
     superuser = User.objects.create_superuser(
-        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
+        email="test@example.com",
+        password="password",
+        first_name="Leslie",
+        last_name="Burke",
     )
 
     assert superuser.is_superuser
@@ -68,7 +74,9 @@ def test_create_user_from_factory(sample_user):
 @pytest.mark.django_db
 def test_user_can_login(api_client, sample_user):
     res = api_client.post(
-        "/api/login/", {"email": sample_user.email, "password": "password"}, format="json"
+        "/api/login/",
+        {"email": sample_user.email, "password": "password"},
+        format="json",
     )
     assert res.status_code == status.HTTP_200_OK
 
@@ -76,7 +84,9 @@ def test_user_can_login(api_client, sample_user):
 @pytest.mark.django_db
 def test_wrong_email(api_client, sample_user):
     res = api_client.post(
-        "/api/login/", {"email": "wrong@example.com", "password": "password"}, format="json"
+        "/api/login/",
+        {"email": "wrong@example.com", "password": "password"},
+        format="json",
     )
     assert res.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -137,7 +147,8 @@ def test_delete_user(api_client, sample_user):
 @pytest.mark.use_requests
 @pytest.mark.django_db
 def test_password_reset(caplog, api_client, sample_user):
-    # fake our API call to the view that generates an email for the user to reset their password
+    # fake our API call to the view that generates an email for the user to reset
+    # their password
     rf = RequestFactory()
     post_request = rf.post("api/password/reset/", {"email": sample_user.email})
     request_reset_link(post_request)
@@ -275,9 +286,7 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
-        with mock.patch(
-            "{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()
-        ) as mocked_render:
+        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
             client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
 
