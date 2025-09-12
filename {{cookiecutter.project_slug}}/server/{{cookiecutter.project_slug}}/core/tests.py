@@ -475,3 +475,35 @@ class TestUserViewSetGroupFiltering:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["email"] == other_user.email
+
+    def test_filter_prevents_duplicates_with_multiple_group_matches(self, api_client):
+        """Test that filtering doesn't return duplicate users when they match multiple filter criteria.
+
+        This test specifically validates that the distinct() clause in MultiValueModelFilter
+        prevents duplicate results when a user belongs to multiple groups being filtered.
+        """
+        # Create groups
+        group1 = GroupFactory(name="Editors")
+        group2 = GroupFactory(name="Viewers")
+        group3 = GroupFactory(name="Admins")
+
+        # Create a user that belongs to all three groups
+        user_with_multiple_groups = UserFactory(groups=[group1, group2, group3])
+
+        # Create a staff user to make the request
+        staff_user = UserFactory.create_staff_user()
+        api_client.force_authenticate(staff_user)
+
+        # Filter by multiple groups that the same user belongs to
+        # Without distinct(), this could potentially return the user multiple times
+        response = api_client.get(f"/api/users/?groups={group1.id},{group2.id},{group3.id}")
+
+        assert response.status_code == status.HTTP_200_OK
+
+        # Count how many times our user appears in the results
+        user_ids = [str(user["id"]) for user in response.data["results"]]
+        occurrences = user_ids.count(str(user_with_multiple_groups.id))
+
+        # The user should appear exactly once, not multiple times
+        assert occurrences == 1, f"User appeared {occurrences} times, expected 1"
+        assert len(response.data["results"]) == 1
