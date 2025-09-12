@@ -30,7 +30,7 @@ class MultiValueCharFilter(CharFilter):
                 q_objects &= Q(**{f"{self.field_name}__icontains": val})
             else:
                 q_objects |= Q(**{f"{self.field_name}__icontains": val})
-        return qs.filter(q_objects)
+        return qs.filter(q_objects).distinct()
 
 
 class MultiValueModelFilter(CharFilter):
@@ -42,4 +42,4 @@ class MultiValueModelFilter(CharFilter):
         values = value.split(",")
         q_objects = Q()
         q_objects |= Q(**{f"{self.field_name}__in": values})
-        return qs.filter(q_objects)
+        return qs.filter(q_objects).distinct()
