@@ -7,6 +7,7 @@ from django.test.client import RequestFactory
 from rest_framework import status
 from rest_framework.response import Response
 
+from .factories import GroupFactory, UserFactory
 from .models import User
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 from .views import PreviewTemplateView, request_reset_link
@@ -15,7 +16,10 @@ from .views import PreviewTemplateView, request_reset_link
 @pytest.mark.django_db
 def test_create_user():
     user = User.objects.create_user(
-        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
+        email="test@example.com",
+        password="password",
+        first_name="Leslie",
+        last_name="Burke",
     )
 
     assert user.email == "test@example.com"
@@ -52,7 +56,10 @@ def test_create_user_api(api_client):
 @pytest.mark.django_db
 def test_create_superuser():
     superuser = User.objects.create_superuser(
-        email="test@example.com", password="password", first_name="Leslie", last_name="Burke"
+        email="test@example.com",
+        password="password",
+        first_name="Leslie",
+        last_name="Burke",
     )
 
     assert superuser.is_superuser
@@ -67,7 +74,9 @@ def test_create_user_from_factory(sample_user):
 @pytest.mark.django_db
 def test_user_can_login(api_client, sample_user):
     res = api_client.post(
-        "/api/login/", {"email": sample_user.email, "password": "password"}, format="json"
+        "/api/login/",
+        {"email": sample_user.email, "password": "password"},
+        format="json",
     )
     assert res.status_code == status.HTTP_200_OK
 
@@ -75,7 +84,9 @@ def test_user_can_login(api_client, sample_user):
 @pytest.mark.django_db
 def test_wrong_email(api_client, sample_user):
     res = api_client.post(
-        "/api/login/", {"email": "wrong@example.com", "password": "password"}, format="json"
+        "/api/login/",
+        {"email": "wrong@example.com", "password": "password"},
+        format="json",
     )
     assert res.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -136,7 +147,8 @@ def test_delete_user(api_client, sample_user):
 @pytest.mark.use_requests
 @pytest.mark.django_db
 def test_password_reset(caplog, api_client, sample_user):
-    # fake our API call to the view that generates an email for the user to reset their password
+    # fake our API call to the view that generates an email for the user to reset
+    # their password
     rf = RequestFactory()
     post_request = rf.post("api/password/reset/", {"email": sample_user.email})
     request_reset_link(post_request)
@@ -327,3 +339,171 @@ class TestPreviewTemplateView:
         assert context["key"] == 0
         assert context["parent"] == {"child": 1, "other_child": 2, "multi_nested": {"child": 3}}
         assert context["parent_field"] == 4
+
+
+@pytest.mark.django_db
+class TestUserViewSetGroupFiltering:
+    """Test the UserViewSet group filtering functionality."""
+
+    def test_staff_can_list_all_users(self, api_client):
+        """Test that staff users can list all users."""
+        # Create a staff user
+        staff_user = UserFactory.create_staff_user()
+
+        # Create some regular users
+        UserFactory()
+        UserFactory()
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get("/api/users/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["results"]) == 3  # staff_user + 2 regular users
+
+    def test_regular_user_cannot_list_users(self, api_client):
+        """Test that regular users cannot list users."""
+        regular_user = UserFactory()
+        UserFactory()  # Another user
+
+        api_client.force_authenticate(regular_user)
+        response = api_client.get("/api/users/")
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_filter_users_by_single_group(self, api_client):
+        """Test filtering users by a single group."""
+        # Create groups
+        group1 = GroupFactory(name="Editors")
+        group2 = GroupFactory(name="Viewers")
+
+        # Create users with different groups
+        user1 = UserFactory(groups=[group1])
+        user2 = UserFactory(groups=[group2])
+        user3 = UserFactory(groups=[group1, group2])
+        user4 = UserFactory()  # No groups
+
+        staff_user = UserFactory.create_staff_user()
+        api_client.force_authenticate(staff_user)
+
+        # Filter by group1
+        response = api_client.get(f"/api/users/?groups={group1.id}")
+
+        assert response.status_code == status.HTTP_200_OK
+        user_ids = [str(user["id"]) for user in response.data["results"]]
+        assert str(user1.id) in user_ids
+        assert str(user3.id) in user_ids
+        assert str(user2.id) not in user_ids
+        assert str(user4.id) not in user_ids
+
+    def test_filter_users_by_multiple_groups(self, api_client):
+        """Test filtering users by multiple groups."""
+        # Create groups
+        group1 = GroupFactory(name="Editors")
+        group2 = GroupFactory(name="Viewers")
+        group3 = GroupFactory(name="Admins")
+
+        # Create users with different groups
+        user1 = UserFactory(groups=[group1])
+        user2 = UserFactory(groups=[group2])
+        user3 = UserFactory(groups=[group1, group2])
+        user4 = UserFactory(groups=[group3])
+        user5 = UserFactory()  # No groups
+
+        staff_user = UserFactory.create_staff_user()
+        api_client.force_authenticate(staff_user)
+
+        # Filter by group1 and group2
+        response = api_client.get(f"/api/users/?groups={group1.id},{group2.id}")
+
+        assert response.status_code == status.HTTP_200_OK
+        user_ids = [str(user["id"]) for user in response.data["results"]]
+        assert str(user1.id) in user_ids
+        assert str(user2.id) in user_ids
+        assert str(user3.id) in user_ids
+        assert str(user4.id) not in user_ids
+        assert str(user5.id) not in user_ids
+
+    def test_filter_users_by_nonexistent_group(self, api_client):
+        """Test filtering users by a nonexistent group."""
+        staff_user = UserFactory.create_staff_user()
+        UserFactory()  # Create a user
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get("/api/users/?groups=99999")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["results"]) == 0
+
+    def test_filter_users_by_empty_groups(self, api_client):
+        """Test filtering users with empty groups parameter."""
+        staff_user = UserFactory.create_staff_user()
+        UserFactory()
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get("/api/users/?groups=")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["results"]) == 2  # staff_user + created user
+
+    def test_regular_user_can_still_access_own_data(self, api_client):
+        """Test that regular users can still access their own data."""
+        regular_user = UserFactory()
+
+        api_client.force_authenticate(regular_user)
+        response = api_client.get(f"/api/users/{regular_user.id}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["email"] == regular_user.email
+
+    def test_regular_user_cannot_access_other_user_data(self, api_client):
+        """Test that regular users cannot access other users' data."""
+        regular_user = UserFactory()
+        other_user = UserFactory()
+
+        api_client.force_authenticate(regular_user)
+        response = api_client.get(f"/api/users/{other_user.id}/")
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_staff_can_access_any_user_data(self, api_client):
+        """Test that staff users can access any user's data."""
+        staff_user = UserFactory.create_staff_user()
+        other_user = UserFactory()
+
+        api_client.force_authenticate(staff_user)
+        response = api_client.get(f"/api/users/{other_user.id}/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["email"] == other_user.email
+
+    def test_filter_prevents_duplicates_with_multiple_group_matches(self, api_client):
+        """Test that filtering doesn't return duplicate users when they match multiple filter criteria.
+
+        This test specifically validates that the distinct() clause in MultiValueModelFilter
+        prevents duplicate results when a user belongs to multiple groups being filtered.
+        """
+        # Create groups
+        group1 = GroupFactory(name="Editors")
+        group2 = GroupFactory(name="Viewers")
+        group3 = GroupFactory(name="Admins")
+
+        # Create a user that belongs to all three groups
+        user_with_multiple_groups = UserFactory(groups=[group1, group2, group3])
+
+        # Create a staff user to make the request
+        staff_user = UserFactory.create_staff_user()
+        api_client.force_authenticate(staff_user)
+
+        # Filter by multiple groups that the same user belongs to
+        # Without distinct(), this could potentially return the user multiple times
+        response = api_client.get(f"/api/users/?groups={group1.id},{group2.id},{group3.id}")
+
+        assert response.status_code == status.HTTP_200_OK
+
+        # Count how many times our user appears in the results
+        user_ids = [str(user["id"]) for user in response.data["results"]]
+        occurrences = user_ids.count(str(user_with_multiple_groups.id))
+
+        # The user should appear exactly once, not multiple times
+        assert occurrences == 1, f"User appeared {occurrences} times, expected 1"
+        assert len(response.data["results"]) == 1
