@@ -1,4 +1,8 @@
 name: Expo Publish Main
+concurrency:
+  group: {{ main-merge-${{ github.event.number }} }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
