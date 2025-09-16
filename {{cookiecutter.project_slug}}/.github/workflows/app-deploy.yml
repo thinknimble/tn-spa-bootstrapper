@@ -23,7 +23,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REGISTRY: "{{ "${{ vars.AWS_ACCOUNT_ID }}" }}.dkr.ecr.us-east-1.amazonaws.com"
+  ECR_REGISTRY: "{{'${{ vars.AWS_ACCOUNT_ID }}'}}.dkr.ecr.us-east-1.amazonaws.com"
 
 jobs:
   build-and-deploy:
