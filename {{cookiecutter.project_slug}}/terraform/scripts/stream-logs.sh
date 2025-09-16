@@ -1,4 +1,4 @@
-#!/bin/bash
+{% raw %}#!/bin/bash
 
 # ECS Logs Streaming Script - Real-time log viewing for ECS services
 # Streams CloudWatch logs from your ECS containers
@@ -391,3 +391,4 @@ while true; do
     # Wait before next poll
     sleep 2
 done
+{% endraw %}
