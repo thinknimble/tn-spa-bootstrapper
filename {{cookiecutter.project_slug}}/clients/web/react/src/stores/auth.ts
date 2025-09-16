@@ -77,7 +77,6 @@ export const useAuth = createSelectors(
           state.actions.hydrate()
         },
         partialize(state) {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { actions: _, ...rest } = state
           return rest
         },
