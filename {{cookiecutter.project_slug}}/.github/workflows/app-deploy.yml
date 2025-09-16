@@ -59,296 +59,296 @@ jobs:
             echo "is_pr=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: {{ "${{ vars.TF_AWS_ROLE_ARN }}" }}
-          role-session-name: GitHubActions-{{ "${{ github.run_id }}" }}
-          aws-region: {{ "${{ env.AWS_REGION }}" }}
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: {{ "${{ vars.TF_AWS_ROLE_ARN }}" }}
+#           role-session-name: GitHubActions-{{ "${{ github.run_id }}" }}
+#           aws-region: {{ "${{ env.AWS_REGION }}" }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+#       - name: Login to Amazon ECR
+#         id: login-ecr
+#         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Create ECR repository if it doesn't exist
-        run: |
-          aws ecr describe-repositories --repository-names {{ cookiecutter.project_slug }}-server || \
-          aws ecr create-repository --repository-name {{ cookiecutter.project_slug }}-server
+#       - name: Create ECR repository if it doesn't exist
+#         run: |
+#           aws ecr describe-repositories --repository-names {{ cookiecutter.project_slug }}-server || \
+#           aws ecr create-repository --repository-name {{ cookiecutter.project_slug }}-server
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./compose/server/tf/Dockerfile
-          platforms: linux/amd64
-          push: true
-          tags: |
-            {{ "${{ env.ECR_REGISTRY }}" }}/{{ cookiecutter.project_slug }}-server:{{ "${{ steps.env-vars.outputs.image_tag }}" }}
-            {{ "${{ env.ECR_REGISTRY }}" }}/{{ cookiecutter.project_slug }}-server:{{ "${{ steps.env-vars.outputs.environment }}" }}-latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: .
+#           file: ./compose/server/tf/Dockerfile
+#           platforms: linux/amd64
+#           push: true
+#           tags: |
+#             {{ "${{ env.ECR_REGISTRY }}" }}/{{ cookiecutter.project_slug }}-server:{{ "${{ steps.env-vars.outputs.image_tag }}" }}
+#             {{ "${{ env.ECR_REGISTRY }}" }}/{{ cookiecutter.project_slug }}-server:{{ "${{ steps.env-vars.outputs.environment }}" }}-latest
+#           cache-from: type=gha
+#           cache-to: type=gha,mode=max
 
-      - name: Create deployment
-        id: deployment
-        run: |
-          echo "Creating deployment for environment: pr-{{ "${{ github.event.number }}" }}"
-          DEPLOYMENT_ID=$(gh api repos/{{ "${{ github.repository }}" }}/deployments \
-            --method POST \
-            --field ref='{{ "${{ github.sha }}" }}' \
-            --field environment='pr-{{ "${{ github.event.number }}" }}' \
-            --field auto_merge=false \
-            --jq '.id')
+#       - name: Create deployment
+#         id: deployment
+#         run: |
+#           echo "Creating deployment for environment: pr-{{ "${{ github.event.number }}" }}"
+#           DEPLOYMENT_ID=$(gh api repos/{{ "${{ github.repository }}" }}/deployments \
+#             --method POST \
+#             --field ref='{{ "${{ github.sha }}" }}' \
+#             --field environment='pr-{{ "${{ github.event.number }}" }}' \
+#             --field auto_merge=false \
+#             --jq '.id')
           
-          if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" = "null" ]; then
-            echo "Failed to create deployment"
-            exit 1
-          fi
+#           if [ -z "$DEPLOYMENT_ID" ] || [ "$DEPLOYMENT_ID" = "null" ]; then
+#             echo "Failed to create deployment"
+#             exit 1
+#           fi
           
-          echo "Created deployment with ID: $DEPLOYMENT_ID"
-          echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+#           echo "Created deployment with ID: $DEPLOYMENT_ID"
+#           echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
+#         env:
+#           GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
 
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ~1.0
+#       - name: Install Terraform
+#         uses: hashicorp/setup-terraform@v3
+#         with:
+#           terraform_version: ~1.0
 
-      - name: Terraform Init with Backend
-        run: |
-          cd terraform
-          # Use the init_backend script with environment-specific configuration
-          ./scripts/init_backend.sh -e "{{ "${{ steps.env-vars.outputs.environment }}" }}" -s "{{ cookiecutter.project_slug }}" -p ""
+#       - name: Terraform Init with Backend
+#         run: |
+#           cd terraform
+#           # Use the init_backend script with environment-specific configuration
+#           ./scripts/init_backend.sh -e "{{ "${{ steps.env-vars.outputs.environment }}" }}" -s "{{ cookiecutter.project_slug }}" -p ""
 
-      - name: Check if Terraform workspace exists
-        id: workspace-check
-        run: |
-          cd terraform
-          if terraform workspace list | grep -q "{{ "${{ steps.env-vars.outputs.environment }}" }}"; then
-            echo "workspace_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "workspace_exists=false" >> $GITHUB_OUTPUT
-          fi
+#       - name: Check if Terraform workspace exists
+#         id: workspace-check
+#         run: |
+#           cd terraform
+#           if terraform workspace list | grep -q "{{ "${{ steps.env-vars.outputs.environment }}" }}"; then
+#             echo "workspace_exists=true" >> $GITHUB_OUTPUT
+#           else
+#             echo "workspace_exists=false" >> $GITHUB_OUTPUT
+#           fi
 
-      - name: Create or select Terraform workspace
-        run: |
-          cd terraform
-          if [ "{{ "${{ steps.workspace-check.outputs.workspace_exists }}" }}" = "true" ]; then
-            terraform workspace select {{ "${{ steps.env-vars.outputs.environment }}" }}
-          else
-            terraform workspace new {{ "${{ steps.env-vars.outputs.environment }}" }}
-          fi
+#       - name: Create or select Terraform workspace
+#         run: |
+#           cd terraform
+#           if [ "{{ "${{ steps.workspace-check.outputs.workspace_exists }}" }}" = "true" ]; then
+#             terraform workspace select {{ "${{ steps.env-vars.outputs.environment }}" }}
+#           else
+#             terraform workspace new {{ "${{ steps.env-vars.outputs.environment }}" }}
+#           fi
 
-      - name: Generate Terraform variables file
-        run: |
-          cd terraform
-          # Create sanitized DB variables
-          DB_NAME=$(echo "{{ cookiecutter.project_slug }}_{{ "${{ steps.env-vars.outputs.environment }}" }}" | sed 's/-/_/g')
-          DB_USER=$(echo "{{ cookiecutter.project_slug }}_user" | sed 's/-//g')
+#       - name: Generate Terraform variables file
+#         run: |
+#           cd terraform
+#           # Create sanitized DB variables
+#           DB_NAME=$(echo "{{ cookiecutter.project_slug }}_{{ "${{ steps.env-vars.outputs.environment }}" }}" | sed 's/-/_/g')
+#           DB_USER=$(echo "{{ cookiecutter.project_slug }}_user" | sed 's/-//g')
           
-          cat << EOF > terraform.tfvars
-          service = "{{ cookiecutter.project_slug }}"
-          environment = "{{ "${{ steps.env-vars.outputs.environment }}" }}"
-          ecr_server_repository_name = "{{ cookiecutter.project_slug }}-server"
-          ecr_tag = "{{ "${{ steps.env-vars.outputs.image_tag }}" }}"
-          secret_key = "{{ "${{ secrets.DJANGO_SECRET_KEY }}" }}"
-          db_pass = "{{ "${{ secrets.DB_PASSWORD }}" }}"
-          django_superuser_password = "{{ "${{ secrets.DJANGO_SUPERUSER_PASSWORD }}" }}"
-          db_name = "$DB_NAME"
-          db_user = "$DB_USER"
-          current_port = "8080"
-          allowed_hosts = "\$(terraform output -raw current_domain 2>/dev/null || echo 'localhost')"
-          staff_email = "{{ cookiecutter.author_name }} <{{ cookiecutter.email }}>"
-          playwright_test_user_pass = "{{ "${{ secrets.PLAYWRIGHT_TEST_USER_PASS }}" }}"
-          playwright_test_base_url = "\$(terraform output -raw application_url 2>/dev/null || echo 'http://localhost:8080')"
-          aws_access_key_id = "{{ "${{ secrets.AWS_ACCESS_KEY_ID }}" }}"
-          aws_secret_access_key = "{{ "${{ secrets.AWS_SECRET_ACCESS_KEY }}" }}"
-          aws_profile = ""
-          EOF
+#           cat << EOF > terraform.tfvars
+#           service = "{{ cookiecutter.project_slug }}"
+#           environment = "{{ "${{ steps.env-vars.outputs.environment }}" }}"
+#           ecr_server_repository_name = "{{ cookiecutter.project_slug }}-server"
+#           ecr_tag = "{{ "${{ steps.env-vars.outputs.image_tag }}" }}"
+#           secret_key = "{{ "${{ secrets.DJANGO_SECRET_KEY }}" }}"
+#           db_pass = "{{ "${{ secrets.DB_PASSWORD }}" }}"
+#           django_superuser_password = "{{ "${{ secrets.DJANGO_SUPERUSER_PASSWORD }}" }}"
+#           db_name = "$DB_NAME"
+#           db_user = "$DB_USER"
+#           current_port = "8080"
+#           allowed_hosts = "\$(terraform output -raw current_domain 2>/dev/null || echo 'localhost')"
+#           staff_email = "{{ cookiecutter.author_name }} <{{ cookiecutter.email }}>"
+#           playwright_test_user_pass = "{{ "${{ secrets.PLAYWRIGHT_TEST_USER_PASS }}" }}"
+#           playwright_test_base_url = "\$(terraform output -raw application_url 2>/dev/null || echo 'http://localhost:8080')"
+#           aws_access_key_id = "{{ "${{ secrets.AWS_ACCESS_KEY_ID }}" }}"
+#           aws_secret_access_key = "{{ "${{ secrets.AWS_SECRET_ACCESS_KEY }}" }}"
+#           aws_profile = ""
+#           EOF
 
-      - name: Terraform Plan
-        run: |
-          cd terraform
-          terraform plan -out=tfplan
+#       - name: Terraform Plan
+#         run: |
+#           cd terraform
+#           terraform plan -out=tfplan
 
-      - name: Check if this is a subsequent commit (force redeployment)
-        id: force-deploy
-        run: |
-          cd terraform
-          # Check if resources already exist (indicates subsequent commit)
-          if terraform show | grep -q "aws_ecs_service.server"; then
-            echo "existing_deployment=true" >> $GITHUB_OUTPUT
-            echo "🔄 Existing deployment detected - will force ECS service update"
-          else
-            echo "existing_deployment=false" >> $GITHUB_OUTPUT
-            echo "🆕 New deployment detected"
-          fi
+#       - name: Check if this is a subsequent commit (force redeployment)
+#         id: force-deploy
+#         run: |
+#           cd terraform
+#           # Check if resources already exist (indicates subsequent commit)
+#           if terraform show | grep -q "aws_ecs_service.server"; then
+#             echo "existing_deployment=true" >> $GITHUB_OUTPUT
+#             echo "🔄 Existing deployment detected - will force ECS service update"
+#           else
+#             echo "existing_deployment=false" >> $GITHUB_OUTPUT
+#             echo "🆕 New deployment detected"
+#           fi
 
-      - name: Force ECS service redeployment (subsequent commits)
-        if: {{ "${{ steps.force-deploy.outputs.existing_deployment }}" }} == 'true'
-        run: |
-          cd terraform
-          # Taint the ECS task definition to force recreation with new image
-          terraform taint aws_ecs_task_definition.server || echo "Task definition not found or already tainted"
-          echo "✅ Tainted ECS task definition for redeployment"
+#       - name: Force ECS service redeployment (subsequent commits)
+#         if: {{ "${{ steps.force-deploy.outputs.existing_deployment }}" }} == 'true'
+#         run: |
+#           cd terraform
+#           # Taint the ECS task definition to force recreation with new image
+#           terraform taint aws_ecs_task_definition.server || echo "Task definition not found or already tainted"
+#           echo "✅ Tainted ECS task definition for redeployment"
 
-      - name: Terraform Plan (after taint)
-        if: {{ "${{ steps.force-deploy.outputs.existing_deployment }}" }} == 'true'
-        run: |
-          cd terraform
-          terraform plan -out=tfplan
+#       - name: Terraform Plan (after taint)
+#         if: {{ "${{ steps.force-deploy.outputs.existing_deployment }}" }} == 'true'
+#         run: |
+#           cd terraform
+#           terraform plan -out=tfplan
 
-      - name: Terraform Apply
-        run: |
-          cd terraform
-          terraform apply -auto-approve tfplan
+#       - name: Terraform Apply
+#         run: |
+#           cd terraform
+#           terraform apply -auto-approve tfplan
 
-      - name: Force ECS service update (ensure new image is deployed)
-        run: |
-          cd terraform
+#       - name: Force ECS service update (ensure new image is deployed)
+#         run: |
+#           cd terraform
           
-          # Check if terraform outputs are available
-          if ! terraform output ecs_service_name >/dev/null 2>&1; then
-            echo "⚠️  Terraform outputs not available, skipping ECS service update"
-            echo "This might be a new deployment where ECS service isn't created yet"
-            exit 0
-          fi
+#           # Check if terraform outputs are available
+#           if ! terraform output ecs_service_name >/dev/null 2>&1; then
+#             echo "⚠️  Terraform outputs not available, skipping ECS service update"
+#             echo "This might be a new deployment where ECS service isn't created yet"
+#             exit 0
+#           fi
           
-          SERVICE_NAME=$(terraform output -raw ecs_service_name)
-          CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)
+#           SERVICE_NAME=$(terraform output -raw ecs_service_name)
+#           CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)
           
-          echo "🚀 Forcing ECS service update to deploy new image..."
-          echo "Service: $SERVICE_NAME"
-          echo "Cluster: $CLUSTER_NAME"
+#           echo "🚀 Forcing ECS service update to deploy new image..."
+#           echo "Service: $SERVICE_NAME"
+#           echo "Cluster: $CLUSTER_NAME"
           
-          # Verify cluster exists before updating service
-          if aws ecs describe-clusters --clusters "$CLUSTER_NAME" --region ${{ env.AWS_REGION }} >/dev/null 2>&1; then
-            aws ecs update-service \
-              --cluster "$CLUSTER_NAME" \
-              --service "$SERVICE_NAME" \
-              --force-new-deployment \
-              --region {{ "${{ env.AWS_REGION }}" }}
-            echo "✅ ECS service update initiated"
-          else
-            echo "⚠️  Cluster $CLUSTER_NAME not found, skipping service update"
-          fi
+#           # Verify cluster exists before updating service
+#           if aws ecs describe-clusters --clusters "$CLUSTER_NAME" --region ${{ env.AWS_REGION }} >/dev/null 2>&1; then
+#             aws ecs update-service \
+#               --cluster "$CLUSTER_NAME" \
+#               --service "$SERVICE_NAME" \
+#               --force-new-deployment \
+#               --region {{ "${{ env.AWS_REGION }}" }}
+#             echo "✅ ECS service update initiated"
+#           else
+#             echo "⚠️  Cluster $CLUSTER_NAME not found, skipping service update"
+#           fi
 
-      - name: Get deployment URL
-        id: deployment-url
-        run: |
-          cd terraform
-          echo "url=$(terraform output -raw application_url)" >> $GITHUB_OUTPUT
+#       - name: Get deployment URL
+#         id: deployment-url
+#         run: |
+#           cd terraform
+#           echo "url=$(terraform output -raw application_url)" >> $GITHUB_OUTPUT
 
-      - name: Comment PR with deployment URL
-        if: {{ "${{ steps.env-vars.outputs.is_pr }}" }} == 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
+#       - name: Comment PR with deployment URL
+#         if: {{ "${{ steps.env-vars.outputs.is_pr }}" }} == 'true'
+#         uses: actions/github-script@v7
+#         with:
+#           script: |
+#             const { data: comments } = await github.rest.issues.listComments({
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#               issue_number: context.issue.number,
+#             });
             
-            const botComment = comments.find(comment => 
-              comment.user.type === 'Bot' && comment.body.includes('🚀 PR Environment Deployed')
-            );
+#             const botComment = comments.find(comment => 
+#               comment.user.type === 'Bot' && comment.body.includes('🚀 PR Environment Deployed')
+#             );
             
-            const commentBody = `🚀 **PR Environment Deployed**
+#             const commentBody = `🚀 **PR Environment Deployed**
             
-            **Environment:** \`${{ steps.env-vars.outputs.environment }}\`
-            **Image Tag:** \`${{ steps.env-vars.outputs.image_tag }}\`
-            **URL:** ${{ steps.deployment-url.outputs.url }}
+#             **Environment:** \`${{ steps.env-vars.outputs.environment }}\`
+#             **Image Tag:** \`${{ steps.env-vars.outputs.image_tag }}\`
+#             **URL:** ${{ steps.deployment-url.outputs.url }}
             
-            The environment will be automatically updated with each new commit to this PR.`;
+#             The environment will be automatically updated with each new commit to this PR.`;
             
-            if (botComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: commentBody
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: commentBody
-              });
-            }
+#             if (botComment) {
+#               await github.rest.issues.updateComment({
+#                 owner: context.repo.owner,
+#                 repo: context.repo.repo,
+#                 comment_id: botComment.id,
+#                 body: commentBody
+#               });
+#             } else {
+#               await github.rest.issues.createComment({
+#                 owner: context.repo.owner,
+#                 repo: context.repo.repo,
+#                 issue_number: context.issue.number,
+#                 body: commentBody
+#               });
+#             }
 
-      - name: Update deployment status (success)
-        if: {{ "${{ success() }}" }} && {{ "${{ steps.deployment.outputs.deployment_id }}" }} != ''
-        run: |
-          DEPLOYMENT_ID="{{ "${{ steps.deployment.outputs.deployment_id }}" }}"
-          APP_URL=$(cd terraform && terraform output -raw application_url 2>/dev/null || echo 'https://deployment.url')
+#       - name: Update deployment status (success)
+#         if: {{ "${{ success() }}" }} && {{ "${{ steps.deployment.outputs.deployment_id }}" }} != ''
+#         run: |
+#           DEPLOYMENT_ID="{{ "${{ steps.deployment.outputs.deployment_id }}" }}"
+#           APP_URL=$(cd terraform && terraform output -raw application_url 2>/dev/null || echo 'https://deployment.url')
           
-          echo "Updating deployment $DEPLOYMENT_ID to success with URL: $APP_URL"
-          gh api repos/{{ "${{ github.repository }}" }}/deployments/$DEPLOYMENT_ID/statuses \
-            --method POST \
-            --field state=success \
-            --field environment_url="$APP_URL"
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+#           echo "Updating deployment $DEPLOYMENT_ID to success with URL: $APP_URL"
+#           gh api repos/{{ "${{ github.repository }}" }}/deployments/$DEPLOYMENT_ID/statuses \
+#             --method POST \
+#             --field state=success \
+#             --field environment_url="$APP_URL"
+#         env:
+#           GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
 
-      - name: Update deployment status (failure)
-        if: {{ "${{ failure() }}" }} && {{ "${{ steps.deployment.outputs.deployment_id }}" }} != ''
-        run: |
-          DEPLOYMENT_ID="{{ "${{ steps.deployment.outputs.deployment_id }}" }}"
+#       - name: Update deployment status (failure)
+#         if: {{ "${{ failure() }}" }} && {{ "${{ steps.deployment.outputs.deployment_id }}" }} != ''
+#         run: |
+#           DEPLOYMENT_ID="{{ "${{ steps.deployment.outputs.deployment_id }}" }}"
           
-          echo "Updating deployment $DEPLOYMENT_ID to failure"
-          gh api repos/{{ "${{ github.repository }}" }}/deployments/$DEPLOYMENT_ID/statuses \
-            --method POST \
-            --field state=failure
-        env:
-          GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
+#           echo "Updating deployment $DEPLOYMENT_ID to failure"
+#           gh api repos/{{ "${{ github.repository }}" }}/deployments/$DEPLOYMENT_ID/statuses \
+#             --method POST \
+#             --field state=failure
+#         env:
+#           GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN }}" }}
 
-  cleanup-pr-environment:
-    runs-on: ubuntu-latest
-    if: github.event.action == 'closed'
-    permissions:
-      id-token: write
-      contents: read
+#   cleanup-pr-environment:
+#     runs-on: ubuntu-latest
+#     if: github.event.action == 'closed'
+#     permissions:
+#       id-token: write
+#       contents: read
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: {{ "${{ vars.TF_AWS_ROLE_ARN }}" }}
-          role-session-name: GitHubActions-{{ "${{ github.run_id }}" }}
-          aws-region: {{ "${{ env.AWS_REGION }}" }}
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: {{ "${{ vars.TF_AWS_ROLE_ARN }}" }}
+#           role-session-name: GitHubActions-{{ "${{ github.run_id }}" }}
+#           aws-region: {{ "${{ env.AWS_REGION }}" }}
 
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ~1.0
+#       - name: Install Terraform
+#         uses: hashicorp/setup-terraform@v3
+#         with:
+#           terraform_version: ~1.0
 
-      - name: Terraform Init with Backend
-        run: |
-          cd terraform
-          # Use the init_backend script with environment-specific configuration
-          ./scripts/init_backend.sh -e "{{ "${{ steps.env-vars.outputs.environment }}" }}" -s "{{ cookiecutter.project_slug }}" -p ""
+#       - name: Terraform Init with Backend
+#         run: |
+#           cd terraform
+#           # Use the init_backend script with environment-specific configuration
+#           ./scripts/init_backend.sh -e "{{ "${{ steps.env-vars.outputs.environment }}" }}" -s "{{ cookiecutter.project_slug }}" -p ""
 
-      - name: Select and destroy PR workspace # we might need to create the tfvars file for this
-        run: |
-          cd terraform
-          PR_WORKSPACE="pr-{{ "${{ github.event.number }}" }}"
+#       - name: Select and destroy PR workspace # we might need to create the tfvars file for this
+#         run: |
+#           cd terraform
+#           PR_WORKSPACE="pr-{{ "${{ github.event.number }}" }}"
           
-          if terraform workspace list | grep -q "$PR_WORKSPACE"; then
-            terraform workspace select $PR_WORKSPACE
+#           if terraform workspace list | grep -q "$PR_WORKSPACE"; then
+#             terraform workspace select $PR_WORKSPACE
             
-            terraform destroy -auto-approve
-            terraform workspace select default
-            terraform workspace delete $PR_WORKSPACE
+#             terraform destroy -auto-approve
+#             terraform workspace select default
+#             terraform workspace delete $PR_WORKSPACE
             
-            echo "✅ Cleaned up PR environment: $PR_WORKSPACE"
-          else
-            echo "ℹ️  No workspace found for PR {{ "${{ github.event.number }}" }}"
-          fi
+#             echo "✅ Cleaned up PR environment: $PR_WORKSPACE"
+#           else
+#             echo "ℹ️  No workspace found for PR {{ "${{ github.event.number }}" }}"
+#           fi
