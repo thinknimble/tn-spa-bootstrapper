@@ -1,4 +1,4 @@
-#!/bin/bash
+{% raw %}#!/bin/bash
 
 # ECS Exec Script - Connect to running ECS tasks
 # Works with Fargate tasks that have enable_execute_command = true
@@ -291,3 +291,4 @@ aws ecs execute-command \
     --interactive \
     --command "$COMMAND" \
     $PROFILE_FLAG $REGION_FLAG
+{% endraw %}

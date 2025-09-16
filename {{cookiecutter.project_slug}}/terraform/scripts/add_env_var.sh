@@ -1,4 +1,4 @@
-#!/bin/bash
+{% raw %}#!/bin/bash
 
 # Environment Variable Management Script
 # This script helps add new environment variables to your Terraform infrastructure
@@ -570,3 +570,4 @@ main() {
 
 # Run main function
 main "$@"
+{% endraw %}
