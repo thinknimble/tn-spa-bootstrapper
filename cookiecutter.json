@@ -15,5 +15,6 @@
   ],
   "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
   "client_app": ["React", "None"],
-  "include_mobile": "n"
+  "include_mobile": "n",
+  "deployment_option": ["Heroku", "Terraform (AWS)"]
 }

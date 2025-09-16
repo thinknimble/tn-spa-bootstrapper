@@ -123,6 +123,39 @@ def remove_expo_yaml_files():
             remove(file_name)
 
 
+def remove_terraform_files():
+    """Remove Terraform-related files when Heroku deployment is chosen"""
+    file_names = [
+        join(".github/workflows", "app-deploy.yml"),
+        join(".github/workflows", "SETUP.md"),
+    ]
+    directories = [
+        "terraform"
+    ]
+    
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+    
+    for directory in directories:
+        if exists(directory):
+            rmtree(directory)
+
+
+def remove_heroku_files():
+    """Remove Heroku-related files when Terraform deployment is chosen"""
+    file_names = [
+        join("scripts", "deploy-on-heroku.sh"),
+        "app.json",
+        "Procfile",
+        "runtime.txt"
+    ]
+    
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
+
 def set_keys_in_envs(django_secret, postgres_secret):
     env_file_path = join(".env.example")
     pull_request_template_path = join(".github", "pull_request_template.md")
@@ -175,6 +208,15 @@ def main():
 
     clean_up_clients_folder()
 
+    # Handle deployment option choice
+    deployment_option = "{{ cookiecutter.deployment_option }}"
+    if deployment_option.lower() == "heroku":
+        remove_terraform_files()
+        print(f"{INFO}Heroku deployment selected - removed Terraform files{END}")
+    elif deployment_option.lower().startswith("terraform"):
+        remove_heroku_files()
+        print(f"{INFO}Terraform (AWS) deployment selected - removed Heroku files{END}")
+
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")
 
@@ -184,7 +226,14 @@ def main():
     )
     print(f"{INFO}To initialize the database see {project_slug}/scripts/init-db.sh{END}")
     print(f"{INFO}To initialize the app see {project_slug}/scripts/init-app.sh{END}")
-    print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    
+    # Show deployment-specific instructions
+    if deployment_option.lower() == "heroku":
+        print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    elif deployment_option.lower().startswith("terraform"):
+        print(f"{INFO}To deploy with Terraform see {project_slug}/.github/workflows/SETUP.md{END}")
+        print(f"{INFO}Terraform configuration is in {project_slug}/terraform/{END}")
+    
     print(f"{INFO}To push the project to github {project_slug}/scripts/init-github.sh{END}")
 
 
