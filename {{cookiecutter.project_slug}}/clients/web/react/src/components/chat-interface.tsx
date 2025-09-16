@@ -1,6 +1,9 @@
 import { useState, useRef, FormEvent, useEffect } from 'react'
 import { useAuth } from 'src/stores/auth'
 import { Sidebar } from './sidebar'
+import { useChatStore } from './chat-store-provider'
+import { Menu } from 'lucide-react'
+import { ConnectionStatusIndicator } from './connection-status-indicator'
 
 type Message = {
   content: string
@@ -8,76 +11,13 @@ type Message = {
 }
 
 export const ChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([])
+  const messages = useChatStore((s) => s.messages)
+  const { sendMessage } = useChatStore((s) => s.actions)
   const [inputMessage, setInputMessage] = useState('')
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [, setStreamingContent] = useState('')
   const chatHistoryRef = useRef<HTMLDivElement>(null)
   const token = useAuth.use.token()
-
-  useEffect(() => {
-    // Create WebSocket connection with auth token
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const host = import.meta.env.DEV ? window.location.host : window.location.host
-    const ws = new WebSocket(`${protocol}//${host}/ws/chat/?token=${token}`)
-
-    ws.onopen = () => {
-      console.log('WebSocket connected')
-    }
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-
-      if (data.error) {
-        setMessages((prev) => {
-          const newMessages = [...prev]
-          const lastMessage = newMessages[newMessages.length - 1]
-          if (lastMessage?.role === 'assistant') {
-            lastMessage.content += `\nError: ${data.error}`
-          }
-          return newMessages
-        })
-        return
-      }
-
-      if (data.delta) {
-        // Handling streaming response
-        if (data.delta.content) {
-          setStreamingContent((prev) => {
-            const newContent = prev + data.delta.content
-            setMessages((messages) => {
-              const newMessages = [...messages]
-              newMessages[newMessages.length - 1].content = newContent
-              return newMessages
-            })
-            return newContent
-          })
-        }
-      } else if (data.message) {
-        // Handling regular response
-        setMessages((prev) => [...prev, { content: data.message.content, role: 'assistant' }])
-      }
-    }
-
-    ws.onclose = (event) => {
-      console.log('WebSocket connection closed:', event.code, event.reason)
-      if (event.code === 4003) {
-        // Handle authentication failure
-        console.error('WebSocket authentication failed')
-      }
-    }
-
-    setSocket(ws)
-
-    return () => {
-      ws.close()
-    }
-  }, [token])
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -88,23 +28,12 @@ export const ChatInterface = () => {
     e.preventDefault()
     const content = inputMessage.trim()
     if (!content || !socket) return
-
     // Add user message to conversation
     const userMessage: Message = { content, role: 'user' }
-    setMessages((prev) => [...prev, userMessage])
+    sendMessage(userMessage)
     setInputMessage('')
-    setStreamingContent('')
-
     // Add empty assistant message that will be updated
-    setMessages((prev) => [...prev, { content: '', role: 'assistant' }])
-
-    // Send full conversation history through WebSocket
-    socket.send(
-      JSON.stringify({
-        messages: [...messages, userMessage], // Include previous messages plus new user message
-        stream: true,
-      }),
-    )
+    // setMessages((prev) => [...prev, { content: '', role: 'assistant' }])
   }
 
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -136,22 +65,18 @@ export const ChatInterface = () => {
             onClick={() => setIsSidebarOpen(true)}
             className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary"
           >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+            <Menu size={20} />
             Menu
           </button>
         </div>
 
         {/* Main Chat Area - Scrollable */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div ref={chatHistoryRef} className="flex-1 overflow-y-auto p-4">
-            <div className="mx-auto max-w-3xl">
+          <div
+            ref={chatHistoryRef}
+            className="relative flex flex-1 flex-col overflow-y-auto px-4 pt-4"
+          >
+            <div className="mx-auto max-w-3xl flex-grow overflow-auto">
               {messages.map((message, index) => (
                 <div
                   key={index}
@@ -169,14 +94,17 @@ export const ChatInterface = () => {
                 </div>
               ))}
             </div>
+            <section className="flex h-10 w-full">
+              <ConnectionStatusIndicator />
+            </section>
           </div>
 
           {/* Chat Input Area - Fixed at Bottom */}
           <div className="border-t border-gray-200 bg-white">
             <div className="mx-auto max-w-3xl">
-              <form onSubmit={handleSubmit} className="flex flex-col">
+              <form onSubmit={handleSubmit} className="flex w-full flex-row">
                 {/* Text Input */}
-                <div className="p-4 pb-2">
+                <div className="flex-grow p-4 pb-2">
                   <textarea
                     value={inputMessage}
                     onChange={handleTextareaInput}
@@ -195,7 +123,8 @@ export const ChatInterface = () => {
                   </div>
                   <button
                     type="submit"
-                    className="rounded-lg bg-primary px-6 py-2 text-white hover:bg-primaryLight focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    className="rounded-lg bg-primary px-6 py-2 text-white hover:bg-primaryLight focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={!inputMessage.trim()}
                   >
                     Send
                   </button>

@@ -29,4 +29,7 @@ yarn-error.log*
 /playwright/.cache/
 /playwright/.auth/
 
+#shadcn
+!/src/lib
+
 vite/*
