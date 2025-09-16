@@ -26,5 +26,6 @@
     "React",
     "None"
   ],
-  "include_mobile": "n"
+  "include_mobile": "n",
+  "deployment_option": ["Heroku", "Terraform (AWS)"]
 }
