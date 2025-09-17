@@ -1,4 +1,4 @@
 default_context:
   client_app: "React"
-  include_mobile: "n"
   deployment_option: "Heroku" 
+  include_mobile: "n"
