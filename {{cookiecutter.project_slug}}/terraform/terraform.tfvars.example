@@ -1,0 +1,39 @@
+service                       = "{{ cookiecutter.project_slug }}"
+ecr_server_repository_name    = "{{ cookiecutter.project_slug }}-server"
+
+aws_profile                   = "default"
+aws_region                    = "us-east-1"
+ecr_tag                       = "latest"
+environment                   = "development"
+
+
+# Certificate Configuration
+default_certificate_arn       = "arn:aws:acm:us-east-1:123456789012:certificate/your-wildcard-cert-id"  # Required: Wildcard certificate ARN
+custom_certificate_arn        = ""               # Optional: Override with custom certificate
+# company_domain removed - use current_domain instead for custom domains
+enable_https                  = true             # HTTPS enabled by default
+route53_zone_id               = ""               # Leave blank if you are part of TN
+
+# App Variables 
+
+secret_key                    = "{{ random_ascii_string(50) }}"
+debug                         = "True"
+current_domain                = "" # leave this blank to use the default created by the load balancer
+current_port                  = "8080"
+allowed_hosts                 = "server,localhost,127.0.0.1"
+db_name                       = "{{ cookiecutter.project_slug }}_db"
+db_user                       = "{{ cookiecutter.project_slug }}_user"
+db_pass                       = "{{ random_ascii_string(50) }}"
+use_aws_storage               = "False"
+aws_storage_bucket_name       = ""
+aws_location                  = ""
+aws_s3_region_name            = ""
+aws_access_key_id             = ""
+aws_secret_access_key         = ""
+enable_emails                 = "False"
+staff_email                   = "{{ cookiecutter.email }}"
+django_superuser_password     = "{{ random_ascii_string(50) }}"
+playwright_test_user_pass     = "{{ random_ascii_string(50) }}"
+playwright_test_base_url      = "http://localhost:8080"
+rollbar_access_token          = "your_rollbar_token"
+
