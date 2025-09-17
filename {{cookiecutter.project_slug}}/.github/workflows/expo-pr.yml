@@ -1,4 +1,10 @@
 name: Expo Publish PR
+concurrency:
+  {% raw %}
+  group: {{ pr-${{ github.event.number }} }}
+  {% endraw %}
+  cancel-in-progress: true
+
 on: [deployment_status]
 jobs:
   setup:
