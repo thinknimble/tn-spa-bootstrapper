@@ -33,39 +33,6 @@ variable "ecr_tag" {
 }
 
 
-# Backend Configuration Variables
-# These are used for S3 remote state backend setup
-
-variable "terraform_state_bucket" {
-  type        = string
-  description = "S3 bucket name for storing Terraform state files"
-  default     = ""
-}
-
-variable "terraform_state_key" {
-  type        = string
-  description = "S3 key path for the Terraform state file"
-  default     = ""
-}
-
-variable "terraform_state_region" {
-  type        = string
-  description = "AWS region for the S3 backend (usually matches aws_region)"
-  default     = ""
-}
-
-variable "terraform_lock_table" {
-  type        = string
-  description = "DynamoDB table name for Terraform state locking"
-  default     = ""
-}
-
-
-
-# TLS
-
-
-
 ## Django environment variables
 
 variable "environment" {
