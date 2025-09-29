@@ -416,112 +416,54 @@ For team environments, this infrastructure uses S3 remote state backend to share
 
 ### 🔧 Initial Setup (One-time per team)
 
-**1. Create S3 backend resources:**
 ```bash
+# 1. Create S3 backend resources
 ./scripts/setup_backend.sh
-```
-This creates:
-- S3 bucket for state storage (with versioning & encryption)
-- DynamoDB table for state locking
-- Proper IAM policies
 
-**2. Configure backend in your `terraform.tfvars`:**
-```hcl
+# 2. Configure backend in terraform.tfvars
 terraform_state_bucket = "your-company-terraform-state"
 terraform_state_key    = "myapp/development/terraform.tfstate" 
 terraform_state_region = "us-east-1"
 terraform_lock_table   = "terraform-state-lock"
-```
 
-**3. Initialize with remote backend:**
-```bash
+# 3. Initialize with remote backend
 ./scripts/init_backend.sh
 ```
-This script automatically:
-- Reads configuration from your `terraform.tfvars`
-- Generates appropriate state keys per environment
-- Handles PR-based review apps with isolated state
-- Supports different AWS profiles
 
-### 👥 Team Member Workflow
+### 👥 Team Workflows
 
-**New team member setup:**
+**New team member:**
 ```bash
-git clone your-repo
-cd terraform
-cp terraform.tfvars.example terraform.tfvars  # Add your actual values
-./scripts/init_backend.sh                     # Initialize with correct backend
-terraform plan                                # See current infrastructure state
-```
-
-### 🔄 PR Review Apps
-
-**For PR-based deployments:**
-```bash
-# Development environment
-./scripts/init_backend.sh -e development
-
-# PR review app (isolated state)
-./scripts/init_backend.sh -e pr-123
-
-# Production environment  
-./scripts/init_backend.sh -e production -p prod-profile
-```
-
-**CI/CD Integration:**
-```bash
-# GitHub Actions example
-./scripts/init_backend.sh -e pr-${GITHUB_PR_NUMBER} -s myapp
+cp terraform.tfvars.example terraform.tfvars
+./scripts/init_backend.sh
 terraform plan
-terraform apply
 ```
 
-### 🔒 What This Provides
-
-- **State Sharing**: All team members see the same infrastructure state
-- **Locking**: Prevents concurrent modifications (via DynamoDB)
-- **Versioning**: S3 versioning keeps state history
-- **Encryption**: State encrypted at rest in S3
-- **Backup**: State automatically backed up in S3
-
-### 🧹 Cleanup PR Environments
-
-**When PR is closed:**
+**Environment-specific deployments:**
 ```bash
-# Destroy infrastructure first
-./scripts/init_backend.sh -e pr-123
-terraform destroy
-
-# Clean up state file (optional)
-aws s3 rm s3://your-terraform-bucket/myapp/pr-123/terraform.tfstate
+./scripts/init_backend.sh -e development    # Development
+./scripts/init_backend.sh -e pr-123         # PR review app
+./scripts/init_backend.sh -e production     # Production
 ```
 
-### ⚠️ Important Notes
-
-- **Never commit `terraform.tfstate`** - it's stored in S3, not git
-- **Always run `terraform plan`** before `apply` to see changes  
-- **State locks automatically** during operations (no manual action needed)
-- **Each environment gets isolated state** - PR apps won't affect production
-- **Backend resources are shared** across all environments for your team
+**Benefits:**
+- State sharing across team members
+- Automatic state locking (DynamoDB)
+- Encrypted state storage (S3)
+- Isolated state per environment
 
 ## Required IAM permissions
 
 - [Pull-through cache rule IAM permissions](https://docs.aws.amazon.com/AmazonECR/latest/userguide/pull-through-cache-iam.html)
 
-## Deploy Your Review App
+## 🚀 Deploy Your Infrastructure
 
 ```bash
 cd terraform
 terraform init
 terraform plan
 terraform apply
-```
-
-After deployment, Terraform will output:
-```bash
-application_url = "https://myapp-development.mycompany.com"
-certificate_type = "default"
-load_balancer_dns = "myapp-dev-123456789.us-east-1.elb.amazonaws.com"
+terraform output  # View URLs and status
 ```
 
 ## Resources:
