@@ -87,6 +87,14 @@ validate_variable_name() {
     # Convert to snake_case for consistency check
     local snake_case_name=$(to_snake_case "$var_name")
     
+    # Special handling for aws_region - it's already configured for multi-account deployments
+    if [[ "$snake_case_name" == "aws_region" ]]; then
+        print_colored $YELLOW "💡 The 'aws_region' variable already exists and is configured for multi-account deployments."
+        print_colored $YELLOW "Region settings are managed in .github/environments.json"
+        print_colored $YELLOW "See the README for configuration details."
+        return 1
+    fi
+    
     # Check if variable already exists
     if grep -q "variable \"$snake_case_name\"" "$VARIABLES_FILE"; then
         print_colored $RED "❌ Variable '$snake_case_name' already exists in $VARIABLES_FILE"
@@ -163,9 +171,16 @@ resource \"aws_secretsmanager_secret_version\" \"$var_name\" {
 # Function to add GitHub repository variable
 add_github_variable_prompt() {
     local var_name=$1
-    local tf_var_name="TF_$(to_upper_snake_case "$var_name")"
+    local github_var_name=$(to_upper_snake_case "$var_name")
     
     echo ""
+    print_colored $BLUE "💡 GitHub Variable Setup"
+    print_colored $YELLOW "For multi-account deployments, most variables are handled via Terraform."
+    print_colored $YELLOW "Only add GitHub variables for:"
+    print_colored $YELLOW "  - SERVICE_NAME, ECR_REPOSITORY_NAME, AWS_ACCOUNT_ID, STAFF_EMAIL"
+    print_colored $YELLOW "  - Environment-specific role ARNs (DEV_AWS_ROLE_ARN, etc.)"
+    echo ""
+    
     echo -n "GitHub repository (format: owner/repo): "
     read github_repo
     
@@ -174,7 +189,7 @@ add_github_variable_prompt() {
         return
     fi
     
-    echo -n "Value for GitHub variable $tf_var_name: "
+    echo -n "Value for GitHub variable $github_var_name: "
     read github_value
     
     if [[ -z "$github_value" ]]; then
@@ -185,51 +200,29 @@ add_github_variable_prompt() {
     # Check if gh CLI is installed
     if ! command -v gh &> /dev/null; then
         print_colored $YELLOW "❌ GitHub CLI (gh) not found. Run manually:"
-        print_colored $BLUE "gh variable set $tf_var_name -b \"$github_value\" -R $github_repo"
+        print_colored $BLUE "gh variable set $github_var_name -b \"$github_value\" -R $github_repo"
     else
-        if gh variable set "$tf_var_name" -b "$github_value" -R "$github_repo"; then
-            print_colored $GREEN "✅ GitHub variable $tf_var_name set successfully"
+        if gh variable set "$github_var_name" -b "$github_value" -R "$github_repo"; then
+            print_colored $GREEN "✅ GitHub variable $github_var_name set successfully"
         else
             print_colored $RED "❌ Failed to set GitHub variable"
         fi
     fi
 }
 
-# Function to add GitHub repository secret
-add_github_secret_prompt() {
+# Function to add S3 secrets workflow guidance
+add_s3_secrets_guidance() {
     local var_name=$1
-    local tf_secret_name="TF_$(to_upper_snake_case "$var_name")"
+    local snake_case_name=$(to_snake_case "$var_name")
     
     echo ""
-    echo -n "GitHub repository (format: owner/repo): "
-    read github_repo
-    
-    if [[ -z "$github_repo" ]]; then
-        print_colored $YELLOW "⚠️  Skipping GitHub secret setup"
-        return
-    fi
-    
-    echo -n "Value for GitHub secret $tf_secret_name: "
-    read -s github_value  # -s for silent input (hides password)
+    print_colored $BLUE "💡 S3 Secrets Management"
+    print_colored $YELLOW "Secrets are stored in S3 for security and visibility."
+    print_colored $YELLOW "This variable '$snake_case_name' will be available in your secrets file."
+    print_colored $YELLOW "Use the secrets-sync.sh script to manage secrets:"
+    print_colored $BLUE "  .github/scripts/secrets-sync.sh pull development"
+    print_colored $BLUE "  .github/scripts/secrets-sync.sh push development"
     echo ""
-    
-    if [[ -z "$github_value" ]]; then
-        print_colored $YELLOW "⚠️  Skipping GitHub secret setup (no value provided)"
-        return
-    fi
-    
-    # Check if gh CLI is installed
-    if ! command -v gh &> /dev/null; then
-        print_colored $YELLOW "❌ GitHub CLI (gh) not found. Set manually at:"
-        print_colored $BLUE "https://github.com/$github_repo/settings/secrets/actions"
-        print_colored $BLUE "Secret name: $tf_secret_name"
-    else
-        if echo "$github_value" | gh secret set "$tf_secret_name" -R "$github_repo"; then
-            print_colored $GREEN "✅ GitHub secret $tf_secret_name set successfully"
-        else
-            print_colored $RED "❌ Failed to set GitHub secret"
-        fi
-    fi
 }
 
 # Function to add environment variable to workers.tf (common variables)
@@ -349,19 +342,17 @@ add_sensitive_variable() {
     
     print_colored $GREEN "✅ Successfully added sensitive variable: $var_name"
     
-    # Prompt to add GitHub secret
-    echo ""
-    echo -n "Add this as a GitHub repository secret? (y/N): "
-    read add_github_secret
-    
-    if [[ "$add_github_secret" =~ ^[Yy]$ ]]; then
-        add_github_secret_prompt "$var_name"
-    fi
+    # Show S3 secrets guidance
+    add_s3_secrets_guidance "$var_name"
     
     print_colored $YELLOW "📋 Next steps:"
     print_colored $YELLOW "  1. Add the actual value to your terraform.tfvars file"
-    print_colored $YELLOW "  2. Run 'terraform plan' to review changes"
-    print_colored $YELLOW "  3. Run 'terraform apply' to deploy"
+    print_colored $YELLOW "  2. Add the secret to S3 using: .github/scripts/secrets-sync.sh template development"
+    print_colored $YELLOW "  3. Edit the secrets file and add your value for '$var_name'"
+    print_colored $YELLOW "  4. Upload secrets: .github/scripts/secrets-sync.sh push development"
+    print_colored $YELLOW "  5. For multi-account setups, repeat for staging/production environments"
+    print_colored $YELLOW "  6. Run 'terraform plan' to review changes"
+    print_colored $YELLOW "  7. Run 'terraform apply' to deploy"
 }
 
 # Function to add non-sensitive variable
@@ -403,8 +394,10 @@ add_non_sensitive_variable() {
     
     print_colored $YELLOW "📋 Next steps:"
     print_colored $YELLOW "  1. Add the actual value to your terraform.tfvars file (or use default)"
-    print_colored $YELLOW "  2. Run 'terraform plan' to review changes"
-    print_colored $YELLOW "  3. Run 'terraform apply' to deploy"
+    print_colored $YELLOW "  2. For multi-account setups, also add to environment-specific .tfvars files"
+    print_colored $YELLOW "  3. Update app-config.json if this variable affects application behavior"
+    print_colored $YELLOW "  4. Run 'terraform plan' to review changes"
+    print_colored $YELLOW "  5. Run 'terraform apply' to deploy"
 }
 
 # Function to show usage
@@ -424,14 +417,28 @@ show_usage() {
     echo "Examples:"
     echo "  $0                                           # Interactive mode"
     echo "  $0 -s --name myApiKey --description 'API key for service' --example 'your-key-here'"
-    echo "  $0 -s --name MY_API_KEY --description 'API key for service' --example 'your-key-here'"
+    echo "  $0 -s --name MY_API_KEY --description 'API key for service' --example 'your-key-here'"  
     echo "  $0 -n --name enableFeature --description 'Enable new feature' --example 'true' --default 'false'"
+    echo ""
+    echo "Multi-Account Setup:"
+    echo "  • Configure regions in .github/environments.json"
+    echo "  • Create environment-specific .tfvars files (terraform.tfvars.prod, etc.)"
+    echo "  • Set GitHub role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, PROD_AWS_ROLE_ARN"
+    echo "  • Manage secrets with: .github/scripts/secrets-sync.sh [pull|push] [environment]"
 }
 
 # Interactive mode
 interactive_mode() {
     print_colored $BLUE "🚀 Environment Variable Setup"
     print_colored $BLUE "=============================\n"
+    
+    print_colored $YELLOW "💡 Multi-Account Deployment Notes:"
+    print_colored $YELLOW "• AWS regions are configured in .github/environments.json"
+    print_colored $YELLOW "• GitHub variables use direct names (no TF_ prefix)"  
+    print_colored $YELLOW "• Environment-specific role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, etc."
+    print_colored $YELLOW "• Sensitive variables are stored in S3 using secrets-sync.sh script"
+    print_colored $YELLOW "• Non-sensitive variables are managed via Terraform .tfvars files"
+    echo ""
     
     # Get variable name
     while true; do
@@ -451,7 +458,7 @@ interactive_mode() {
     # Get variable type
     echo ""
     print_colored $YELLOW "Is this variable sensitive? (contains passwords, API keys, tokens)"
-    echo "1) Yes - Sensitive (stored in AWS Secrets Manager)"
+    echo "1) Yes - Sensitive (stored in S3 and AWS Secrets Manager)"
     echo "2) No - Non-sensitive (passed as environment variable)"
     echo -n "Choose (1 or 2): "
     read choice

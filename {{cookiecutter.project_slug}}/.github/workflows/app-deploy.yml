@@ -23,8 +23,8 @@ on:
         default: 'staging'
 
 env:
+  # Default region - can be overridden per environment
   AWS_REGION: us-east-1
-  ECR_REGISTRY: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
 
 jobs:
   build-and-deploy:
@@ -42,30 +42,70 @@ jobs:
       - name: Set environment variables
         id: env-vars
         run: |
+          # Determine environment name based on trigger
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "environment=pr-${{ github.event.number }}" >> $GITHUB_OUTPUT
-            echo "image_tag=pr-${{ github.event.number }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+            ENV_NAME="pr-${{ github.event.number }}"
+            echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=true" >> $GITHUB_OUTPUT
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
-            echo "image_tag=${{ github.event.inputs.environment }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+            ENV_NAME="${{ github.event.inputs.environment }}"
+            echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=false" >> $GITHUB_OUTPUT
           elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "environment=staging" >> $GITHUB_OUTPUT
-            echo "image_tag=staging-${{ github.sha }}" >> $GITHUB_OUTPUT
+            ENV_NAME="staging"
+            echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=false" >> $GITHUB_OUTPUT
           else
-            echo "environment=main" >> $GITHUB_OUTPUT
-            echo "image_tag=main-${{ github.sha }}" >> $GITHUB_OUTPUT
+            ENV_NAME="main"
+            echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=false" >> $GITHUB_OUTPUT
           fi
+          
+          # Get environment configuration from centralized config
+          echo "🔍 Looking up configuration for environment: $ENV_NAME"
+          ENV_CONFIG=$(.github/scripts/get-env-config.sh "$ENV_NAME")
+          
+          # Extract values from config
+          ACCOUNT=$(echo "$ENV_CONFIG" | grep "^account=" | cut -d= -f2)
+          REGION=$(echo "$ENV_CONFIG" | grep "^region=" | cut -d= -f2)  
+          ROLE_ARN_VAR=$(echo "$ENV_CONFIG" | grep "^role_arn_var=" | cut -d= -f2)
+          SECRETS_BUCKET=$(echo "$ENV_CONFIG" | grep "^secrets_bucket=" | cut -d= -f2)
+          
+          # Set outputs
+          echo "aws_region=$REGION" >> $GITHUB_OUTPUT
+          echo "account=$ACCOUNT" >> $GITHUB_OUTPUT
+          echo "role_arn_var=$ROLE_ARN_VAR" >> $GITHUB_OUTPUT
+          echo "secrets_bucket=$SECRETS_BUCKET" >> $GITHUB_OUTPUT
+          echo "ecr_registry=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.$REGION.amazonaws.com" >> $GITHUB_OUTPUT
+          
+          # Resolve role ARN from the variable name
+          case "$ROLE_ARN_VAR" in
+            "PROD_AWS_ROLE_ARN")
+              echo "role_arn=${{ vars.PROD_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+            "STAGING_AWS_ROLE_ARN")
+              echo "role_arn=${{ vars.STAGING_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+            "DEV_AWS_ROLE_ARN")
+              echo "role_arn=${{ vars.DEV_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "role_arn=${{ vars.TF_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+          esac
+          
+          echo "✅ Environment '$ENV_NAME' configured for account '$ACCOUNT' in region '$REGION'"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ vars.TF_AWS_ROLE_ARN }}
+          role-to-assume: ${{ steps.env-vars.outputs.role_arn }}
           role-session-name: GitHubActions-${{ github.run_id }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ steps.env-vars.outputs.aws_region }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -87,8 +127,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY_NAME }}:${{ steps.env-vars.outputs.image_tag }}
-            ${{ env.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY_NAME }}:${{ steps.env-vars.outputs.environment }}-latest
+            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME }}:${{ steps.env-vars.outputs.image_tag }}
+            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME }}:${{ steps.env-vars.outputs.environment }}-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -122,7 +162,7 @@ jobs:
         run: |
           cd terraform
           # Use the init_backend script with environment-specific configuration
-          ./scripts/init_backend.sh -e "${{ steps.env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME }}" -p ""
+          ./scripts/init_backend.sh -e "${{ steps.env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME }}"
 
       - name: Check if Terraform workspace exists
         id: workspace-check
@@ -143,6 +183,115 @@ jobs:
             terraform workspace new ${{ steps.env-vars.outputs.environment }}
           fi
 
+      - name: Retrieve app configuration
+        id: app-config
+        run: |
+          # Get app configuration from centralized config
+          echo "🔍 Looking up app configuration for environment: ${{ steps.env-vars.outputs.environment }}"
+          
+          # Use a simple script to extract app config (similar to get-env-config.sh)
+          cat > get-app-config.sh << 'EOF'
+          #!/bin/bash
+          ENV_NAME="$1"
+          CONFIG_FILE=".github/app-config.json"
+          
+          if [[ ! -f "$CONFIG_FILE" ]]; then
+            echo "Warning: app-config.json not found, using defaults" >&2
+            echo "debug=true"
+            echo "current_port=8000"
+            echo "enable_emails=false"
+            echo "use_aws_storage=false"
+            exit 0
+          fi
+          
+          # Try exact match first
+          CONFIG=$(jq -r --arg env "$ENV_NAME" '.environments[$env] // empty' "$CONFIG_FILE")
+          
+          # Try pattern match
+          if [[ -z "$CONFIG" || "$CONFIG" == "null" ]]; then
+            if [[ "$ENV_NAME" =~ ^pr-[0-9]+$ ]]; then
+              CONFIG=$(jq -r '.patterns["pr-*"] // empty' "$CONFIG_FILE")
+            elif [[ "$ENV_NAME" == "main" ]]; then
+              CONFIG=$(jq -r '.patterns["main"] // empty' "$CONFIG_FILE")
+            fi
+          fi
+          
+          # Use defaults if still not found
+          if [[ -z "$CONFIG" || "$CONFIG" == "null" ]]; then
+            CONFIG=$(jq -r '.defaults' "$CONFIG_FILE")
+          fi
+          
+          # Extract values
+          echo "debug=$(echo "$CONFIG" | jq -r '.django.debug // true')"
+          echo "current_port=$(echo "$CONFIG" | jq -r '.django.current_port // 8000')"
+          echo "allowed_hosts=$(echo "$CONFIG" | jq -r '.django.allowed_hosts // "server,localhost,127.0.0.1"')"
+          echo "enable_emails=$(echo "$CONFIG" | jq -r '.django.enable_emails // false')"
+          echo "staff_email=$(echo "$CONFIG" | jq -r '.django.staff_email // "admin@example.com"')"
+          echo "use_aws_storage=$(echo "$CONFIG" | jq -r '.aws.use_aws_storage // false')"
+          echo "aws_s3_region_name=$(echo "$CONFIG" | jq -r '.aws.aws_s3_region_name // ""')"
+          echo "enable_https=$(echo "$CONFIG" | jq -r '.features.enable_https // true')"
+          echo "playwright_test_base_url=$(echo "$CONFIG" | jq -r '.testing.playwright_test_base_url // "http://localhost:8000"')"
+          echo "secrets_set=$(echo "$CONFIG" | jq -r '.secrets_set // "DEV_SECRETS"')"
+          EOF
+          
+          chmod +x get-app-config.sh
+          APP_CONFIG_OUTPUT=$(./get-app-config.sh "${{ steps.env-vars.outputs.environment }}")
+          
+          # Set outputs
+          echo "debug=$(echo "$APP_CONFIG_OUTPUT" | grep "^debug=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "current_port=$(echo "$APP_CONFIG_OUTPUT" | grep "^current_port=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "allowed_hosts=$(echo "$APP_CONFIG_OUTPUT" | grep "^allowed_hosts=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "enable_emails=$(echo "$APP_CONFIG_OUTPUT" | grep "^enable_emails=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "staff_email=$(echo "$APP_CONFIG_OUTPUT" | grep "^staff_email=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "use_aws_storage=$(echo "$APP_CONFIG_OUTPUT" | grep "^use_aws_storage=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "aws_s3_region_name=$(echo "$APP_CONFIG_OUTPUT" | grep "^aws_s3_region_name=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "enable_https=$(echo "$APP_CONFIG_OUTPUT" | grep "^enable_https=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          echo "playwright_test_base_url=$(echo "$APP_CONFIG_OUTPUT" | grep "^playwright_test_base_url=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+          
+          echo "✅ App configuration loaded for environment '${{ steps.env-vars.outputs.environment }}'"
+
+      - name: Retrieve secrets from S3
+        id: secrets
+        run: |
+          # Build S3 path for secrets
+          SERVICE_NAME="${{ vars.SERVICE_NAME }}"
+          ENVIRONMENT="${{ steps.env-vars.outputs.environment }}"
+          SECRETS_BUCKET="${{ steps.env-vars.outputs.secrets_bucket }}"
+          S3_KEY="${SERVICE_NAME}/${ENVIRONMENT}/secrets.json"
+          
+          echo "🔐 Retrieving secrets from S3..."
+          echo "   Bucket: $SECRETS_BUCKET"
+          echo "   Key: $S3_KEY"
+          
+          # Download secrets from S3
+          if aws s3 cp "s3://${SECRETS_BUCKET}/${S3_KEY}" secrets.json; then
+            echo "✅ Successfully downloaded secrets"
+            
+            # Validate JSON
+            if ! jq empty secrets.json 2>/dev/null; then
+              echo "❌ Invalid JSON in secrets file"
+              exit 1
+            fi
+            
+            # Extract secrets to masked GitHub Actions outputs
+            echo "django_secret_key=$(jq -r '.secrets.django_secret_key' secrets.json)" >> $GITHUB_OUTPUT
+            echo "db_password=$(jq -r '.secrets.db_password' secrets.json)" >> $GITHUB_OUTPUT
+            echo "django_superuser_password=$(jq -r '.secrets.django_superuser_password' secrets.json)" >> $GITHUB_OUTPUT
+            echo "rollbar_access_token=$(jq -r '.secrets.rollbar_access_token // ""' secrets.json)" >> $GITHUB_OUTPUT
+            echo "aws_access_key_id=$(jq -r '.secrets.aws_access_key_id // ""' secrets.json)" >> $GITHUB_OUTPUT
+            echo "aws_secret_access_key=$(jq -r '.secrets.aws_secret_access_key // ""' secrets.json)" >> $GITHUB_OUTPUT
+            echo "playwright_test_user_pass=$(jq -r '.secrets.playwright_test_user_pass' secrets.json)" >> $GITHUB_OUTPUT
+            
+            echo "✅ Secrets extracted and masked"
+          else
+            echo "❌ Failed to download secrets from S3"
+            echo "💡 Make sure secrets exist: use '.github/scripts/secrets-sync.sh template $ENVIRONMENT' to create"
+            exit 1
+          fi
+          
+          # Clean up
+          rm -f secrets.json get-app-config.sh
+
       - name: Generate Terraform variables file
         run: |
           cd terraform
@@ -153,20 +302,35 @@ jobs:
           cat << EOF > terraform.tfvars
           service = "${{ vars.SERVICE_NAME }}"
           environment = "${{ steps.env-vars.outputs.environment }}"
+          aws_region = "${{ steps.env-vars.outputs.aws_region }}"
           ecr_server_repository_name = "${{ vars.ECR_REPOSITORY_NAME }}"
           ecr_tag = "${{ steps.env-vars.outputs.image_tag }}"
-          secret_key = "${{ secrets.DJANGO_SECRET_KEY }}"
-          db_pass = "${{ secrets.DB_PASSWORD }}"
-          django_superuser_password = "${{ secrets.DJANGO_SUPERUSER_PASSWORD }}"
+          
+          # Secrets from S3
+          secret_key = "${{ steps.secrets.outputs.django_secret_key }}"
+          db_pass = "${{ steps.secrets.outputs.db_password }}"
+          django_superuser_password = "${{ steps.secrets.outputs.django_superuser_password }}"
+          rollbar_access_token = "${{ steps.secrets.outputs.rollbar_access_token }}"
+          aws_access_key_id = "${{ steps.secrets.outputs.aws_access_key_id }}"
+          aws_secret_access_key = "${{ steps.secrets.outputs.aws_secret_access_key }}"
+          playwright_test_user_pass = "${{ steps.secrets.outputs.playwright_test_user_pass }}"
+          
+          # Database config
           db_name = "$DB_NAME"
           db_user = "$DB_USER"
-          current_port = "8000"
-          allowed_hosts = "\$(terraform output -raw current_domain 2>/dev/null || echo 'localhost')"
-          staff_email = "${{ vars.STAFF_EMAIL }}"
-          playwright_test_user_pass = "${{ secrets.PLAYWRIGHT_TEST_USER_PASS }}"
-          playwright_test_base_url = "\$(terraform output -raw application_url 2>/dev/null || echo 'http://localhost:8000')"
-          aws_access_key_id = "${{ secrets.AWS_ACCESS_KEY_ID }}"
-          aws_secret_access_key = "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          
+          # App configuration from app-config.json
+          debug = "${{ steps.app-config.outputs.debug }}"
+          current_port = "${{ steps.app-config.outputs.current_port }}"
+          allowed_hosts = "${{ steps.app-config.outputs.allowed_hosts }}"
+          enable_emails = "${{ steps.app-config.outputs.enable_emails }}"
+          staff_email = "${{ steps.app-config.outputs.staff_email }}"
+          use_aws_storage = "${{ steps.app-config.outputs.use_aws_storage }}"
+          aws_s3_region_name = "${{ steps.app-config.outputs.aws_s3_region_name }}"
+          enable_https = "${{ steps.app-config.outputs.enable_https }}"
+          playwright_test_base_url = "${{ steps.app-config.outputs.playwright_test_base_url }}"
+          
+          # AWS profile (empty for CI/CD)
           aws_profile = ""
           EOF
 
@@ -226,12 +390,12 @@ jobs:
           echo "Cluster: $CLUSTER_NAME"
           
           # Verify cluster exists before updating service
-          if aws ecs describe-clusters --clusters "$CLUSTER_NAME" --region ${{ env.AWS_REGION }} >/dev/null 2>&1; then
+          if aws ecs describe-clusters --clusters "$CLUSTER_NAME" --region ${{ steps.env-vars.outputs.aws_region }} >/dev/null 2>&1; then
             aws ecs update-service \
               --cluster "$CLUSTER_NAME" \
               --service "$SERVICE_NAME" \
               --force-new-deployment \
-              --region ${{ env.AWS_REGION }}
+              --region ${{ steps.env-vars.outputs.aws_region }}
             echo "✅ ECS service update initiated"
           else
             echo "⚠️  Cluster $CLUSTER_NAME not found, skipping service update"
@@ -319,12 +483,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set cleanup environment variables
+        id: cleanup-env-vars
+        run: |
+          PR_ENV_NAME="pr-${{ github.event.number }}"
+          echo "environment=$PR_ENV_NAME" >> $GITHUB_OUTPUT
+          
+          # Get environment configuration
+          ENV_CONFIG=$(.github/scripts/get-env-config.sh "$PR_ENV_NAME")
+          
+          # Extract values from config
+          REGION=$(echo "$ENV_CONFIG" | grep "^region=" | cut -d= -f2)  
+          ROLE_ARN_VAR=$(echo "$ENV_CONFIG" | grep "^role_arn_var=" | cut -d= -f2)
+          
+          echo "aws_region=$REGION" >> $GITHUB_OUTPUT
+          echo "role_arn_var=$ROLE_ARN_VAR" >> $GITHUB_OUTPUT
+          
+          # Resolve role ARN from the variable name
+          case "$ROLE_ARN_VAR" in
+            "PROD_AWS_ROLE_ARN")
+              echo "role_arn=${{ vars.PROD_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+            "STAGING_AWS_ROLE_ARN")
+              echo "role_arn=${{ vars.STAGING_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+            "DEV_AWS_ROLE_ARN")
+              echo "role_arn=${{ vars.DEV_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "role_arn=${{ vars.TF_AWS_ROLE_ARN }}" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ vars.TF_AWS_ROLE_ARN }}
+          role-to-assume: ${{ steps.cleanup-env-vars.outputs.role_arn }}
           role-session-name: GitHubActions-${{ github.run_id }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ steps.cleanup-env-vars.outputs.aws_region }}
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
@@ -335,7 +531,7 @@ jobs:
         run: |
           cd terraform
           # Use the init_backend script with environment-specific configuration
-          ./scripts/init_backend.sh -e "${{ steps.env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME }}" -p ""
+          ./scripts/init_backend.sh -e "${{ steps.cleanup-env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME }}"
 
       - name: Select and destroy PR workspace # we might need to create the tfvars file for this
         run: |
