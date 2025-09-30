@@ -14,19 +14,26 @@ Production-ready AWS infrastructure for Django applications using ECS Fargate, w
 
 2. **Set up secrets**:
    ```bash
-   # Create and upload secrets to S3
-   .github/scripts/secrets-sync.sh template development
-   # Edit secrets-development.json with your values
-   .github/scripts/secrets-sync.sh push development
+   # First, create the S3 secrets bucket
+   .github/scripts/setup-secrets-bucket.sh development
+   
+   # Check if secrets already exist, otherwise create template
+   if .github/scripts/secrets-sync.sh pull development 2>/dev/null; then
+     echo "Using existing secrets from S3"
+   else
+     echo "Creating new secrets template"
+     .github/scripts/secrets-sync.sh template development
+     # Edit secrets-development.json with your values
+     .github/scripts/secrets-sync.sh push development
+   fi
    ```
 
 3. **Configure GitHub variables**:
    ```bash
    # Repository Variables (in GitHub Settings → Actions)
    SERVICE_NAME="{{cookiecutter.project_slug}}"
-   ECR_REPOSITORY_NAME="{{cookiecutter.project_slug}}-server"
+   ECR_REPOSITORY_NAME="{{cookiecutter.project_slug}}-app"
    AWS_ACCOUNT_ID="123456789012"
-   STAFF_EMAIL="admin@{{cookiecutter.project_slug}}.com"
    
    # Environment-specific Role ARNs
    DEV_AWS_ROLE_ARN="arn:aws:iam::123456789012:role/github-actions-dev"
@@ -54,6 +61,34 @@ Production-ready AWS infrastructure for Django applications using ECS Fargate, w
 - **Session Manager plugin** for container access (optional)
 
 **⚠️ Security Warning**: Never commit `terraform.tfvars` or any files containing secrets to git!
+
+## 📝 Naming Requirements
+
+**Important**: AWS resource naming has strict constraints. The following variables must follow specific naming conventions:
+
+### Required Format
+- **service**: Lowercase alphanumeric characters and hyphens only (no underscores)
+- **environment**: Lowercase alphanumeric characters and hyphens only (no underscores)  
+- **worker names**: Lowercase alphanumeric characters and hyphens only (no underscores)
+
+### Examples
+```bash
+# ✅ Good
+service = "my-app"
+environment = "development"
+
+# ❌ Bad - will cause terraform validation errors
+service = "My_App"        # Contains uppercase and underscores
+environment = "dev_env"   # Contains underscores
+```
+
+### Why This Matters
+AWS services have different naming constraints:
+- **ALB names**: Max 32 chars, alphanumeric and hyphens only
+- **ElastiCache clusters**: Max 50 chars, lowercase alphanumeric and hyphens only
+- **Secrets Manager**: No specific length limit, but consistent naming is important
+
+Terraform will validate these requirements and provide clear error messages if invalid names are used.
 
 ## 🏗️ Architecture Overview
 
@@ -168,7 +203,7 @@ Deploy to separate AWS accounts for maximum security isolation between environme
     "staging": {
       "account": "staging",
       "account_id": "234567890123",
-      "region": "us-west-2",
+      "region": "us-east-1",
       "role_arn_var": "STAGING_AWS_ROLE_ARN",
       "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
       "description": "Staging environment"
@@ -213,9 +248,8 @@ terraform/scripts/setup-github-oidc-role.sh
 ```bash
 # Repository Variables
 SERVICE_NAME="{{cookiecutter.project_slug}}"
-ECR_REPOSITORY_NAME="{{cookiecutter.project_slug}}-server"
+ECR_REPOSITORY_NAME="{{cookiecutter.project_slug}}-app"
 AWS_ACCOUNT_ID="123456789012"  # Primary account ID
-STAFF_EMAIL="admin@{{cookiecutter.project_slug}}.com"
 
 # Environment-specific Role ARNs
 DEV_AWS_ROLE_ARN="arn:aws:iam::123456789012:role/github-actions-development"
@@ -228,7 +262,7 @@ PROD_AWS_ROLE_ARN="arn:aws:iam::345678901234:role/github-actions-production"
 | Trigger | Environment | Account | Region | Outcome |
 |---------|-------------|---------|--------|---------|
 | **PR opened** | `pr-123` | Dev | us-east-1 | `https://{{cookiecutter.project_slug}}-pr-123.your-domain.com` |
-| **Push to main** | `staging` | Staging | us-west-2 | `https://{{cookiecutter.project_slug}}-staging.your-domain.com` |
+| **Push to main** | `staging` | Staging | us-east-1 | `https://{{cookiecutter.project_slug}}-staging.your-domain.com` |
 | **Manual deploy** | `production` | Prod | us-east-1 | `https://{{cookiecutter.project_slug}}-production.your-domain.com` |
 
 ## 🎯 Application Configuration
@@ -441,7 +475,7 @@ aws ecs list-tasks --cluster cluster-{{cookiecutter.project_slug}}-development
 aws ecs execute-command \
   --cluster cluster-{{cookiecutter.project_slug}}-development \
   --task TASK_ID \
-  --container server-{{cookiecutter.project_slug}}-development \
+  --container app-{{cookiecutter.project_slug}}-development \
   --interactive \
   --command "/bin/bash"
 ```
@@ -452,7 +486,7 @@ aws ecs execute-command \
 # Check service health
 aws ecs describe-services \
   --cluster "cluster-{{cookiecutter.project_slug}}-development" \
-  --services "service-server-{{cookiecutter.project_slug}}-development"
+  --services "service-app-{{cookiecutter.project_slug}}-development"
 
 # Check task details
 aws ecs describe-tasks \
@@ -623,7 +657,7 @@ aws ecs describe-task-definition --task-definition task-{{cookiecutter.project_s
 # Force new deployment
 aws ecs update-service \
   --cluster cluster-{{cookiecutter.project_slug}}-development \
-  --service service-server-{{cookiecutter.project_slug}}-development \
+  --service service-app-{{cookiecutter.project_slug}}-development \
   --force-new-deployment
 ```
 

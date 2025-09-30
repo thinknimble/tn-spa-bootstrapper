@@ -71,6 +71,134 @@ bucket_exists() {
     aws s3api head-bucket --bucket "$bucket_name" $profile_flag 2>/dev/null
 }
 
+# Get existing bucket policy
+get_existing_bucket_policy() {
+    local bucket_name=$1
+    local profile_flag=$2
+    
+    aws s3api get-bucket-policy --bucket "$bucket_name" --query 'Policy' --output text $profile_flag 2>/dev/null || echo ""
+}
+
+# Check if environment already has access in bucket policy
+check_env_in_bucket_policy() {
+    local existing_policy=$1
+    local env_name=$2
+    local account_id=$3
+    
+    if [[ -z "$existing_policy" ]]; then
+        return 1
+    fi
+    
+    echo "$existing_policy" | python3 -c "
+import sys, json
+try:
+    policy = json.loads(sys.stdin.read())
+    env_name = '$env_name'
+    account_id = '$account_id'
+    role_arn = f'arn:aws:iam::{account_id}:role/github-actions-{env_name}'
+    
+    for stmt in policy.get('Statement', []):
+        principal = stmt.get('Principal', {})
+        aws_principal = principal.get('AWS', '')
+        if isinstance(aws_principal, str):
+            if role_arn == aws_principal:
+                sys.exit(0)
+        elif isinstance(aws_principal, list):
+            if role_arn in aws_principal:
+                sys.exit(0)
+    sys.exit(1)
+except:
+    sys.exit(1)
+" 2>/dev/null
+    return $?
+}
+
+# Merge environment access into existing bucket policy
+merge_bucket_policy() {
+    local existing_policy=$1
+    local env_name=$2
+    local account_id=$3
+    local region=$4
+    local secrets_bucket=$5
+    
+    echo "$existing_policy" | python3 -c "
+import sys, json
+try:
+    env_name = '$env_name'
+    account_id = '$account_id'
+    region = '$region'
+    secrets_bucket = '$secrets_bucket'
+    role_arn = f'arn:aws:iam::{account_id}:role/github-actions-{env_name}'
+    
+    # If no existing policy, create new one
+    existing_policy_text = sys.stdin.read().strip()
+    if not existing_policy_text:
+        policy = {
+            'Version': '2012-10-17',
+            'Statement': []
+        }
+    else:
+        policy = json.loads(existing_policy_text)
+    
+    # Add object access statement
+    object_stmt = {
+        'Sid': f'AllowGitHubOIDCAccess{env_name.title()}',
+        'Effect': 'Allow',
+        'Principal': {
+            'AWS': role_arn
+        },
+        'Action': [
+            's3:GetObject',
+            's3:PutObject',
+            's3:DeleteObject'
+        ],
+        'Resource': [
+            f'arn:aws:s3:::{secrets_bucket}/{env_name}/*'
+        ],
+        'Condition': {
+            'StringEquals': {
+                'aws:RequestedRegion': region
+            }
+        }
+    }
+    
+    # Add list bucket statement
+    list_stmt = {
+        'Sid': f'AllowListBucketForEnvironment{env_name.title()}',
+        'Effect': 'Allow',
+        'Principal': {
+            'AWS': role_arn
+        },
+        'Action': [
+            's3:ListBucket'
+        ],
+        'Resource': [
+            f'arn:aws:s3:::{secrets_bucket}'
+        ],
+        'Condition': {
+            'StringEquals': {
+                'aws:RequestedRegion': region
+            },
+            'StringLike': {
+                's3:prefix': f'{env_name}/*'
+            }
+        }
+    }
+    
+    # Remove any existing statements for this environment
+    policy['Statement'] = [s for s in policy['Statement'] 
+                          if not (s.get('Principal', {}).get('AWS') == role_arn)]
+    
+    # Add new statements
+    policy['Statement'].extend([object_stmt, list_stmt])
+    
+    print(json.dumps(policy, indent=2))
+except Exception as e:
+    print(f'Error merging bucket policy: {e}', file=sys.stderr)
+    sys.exit(1)
+"
+}
+
 # Create S3 bucket with security settings
 create_secrets_bucket() {
     local env_name=$1
@@ -86,9 +214,10 @@ create_secrets_bucket() {
     echo ""
     
     # Check if bucket already exists
+    local bucket_already_exists=false
     if bucket_exists "$SECRETS_BUCKET" "$profile_flag"; then
         print_colored $YELLOW "⚠️  Bucket $SECRETS_BUCKET already exists"
-        return 0
+        bucket_already_exists=true
     fi
     
     if [[ "$dry_run" == "true" ]]; then
@@ -96,50 +225,53 @@ create_secrets_bucket() {
         return 0
     fi
     
-    # Create bucket
-    print_colored $BLUE "📦 Creating S3 bucket: $SECRETS_BUCKET"
-    if [[ "$REGION" == "us-east-1" ]]; then
-        aws s3api create-bucket \
+    # Create bucket only if it doesn't exist
+    if [[ "$bucket_already_exists" == "false" ]]; then
+        # Create bucket
+        print_colored $BLUE "📦 Creating S3 bucket: $SECRETS_BUCKET"
+        if [[ "$REGION" == "us-east-1" ]]; then
+            aws s3api create-bucket \
+                --bucket "$SECRETS_BUCKET" \
+                $profile_flag
+        else
+            aws s3api create-bucket \
+                --bucket "$SECRETS_BUCKET" \
+                --region "$REGION" \
+                --create-bucket-configuration LocationConstraint="$REGION" \
+                $profile_flag
+        fi
+        
+        # Enable versioning
+        print_colored $BLUE "🔄 Enabling versioning..."
+        aws s3api put-bucket-versioning \
             --bucket "$SECRETS_BUCKET" \
+            --versioning-configuration Status=Enabled \
             $profile_flag
-    else
-        aws s3api create-bucket \
+        
+        # Enable server-side encryption
+        print_colored $BLUE "🔐 Enabling server-side encryption..."
+        aws s3api put-bucket-encryption \
             --bucket "$SECRETS_BUCKET" \
-            --region "$REGION" \
-            --create-bucket-configuration LocationConstraint="$REGION" \
+            --server-side-encryption-configuration '{
+                "Rules": [
+                    {
+                        "ApplyServerSideEncryptionByDefault": {
+                            "SSEAlgorithm": "AES256"
+                        },
+                        "BucketKeyEnabled": true
+                    }
+                ]
+            }' \
+            $profile_flag
+        
+        # Block public access
+        print_colored $BLUE "🚫 Blocking public access..."
+        aws s3api put-public-access-block \
+            --bucket "$SECRETS_BUCKET" \
+            --public-access-block-configuration \
+            BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true \
             $profile_flag
     fi
-    
-    # Enable versioning
-    print_colored $BLUE "🔄 Enabling versioning..."
-    aws s3api put-bucket-versioning \
-        --bucket "$SECRETS_BUCKET" \
-        --versioning-configuration Status=Enabled \
-        $profile_flag
-    
-    # Enable server-side encryption
-    print_colored $BLUE "🔐 Enabling server-side encryption..."
-    aws s3api put-bucket-encryption \
-        --bucket "$SECRETS_BUCKET" \
-        --server-side-encryption-configuration '{
-            "Rules": [
-                {
-                    "ApplyServerSideEncryptionByDefault": {
-                        "SSEAlgorithm": "AES256"
-                    },
-                    "BucketKeyEnabled": true
-                }
-            ]
-        }' \
-        $profile_flag
-    
-    # Block public access
-    print_colored $BLUE "🚫 Blocking public access..."
-    aws s3api put-public-access-block \
-        --bucket "$SECRETS_BUCKET" \
-        --public-access-block-configuration \
-        BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true \
-        $profile_flag
     
     # Enable access logging (optional - requires a separate logging bucket)
     # print_colored $BLUE "📝 Configuring access logging..."
@@ -153,45 +285,41 @@ create_secrets_bucket() {
     #     }' \
     #     $profile_flag
     
-    # Create bucket policy for OIDC role access
-    print_colored $BLUE "🔑 Creating bucket policy for OIDC access..."
-    local github_repo=$(git config --get remote.origin.url | sed 's/.*[\/:]//; s/\.git$//')
-    local github_org=$(git config --get remote.origin.url | sed 's/.*[\/:]//; s/\/.*$//')
+    # Create or update bucket policy for OIDC role access
+    print_colored $BLUE "🔑 Creating/updating bucket policy for OIDC access..."
     
-    cat > /tmp/bucket-policy.json << EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllowGitHubOIDCAccess",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::${ACCOUNT_ID}:role/github-actions-${env_name}"
-            },
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject",
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::${SECRETS_BUCKET}",
-                "arn:aws:s3:::${SECRETS_BUCKET}/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "aws:RequestedRegion": "$REGION"
-                }
-            }
-        }
-    ]
-}
-EOF
+    # Get existing bucket policy
+    local existing_policy=$(get_existing_bucket_policy "$SECRETS_BUCKET" "$profile_flag")
     
+    # Check if this environment already has access
+    if check_env_in_bucket_policy "$existing_policy" "$env_name" "$ACCOUNT_ID"; then
+        print_colored $YELLOW "⚠️  Environment '$env_name' already has access to bucket"
+        return 0
+    fi
+    
+    # Merge the new environment access into existing policy
+    local merged_policy=$(merge_bucket_policy "$existing_policy" "$env_name" "$ACCOUNT_ID" "$REGION" "$SECRETS_BUCKET")
+    
+    if [[ $? -ne 0 ]]; then
+        print_colored $RED "❌ Failed to merge bucket policy for environment: $env_name"
+        return 1
+    fi
+    
+    # Write merged policy to temp file
+    echo "$merged_policy" > /tmp/bucket-policy.json
+    
+    # Apply the updated policy
     aws s3api put-bucket-policy \
         --bucket "$SECRETS_BUCKET" \
         --policy file:///tmp/bucket-policy.json \
         $profile_flag
+    
+    if [[ $? -eq 0 ]]; then
+        print_colored $GREEN "✅ Added environment '$env_name' access to bucket policy"
+    else
+        print_colored $RED "❌ Failed to update bucket policy"
+        return 1
+    fi
     
     rm -f /tmp/bucket-policy.json
     

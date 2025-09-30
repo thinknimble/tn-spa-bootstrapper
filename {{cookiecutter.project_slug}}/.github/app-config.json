@@ -31,7 +31,7 @@
       },
       "aws": {
         "use_aws_storage": false,
-        "aws_s3_region_name": "us-west-2"
+        "aws_s3_region_name": "us-east-1"
       },
       "features": {
         "enable_https": true,

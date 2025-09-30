@@ -91,7 +91,7 @@ resource "aws_db_subnet_group" "database" {
 
 # Create an RDS Postgres instance for the ECS service
 resource "aws_db_instance" "postgres" {
-  identifier             = "db-${var.service}-${var.environment}"
+  identifier             = local.db_identifier
   allocated_storage      = 20
   storage_type           = "gp2"
   engine                 = "postgres"
@@ -137,7 +137,7 @@ resource "aws_iam_role_policy_attachment" "ecs_tasks_execution_role" {
 
 
 resource "aws_lb" "ecs" {
-  name               = "${var.service}-${var.environment}"
+  name               = local.alb_name
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_load_balancer.id]
@@ -157,7 +157,7 @@ resource "aws_lb_listener" "http" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.server.arn
+    target_group_arn = aws_lb_target_group.app.arn
   }
 }
 
@@ -173,7 +173,7 @@ resource "aws_lb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.server.arn
+    target_group_arn = aws_lb_target_group.app.arn
   }
   lifecycle {
     prevent_destroy = false
@@ -193,7 +193,7 @@ resource "aws_elasticache_subnet_group" "redis" {
 
 # Redis ElastiCache Cluster
 resource "aws_elasticache_cluster" "redis" {
-  cluster_id           = "redis-${var.service}-${var.environment}"
+  cluster_id           = local.redis_cluster_id
   engine               = "redis"
   node_type            = "cache.t3.micro"
   num_cache_nodes      = 1

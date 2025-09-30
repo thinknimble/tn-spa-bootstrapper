@@ -1,7 +1,12 @@
 variable "service" {
   type        = string
-  description = "The service name for AWS resources"
+  description = "The service name for AWS resources (lowercase, alphanumeric and hyphens only, no underscores)"
   default     = "{{ cookiecutter.project_slug }}"
+  
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.service))
+    error_message = "Service name must be lowercase alphanumeric characters and hyphens only (no underscores or uppercase). AWS resource naming constraints require this format."
+  }
 }
 
 
@@ -19,16 +24,16 @@ variable "aws_region" {
 
 # ECR
 
-variable "ecr_server_repository_name" {
+variable "ecr_app_repository_name" {
   type        = string
-  description = "The ECR repository name for the server service backend"
-  default     = "{{ cookiecutter.project_slug }}-server"
+  description = "The ECR repository name for the app service backend"
+  default     = "{{ cookiecutter.project_slug }}-app"
 }
 
 
 variable "ecr_tag" {
   type        = string
-  description = "The ECR tag for both server and client services"
+  description = "The ECR tag for the app services"
   default     = "latest"
 }
 
@@ -37,8 +42,13 @@ variable "ecr_tag" {
 
 variable "environment" {
   type        = string
-  description = "ENVIRONMENT for the app service backend"
+  description = "Environment name for the app service backend (lowercase, alphanumeric and hyphens only, no underscores)"
   default     = "development"
+  
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.environment))
+    error_message = "Environment name must be lowercase alphanumeric characters and hyphens only (no underscores or uppercase). AWS resource naming constraints require this format."
+  }
 }
 
 variable "secret_key" {

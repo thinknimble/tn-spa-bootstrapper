@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+
+[ -d "/app/client/dist" ] && python manage.py collectstatic --noinput || echo "Client Folder not built skipping collect static"
+
+python manage.py migrate
+# python -m debugpy --listen 0.0.0.0:5678 server/manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8000

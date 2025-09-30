@@ -71,6 +71,10 @@ celerybeat-schedule
 .env*
 !.env.local.example
 !.env.example
+
+# Secrets files
+secrets-*.json
+!secrets-template.json
 .venv
 env/
 venv/
@@ -228,6 +232,9 @@ tags
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+# Terraform dependency lock file
+.terraform.lock.hcl
 
 # Crash log files
 crash.log

@@ -1,5 +1,5 @@
 service                       = "{{ cookiecutter.project_slug }}"
-ecr_server_repository_name    = "{{ cookiecutter.project_slug }}-server"
+ecr_app_epository_name    = "{{ cookiecutter.project_slug }}-app"
 
 aws_profile                   = "default"
 aws_region                    = "us-east-1"

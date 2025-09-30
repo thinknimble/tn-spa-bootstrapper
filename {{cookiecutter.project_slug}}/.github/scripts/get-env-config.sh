@@ -21,10 +21,11 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "Using fallback configuration" >&2
     # Fallback configuration if file doesn't exist
     echo "account=dev"
+    echo "account_id="
     echo "region=us-east-1" 
-    echo "role_arn_var=TF_AWS_ROLE_ARN"
+    echo "role_arn="
     echo "description=Fallback configuration - config file not found"
-    echo "ecr_registry=\${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com"
+    echo "ecr_registry=.dkr.ecr.us-east-1.amazonaws.com"
     echo "⚠️  Using fallback config for '$ENV_NAME' - create .github/environments.json" >&2
     exit 0
 fi
@@ -35,10 +36,11 @@ if ! jq empty "$CONFIG_FILE" 2>/dev/null; then
     echo "Using fallback configuration" >&2
     # Fallback for invalid JSON
     echo "account=dev"
+    echo "account_id="
     echo "region=us-east-1"
-    echo "role_arn_var=TF_AWS_ROLE_ARN" 
+    echo "role_arn="
     echo "description=Fallback configuration - invalid JSON"
-    echo "ecr_registry=\${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com"
+    echo "ecr_registry=.dkr.ecr.us-east-1.amazonaws.com"
     echo "⚠️  Using fallback config for '$ENV_NAME' - fix JSON syntax" >&2
     exit 0
 fi
@@ -89,7 +91,7 @@ fi
 ACCOUNT=$(echo "$CONFIG" | jq -r '.account')
 ACCOUNT_ID=$(echo "$CONFIG" | jq -r '.account_id // empty')
 REGION=$(echo "$CONFIG" | jq -r '.region') 
-ROLE_ARN_VAR=$(echo "$CONFIG" | jq -r '.role_arn_var')
+ROLE_ARN=$(echo "$CONFIG" | jq -r '.role_arn // empty')
 SECRETS_BUCKET=$(echo "$CONFIG" | jq -r '.secrets_bucket // empty')
 DESCRIPTION=$(echo "$CONFIG" | jq -r '.description')
 
@@ -104,9 +106,10 @@ if [[ -z "$REGION" || "$REGION" == "null" ]]; then
     REGION="us-east-1"
 fi
 
-if [[ -z "$ROLE_ARN_VAR" || "$ROLE_ARN_VAR" == "null" ]]; then
-    echo "Error: No role ARN variable specified in configuration" >&2
-    ROLE_ARN_VAR="TF_AWS_ROLE_ARN"
+if [[ -z "$ACCOUNT_ID" || "$ACCOUNT_ID" == "null" ]]; then
+    echo "Warning: No account_id specified in configuration for '$ENV_NAME'" >&2
+    echo "💡 Consider adding 'account_id' field to environments.json for this environment" >&2
+    ACCOUNT_ID=""
 fi
 
 # Validate AWS region format
@@ -118,12 +121,12 @@ fi
 echo "account=$ACCOUNT"
 echo "account_id=$ACCOUNT_ID"
 echo "region=$REGION"
-echo "role_arn_var=$ROLE_ARN_VAR"
+echo "role_arn=$ROLE_ARN"
 echo "secrets_bucket=$SECRETS_BUCKET"
 echo "description=${DESCRIPTION:-"No description"}"
 
 # Also output ECR registry
-echo "ecr_registry=\${AWS_ACCOUNT_ID}.dkr.ecr.$REGION.amazonaws.com"
+echo "ecr_registry=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 
 # Debug info to stderr
 echo "✅ Environment '$ENV_NAME' mapped to account '$ACCOUNT' in region '$REGION'" >&2

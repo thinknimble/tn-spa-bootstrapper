@@ -4,25 +4,25 @@
       "account": "prod",
       "account_id": "345678901234",
       "region": "us-east-1",
-      "role_arn_var": "PROD_AWS_ROLE_ARN",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-      "description": "Production environment"
+      "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Production environment - isolated account"
     },
     "staging": {
-      "account": "staging", 
-      "account_id": "234567890123",
-      "region": "us-west-2",
-      "role_arn_var": "STAGING_AWS_ROLE_ARN",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-      "description": "Staging environment"
+      "account": "prod", 
+      "account_id": "345678901234",
+      "region": "us-east-1",
+      "role_arn": "arn:aws:iam::345678901234:role/github-actions-staging",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Staging environment - prod account"
     },
     "development": {
       "account": "dev",
       "account_id": "123456789012", 
       "region": "us-east-1", 
-      "role_arn_var": "DEV_AWS_ROLE_ARN",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-      "description": "Development environment"
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Development environment - dev account"
     }
   },
   "patterns": {
@@ -30,16 +30,16 @@
       "account": "dev",
       "account_id": "123456789012",
       "region": "us-east-1",
-      "role_arn_var": "DEV_AWS_ROLE_ARN",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+      "secrets_bucket": "myapp-terraform-secrets",
       "description": "Pull request environments"
     },
     "main": {
       "account": "dev", 
       "account_id": "123456789012",
       "region": "us-east-1",
-      "role_arn_var": "DEV_AWS_ROLE_ARN",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+      "secrets_bucket": "myapp-terraform-secrets",
       "description": "Main branch development"
     }
   },
@@ -47,8 +47,8 @@
     "account": "dev",
     "account_id": "123456789012",
     "region": "us-east-1",
-    "role_arn_var": "TF_AWS_ROLE_ARN",
-    "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+    "secrets_bucket": "myapp-terraform-secrets",
     "description": "Default fallback configuration"
   }
 }
