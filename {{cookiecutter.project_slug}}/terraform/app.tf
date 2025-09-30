@@ -44,8 +44,8 @@ resource "aws_iam_role_policy" "ecs_exec_policy" {
   policy = data.aws_iam_policy_document.ecs_ssm_policy.json
 }
 
-resource "aws_ecs_task_definition" "server" {
-  family                   = "task-server-${var.service}-${var.environment}"
+resource "aws_ecs_task_definition" "app" {
+  family                   = "task-app-${var.service}-${var.environment}"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
@@ -54,8 +54,8 @@ resource "aws_ecs_task_definition" "server" {
   task_role_arn            = aws_iam_role.ecs_task_role.arn
   container_definitions = jsonencode([
     {
-      name      = "server-${var.service}-${var.environment}",
-      image     = "${data.aws_ecr_repository.server.repository_url}:${data.aws_ecr_image.server.image_tag}",
+      name      = "app-${var.service}-${var.environment}",
+      image     = "${data.aws_ecr_repository.app.repository_url}:${data.aws_ecr_image.app.image_tag}",
       essential = true,
       portMappings = [
         {
@@ -156,8 +156,8 @@ resource "aws_ecs_task_definition" "server" {
 }
 
 
-resource "aws_lb_target_group" "server" {
-  name        = "http-${var.service}-${var.environment}"
+resource "aws_lb_target_group" "app" {
+  name        = local.tg_name
   port        = 8000
   protocol    = "HTTP"
   target_type = "ip"
@@ -181,23 +181,23 @@ resource "aws_lb_target_group" "server" {
 
 
 
-resource "aws_ecs_service" "server" {
-  name                   = "service-server-${var.service}-${var.environment}"
+resource "aws_ecs_service" "app" {
+  name                   = "service-app-${var.service}-${var.environment}"
   cluster                = aws_ecs_cluster.main.id
-  task_definition        = aws_ecs_task_definition.server.arn
+  task_definition        = aws_ecs_task_definition.app.arn
   desired_count          = 1
   launch_type            = "FARGATE"
   enable_execute_command = true
 
   network_configuration {
     subnets          = [aws_subnet.public.id]
-    security_groups  = [aws_security_group.server.id]
+    security_groups  = [aws_security_group.app.id]
     assign_public_ip = true
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.server.arn
-    container_name   = "server-${var.service}-${var.environment}"
+    target_group_arn = aws_lb_target_group.app.arn
+    container_name   = "app-${var.service}-${var.environment}"
     container_port   = 8000
   }
 
@@ -207,7 +207,7 @@ resource "aws_ecs_service" "server" {
 }
 
 
-# resource "aws_vpc_security_group_ingress_rule" "server" {
+# resource "aws_vpc_security_group_ingress_rule" "app" {
 #   security_group_id = aws_security_group.ecs.id
 #   from_port         = 8000
 #   to_port           = 8000

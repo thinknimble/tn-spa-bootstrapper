@@ -48,18 +48,18 @@ resource "aws_vpc_security_group_egress_rule" "load_balancer_https" {
 
 
 
-resource "aws_security_group" "server" {
+resource "aws_security_group" "app" {
   vpc_id      = aws_vpc.main.id
-  name        = "ecs-server-${var.service}-${var.environment}"
-  description = "Allow inbound traffic to the server"
+  name        = "ecs-app-${var.service}-${var.environment}"
+  description = "Allow inbound traffic to the app"
 
   tags = {
-    Name = "ecs-server-${var.service}-${var.environment}"
+    Name = "ecs-app-${var.service}-${var.environment}"
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "server" {
-  security_group_id            = aws_security_group.server.id
+resource "aws_vpc_security_group_ingress_rule" "app" {
+  security_group_id            = aws_security_group.app.id
   from_port                    = 8000
   to_port                      = 8000
   ip_protocol                  = "tcp"
@@ -67,8 +67,8 @@ resource "aws_vpc_security_group_ingress_rule" "server" {
 }
 
 
-# resource "aws_vpc_security_group_egress_rule" "server_to_db" {
-#   security_group_id = aws_security_group.server.id
+# resource "aws_vpc_security_group_egress_rule" "app_to_db" {
+#   security_group_id = aws_security_group.app.id
 #   from_port         = 5432
 #   to_port           = 5432
 #   ip_protocol       = "tcp"
@@ -81,7 +81,7 @@ resource "aws_security_group_rule" "allow_all_egress" {
   to_port           = 0
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.server.id
+  security_group_id = aws_security_group.app.id
 }
 
 resource "aws_security_group" "rds" {
@@ -101,7 +101,7 @@ resource "aws_security_group_rule" "rds" {
   from_port                = 5432
   to_port                  = 5432
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.server.id
+  source_security_group_id = aws_security_group.app.id
   security_group_id        = aws_security_group.rds.id
 
 }
@@ -122,12 +122,12 @@ resource "aws_security_group" "redis" {
   }
 }
 
-resource "aws_security_group_rule" "redis_from_server" {
+resource "aws_security_group_rule" "redis_from_app" {
   type                     = "ingress"
   from_port                = 6379
   to_port                  = 6379
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.server.id
+  source_security_group_id = aws_security_group.app.id
   security_group_id        = aws_security_group.redis.id
 }
 

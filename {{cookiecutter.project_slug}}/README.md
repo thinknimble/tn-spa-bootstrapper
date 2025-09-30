@@ -60,3 +60,114 @@ The pre-commit configuration includes:
 1. `npx playwright install-deps` - Install system-level dependencies
 1. `npx playwright test`
 1. `npx playwright codegen localhost:8080` - Generate your tests through manual testing
+
+## AWS Deployment (Terraform)
+
+This project includes a complete AWS ECS Fargate deployment setup with Terraform and GitHub Actions CI/CD.
+
+### Quick Setup
+
+1. **Configure environments.json** - Update `.github/environments.json` with your AWS account details:
+   ```json
+   {
+     "patterns": {
+       "pr-*": {
+         "account_id": "123456789012",
+         "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+         "region": "us-east-1",
+         "secrets_bucket": "myapp-terraform-secrets"
+       }
+     }
+   }
+   ```
+
+2. **Set up GitHub repository variables** (Settings → Secrets and variables → Actions → Variables):
+   - `ECR_REPOSITORY_NAME`: Your ECR repository name
+   - `SERVICE_NAME`: Your service name
+
+3. **Set up AWS backend infrastructure**:
+   ```bash
+   cd terraform/scripts
+   ./setup_backend.sh
+   ```
+
+4. **Set up GitHub OIDC roles**:
+   ```bash
+   cd terraform/scripts  
+   ./setup-github-oidc-role.sh
+   ```
+
+5. **Deploy via GitHub Actions** - Push to a branch to trigger deployment
+
+### Multi-Account Setup
+
+For production isolation, set up separate AWS accounts:
+
+**Dev Account (123456789012):**
+- Environments: `development`, `pr-*`, `main`
+- Resources: `123456789012-myapp-terraform-state`
+
+**Prod Account (345678901234):**
+- Environments: `production`, `staging`  
+- Resources: `345678901234-myapp-terraform-state`
+
+The deployment automatically selects the correct backend based on your AWS account.
+
+### Manual Deployment
+
+```bash
+# Initialize terraform backend
+cd terraform
+./scripts/init_backend.sh -e development -s myapp
+
+# Deploy
+terraform plan
+terraform apply
+```
+
+### Secrets Management
+
+Manage application secrets with the included secrets sync tool:
+
+```bash
+# Create secrets template
+.github/scripts/secrets-sync.sh template development
+
+# Edit secrets-development.json with your values
+
+# Upload to S3
+.github/scripts/secrets-sync.sh push development
+
+# Pull from S3  
+.github/scripts/secrets-sync.sh pull development
+```
+
+### Log Streaming
+
+Stream real-time logs from your deployed application:
+
+```bash
+cd terraform/scripts
+./stream-logs.sh -s myapp -e development -t a  # All server logs
+./stream-logs.sh -s myapp -e production -t w   # All worker logs
+```
+
+### Architecture
+
+- **ECS Fargate** - Serverless container hosting
+- **Application Load Balancer** - Traffic distribution
+- **RDS PostgreSQL** - Managed database
+- **S3** - Static files and Terraform state
+- **CloudWatch** - Logging and monitoring
+- **GitHub Actions** - CI/CD pipeline
+- **OIDC Authentication** - Secure AWS access
+
+### Environment Variables
+
+Key environment variables are automatically configured from your environments.json:
+
+- `DJANGO_SECRET_KEY` - From secrets
+- `DATABASE_URL` - Auto-generated from RDS
+- `ALLOWED_HOSTS` - From environment config
+- `AWS_STORAGE_BUCKET_NAME` - For S3 static files
+- `PLAYWRIGHT_TEST_BASE_URL` - Auto-generated from deployment URL

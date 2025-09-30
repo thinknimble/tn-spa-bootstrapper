@@ -99,8 +99,8 @@ else
     echo "✅ OIDC provider created"
 fi
 
-# Array to store created role ARNs
-declare -A ROLE_ARNS
+# Variables to store created role ARNs (compatible with older Bash versions)
+ROLE_ARNS_OUTPUT=""
 
 # Loop through each selected environment
 for ENVIRONMENT in "${ENVIRONMENTS[@]}"; do
@@ -108,10 +108,114 @@ for ENVIRONMENT in "${ENVIRONMENTS[@]}"; do
     echo "🌟 Processing environment: $ENVIRONMENT"
     echo "========================================"
 
-# 2. Create IAM Role
+# Function to check if GitHub org already exists in trust policy
+check_github_org_in_trust_policy() {
+    local role_name="$1"
+    local github_org="$2"
+    
+    local trust_policy=$(run_aws iam get-role --role-name "$role_name" --query 'Role.AssumeRolePolicyDocument' --output json 2>/dev/null)
+    if [[ $? -eq 0 ]]; then
+        echo "$trust_policy" | python3 -c "
+import sys, json
+try:
+    policy = json.loads(sys.stdin.read())
+    github_org = '$github_org'
+    search_pattern = f'repo:{github_org}/*:*'
+    
+    for stmt in policy.get('Statement', []):
+        condition = stmt.get('Condition', {})
+        string_like = condition.get('StringLike', {})
+        sub_condition = string_like.get('token.actions.githubusercontent.com:sub', '')
+        if isinstance(sub_condition, list):
+            for sub in sub_condition:
+                if search_pattern in sub:
+                    sys.exit(0)
+        elif search_pattern in str(sub_condition):
+            sys.exit(0)
+    sys.exit(1)
+except Exception as e:
+    print(f'Error checking trust policy: {e}', file=sys.stderr)
+    sys.exit(1)
+" 2>/dev/null
+        return $?
+    fi
+    return 1
+}
+
+# Function to update trust policy with new GitHub org
+update_trust_policy_with_github_org() {
+    local role_name="$1"
+    local github_org="$2"
+    
+    # Get current trust policy in JSON format
+    local current_policy=$(run_aws iam get-role --role-name "$role_name" --query 'Role.AssumeRolePolicyDocument' --output json)
+    
+    # Create updated policy with new GitHub org
+    echo "$current_policy" | python3 -c "
+import sys, json
+try:
+    policy = json.loads(sys.stdin.read())
+    github_org = '$github_org'
+    
+    for stmt in policy.get('Statement', []):
+        condition = stmt.get('Condition', {})
+        string_like = condition.get('StringLike', {})
+        sub_condition = string_like.get('token.actions.githubusercontent.com:sub', '')
+        
+        if isinstance(sub_condition, str):
+            # Convert single string to list and add new org
+            string_like['token.actions.githubusercontent.com:sub'] = [sub_condition, f'repo:{github_org}/*:*']
+        elif isinstance(sub_condition, list):
+            # Add to existing list if not already present
+            new_sub = f'repo:{github_org}/*:*'
+            if new_sub not in sub_condition:
+                sub_condition.append(new_sub)
+        else:
+            # Create new condition
+            string_like['token.actions.githubusercontent.com:sub'] = f'repo:{github_org}/*:*'
+    
+    print(json.dumps(policy, indent=2))
+except Exception as e:
+    print(f'Error updating trust policy: {e}', file=sys.stderr)
+    sys.exit(1)
+" > /tmp/updated-trust-policy.json
+    
+    if [[ $? -eq 0 ]]; then
+        run_aws iam update-assume-role-policy \
+            --role-name "$role_name" \
+            --policy-document file:///tmp/updated-trust-policy.json
+        return $?
+    fi
+    return 1
+}
+
+# 2. Create or Update IAM Role
 echo ""
-echo "👤 Creating IAM Role..."
-cat > /tmp/github-actions-trust-policy.json << EOF
+echo "👤 Processing IAM Role..."
+
+ROLE_NAME="github-actions-$ENVIRONMENT"
+
+if run_aws iam get-role --role-name "$ROLE_NAME" &>/dev/null; then
+    echo "⚠️  Role $ROLE_NAME already exists"
+    
+    # Check if the GitHub org is already in the trust policy
+    if check_github_org_in_trust_policy "$ROLE_NAME" "$GITHUB_ORG"; then
+        echo "✅ GitHub org '$GITHUB_ORG' already has access to role $ROLE_NAME"
+    else
+        echo "🔄 Adding GitHub org '$GITHUB_ORG' to existing role $ROLE_NAME..."
+        if update_trust_policy_with_github_org "$ROLE_NAME" "$GITHUB_ORG"; then
+            echo "✅ Successfully added GitHub org '$GITHUB_ORG' to role $ROLE_NAME"
+        else
+            echo "❌ Failed to update trust policy for role $ROLE_NAME"
+            exit 1
+        fi
+    fi
+else
+    # Create new role with initial trust policy
+    echo "📋 Creating trust policy for GitHub org: $GITHUB_ORG"
+    echo "   This will allow access from repositories: repo:$GITHUB_ORG/*:*"
+    
+    cat > /tmp/github-actions-trust-policy.json << EOF
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -134,15 +238,19 @@ cat > /tmp/github-actions-trust-policy.json << EOF
 }
 EOF
 
-ROLE_NAME="github-actions-$ENVIRONMENT"
-
-if run_aws iam get-role --role-name "$ROLE_NAME" &>/dev/null; then
-    echo "⚠️  Role $ROLE_NAME already exists"
-else
+    echo "📄 Trust policy content:"
+    cat /tmp/github-actions-trust-policy.json | jq .
+    
     run_aws iam create-role \
         --role-name "$ROLE_NAME" \
         --assume-role-policy-document file:///tmp/github-actions-trust-policy.json
     echo "✅ IAM role created: $ROLE_NAME"
+    
+    # Verify the trust policy was set correctly
+    echo "🔍 Verifying trust policy..."
+    ACTUAL_POLICY=$(run_aws iam get-role --role-name "$ROLE_NAME" --query 'Role.AssumeRolePolicyDocument' --output json)
+    echo "📄 Actual trust policy set:"
+    echo "$ACTUAL_POLICY" | jq .
 fi
 
 # 3. Create comprehensive GitHub Actions policy
@@ -340,13 +448,22 @@ cat > /tmp/s3-secrets-policy.json << EOF
                 "s3:GetObject",
                 "s3:PutObject",
                 "s3:DeleteObject",
-                "s3:GetObjectVersion",
-                "s3:ListBucket"
+                "s3:GetObjectVersion"
             ],
             "Resource": [
-                "arn:aws:s3:::$SECRETS_BUCKET",
-                "arn:aws:s3:::$SECRETS_BUCKET/*"
+                "arn:aws:s3:::$SECRETS_BUCKET/$ENVIRONMENT/*"
             ]
+        },
+        {
+            "Sid": "AllowListBucketForEnvironment", 
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::$SECRETS_BUCKET",
+            "Condition": {
+                "StringLike": {
+                    "s3:prefix": "$ENVIRONMENT/*"
+                }
+            }
         },
         {
             "Sid": "AllowListBucketsForSecretsAccess",
@@ -362,6 +479,13 @@ SECRETS_POLICY_NAME="$ROLE_NAME-secrets-access"
 
 # Delete existing policy if it exists
 if run_aws iam get-policy --policy-arn "arn:aws:iam::$ACCOUNT_ID:policy/$SECRETS_POLICY_NAME" &>/dev/null; then
+    # Detach from role first
+    run_aws iam detach-role-policy --role-name "$ROLE_NAME" --policy-arn "arn:aws:iam::$ACCOUNT_ID:policy/$SECRETS_POLICY_NAME" || true
+    # Delete all policy versions except default
+    run_aws iam list-policy-versions --policy-arn "arn:aws:iam::$ACCOUNT_ID:policy/$SECRETS_POLICY_NAME" --query 'Versions[?!IsDefaultVersion].[VersionId]' --output text | while read version; do
+        run_aws iam delete-policy-version --policy-arn "arn:aws:iam::$ACCOUNT_ID:policy/$SECRETS_POLICY_NAME" --version-id "$version" 2>/dev/null || true
+    done
+    # Delete policy
     run_aws iam delete-policy --policy-arn "arn:aws:iam::$ACCOUNT_ID:policy/$SECRETS_POLICY_NAME" || true
 fi
 
@@ -379,7 +503,7 @@ echo "  ✅ Attached S3 secrets policy"
 
 # 5. Get role ARN and store it
 ROLE_ARN=$(run_aws iam get-role --role-name "$ROLE_NAME" --query Role.Arn --output text)
-ROLE_ARNS["$ENVIRONMENT"]="$ROLE_ARN"
+ROLE_ARNS_OUTPUT="${ROLE_ARNS_OUTPUT}${ENVIRONMENT}:${ROLE_ARN}\n"
 
 echo "  ✅ Role created for $ENVIRONMENT: $ROLE_ARN"
 
@@ -387,6 +511,7 @@ done  # End of environment loop
 
 # Clean up temp files
 rm -f /tmp/github-actions-trust-policy.json
+rm -f /tmp/updated-trust-policy.json
 rm -f /tmp/github-actions-policy.json
 rm -f /tmp/s3-secrets-policy.json
 
@@ -395,18 +520,18 @@ echo "🎉 Setup complete!"
 echo "=================="
 echo ""
 echo "Created roles for ${#ENVIRONMENTS[@]} environment(s):"
-for env in "${ENVIRONMENTS[@]}"; do
-    if [[ -n "${ROLE_ARNS[$env]}" ]]; then
-        echo "  📋 $(echo $env | tr '[:lower:]' '[:upper:]'): ${ROLE_ARNS[$env]}"
+echo -e "$ROLE_ARNS_OUTPUT" | while IFS=: read -r env role_arn; do
+    if [[ -n "$env" && -n "$role_arn" ]]; then
+        echo "  📋 $(echo $env | tr '[:lower:]' '[:upper:]'): $role_arn"
     fi
 done
 echo ""
 echo "Usage:"
 echo "1. In each GitHub repository, go to Settings → Secrets and variables → Actions → Variables"
 echo "2. Add these variables:"
-for env in "${ENVIRONMENTS[@]}"; do
-    if [[ -n "${ROLE_ARNS[$env]}" ]]; then
-        echo "   - $(echo $env | tr '[:lower:]' '[:upper:]')_AWS_ROLE_ARN = ${ROLE_ARNS[$env]}"
+echo -e "$ROLE_ARNS_OUTPUT" | while IFS=: read -r env role_arn; do
+    if [[ -n "$env" && -n "$role_arn" ]]; then
+        echo "   - $(echo $env | tr '[:lower:]' '[:upper:]')_AWS_ROLE_ARN = $role_arn"
     fi
 done
 echo ""

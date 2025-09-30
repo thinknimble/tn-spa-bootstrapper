@@ -11,7 +11,7 @@ Go to your repository **Settings > Secrets and variables > Actions > Variables**
 | `AWS_ACCOUNT_ID` | Your AWS Account ID | `123456789012` |
 | `SERVICE_NAME` | Your application service name | `myapp` |
 | `COMPANY_DOMAIN` | Your company's base domain (optional if not using default) | `mycompany.com` |
-| `ECR_REPOSITORY_NAME` | ECR repository name for your app | `myapp-server` |
+| `ECR_REPOSITORY_NAME` | ECR repository name for your app | `myapp-app` |
 | `STAFF_EMAIL` | Admin email address | `admin@mycompany.com` |
 | `TF_AWS_ROLE_ARN` | IAM role ARN for GitHub Actions OIDC | `arn:aws:iam::123456789012:role/GitHubActionsRole` |
 
@@ -183,6 +183,6 @@ Check ECS service status:
 ```bash
 aws ecs describe-services \
     --cluster "cluster-myapp-pr-123" \
-    --services "service-server-myapp-pr-123" \
+    --services "service-app-myapp-pr-123" \
     --region us-east-1
 ```

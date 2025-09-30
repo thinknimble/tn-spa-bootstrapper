@@ -1,6 +1,19 @@
 # locals
 
 locals {
+  # Resource name components (with length limits for AWS services)
+  # ALB names: max 32 chars, alphanumeric and hyphens only
+  alb_name = substr("${var.service}-${var.environment}", 0, 32)
+  
+  # Target group names: max 32 chars, alphanumeric and hyphens only  
+  tg_name = substr("http-${var.service}-${var.environment}", 0, 32)
+  
+  # DB identifier: max 63 chars, lowercase alphanumeric and hyphens only
+  db_identifier = substr("db-${var.service}-${var.environment}", 0, 63)
+  
+  # ElastiCache cluster: max 50 chars, lowercase alphanumeric and hyphens only
+  redis_cluster_id = substr("redis-${var.service}-${var.environment}", 0, 50)
+  
   db_endpoint     = aws_db_instance.postgres.endpoint
   db_host         = regex("^(.*):\\d+$", local.db_endpoint)[0]
   redis_host      = aws_elasticache_cluster.redis.cache_nodes[0].address

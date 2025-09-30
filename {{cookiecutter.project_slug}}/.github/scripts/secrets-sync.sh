@@ -81,8 +81,7 @@ get_env_config() {
 # Build S3 key for secrets
 build_s3_key() {
     local env_name=$1
-    local service_name=$(jq -r '.service // "{{cookiecutter.project_slug}}"' "$CONFIG_FILE" 2>/dev/null || echo "{{cookiecutter.project_slug}}")
-    echo "${service_name}/${env_name}/secrets.json"
+    echo "${env_name}/secrets.json"
 }
 
 # Pull secrets from S3
@@ -109,6 +108,41 @@ pull_secrets() {
     
     # Check if secrets exist in S3
     if ! aws s3api head-object --bucket "$SECRETS_BUCKET" --key "$s3_key" $profile_flag >/dev/null 2>&1; then
+        
+        # For PR environments, try to fall back to development secrets
+        if [[ "$env_name" =~ ^pr-[0-9]+$ ]]; then
+            print_colored $YELLOW "⚠️  PR secrets not found, trying development fallback..."
+            local dev_key="development/secrets.json"
+            local dev_path="s3://${SECRETS_BUCKET}/${dev_key}"
+            
+            if aws s3api head-object --bucket "$SECRETS_BUCKET" --key "$dev_key" $profile_flag >/dev/null 2>&1; then
+                print_colored $BLUE "📋 Using development secrets as fallback for PR environment"
+                print_colored $BLUE "   Development Path: $dev_path"
+                print_colored $BLUE "   Local File: $local_file"
+                
+                if aws s3 cp "$dev_path" "$local_file" $profile_flag; then
+                    print_colored $GREEN "✅ Successfully copied development secrets for PR environment"
+                    
+                    # Add a note to the file indicating it's from development
+                    local temp_file=$(mktemp)
+                    jq '. + {
+                        "pr_environment": "'$env_name'",
+                        "fallback_source": "development",
+                        "fallback_note": "This PR environment is using development secrets as a fallback. Customize as needed and push to create PR-specific secrets."
+                    }' "$local_file" > "$temp_file" && mv "$temp_file" "$local_file"
+                    
+                    print_colored $BLUE "💡 To customize secrets for this PR:"
+                    print_colored $BLUE "   1. Edit $local_file"
+                    print_colored $BLUE "   2. Run: $0 push $env_name"
+                    return 0
+                else
+                    print_colored $RED "❌ Failed to copy development secrets"
+                fi
+            else
+                print_colored $YELLOW "⚠️  Development secrets also not found"
+            fi
+        fi
+        
         print_colored $YELLOW "⚠️  Secrets not found in S3, creating template..."
         create_secrets_template "$env_name" "$local_file"
         return 0
@@ -187,7 +221,7 @@ push_secrets() {
     
     # Upload to S3 with encryption
     if aws s3 cp "$temp_file" "$s3_path" \
-        --server-side-encryption AES256 \
+        --sse \
         --metadata "service=$service_name,environment=$env_name,updated-by=$(git config user.email 2>/dev/null || whoami)" \
         $profile_flag; then
         print_colored $GREEN "✅ Successfully uploaded secrets to S3"
@@ -245,16 +279,15 @@ list_secrets() {
     local profile_flag=$2
     
     get_env_config "$env_name"
-    local service_name=$(jq -r '.service // "{{cookiecutter.project_slug}}"' "$CONFIG_FILE" 2>/dev/null || echo "{{cookiecutter.project_slug}}")
     
-    print_colored $BLUE "📋 Available secrets for $service_name:"
+    print_colored $BLUE "📋 Available secrets:"
     print_colored $BLUE "   Bucket: $SECRETS_BUCKET"
     print_colored $BLUE "   Environment: $env_name"
     echo ""
     
-    local prefix="${service_name}/"
+    local prefix=""
     if [[ "$env_name" != "all" ]]; then
-        prefix="${service_name}/${env_name}/"
+        prefix="${env_name}/"
     fi
     
     aws s3 ls "s3://${SECRETS_BUCKET}/${prefix}" --recursive $profile_flag | \

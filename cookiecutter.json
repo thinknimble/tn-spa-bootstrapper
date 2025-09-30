@@ -11,7 +11,9 @@
     "clients/web/react/src/pages/layout.tsx",
     "*/swagger-ui.html",
     "clients/mobile/react-native/src/screens/settings/edit-profile.tsx",
-    "clients/mobile/react-native/src/screens/settings/main-settings.tsx"
+    "clients/mobile/react-native/src/screens/settings/main-settings.tsx",
+    ".github/scripts/get-env-config.sh",
+     "terraform/scripts/*.sh"
   ],
   "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
   "client_app": ["React", "None"],

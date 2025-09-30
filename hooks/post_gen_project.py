@@ -134,6 +134,7 @@ def remove_terraform_files():
         join(".github/scripts", "get-env-config.sh"),
         join(".github/scripts", "secrets-sync.sh"),
         join(".github/scripts", "setup-secrets-bucket.sh"),
+        "secrets-template.json",  # Remove secrets template for Heroku deployments
     ]
     directories = [
         "terraform"
@@ -197,6 +198,38 @@ def get_secrets():
     return django_secret, postgres_secret
 
 
+def create_secrets_files():
+    """Create secrets template files for each environment when using Terraform"""
+    template_file = "secrets-template.json"
+    environments = ["development", "staging", "production"]
+    
+    if not exists(template_file):
+        print(f"{INFO}Warning: {template_file} not found, skipping secrets file creation{END}")
+        return
+    
+    print(f"{INFO}Creating secrets template files for environments: {', '.join(environments)}{END}")
+    
+    # Read the template
+    with open(template_file, 'r') as f:
+        template_content = f.read()
+    
+    for env in environments:
+        output_file = f"secrets-{env}.json"
+        
+        # Replace environment placeholder
+        env_content = template_content.replace("ENVIRONMENT_NAME", env)
+        
+        # Write the environment-specific file
+        with open(output_file, 'w') as f:
+            f.write(env_content)
+        
+        print(f"{INFO}Created {output_file}{END}")
+    
+    # Remove the template file
+    remove(template_file)
+    print(f"{INFO}Removed template file{END}")
+
+
 
 def main():
     django_secret, postgres_secret = get_secrets()
@@ -223,13 +256,15 @@ def main():
     elif deployment_option.lower().startswith("terraform"):
         remove_heroku_files()
         print(f"{INFO}Terraform (AWS) deployment selected - removed Heroku files{END}")
+        create_secrets_files()
         print(f"{INFO}S3 secrets management workflow configured{END}")
         print(f"{INFO}Next steps for S3 secrets:{END}")
         print(f"{INFO}  1. Update .github/environments.json with your AWS account IDs{END}")
         print(f"{INFO}  2. Run terraform/scripts/setup-github-oidc-role.sh to create IAM roles{END}")
         print(f"{INFO}  3. Set GitHub repository variables: SERVICE_NAME, ECR_REPOSITORY_NAME, AWS_ACCOUNT_ID{END}")
         print(f"{INFO}  4. Set environment-specific role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, PROD_AWS_ROLE_ARN{END}")
-        print(f"{INFO}  5. Use .github/scripts/secrets-sync.sh to manage secrets{END}")
+        print(f"{INFO}  5. Edit secrets-*.json files and replace CHANGE-ME values{END}")
+        print(f"{INFO}  6. Use .github/scripts/secrets-sync.sh to manage secrets{END}")
 
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")

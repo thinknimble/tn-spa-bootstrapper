@@ -1,6 +1,6 @@
 # Server ECR Repository
-data "aws_ecr_image" "server" {
-  repository_name = var.ecr_server_repository_name
+data "aws_ecr_image" "app" {
+  repository_name = var.ecr_app_repository_name
   # in order to trigger a new task definition revision this would need to change
   # assuming we have a ci/cd pipleline that updates the image tag we would use the tag here
   # e.g on merge to main we would update the tag to the git commit sha for staging and production
@@ -10,12 +10,12 @@ data "aws_ecr_image" "server" {
   image_tag = var.ecr_tag
 }
 
-data "aws_ecr_repository" "server" {
-  name = var.ecr_server_repository_name
+data "aws_ecr_repository" "app" {
+  name = var.ecr_app_repository_name
 }
 
 
-output "ecr_server_repository_url" {
-  value = data.aws_ecr_repository.server.repository_url
+output "ecr_app_repository_url" {
+  value = data.aws_ecr_repository.app.repository_url
 }
 

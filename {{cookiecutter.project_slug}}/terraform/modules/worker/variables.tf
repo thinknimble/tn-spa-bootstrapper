@@ -1,16 +1,31 @@
 variable "name" {
   type        = string
-  description = "Worker name (e.g., 'bg-processor')"
+  description = "Worker name (lowercase, alphanumeric and hyphens only, no underscores)"
+  
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.name))
+    error_message = "Worker name must be lowercase alphanumeric characters and hyphens only (no underscores or uppercase). AWS resource naming constraints require this format."
+  }
 }
 
 variable "service" {
   type        = string
-  description = "Service name for resource naming"
+  description = "Service name for resource naming (lowercase, alphanumeric and hyphens only, no underscores)"
+  
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.service))
+    error_message = "Service name must be lowercase alphanumeric characters and hyphens only (no underscores or uppercase). AWS resource naming constraints require this format."
+  }
 }
 
 variable "environment" {
   type        = string
-  description = "Environment (dev/staging/prod)"
+  description = "Environment name (lowercase, alphanumeric and hyphens only, no underscores)"
+  
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.environment))
+    error_message = "Environment name must be lowercase alphanumeric characters and hyphens only (no underscores or uppercase). AWS resource naming constraints require this format."
+  }
 }
 
 variable "cluster_id" {
