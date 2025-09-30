@@ -180,11 +180,11 @@ variable "enable_https" {
   default     = true  # Enable by default for review apps
 }
 
-# Base domain for auto-generated subdomains
+# Domain and DNS configuration
 variable "base_domain" {
   type        = string
-  description = "Base domain for generating subdomains (e.g., kanw.3leafcoder.com)"
-  default     = "kanw.3leafcoder.com"
+  description = "Base domain for generating subdomains (e.g., dev.myapp.com, myapp.com)"
+  default     = ""
 }
 
 variable "use_custom_domain" {
@@ -196,18 +196,25 @@ variable "use_custom_domain" {
 variable "route53_zone_id" {
   type        = string
   description = "Route53 zone ID for auto-creating DNS records (only used when use_custom_domain = false)"
-  default     = "Z06118351LUGXMN4X34BT"
+  default     = ""
 }
 
+variable "certificate_arn" {
+  type        = string
+  description = "ARN of the SSL certificate to use for HTTPS"
+  default     = ""
+}
+
+# Deprecated variables (kept for backward compatibility)
 variable "default_certificate_arn" {
   type        = string
-  description = "ARN of the default certificate to use (e.g., wildcard certificate)"
-  default     = "arn:aws:acm:us-east-1:458029411633:certificate/ef8fc192-5e26-4470-bd13-0b93fa3b8a0d"
+  description = "DEPRECATED: Use certificate_arn instead. ARN of the default certificate to use"
+  default     = ""
 }
 
 variable "custom_certificate_arn" {
   type        = string
-  description = "ARN of a custom certificate (optional, overrides default)"
+  description = "DEPRECATED: Use certificate_arn instead. ARN of a custom certificate"
   default     = ""
 }
 

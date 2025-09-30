@@ -29,6 +29,9 @@ locals {
     var.current_domain != "" ? var.current_domain : aws_lb.ecs.dns_name
   ) : local.app_subdomain
   
-  # Certificate logic: use custom certificate if provided, otherwise use default certificate
-  certificate_arn = var.custom_certificate_arn != "" ? var.custom_certificate_arn : var.default_certificate_arn
+  # Certificate logic with backward compatibility
+  # Priority: certificate_arn -> custom_certificate_arn -> default_certificate_arn
+  certificate_arn = var.certificate_arn != "" ? var.certificate_arn : (
+    var.custom_certificate_arn != "" ? var.custom_certificate_arn : var.default_certificate_arn
+  )
 }
