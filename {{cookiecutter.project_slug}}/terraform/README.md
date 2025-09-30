@@ -90,6 +90,99 @@ AWS services have different naming constraints:
 
 Terraform will validate these requirements and provide clear error messages if invalid names are used.
 
+## 🌐 Domain and DNS Configuration
+
+**New**: Domain and Route53 configuration is now managed through the centralized `environments.json` file, allowing different domain configurations per environment.
+
+### Configuration Structure
+
+Domain configuration is specified in `.github/environments.json` under the `domain` key for each environment:
+
+```json
+{
+  "environments": {
+    "production": {
+      "domain": {
+        "base_domain": "myapp.com",
+        "use_custom_domain": true,
+        "custom_domain": "myapp.com",
+        "route53_zone_id": "Z1D633PJN98FT9",
+        "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/prod-cert-id"
+      }
+    },
+    "staging": {
+      "domain": {
+        "base_domain": "myapp.com", 
+        "use_custom_domain": false,
+        "route53_zone_id": "Z1D633PJN98FT9",
+        "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/wildcard-cert-id"
+      }
+    },
+    "development": {
+      "domain": {
+        "base_domain": "dev.myapp.com",
+        "use_custom_domain": false,
+        "route53_zone_id": "Z06118351LUGXMN4X34BT", 
+        "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/dev-wildcard-cert-id"
+      }
+    }
+  }
+}
+```
+
+### Domain Configuration Options
+
+- **base_domain**: Base domain for auto-generating subdomains (e.g., `dev.myapp.com`)
+- **use_custom_domain**: 
+  - `false`: Auto-generate subdomain like `myapp-staging.dev.myapp.com`
+  - `true`: Use the exact domain specified in `custom_domain`
+- **custom_domain**: Exact domain to use when `use_custom_domain` is true
+- **route53_zone_id**: Route53 hosted zone ID for DNS record creation
+- **certificate_arn**: SSL certificate ARN for HTTPS
+
+### Environment Examples
+
+#### Production (Custom Domain)
+```json
+"domain": {
+  "base_domain": "myapp.com",
+  "use_custom_domain": true, 
+  "custom_domain": "myapp.com",
+  "route53_zone_id": "Z1D633PJN98FT9",
+  "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/prod-cert"
+}
+```
+**Result**: Uses exactly `myapp.com`
+
+#### Staging/Development (Auto-Generated Subdomain)
+```json
+"domain": {
+  "base_domain": "dev.myapp.com",
+  "use_custom_domain": false,
+  "route53_zone_id": "Z06118351LUGXMN4X34BT",
+  "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/wildcard-cert"
+}
+```
+**Result**: Auto-generates `myapp-staging.dev.myapp.com`
+
+#### PR Environments
+```json
+"domain": {
+  "base_domain": "dev.myapp.com", 
+  "use_custom_domain": false,
+  "route53_zone_id": "Z06118351LUGXMN4X34BT",
+  "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/wildcard-cert"
+}
+```
+**Result**: Auto-generates `myapp-pr-123.dev.myapp.com`
+
+### Migration from Old Configuration
+
+The system maintains backward compatibility with the old terraform variables:
+- `default_certificate_arn` (deprecated) → use `certificate_arn` in environments.json
+- `custom_certificate_arn` (deprecated) → use `certificate_arn` in environments.json
+- `base_domain` variable → now set from environments.json
+
 ## 🏗️ Architecture Overview
 
 ### Core Infrastructure

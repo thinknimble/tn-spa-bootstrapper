@@ -95,6 +95,13 @@ ROLE_ARN=$(echo "$CONFIG" | jq -r '.role_arn // empty')
 SECRETS_BUCKET=$(echo "$CONFIG" | jq -r '.secrets_bucket // empty')
 DESCRIPTION=$(echo "$CONFIG" | jq -r '.description')
 
+# Extract domain configuration
+BASE_DOMAIN=$(echo "$CONFIG" | jq -r '.domain.base_domain // empty')
+USE_CUSTOM_DOMAIN=$(echo "$CONFIG" | jq -r '.domain.use_custom_domain // false')
+CUSTOM_DOMAIN=$(echo "$CONFIG" | jq -r '.domain.custom_domain // empty')
+ROUTE53_ZONE_ID=$(echo "$CONFIG" | jq -r '.domain.route53_zone_id // empty')
+CERTIFICATE_ARN=$(echo "$CONFIG" | jq -r '.domain.certificate_arn // empty')
+
 # Validate extracted values
 if [[ -z "$ACCOUNT" || "$ACCOUNT" == "null" ]]; then
     echo "Error: No account specified in configuration" >&2
@@ -124,6 +131,13 @@ echo "region=$REGION"
 echo "role_arn=$ROLE_ARN"
 echo "secrets_bucket=$SECRETS_BUCKET"
 echo "description=${DESCRIPTION:-"No description"}"
+
+# Domain configuration outputs
+echo "base_domain=$BASE_DOMAIN"
+echo "use_custom_domain=$USE_CUSTOM_DOMAIN"
+echo "custom_domain=$CUSTOM_DOMAIN"
+echo "route53_zone_id=$ROUTE53_ZONE_ID"
+echo "certificate_arn=$CERTIFICATE_ARN"
 
 # Also output ECR registry
 echo "ecr_registry=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"

@@ -76,10 +76,24 @@ jobs:
           ROLE_ARN=$(echo "$ENV_CONFIG" | grep "^role_arn=" | cut -d= -f2)
           SECRETS_BUCKET=$(echo "$ENV_CONFIG" | grep "^secrets_bucket=" | cut -d= -f2)
           
+          # Extract domain configuration
+          BASE_DOMAIN=$(echo "$ENV_CONFIG" | grep "^base_domain=" | cut -d= -f2)
+          USE_CUSTOM_DOMAIN=$(echo "$ENV_CONFIG" | grep "^use_custom_domain=" | cut -d= -f2)
+          CUSTOM_DOMAIN=$(echo "$ENV_CONFIG" | grep "^custom_domain=" | cut -d= -f2)
+          ROUTE53_ZONE_ID=$(echo "$ENV_CONFIG" | grep "^route53_zone_id=" | cut -d= -f2)
+          CERTIFICATE_ARN=$(echo "$ENV_CONFIG" | grep "^certificate_arn=" | cut -d= -f2)
+          
           # Set outputs
           echo "aws_region=$REGION" >> $GITHUB_OUTPUT
           echo "account=$ACCOUNT" >> $GITHUB_OUTPUT
           echo "secrets_bucket=$SECRETS_BUCKET" >> $GITHUB_OUTPUT
+          
+          # Domain configuration outputs
+          echo "base_domain=$BASE_DOMAIN" >> $GITHUB_OUTPUT
+          echo "use_custom_domain=$USE_CUSTOM_DOMAIN" >> $GITHUB_OUTPUT
+          echo "custom_domain=$CUSTOM_DOMAIN" >> $GITHUB_OUTPUT
+          echo "route53_zone_id=$ROUTE53_ZONE_ID" >> $GITHUB_OUTPUT
+          echo "certificate_arn=$CERTIFICATE_ARN" >> $GITHUB_OUTPUT
           # Use account_id from config, fallback to AWS_ACCOUNT_ID variable if empty
           if [[ -n "$ACCOUNT_ID" ]]; then
             echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
@@ -328,6 +342,13 @@ jobs:
           
           # Placeholder for playwright URL - will be updated after deployment
           playwright_test_base_url = "http://localhost:8000"
+          
+          # Domain and Route53 configuration from environments.json
+          base_domain = "${{ steps.env-vars.outputs.base_domain }}"
+          use_custom_domain = ${{ steps.env-vars.outputs.use_custom_domain }}
+          current_domain = "${{ steps.env-vars.outputs.custom_domain }}"
+          route53_zone_id = "${{ steps.env-vars.outputs.route53_zone_id }}"
+          certificate_arn = "${{ steps.env-vars.outputs.certificate_arn }}"
           
           # AWS profile (empty for CI/CD)
           aws_profile = ""
