@@ -1,4 +1,5 @@
 import secrets
+import json
 from os import remove
 from os.path import exists, join
 from shutil import copy2, move, rmtree
@@ -128,6 +129,11 @@ def remove_terraform_files():
     file_names = [
         join(".github/workflows", "app-deploy.yml"),
         join(".github/workflows", "SETUP.md"),
+        join(".github", "environments.json"),
+        join(".github", "app-config.json"),
+        join(".github/scripts", "get-env-config.sh"),
+        join(".github/scripts", "secrets-sync.sh"),
+        join(".github/scripts", "setup-secrets-bucket.sh"),
     ]
     directories = [
         "terraform"
@@ -191,6 +197,7 @@ def get_secrets():
     return django_secret, postgres_secret
 
 
+
 def main():
     django_secret, postgres_secret = get_secrets()
     set_keys_in_envs(django_secret, postgres_secret)
@@ -216,6 +223,13 @@ def main():
     elif deployment_option.lower().startswith("terraform"):
         remove_heroku_files()
         print(f"{INFO}Terraform (AWS) deployment selected - removed Heroku files{END}")
+        print(f"{INFO}S3 secrets management workflow configured{END}")
+        print(f"{INFO}Next steps for S3 secrets:{END}")
+        print(f"{INFO}  1. Update .github/environments.json with your AWS account IDs{END}")
+        print(f"{INFO}  2. Run terraform/scripts/setup-github-oidc-role.sh to create IAM roles{END}")
+        print(f"{INFO}  3. Set GitHub repository variables: SERVICE_NAME, ECR_REPOSITORY_NAME, AWS_ACCOUNT_ID{END}")
+        print(f"{INFO}  4. Set environment-specific role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, PROD_AWS_ROLE_ARN{END}")
+        print(f"{INFO}  5. Use .github/scripts/secrets-sync.sh to manage secrets{END}")
 
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")

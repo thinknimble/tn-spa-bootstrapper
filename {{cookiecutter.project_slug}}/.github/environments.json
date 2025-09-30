@@ -1,0 +1,54 @@
+{
+  "environments": {
+    "production": {
+      "account": "prod",
+      "account_id": "345678901234",
+      "region": "us-east-1",
+      "role_arn_var": "PROD_AWS_ROLE_ARN",
+      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+      "description": "Production environment"
+    },
+    "staging": {
+      "account": "staging", 
+      "account_id": "234567890123",
+      "region": "us-west-2",
+      "role_arn_var": "STAGING_AWS_ROLE_ARN",
+      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+      "description": "Staging environment"
+    },
+    "development": {
+      "account": "dev",
+      "account_id": "123456789012", 
+      "region": "us-east-1", 
+      "role_arn_var": "DEV_AWS_ROLE_ARN",
+      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+      "description": "Development environment"
+    }
+  },
+  "patterns": {
+    "pr-*": {
+      "account": "dev",
+      "account_id": "123456789012",
+      "region": "us-east-1",
+      "role_arn_var": "DEV_AWS_ROLE_ARN",
+      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+      "description": "Pull request environments"
+    },
+    "main": {
+      "account": "dev", 
+      "account_id": "123456789012",
+      "region": "us-east-1",
+      "role_arn_var": "DEV_AWS_ROLE_ARN",
+      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+      "description": "Main branch development"
+    }
+  },
+  "defaults": {
+    "account": "dev",
+    "account_id": "123456789012",
+    "region": "us-east-1",
+    "role_arn_var": "TF_AWS_ROLE_ARN",
+    "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
+    "description": "Default fallback configuration"
+  }
+}
