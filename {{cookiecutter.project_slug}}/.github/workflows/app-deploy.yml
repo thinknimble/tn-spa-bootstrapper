@@ -131,8 +131,8 @@ jobs:
 
       - name: Create ECR repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names ${{ vars.ECR_REPOSITORY_NAME }} || \
-          aws ecr create-repository --repository-name ${{ vars.ECR_REPOSITORY_NAME }}
+          aws ecr describe-repositories --repository-names ${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }} || \
+          aws ecr create-repository --repository-name ${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -145,8 +145,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME }}:${{ steps.env-vars.outputs.image_tag }}
-            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME }}:${{ steps.env-vars.outputs.environment }}-latest
+            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.env-vars.outputs.image_tag }}
+            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.env-vars.outputs.environment }}-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -180,7 +180,7 @@ jobs:
         run: |
           cd terraform
           # Use the init_backend script with environment-specific configuration
-          ./scripts/init_backend.sh -e "${{ steps.env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME }}"
+          ./scripts/init_backend.sh -e "${{ steps.env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}"
 
       - name: Check if Terraform workspace exists
         id: workspace-check
@@ -306,15 +306,26 @@ jobs:
       - name: Generate initial Terraform variables file
         run: |
           cd terraform
-          # Create sanitized DB variables
-          DB_NAME=$(echo "${{ vars.SERVICE_NAME }}_${{ steps.env-vars.outputs.environment }}" | sed 's/-/_/g')
-          DB_USER=$(echo "${{ vars.SERVICE_NAME }}_user" | sed 's/-//g')
+          # Use GitHub Actions variables with terraform defaults as fallbacks
+          SERVICE_NAME="${{ vars.SERVICE_NAME }}"
+          ECR_REPOSITORY_NAME="${{ vars.ECR_REPOSITORY_NAME }}"
           
-          cat << EOF > terraform.tfvars
-          service = "${{ vars.SERVICE_NAME }}"
+          # If not set in GitHub variables, terraform will use its defaults from variables.tf
+          if [ -n "$SERVICE_NAME" ]; then
+            echo "service = \"$SERVICE_NAME\"" >> terraform.tfvars
+          else
+            echo "# SERVICE_NAME not set in GitHub variables - using terraform default from variables.tf"
+          fi
+          
+          if [ -n "$ECR_REPOSITORY_NAME" ]; then
+            echo "ecr_app_repository_name = \"$ECR_REPOSITORY_NAME\"" >> terraform.tfvars
+          else
+            echo "# ECR_REPOSITORY_NAME not set in GitHub variables - using terraform default from variables.tf"
+          fi
+          
+          cat << EOF >> terraform.tfvars
           environment = "${{ steps.env-vars.outputs.environment }}"
           aws_region = "${{ steps.env-vars.outputs.aws_region }}"
-          ecr_app_repository_name = "${{ vars.ECR_REPOSITORY_NAME }}"
           ecr_tag = "${{ steps.env-vars.outputs.image_tag }}"
           
           # Secrets from S3

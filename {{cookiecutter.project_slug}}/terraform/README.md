@@ -2,56 +2,135 @@
 
 Production-ready AWS infrastructure for Django applications using ECS Fargate, with automated multi-account deployments, S3 secrets management, and comprehensive CI/CD integration.
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
-**Minimal setup for deployment:**
+Follow these step-by-step instructions to deploy your infrastructure:
 
-1. **Configure environments**:
-   ```bash
-   # Update AWS account IDs in .github/environments.json
-   # See Multi-Account Setup section below
-   ```
+> **📝 Important: Naming Constraints**: This template automatically handles AWS naming requirements. Service names are converted from `my_project` (underscores) to `my-project` (hyphens) to comply with AWS Fargate and ALB naming constraints. The original `project_slug` with underscores is still used for database names and Python identifiers where appropriate.
 
-2. **Set up secrets**:
-   ```bash
-   # First, create the S3 secrets bucket
-   .github/scripts/setup-secrets-bucket.sh development
-   
-   # Check if secrets already exist, otherwise create template
-   if .github/scripts/secrets-sync.sh pull development 2>/dev/null; then
-     echo "Using existing secrets from S3"
-   else
-     echo "Creating new secrets template"
-     .github/scripts/secrets-sync.sh template development
-     # Edit secrets-development.json with your values
-     .github/scripts/secrets-sync.sh push development
-   fi
-   ```
+### 🏗️ First-Time Account Setup (AWS Admin - Once per AWS Account)
 
-3. **Configure GitHub variables**:
-   ```bash
-   # Repository Variables (in GitHub Settings → Actions)
-   SERVICE_NAME="{{cookiecutter.project_slug}}"
-   ECR_REPOSITORY_NAME="{{cookiecutter.project_slug}}-app"
-   AWS_ACCOUNT_ID="123456789012"
-   
-   # Environment-specific Role ARNs
-   DEV_AWS_ROLE_ARN="arn:aws:iam::123456789012:role/github-actions-dev"
-   STAGING_AWS_ROLE_ARN="arn:aws:iam::234567890123:role/github-actions-staging"
-   PROD_AWS_ROLE_ARN="arn:aws:iam::345678901234:role/github-actions-prod"
-   ```
+These steps only need to be done **once per AWS account** by an AWS account administrator:
 
-4. **Deploy**:
-   ```bash
-   # Local deployment
-   cd terraform
-   terraform init
-   terraform plan
-   terraform apply
-   
-   # Or push to GitHub for automated deployment
-   git push origin feature-branch  # Creates PR environment
-   ```
+#### 1. GitHub OIDC Roles Setup (Admin Only)
+```bash
+# Set up GitHub Actions OIDC roles (run once per AWS account by admin)
+# This creates reusable IAM roles that all projects can use
+cd terraform/scripts
+./setup-github-oidc-role.sh # this user has access to all projects as they get added 
+```
+:warning: Future improvement will be to have a main oidc-role that is setup by TN to create the OIDC users for each project and their tfstate buckets as part of a UI bootstrapper project.
+
+
+> **Note**: This step creates the foundational OIDC identity provider and roles. Subsequent projects will automatically attach their specific policies to these existing roles.
+
+### 🚀 First-Time New Project Setup
+
+#### 1. AWS CLI Setup
+```bash
+# Install AWS CLI if not already installed
+# Configure AWS CLI with your credentials
+aws configure
+```
+
+#### 2. S3 Backend Infrastructure Setup
+```bash
+# Set up Terraform state backend (run once per project)
+# Creates a dedicated S3 bucket for this project's Terraform state
+cd terraform/scripts
+./setup_backend.sh
+```
+
+> **Backend Strategy**: Each project gets its own dedicated S3 bucket (`{account-id}-{project-name}-terraform-state`) for complete isolation and simpler permissions management. This approach provides better security boundaries between projects.
+
+#### 3. Configure Environment Mapping
+```bash
+# Update AWS account IDs in .github/environments.json
+# See Multi-Account Setup section below for details
+```
+
+#### 2. Set Up Project Secrets
+```bash
+# Create the S3 secrets bucket for your project
+.github/scripts/setup-secrets-bucket.sh development
+
+# Check if secrets already exist, otherwise create template
+if .github/scripts/secrets-sync.sh pull development 2>/dev/null; then
+  echo "Using existing secrets from S3"
+else
+  echo "Creating new secrets template"
+  .github/scripts/secrets-sync.sh template development
+  # Edit secrets-development.json with your values
+  .github/scripts/secrets-sync.sh push development
+fi
+```
+
+#### 3. Configure Terraform Variables
+```bash
+# Copy and customize Terraform variables
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your project-specific values
+```
+
+#### 4. Initialize Terraform Backend
+```bash
+# Initialize Terraform with environment-specific backend
+cd scripts
+./init_backend.sh -e development -s {{cookiecutter.project_slug}}
+```
+
+#### 5. Configure GitHub Repository Variables
+Add these variables in GitHub repository settings → Secrets and variables → Actions → Variables:
+
+> **💡 Naming Safety Tip**: We recommend setting these variables in GitHub Actions as a safety net to avoid issues from local terraform.tfvars changes. If not set, the deployment will automatically use the sanitized defaults from your terraform variables.
+
+```bash
+# Repository Variables (Optional - will use terraform defaults if not set)
+SERVICE_NAME="{{cookiecutter.sanitized_tf_service_name}}"
+ECR_REPOSITORY_NAME="{{cookiecutter.sanitized_tf_service_name}}-app"
+
+# Environment-specific Role ARNs (from step 2 above)
+DEV_AWS_ROLE_ARN="arn:aws:iam::123456789012:role/github-actions-development"
+STAGING_AWS_ROLE_ARN="arn:aws:iam::234567890123:role/github-actions-staging"
+PROD_AWS_ROLE_ARN="arn:aws:iam::345678901234:role/github-actions-production"
+```
+
+> **🔧 Automatic Fallback**: If `SERVICE_NAME` or `ECR_REPOSITORY_NAME` are not set in GitHub Actions variables, the deployment will automatically use the AWS-compatible defaults from your `terraform/variables.tf` file. This ensures consistent, valid resource naming even without manual variable configuration.
+
+### 🔄 Regular Development Workflow
+
+Once your infrastructure is set up, your typical workflow becomes:
+
+#### Local Infrastructure Changes
+```bash
+# Plan infrastructure changes
+cd terraform
+terraform plan
+
+# Apply infrastructure changes
+terraform apply
+```
+
+#### Automated Deployments via GitHub Actions
+```bash
+# Development environment - auto-deploys on pushes to main branch
+git push origin main
+
+# PR environments - auto-creates temporary environments for each pull request
+git push origin feature-branch
+
+# Staging environment - auto-deploys on tagged releases
+git tag v1.0.0
+git push origin v1.0.0
+
+# Production environment - manual approval required through GitHub UI
+```
+
+#### Environment Management
+- **Development**: Deploys automatically on pushes to `main` branch
+- **Staging**: Deploys automatically on tagged releases
+- **Production**: Requires manual approval in GitHub Actions
+- **PR Environments**: Temporary environments created automatically for each pull request
 
 ## 📋 Prerequisites
 
