@@ -24,7 +24,8 @@ data "external" "check_shared_vpc" {
   count = local.is_shared_vpc_env ? 1 : 0
   
   program = ["bash", "-c", <<-EOF
-    VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${local.shared_vpc_name}" "Name=state,Values=available" --query 'Vpcs[0].VpcId' --output text 2>/dev/null || echo "None")
+    # Get the oldest VPC by creation time to ensure deterministic selection
+    VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${local.shared_vpc_name}" "Name=state,Values=available" "Name=tag:Environment,Values=shared-development" --query 'sort_by(Vpcs, &CreationTime)[0].VpcId' --output text 2>/dev/null || echo "None")
     if [ "$VPC_ID" = "None" ] || [ "$VPC_ID" = "null" ]; then
       echo '{"exists": "false", "vpc_id": ""}'
     else
@@ -35,17 +36,13 @@ EOF
 }
 
 # Data source to find existing shared VPC (only if it exists)
+# Uses the VPC ID from external data source to avoid multiple matches
 data "aws_vpc" "shared" {
   count = local.is_shared_vpc_env && try(data.external.check_shared_vpc[0].result.exists, "false") == "true" ? 1 : 0
   
   filter {
-    name   = "tag:Name"
-    values = [local.shared_vpc_name]
-  }
-  
-  filter {
-    name   = "state"
-    values = ["available"]
+    name   = "vpc-id"
+    values = [try(data.external.check_shared_vpc[0].result.vpc_id, "")]
   }
 }
 
