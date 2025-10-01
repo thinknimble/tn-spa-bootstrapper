@@ -1,7 +1,7 @@
 variable "service" {
   type        = string
   description = "The service name for AWS resources (lowercase, alphanumeric and hyphens only, no underscores)"
-  default     = "{{ cookiecutter.project_slug }}"
+  default     = "{{ cookiecutter.sanitized_tf_service_name }}"
   
   validation {
     condition     = can(regex("^[a-z0-9-]+$", var.service))
@@ -27,7 +27,7 @@ variable "aws_region" {
 variable "ecr_app_repository_name" {
   type        = string
   description = "The ECR repository name for the app service backend"
-  default     = "{{ cookiecutter.project_slug }}-app"
+  default     = "{{ cookiecutter.sanitized_tf_service_name }}-app"
 }
 
 
