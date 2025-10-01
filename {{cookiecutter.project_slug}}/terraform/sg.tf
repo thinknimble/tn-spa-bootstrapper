@@ -1,7 +1,7 @@
 resource "aws_security_group" "ecs_load_balancer" {
   name        = "ecs-lb-sg-${var.service}-${var.environment}"
   description = "Allow inbound traffic to the load balancer"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = local.vpc_id
   tags = {
     Name = "ecs-lb-sg-${var.service}-${var.environment}"
   }
@@ -49,7 +49,7 @@ resource "aws_vpc_security_group_egress_rule" "load_balancer_https" {
 
 
 resource "aws_security_group" "app" {
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = local.vpc_id
   name        = "ecs-app-${var.service}-${var.environment}"
   description = "Allow inbound traffic to the app"
 
@@ -85,15 +85,13 @@ resource "aws_security_group_rule" "allow_all_egress" {
 }
 
 resource "aws_security_group" "rds" {
-  name        = "rds-sg-${var.service}"
+  name        = "rds-sg-${var.service}-${var.environment}"
   description = "Allow inbound traffic to RDS"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = local.vpc_id
 
   tags = {
     Name = "rds-sg-${var.service}-${var.environment}"
   }
-
-
 }
 
 resource "aws_security_group_rule" "rds" {
@@ -115,7 +113,7 @@ resource "aws_security_group_rule" "rds" {
 resource "aws_security_group" "redis" {
   name        = "redis-sg-${var.service}-${var.environment}"
   description = "Allow inbound traffic to Redis"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = local.vpc_id
 
   tags = {
     Name = "redis-sg-${var.service}-${var.environment}"

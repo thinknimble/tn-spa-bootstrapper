@@ -39,7 +39,7 @@ locals {
     },
     {
       name  = "VPC_CIDRS"
-      value = "${aws_subnet.public.cidr_block},${aws_subnet.public_b.cidr_block}"
+      value = "${local.subnet_a_cidr},${local.subnet_b_cidr}"
     }
   ]
 
