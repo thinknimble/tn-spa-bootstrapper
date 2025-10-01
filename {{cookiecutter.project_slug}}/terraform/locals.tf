@@ -1,6 +1,27 @@
 # locals
 
 locals {
+  # VPC sharing logic for development environments only
+  # Share VPC for: development, pr-* (in dev AWS account 123456789012)
+  # Dedicated VPC for: production, staging (in separate accounts)
+  is_shared_vpc_env = var.environment == "development" || can(regex("^pr-", var.environment))
+  
+  # Shared VPC name for development environments
+  shared_vpc_name = "shared-dev-vpc"
+  
+  # Environment-specific subnet CIDR calculation for shared VPC
+  # Extract PR number for pr-* environments, use 10 for development
+  env_cidr_base = local.is_shared_vpc_env ? (
+    var.environment == "development" ? 10 : (
+      can(regex("^pr-([0-9]+)", var.environment)) ? 
+        tonumber(regex("^pr-([0-9]+)", var.environment)[0]) : 30
+    )
+  ) : 1
+  
+  # Calculate subnet CIDRs for shared VPC (10.0.X.0/24 and 10.0.Y.0/24)
+  subnet_a_cidr = local.is_shared_vpc_env ? "10.0.${local.env_cidr_base}.0/24" : "10.0.1.0/24"
+  subnet_b_cidr = local.is_shared_vpc_env ? "10.0.${local.env_cidr_base + 100}.0/24" : "10.0.2.0/24"
+  
   # Resource name components (with length limits for AWS services)
   # ALB names: max 32 chars, alphanumeric and hyphens only
   alb_name = substr("${var.service}-${var.environment}", 0, 32)

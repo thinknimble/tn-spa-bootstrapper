@@ -8,6 +8,11 @@ Follow these step-by-step instructions to deploy your infrastructure:
 
 > **📝 Important: Naming Constraints**: This template automatically handles AWS naming requirements. Service names are converted from `my_project` (underscores) to `my-project` (hyphens) to comply with AWS Fargate and ALB naming constraints. The original `project_slug` with underscores is still used for database names and Python identifiers where appropriate.
 
+> **🏗️ VPC Sharing Strategy**: To avoid AWS VPC limits (default 5 per region), development environments share a single VPC while maintaining isolation through environment-specific subnets, security groups, and databases:
+> - **Production & Staging**: Dedicated VPCs (in separate AWS accounts)
+> - **Development & PR Environments**: Shared VPC `shared-dev-vpc` (in dev AWS account)
+> - **Subnet Allocation**: Each environment gets unique CIDR blocks (e.g., `development` = `10.0.10.0/24`, `pr-123` = `10.0.123.0/24`)
+
 ### 🏗️ First-Time Account Setup (AWS Admin - Once per AWS Account)
 
 These steps only need to be done **once per AWS account** by an AWS account administrator:
@@ -131,6 +136,55 @@ git push origin v1.0.0
 - **Staging**: Deploys automatically on tagged releases
 - **Production**: Requires manual approval in GitHub Actions
 - **PR Environments**: Temporary environments created automatically for each pull request
+
+## 🏗️ VPC Sharing & Resource Isolation
+
+### Shared VPC Architecture
+
+**Problem Solved**: AWS has a default limit of 5 VPCs per region. With multiple PR environments, this limit is quickly exceeded.
+
+**Solution**: Smart VPC sharing for development environments while maintaining security isolation.
+
+| Environment Type | VPC Strategy | AWS Account | Isolation Method |
+|------------------|--------------|-------------|------------------|
+| **Production** | Dedicated VPC | Production Account | Complete account separation |
+| **Staging** | Dedicated VPC | Production Account | Complete account separation |
+| **Development** | Shared VPC | Dev Account | Environment-specific subnets |
+| **PR Environments** | Shared VPC | Dev Account | Environment-specific subnets |
+
+### Subnet Allocation Strategy
+
+```
+Shared Development VPC (10.0.0.0/16)
+├── development environment
+│   ├── 10.0.10.0/24 (us-east-1b)
+│   └── 10.0.110.0/24 (us-east-1a)
+├── pr-1 environment  
+│   ├── 10.0.1.0/24 (us-east-1b)
+│   └── 10.0.101.0/24 (us-east-1a)
+├── pr-123 environment
+│   ├── 10.0.123.0/24 (us-east-1b)
+│   └── 10.0.223.0/24 (us-east-1a)
+└── pr-9999 environment
+    ├── 10.0.255.0/24 (us-east-1b)  # Wraps to 255 for large PR numbers
+    └── 10.0.255.0/24 (us-east-1a)
+```
+
+### Security Isolation
+
+Even with shared VPC, environments remain completely isolated through:
+
+- ✅ **Environment-specific Security Groups**: Each environment has unique security groups
+- ✅ **Separate Databases**: Each environment gets its own RDS and Redis instances
+- ✅ **Separate ECS Clusters**: Each environment has its own ECS cluster and services
+- ✅ **Environment-specific Subnets**: No network overlap between environments
+
+### Benefits
+
+- 🎯 **Avoids VPC Limits**: Unlimited PR environments without hitting AWS VPC quotas
+- 🔒 **Maintains Security**: Full isolation through security groups and separate databases
+- 💰 **Cost Efficient**: Shared VPC infrastructure reduces NAT Gateway and networking costs
+- 🚀 **Faster Deployments**: No VPC creation delays for new PR environments
 
 ## 📋 Prerequisites
 

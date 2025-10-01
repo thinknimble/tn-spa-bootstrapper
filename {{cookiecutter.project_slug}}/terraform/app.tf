@@ -110,7 +110,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name  = "VPC_CIDRS",
-          value = "${aws_subnet.public.cidr_block},${aws_subnet.public_b.cidr_block}"
+          value = "${local.subnet_a_cidr},${local.subnet_b_cidr}"
         }
       ],
       secrets = [
@@ -161,7 +161,7 @@ resource "aws_lb_target_group" "app" {
   port        = 8000
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = local.vpc_id
 
   health_check {
     protocol = "HTTP"
@@ -190,7 +190,7 @@ resource "aws_ecs_service" "app" {
   enable_execute_command = true
 
   network_configuration {
-    subnets          = [aws_subnet.public.id]
+    subnets          = [aws_subnet.public.id, aws_subnet.public_b.id]
     security_groups  = [aws_security_group.app.id]
     assign_public_ip = true
   }
