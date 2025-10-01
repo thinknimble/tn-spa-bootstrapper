@@ -218,3 +218,10 @@ variable "custom_certificate_arn" {
   default     = ""
 }
 
+# VPC sharing configuration
+variable "use_per_project_shared_vpc" {
+  type        = bool
+  description = "If true, create per-project shared VPCs (shared-dev-vpc-PROJECT). If false, use account-wide shared VPC (shared-dev-vpc)"
+  default     = false
+}
+

@@ -7,7 +7,8 @@ locals {
   is_shared_vpc_env = var.environment == "development" || can(regex("^pr-", var.environment))
   
   # Shared VPC name for development environments
-  shared_vpc_name = "shared-dev-vpc"
+  # Can be account-wide (shared-dev-vpc) or per-project (shared-dev-vpc-PROJECT)
+  shared_vpc_name = var.use_per_project_shared_vpc ? "shared-dev-vpc-${var.service}" : "shared-dev-vpc"
   
   # Environment-specific subnet CIDR calculation for shared VPC
   # Extract PR number for pr-* environments, use 10 for development
