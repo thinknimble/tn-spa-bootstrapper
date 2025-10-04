@@ -153,11 +153,11 @@ jobs:
       - name: Create deployment
         id: deployment
         run: |
-          echo "Creating deployment for environment: pr-${{ github.event.number }}"
+          echo "Creating deployment for environment: ${{ steps.env-vars.outputs.environment }}"
           DEPLOYMENT_ID=$(gh api repos/${{ github.repository }}/deployments \
             --method POST \
             --field ref='${{ github.sha }}' \
-            --field environment='pr-${{ github.event.number }}' \
+            --field environment='${{ steps.env-vars.outputs.environment }}' \
             --field auto_merge=false \
             --jq '.id')
           
@@ -569,7 +569,69 @@ jobs:
           # Use the init_backend script with environment-specific configuration
           ./scripts/init_backend.sh -e "${{ steps.cleanup-env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME }}"
 
-      - name: Select and destroy PR workspace # we might need to create the tfvars file for this
+      - name: Generate terraform variables for cleanup
+        run: |
+          cd terraform
+          ENVIRONMENT="${{ steps.cleanup-env-vars.outputs.environment }}"
+          
+          echo "🔧 Generating terraform.tfvars for cleanup of environment: $ENVIRONMENT"
+          
+          # Use GitHub Actions variables with terraform defaults as fallbacks
+          SERVICE_NAME="${{ vars.SERVICE_NAME }}"
+          ECR_REPOSITORY_NAME="${{ vars.ECR_REPOSITORY_NAME }}"
+          
+          # Create terraform.tfvars with minimal required variables for destroy
+          if [ -n "$SERVICE_NAME" ]; then
+            echo "service = \"$SERVICE_NAME\"" >> terraform.tfvars
+          fi
+          
+          if [ -n "$ECR_REPOSITORY_NAME" ]; then
+            echo "ecr_app_repository_name = \"$ECR_REPOSITORY_NAME\"" >> terraform.tfvars
+          fi
+          
+          cat << EOF >> terraform.tfvars
+          environment = "$ENVIRONMENT"
+          aws_region = "${{ steps.cleanup-env-vars.outputs.aws_region }}"
+          ecr_tag = "cleanup"
+          
+          # Minimal required variables for destroy (using placeholder values)
+          secret_key = "cleanup_placeholder"
+          db_pass = "cleanup_placeholder"
+          django_superuser_password = "cleanup_placeholder"
+          rollbar_access_token = ""
+          aws_access_key_id = ""
+          aws_secret_access_key = ""
+          playwright_test_user_pass = "cleanup_placeholder"
+          
+          # Database config placeholders
+          db_name = "${ENVIRONMENT}_db"
+          db_user = "${ENVIRONMENT}_user"
+          
+          # App configuration defaults
+          debug = "false"
+          current_port = "8000"
+          allowed_hosts = "localhost"
+          enable_emails = "false"
+          staff_email = "admin@example.com"
+          use_aws_storage = "false"
+          aws_s3_region_name = ""
+          enable_https = true
+          
+          # Placeholder values for cleanup
+          playwright_test_base_url = "http://localhost:8000"
+          base_domain = ""
+          use_custom_domain = false
+          current_domain = ""
+          route53_zone_id = ""
+          certificate_arn = ""
+          
+          # AWS profile (empty for CI/CD)
+          aws_profile = ""
+          EOF
+          
+          echo "✅ Generated terraform.tfvars for cleanup with placeholder values"
+
+      - name: Select and destroy PR workspace
         run: |
           cd terraform
           PR_WORKSPACE="pr-${{ github.event.number }}"
@@ -577,6 +639,7 @@ jobs:
           if terraform workspace list | grep -q "$PR_WORKSPACE"; then
             terraform workspace select $PR_WORKSPACE
             
+            echo "🗑️ Destroying infrastructure for environment: $PR_WORKSPACE"
             terraform destroy -auto-approve
             terraform workspace select default
             terraform workspace delete $PR_WORKSPACE
