@@ -236,9 +236,9 @@ resource "aws_db_instance" "postgres" {
   db_subnet_group_name   = aws_db_subnet_group.database.name
   storage_encrypted      = true
 
-  # tags = {
-  #   Name = "db-${var.service}-${var.environment}}"
-  # }
+  tags = {
+    Name = "db-${var.service}-${var.environment}}"
+  }
 }
 
 

@@ -84,16 +84,16 @@ variable "allowed_hosts" {
 
 variable "db_name" {
   type        = string
-  description = "The database name for the app service backend"
+  description = "The database name for the app service backend (alphanumeric only, no underscores/hyphens)"
   sensitive   = true
-  default     = "{{ cookiecutter.project_slug }}_db"
+  default     = "{{ cookiecutter.sanitized_tf_service_name | replace('-', '') }}db"
 }
 
 variable "db_user" {
   type        = string
-  description = "The database user for the app service backend"
+  description = "The database user for the app service backend (alphanumeric and underscores allowed)"
   sensitive   = true
-  default     = "{{ cookiecutter.project_slug }}_user"
+  default     = "{{ cookiecutter.sanitized_tf_service_name }}_user"
 }
 
 variable "db_pass" {
