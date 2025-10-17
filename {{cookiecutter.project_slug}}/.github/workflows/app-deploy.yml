@@ -1,4 +1,4 @@
-{% raw %}
+
 name: Deploy Application
 
 concurrency:
@@ -338,8 +338,8 @@ jobs:
           playwright_test_user_pass = "${{ steps.secrets.outputs.playwright_test_user_pass }}"
           
           # Database config
-          db_name = "$DB_NAME"
-          db_user = "$DB_USER"
+          db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}${{ steps.env-vars.outputs.environment }}db' | tr -d '-')"
+          db_user = "{{cookiecutter.sanitized_tf_service_name}}_${{ steps.env-vars.outputs.environment }}_user"
           
           # App configuration from app-config.json
           debug = "${{ steps.app-config.outputs.debug }}"
@@ -603,9 +603,9 @@ jobs:
           aws_secret_access_key = ""
           playwright_test_user_pass = "cleanup_placeholder"
           
-          # Database config placeholders
-          db_name = "${ENVIRONMENT}_db"
-          db_user = "${ENVIRONMENT}_user"
+          # Database config placeholders (must match deployment naming for cleanup)
+          db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}${ENVIRONMENT}db' | tr -d '-')"
+          db_user = "{{cookiecutter.sanitized_tf_service_name}}_${ENVIRONMENT}_user"
           
           # App configuration defaults
           debug = "false"
@@ -648,4 +648,3 @@ jobs:
           else
             echo "ℹ️  No workspace found for PR ${{ github.event.number }}"
           fi
-{% endraw %}

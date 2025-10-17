@@ -67,7 +67,8 @@ to_upper_snake_case() {
 
 # Function to convert any case to snake_case
 to_snake_case() {
-    echo "$1" | sed 's/\([A-Z]\)/_\1/g' | tr '[:upper:]' '[:lower:]' | sed 's/^_//'
+    # First handle camelCase -> snake_case, then convert to lowercase
+    echo "$1" | sed 's/\([a-z0-9]\)\([A-Z]\)/\1_\2/g' | tr '[:upper:]' '[:lower:]'
 }
 
 # Function to validate variable name
