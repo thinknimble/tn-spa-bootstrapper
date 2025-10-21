@@ -7,7 +7,7 @@ concurrency:
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, closed]
   push:
     branches:
       - main
@@ -504,6 +504,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Force unlock Terraform state on failure
+        if: failure() || cancelled()
+        run: |
+          cd terraform
+          # Get the current lock ID from the state backend if available
+          LOCK_ID=$(terraform force-unlock -help 2>&1 | grep -o 'terraform force-unlock <LOCK_ID>' | head -1 || echo "")
+          
+          # Try to get lock info and extract lock ID
+          if terraform plan 2>&1 | grep -q "Lock Info:"; then
+            LOCK_ID=$(terraform plan 2>&1 | grep -A 10 "Lock Info:" | grep "ID:" | awk '{print $2}' | head -1)
+            if [ -n "$LOCK_ID" ]; then
+              echo "🔓 Found stale lock with ID: $LOCK_ID"
+              echo "🔓 Force unlocking Terraform state..."
+              terraform force-unlock -force "$LOCK_ID" || echo "⚠️ Failed to unlock or no lock found"
+            fi
+          else
+            echo "ℹ️ No Terraform lock detected"
+          fi
+        continue-on-error: true
+        
       - name: Update deployment status (failure)
         if: failure() && steps.deployment.outputs.deployment_id != ''
         run: |
