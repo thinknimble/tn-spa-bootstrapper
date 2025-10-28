@@ -2,7 +2,7 @@
 name: Deploy Application
 
 concurrency:
-  group: pr-deploy-${{ github.event.number }}
+  group: pr-deploy-${ { github.event.number }}
   cancel-in-progress: true
 
 on:
@@ -43,25 +43,25 @@ jobs:
         id: env-vars
         run: |
           # Determine environment name based on trigger
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            ENV_NAME="pr-${{ github.event.number }}"
+          if [ "${ { github.event_name }}" = "pull_request" ]; then
+            ENV_NAME="pr-${ { github.event.number }}"
             echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
-            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${ { github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=true" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            ENV_NAME="${{ github.event.inputs.environment }}"
+          elif [ "${ { github.event_name }}" = "workflow_dispatch" ]; then
+            ENV_NAME="${ { github.event.inputs.environment }}"
             echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
-            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${ { github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=false" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          elif [ "${ { github.event_name }}" = "push" ] && [ "${ { github.ref }}" = "refs/heads/main" ]; then
             ENV_NAME="staging"
             echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
-            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${ { github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=false" >> $GITHUB_OUTPUT
           else
             ENV_NAME="main"
             echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
-            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "image_tag=$ENV_NAME-${ { github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=false" >> $GITHUB_OUTPUT
           fi
           
@@ -100,9 +100,9 @@ jobs:
             echo "ecr_registry=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com" >> $GITHUB_OUTPUT
             echo "✅ Using account ID from environment config: $ACCOUNT_ID"
           else
-            echo "account_id=${{ vars.AWS_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
-            echo "ecr_registry=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.$REGION.amazonaws.com" >> $GITHUB_OUTPUT
-            echo "⚠️  Using fallback AWS_ACCOUNT_ID repository variable: ${{ vars.AWS_ACCOUNT_ID }}"
+            echo "account_id=${ { vars.AWS_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
+            echo "ecr_registry=${ { vars.AWS_ACCOUNT_ID }}.dkr.ecr.$REGION.amazonaws.com" >> $GITHUB_OUTPUT
+            echo "⚠️  Using fallback AWS_ACCOUNT_ID repository variable: ${ { vars.AWS_ACCOUNT_ID }}"
           fi
           
           # Use role_arn from config
@@ -120,9 +120,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ steps.env-vars.outputs.role_arn }}
-          role-session-name: GitHubActions-${{ github.run_id }}
-          aws-region: ${{ steps.env-vars.outputs.aws_region }}
+          role-to-assume: ${ { steps.env-vars.outputs.role_arn }}
+          role-session-name: GitHubActions-${ { github.run_id }}
+          aws-region: ${ { steps.env-vars.outputs.aws_region }}
           audience: sts.amazonaws.com
 
       - name: Login to Amazon ECR
@@ -131,8 +131,8 @@ jobs:
 
       - name: Create ECR repository if it doesn't exist
         run: |
-          aws ecr describe-repositories --repository-names ${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }} || \
-          aws ecr create-repository --repository-name ${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}
+          aws ecr describe-repositories --repository-names ${ { vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }} || \
+          aws ecr create-repository --repository-name ${ { vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -145,19 +145,19 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.env-vars.outputs.image_tag }}
-            ${{ steps.env-vars.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.env-vars.outputs.environment }}-latest
+            ${ { steps.env-vars.outputs.ecr_registry }}/${ { vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${ { steps.env-vars.outputs.image_tag }}
+            ${ { steps.env-vars.outputs.ecr_registry }}/${ { vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${ { steps.env-vars.outputs.environment }}-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Create deployment
         id: deployment
         run: |
-          echo "Creating deployment for environment: ${{ steps.env-vars.outputs.environment }}"
-          DEPLOYMENT_ID=$(gh api repos/${{ github.repository }}/deployments \
+          echo "Creating deployment for environment: ${ { steps.env-vars.outputs.environment }}"
+          DEPLOYMENT_ID=$(gh api repos/${ { github.repository }}/deployments \
             --method POST \
-            --field ref='${{ github.sha }}' \
-            --field environment='${{ steps.env-vars.outputs.environment }}' \
+            --field ref='${ { github.sha }}' \
+            --field environment='${ { steps.env-vars.outputs.environment }}' \
             --field auto_merge=false \
             --jq '.id')
           
@@ -169,7 +169,7 @@ jobs:
           echo "Created deployment with ID: $DEPLOYMENT_ID"
           echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${ { secrets.GITHUB_TOKEN }}
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
@@ -180,13 +180,13 @@ jobs:
         run: |
           cd terraform
           # Use the init_backend script with environment-specific configuration
-          ./scripts/init_backend.sh -e "${{ steps.env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}"
+          ./scripts/init_backend.sh -e "${ { steps.env-vars.outputs.environment }}" -s "${ { vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}"
 
       - name: Check if Terraform workspace exists
         id: workspace-check
         run: |
           cd terraform
-          if terraform workspace list | grep -q "${{ steps.env-vars.outputs.environment }}"; then
+          if terraform workspace list | grep -q "${ { steps.env-vars.outputs.environment }}"; then
             echo "workspace_exists=true" >> $GITHUB_OUTPUT
           else
             echo "workspace_exists=false" >> $GITHUB_OUTPUT
@@ -195,17 +195,17 @@ jobs:
       - name: Create or select Terraform workspace
         run: |
           cd terraform
-          if [ "${{ steps.workspace-check.outputs.workspace_exists }}" = "true" ]; then
-            terraform workspace select ${{ steps.env-vars.outputs.environment }}
+          if [ "${ { steps.workspace-check.outputs.workspace_exists }}" = "true" ]; then
+            terraform workspace select ${ { steps.env-vars.outputs.environment }}
           else
-            terraform workspace new ${{ steps.env-vars.outputs.environment }}
+            terraform workspace new ${ { steps.env-vars.outputs.environment }}
           fi
 
       - name: Retrieve app configuration
         id: app-config
         run: |
           # Get app configuration from centralized config
-          echo "🔍 Looking up app configuration for environment: ${{ steps.env-vars.outputs.environment }}"
+          echo "🔍 Looking up app configuration for environment: ${ { steps.env-vars.outputs.environment }}"
           
           # Use a simple script to extract app config (similar to get-env-config.sh)
           cat > get-app-config.sh << 'EOF'
@@ -253,7 +253,7 @@ jobs:
           EOF
           
           chmod +x get-app-config.sh
-          APP_CONFIG_OUTPUT=$(./get-app-config.sh "${{ steps.env-vars.outputs.environment }}")
+          APP_CONFIG_OUTPUT=$(./get-app-config.sh "${ { steps.env-vars.outputs.environment }}")
           
           # Set outputs
           echo "debug=$(echo "$APP_CONFIG_OUTPUT" | grep "^debug=" | cut -d= -f2)" >> $GITHUB_OUTPUT
@@ -265,12 +265,12 @@ jobs:
           echo "aws_s3_region_name=$(echo "$APP_CONFIG_OUTPUT" | grep "^aws_s3_region_name=" | cut -d= -f2)" >> $GITHUB_OUTPUT
           echo "enable_https=$(echo "$APP_CONFIG_OUTPUT" | grep "^enable_https=" | cut -d= -f2)" >> $GITHUB_OUTPUT
           
-          echo "✅ App configuration loaded for environment '${{ steps.env-vars.outputs.environment }}'"
+          echo "✅ App configuration loaded for environment '${ { steps.env-vars.outputs.environment }}'"
 
       - name: Retrieve secrets from S3
         id: secrets
         run: |
-          ENVIRONMENT="${{ steps.env-vars.outputs.environment }}"
+          ENVIRONMENT="${ { steps.env-vars.outputs.environment }}"
           
           echo "🔐 Retrieving secrets for environment: $ENVIRONMENT"
           
@@ -307,8 +307,8 @@ jobs:
         run: |
           cd terraform
           # Use GitHub Actions variables with terraform defaults as fallbacks
-          SERVICE_NAME="${{ vars.SERVICE_NAME }}"
-          ECR_REPOSITORY_NAME="${{ vars.ECR_REPOSITORY_NAME }}"
+          SERVICE_NAME="${ { vars.SERVICE_NAME }}"
+          ECR_REPOSITORY_NAME="${ { vars.ECR_REPOSITORY_NAME }}"
           
           # If not set in GitHub variables, terraform will use its defaults from variables.tf
           if [ -n "$SERVICE_NAME" ]; then
@@ -324,42 +324,42 @@ jobs:
           fi
           
           cat << EOF >> terraform.tfvars
-          environment = "${{ steps.env-vars.outputs.environment }}"
-          aws_region = "${{ steps.env-vars.outputs.aws_region }}"
-          ecr_tag = "${{ steps.env-vars.outputs.image_tag }}"
+          environment = "${ { steps.env-vars.outputs.environment }}"
+          aws_region = "${ { steps.env-vars.outputs.aws_region }}"
+          ecr_tag = "${ { steps.env-vars.outputs.image_tag }}"
           
           # Secrets from S3
-          secret_key = "${{ steps.secrets.outputs.django_secret_key }}"
-          db_pass = "${{ steps.secrets.outputs.db_password }}"
-          django_superuser_password = "${{ steps.secrets.outputs.django_superuser_password }}"
-          rollbar_access_token = "${{ steps.secrets.outputs.rollbar_access_token }}"
-          aws_access_key_id = "${{ steps.secrets.outputs.aws_access_key_id }}"
-          aws_secret_access_key = "${{ steps.secrets.outputs.aws_secret_access_key }}"
-          playwright_test_user_pass = "${{ steps.secrets.outputs.playwright_test_user_pass }}"
+          secret_key = "${ { steps.secrets.outputs.django_secret_key }}"
+          db_pass = "${ { steps.secrets.outputs.db_password }}"
+          django_superuser_password = "${ { steps.secrets.outputs.django_superuser_password }}"
+          rollbar_access_token = "${ { steps.secrets.outputs.rollbar_access_token }}"
+          aws_access_key_id = "${ { steps.secrets.outputs.aws_access_key_id }}"
+          aws_secret_access_key = "${ { steps.secrets.outputs.aws_secret_access_key }}"
+          playwright_test_user_pass = "${ { steps.secrets.outputs.playwright_test_user_pass }}"
           
           # Database config
-          db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}${{ steps.env-vars.outputs.environment }}db' | tr -d '-')"
-          db_user = "{{cookiecutter.sanitized_tf_service_name}}_${{ steps.env-vars.outputs.environment }}_user"
+          db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}${ { steps.env-vars.outputs.environment }}db' | tr -d '-')"
+          db_user = "{{cookiecutter.sanitized_tf_service_name}}_${ { steps.env-vars.outputs.environment }}_user"
           
           # App configuration from app-config.json
-          debug = "${{ steps.app-config.outputs.debug }}"
-          current_port = "${{ steps.app-config.outputs.current_port }}"
-          allowed_hosts = "${{ steps.app-config.outputs.allowed_hosts }}"
-          enable_emails = "${{ steps.app-config.outputs.enable_emails }}"
-          staff_email = "${{ steps.app-config.outputs.staff_email }}"
-          use_aws_storage = "${{ steps.app-config.outputs.use_aws_storage }}"
-          aws_s3_region_name = "${{ steps.app-config.outputs.aws_s3_region_name }}"
-          enable_https = "${{ steps.app-config.outputs.enable_https }}"
+          debug = "${ { steps.app-config.outputs.debug }}"
+          current_port = "${ { steps.app-config.outputs.current_port }}"
+          allowed_hosts = "${ { steps.app-config.outputs.allowed_hosts }}"
+          enable_emails = "${ { steps.app-config.outputs.enable_emails }}"
+          staff_email = "${ { steps.app-config.outputs.staff_email }}"
+          use_aws_storage = "${ { steps.app-config.outputs.use_aws_storage }}"
+          aws_s3_region_name = "${ { steps.app-config.outputs.aws_s3_region_name }}"
+          enable_https = "${ { steps.app-config.outputs.enable_https }}"
           
           # Placeholder for playwright URL - will be updated after deployment
           playwright_test_base_url = "http://localhost:8000"
           
           # Domain and Route53 configuration from environments.json
-          base_domain = "${{ steps.env-vars.outputs.base_domain }}"
-          use_custom_domain = ${{ steps.env-vars.outputs.use_custom_domain }}
-          current_domain = "${{ steps.env-vars.outputs.custom_domain }}"
-          route53_zone_id = "${{ steps.env-vars.outputs.route53_zone_id }}"
-          certificate_arn = "${{ steps.env-vars.outputs.certificate_arn }}"
+          base_domain = "${ { steps.env-vars.outputs.base_domain }}"
+          use_custom_domain = ${ { steps.env-vars.outputs.use_custom_domain }}
+          current_domain = "${ { steps.env-vars.outputs.custom_domain }}"
+          route53_zone_id = "${ { steps.env-vars.outputs.route53_zone_id }}"
+          certificate_arn = "${ { steps.env-vars.outputs.certificate_arn }}"
           
           # AWS profile (empty for CI/CD)
           aws_profile = ""
@@ -421,12 +421,12 @@ jobs:
           echo "Cluster: $CLUSTER_NAME"
           
           # Verify cluster exists before updating service
-          if aws ecs describe-clusters --clusters "$CLUSTER_NAME" --region ${{ steps.env-vars.outputs.aws_region }} >/dev/null 2>&1; then
+          if aws ecs describe-clusters --clusters "$CLUSTER_NAME" --region ${ { steps.env-vars.outputs.aws_region }} >/dev/null 2>&1; then
             aws ecs update-service \
               --cluster "$CLUSTER_NAME" \
               --service "$SERVICE_NAME" \
               --force-new-deployment \
-              --region ${{ steps.env-vars.outputs.aws_region }}
+              --region ${ { steps.env-vars.outputs.aws_region }}
             echo "✅ ECS service update initiated"
           else
             echo "⚠️  Cluster $CLUSTER_NAME not found, skipping service update"
@@ -468,9 +468,9 @@ jobs:
             
             const commentBody = `🚀 **PR Environment Deployed**
             
-            **Environment:** \`${{ steps.env-vars.outputs.environment }}\`
-            **Image Tag:** \`${{ steps.env-vars.outputs.image_tag }}\`
-            **URL:** ${{ steps.deployment-url.outputs.url }}
+            **Environment:** \`${ { steps.env-vars.outputs.environment }}\`
+            **Image Tag:** \`${ { steps.env-vars.outputs.image_tag }}\`
+            **URL:** ${ { steps.deployment-url.outputs.url }}
             
             The environment will be automatically updated with each new commit to this PR.`;
             
@@ -493,16 +493,16 @@ jobs:
       - name: Update deployment status (success)
         if: success() && steps.deployment.outputs.deployment_id != ''
         run: |
-          DEPLOYMENT_ID="${{ steps.deployment.outputs.deployment_id }}"
+          DEPLOYMENT_ID="${ { steps.deployment.outputs.deployment_id }}"
           APP_URL=$(cd terraform && terraform output -raw application_url 2>/dev/null || echo 'https://deployment.url')
           
           echo "Updating deployment $DEPLOYMENT_ID to success with URL: $APP_URL"
-          gh api repos/${{ github.repository }}/deployments/$DEPLOYMENT_ID/statuses \
+          gh api repos/${ { github.repository }}/deployments/$DEPLOYMENT_ID/statuses \
             --method POST \
             --field state=success \
             --field environment_url="$APP_URL"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${ { secrets.GITHUB_TOKEN }}
 
       - name: Force unlock Terraform state on failure
         if: failure() || cancelled()
@@ -527,14 +527,14 @@ jobs:
       - name: Update deployment status (failure)
         if: failure() && steps.deployment.outputs.deployment_id != ''
         run: |
-          DEPLOYMENT_ID="${{ steps.deployment.outputs.deployment_id }}"
+          DEPLOYMENT_ID="${ { steps.deployment.outputs.deployment_id }}"
           
           echo "Updating deployment $DEPLOYMENT_ID to failure"
-          gh api repos/${{ github.repository }}/deployments/$DEPLOYMENT_ID/statuses \
+          gh api repos/${ { github.repository }}/deployments/$DEPLOYMENT_ID/statuses \
             --method POST \
             --field state=failure
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${ { secrets.GITHUB_TOKEN }}
 
   cleanup-pr-environment:
     runs-on: ubuntu-latest
@@ -550,7 +550,7 @@ jobs:
       - name: Set cleanup environment variables
         id: cleanup-env-vars
         run: |
-          PR_ENV_NAME="pr-${{ github.event.number }}"
+          PR_ENV_NAME="pr-${ { github.event.number }}"
           echo "environment=$PR_ENV_NAME" >> $GITHUB_OUTPUT
           
           # Get environment configuration
@@ -573,9 +573,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ steps.cleanup-env-vars.outputs.role_arn }}
-          role-session-name: GitHubActions-${{ github.run_id }}
-          aws-region: ${{ steps.cleanup-env-vars.outputs.aws_region }}
+          role-to-assume: ${ { steps.cleanup-env-vars.outputs.role_arn }}
+          role-session-name: GitHubActions-${ { github.run_id }}
+          aws-region: ${ { steps.cleanup-env-vars.outputs.aws_region }}
           audience: sts.amazonaws.com
 
       - name: Install Terraform
@@ -587,18 +587,18 @@ jobs:
         run: |
           cd terraform
           # Use the init_backend script with environment-specific configuration
-          ./scripts/init_backend.sh -e "${{ steps.cleanup-env-vars.outputs.environment }}" -s "${{ vars.SERVICE_NAME }}"
+          ./scripts/init_backend.sh -e "${ { steps.cleanup-env-vars.outputs.environment }}" -s "${ { vars.SERVICE_NAME }}"
 
       - name: Generate terraform variables for cleanup
         run: |
           cd terraform
-          ENVIRONMENT="${{ steps.cleanup-env-vars.outputs.environment }}"
+          ENVIRONMENT="${ { steps.cleanup-env-vars.outputs.environment }}"
           
           echo "🔧 Generating terraform.tfvars for cleanup of environment: $ENVIRONMENT"
           
           # Use GitHub Actions variables with terraform defaults as fallbacks
-          SERVICE_NAME="${{ vars.SERVICE_NAME }}"
-          ECR_REPOSITORY_NAME="${{ vars.ECR_REPOSITORY_NAME }}"
+          SERVICE_NAME="${ { vars.SERVICE_NAME }}"
+          ECR_REPOSITORY_NAME="${ { vars.ECR_REPOSITORY_NAME }}"
           
           # Create terraform.tfvars with minimal required variables for destroy
           if [ -n "$SERVICE_NAME" ]; then
@@ -611,7 +611,7 @@ jobs:
           
           cat << EOF >> terraform.tfvars
           environment = "$ENVIRONMENT"
-          aws_region = "${{ steps.cleanup-env-vars.outputs.aws_region }}"
+          aws_region = "${ { steps.cleanup-env-vars.outputs.aws_region }}"
           ecr_tag = "cleanup"
           
           # Minimal required variables for destroy (using placeholder values)
@@ -654,7 +654,7 @@ jobs:
       - name: Select and destroy PR workspace
         run: |
           cd terraform
-          PR_WORKSPACE="pr-${{ github.event.number }}"
+          PR_WORKSPACE="pr-${ { github.event.number }}"
           
           if terraform workspace list | grep -q "$PR_WORKSPACE"; then
             terraform workspace select $PR_WORKSPACE
@@ -666,5 +666,5 @@ jobs:
             
             echo "✅ Cleaned up PR environment: $PR_WORKSPACE"
           else
-            echo "ℹ️  No workspace found for PR ${{ github.event.number }}"
+            echo "ℹ️  No workspace found for PR ${ { github.event.number }}"
           fi

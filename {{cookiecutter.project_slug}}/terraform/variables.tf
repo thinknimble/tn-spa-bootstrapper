@@ -225,3 +225,8 @@ variable "use_per_project_shared_vpc" {
   default     = false
 }
 
+variable "shared_vpc_name" {
+  type        = string
+  description = "Name of the shared VPC to use (only used when use_per_project_shared_vpc = false)"
+  default     = "shared-dev-vpc"
+}
