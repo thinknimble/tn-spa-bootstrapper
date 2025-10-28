@@ -13,8 +13,16 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+        - deploy
+        - teardown
+        default: 'deploy'
       environment:
-        description: 'Environment to deploy to'
+        description: 'Environment to deploy to or teardown'
         required: true
         type: choice
         options:
@@ -29,6 +37,7 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.action == 'deploy'
     permissions:
       id-token: write
       contents: read
@@ -48,7 +57,7 @@ jobs:
             echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
             echo "image_tag=$ENV_NAME-${ { github.sha }}" >> $GITHUB_OUTPUT
             echo "is_pr=true" >> $GITHUB_OUTPUT
-          elif [ "${ { github.event_name }}" = "workflow_dispatch" ]; then
+          elif [ "${ { github.event_name }}" = "workflow_dispatch" ] && [ "${ { github.event.inputs.action }}" = "deploy" ]; then
             ENV_NAME="${ { github.event.inputs.environment }}"
             echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
             echo "image_tag=$ENV_NAME-${ { github.sha }}" >> $GITHUB_OUTPUT
@@ -668,3 +677,185 @@ jobs:
           else
             echo "ℹ️  No workspace found for PR ${ { github.event.number }}"
           fi
+
+  manual-teardown:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'teardown'
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set teardown environment variables
+        id: teardown-env-vars
+        run: |
+          ENV_NAME="${ { github.event.inputs.environment }}"
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          
+          # Get environment configuration
+          ENV_CONFIG=$(.github/scripts/get-env-config.sh "$ENV_NAME")
+          
+          # Extract values from config
+          REGION=$(echo "$ENV_CONFIG" | grep "^region=" | cut -d= -f2)  
+          ROLE_ARN=$(echo "$ENV_CONFIG" | grep "^role_arn=" | cut -d= -f2)
+          
+          echo "aws_region=$REGION" >> $GITHUB_OUTPUT
+          
+          # Use role_arn from config
+          if [[ -n "$ROLE_ARN" ]]; then
+            echo "role_arn=$ROLE_ARN" >> $GITHUB_OUTPUT
+            echo "✅ Using role ARN from environment config: $ROLE_ARN"
+          else
+            echo "❌ No role ARN found in configuration for environment: $ENV_NAME"
+            exit 1
+          fi
+          
+          echo "✅ Environment '$ENV_NAME' configured for teardown"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${ { steps.teardown-env-vars.outputs.role_arn }}
+          role-session-name: GitHubActions-Teardown-${ { github.run_id }}
+          aws-region: ${ { steps.teardown-env-vars.outputs.aws_region }}
+          audience: sts.amazonaws.com
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ~1.0
+
+      - name: Terraform Init with Backend
+        run: |
+          cd terraform
+          # Use the init_backend script with environment-specific configuration
+          ./scripts/init_backend.sh -e "${ { steps.teardown-env-vars.outputs.environment }}" -s "${ { vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}"
+
+      - name: Generate terraform variables for teardown
+        run: |
+          cd terraform
+          ENVIRONMENT="${ { steps.teardown-env-vars.outputs.environment }}"
+          
+          echo "🔧 Generating terraform.tfvars for teardown of environment: $ENVIRONMENT"
+          
+          # Use GitHub Actions variables with terraform defaults as fallbacks
+          SERVICE_NAME="${ { vars.SERVICE_NAME }}"
+          ECR_REPOSITORY_NAME="${ { vars.ECR_REPOSITORY_NAME }}"
+          
+          # Create terraform.tfvars with minimal required variables for destroy
+          if [ -n "$SERVICE_NAME" ]; then
+            echo "service = \"$SERVICE_NAME\"" >> terraform.tfvars
+          fi
+          
+          if [ -n "$ECR_REPOSITORY_NAME" ]; then
+            echo "ecr_app_repository_name = \"$ECR_REPOSITORY_NAME\"" >> terraform.tfvars
+          fi
+          
+          cat << EOF >> terraform.tfvars
+          environment = "$ENVIRONMENT"
+          aws_region = "${ { steps.teardown-env-vars.outputs.aws_region }}"
+          ecr_tag = "teardown"
+          
+          # Minimal required variables for destroy (using placeholder values)
+          secret_key = "teardown_placeholder"
+          db_pass = "teardown_placeholder"
+          django_superuser_password = "teardown_placeholder"
+          rollbar_access_token = ""
+          aws_access_key_id = ""
+          aws_secret_access_key = ""
+          playwright_test_user_pass = "teardown_placeholder"
+          
+          # Database config placeholders (must match deployment naming for teardown)
+          db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}${ENVIRONMENT}db' | tr -d '-')"
+          db_user = "{{cookiecutter.sanitized_tf_service_name}}_${ENVIRONMENT}_user"
+          
+          # App configuration defaults
+          debug = "false"
+          current_port = "8000"
+          allowed_hosts = "localhost"
+          enable_emails = "false"
+          staff_email = "admin@example.com"
+          use_aws_storage = "false"
+          aws_s3_region_name = ""
+          enable_https = true
+          
+          # Placeholder values for teardown
+          playwright_test_base_url = "http://localhost:8000"
+          base_domain = ""
+          use_custom_domain = false
+          current_domain = ""
+          route53_zone_id = ""
+          certificate_arn = ""
+          
+          # AWS profile (empty for CI/CD)
+          aws_profile = ""
+          EOF
+          
+          echo "✅ Generated terraform.tfvars for teardown with placeholder values"
+
+      - name: Force unlock Terraform state before teardown
+        run: |
+          cd terraform
+          # Try to get lock info and extract lock ID if state is locked
+          if terraform plan 2>&1 | grep -q "Lock Info:"; then
+            LOCK_ID=$(terraform plan 2>&1 | grep -A 10 "Lock Info:" | grep "ID:" | awk '{print $2}' | head -1)
+            if [ -n "$LOCK_ID" ]; then
+              echo "🔓 Found stale lock with ID: $LOCK_ID"
+              echo "🔓 Force unlocking Terraform state before teardown..."
+              terraform force-unlock -force "$LOCK_ID" || echo "⚠️ Failed to unlock or no lock found"
+            fi
+          else
+            echo "ℹ️ No Terraform lock detected"
+          fi
+        continue-on-error: true
+
+      - name: Select and destroy environment workspace
+        run: |
+          cd terraform
+          ENVIRONMENT="${ { steps.teardown-env-vars.outputs.environment }}"
+          
+          if terraform workspace list | grep -q "$ENVIRONMENT"; then
+            terraform workspace select $ENVIRONMENT
+            
+            echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
+            echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
+            
+            # Run destroy with auto-approve
+            if terraform destroy -auto-approve; then
+              echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
+              
+              # Switch back to default workspace and delete the environment workspace
+              terraform workspace select default
+              terraform workspace delete $ENVIRONMENT
+              
+              echo "✅ Cleaned up workspace: $ENVIRONMENT"
+            else
+              echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
+              echo "💡 You may need to manually clean up resources or check for dependencies"
+              exit 1
+            fi
+          else
+            echo "ℹ️  No workspace found for environment: $ENVIRONMENT"
+            echo "💡 Available workspaces:"
+            terraform workspace list
+          fi
+
+      - name: Force unlock Terraform state on failure
+        if: failure() || cancelled()
+        run: |
+          cd terraform
+          # Try to get lock info and extract lock ID
+          if terraform plan 2>&1 | grep -q "Lock Info:"; then
+            LOCK_ID=$(terraform plan 2>&1 | grep -A 10 "Lock Info:" | grep "ID:" | awk '{print $2}' | head -1)
+            if [ -n "$LOCK_ID" ]; then
+              echo "🔓 Found stale lock with ID: $LOCK_ID"
+              echo "🔓 Force unlocking Terraform state after failure..."
+              terraform force-unlock -force "$LOCK_ID" || echo "⚠️ Failed to unlock or no lock found"
+            fi
+          else
+            echo "ℹ️ No Terraform lock detected"
+          fi
+        continue-on-error: true

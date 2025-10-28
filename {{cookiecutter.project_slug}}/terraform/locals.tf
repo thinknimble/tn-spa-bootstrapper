@@ -7,7 +7,7 @@ locals {
   # Shared VPC name for environments
   # Can be account-wide (shared-dev-vpc) or per-project (shared-dev-vpc-PROJECT)
   # Include environment in name for staging and production
-  shared_vpc_name = var.use_per_project_shared_vpc ? "${var.shared_vpc_name}-${var.service}" : (
+  shared_vpc_name =  (
     var.environment == "staging" || var.environment == "production" ? 
       "${var.shared_vpc_name}-${var.environment}" : var.shared_vpc_name
   )
