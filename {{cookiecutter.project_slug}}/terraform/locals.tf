@@ -1,27 +1,27 @@
 # locals
 
 locals {
-  # VPC sharing logic for development environments only
-  # Share VPC for: development, pr-* (in dev AWS account 123456789012)
-  # Dedicated VPC for: production, staging (in separate accounts)
-  is_shared_vpc_env = var.environment == "development" || can(regex("^pr-", var.environment))
+  # VPC sharing logic - always use shared VPC now
+  is_shared_vpc_env = true
   
-  # Shared VPC name for development environments
+  # Shared VPC name for environments
   # Can be account-wide (shared-dev-vpc) or per-project (shared-dev-vpc-PROJECT)
-  shared_vpc_name = var.use_per_project_shared_vpc ? "shared-dev-vpc-${var.service}" : "shared-dev-vpc"
+  # Include environment in name for staging and production
+  shared_vpc_name = var.use_per_project_shared_vpc ? "${var.shared_vpc_name}-${var.service}" : (
+    var.environment == "staging" || var.environment == "production" ? 
+      "${var.shared_vpc_name}-${var.environment}" : var.shared_vpc_name
+  )
   
   # Environment-specific subnet CIDR calculation for shared VPC
   # Extract PR number for pr-* environments, use 10 for development
-  env_cidr_base = local.is_shared_vpc_env ? (
-    var.environment == "development" ? 10 : (
-      can(regex("^pr-([0-9]+)", var.environment)) ? 
-        tonumber(regex("^pr-([0-9]+)", var.environment)[0]) : 30
-    )
-  ) : 1
+  env_cidr_base = var.environment == "development" ? 10 : (
+    can(regex("^pr-([0-9]+)", var.environment)) ? 
+      tonumber(regex("^pr-([0-9]+)", var.environment)[0]) : 30
+  )
   
   # Calculate subnet CIDRs for shared VPC (10.0.X.0/24 and 10.0.Y.0/24)
-  subnet_a_cidr = local.is_shared_vpc_env ? "10.0.${local.env_cidr_base}.0/24" : "10.0.1.0/24"
-  subnet_b_cidr = local.is_shared_vpc_env ? "10.0.${local.env_cidr_base + 100}.0/24" : "10.0.2.0/24"
+  subnet_a_cidr = "10.0.${local.env_cidr_base}.0/24"
+  subnet_b_cidr = "10.0.${local.env_cidr_base + 100}.0/24"
   
   # Resource name components (with length limits for AWS services)
   # ALB names: max 32 chars, alphanumeric and hyphens only
@@ -56,4 +56,8 @@ locals {
   certificate_arn = var.certificate_arn != "" ? var.certificate_arn : (
     var.custom_certificate_arn != "" ? var.custom_certificate_arn : var.default_certificate_arn
   )
+
+  vpc_id = length(try(data.aws_vpc.shared, [])) > 0 ? data.aws_vpc.shared[0].id : aws_vpc.shared[0].id
+  igw_id = length(try(data.aws_internet_gateway.shared, [])) > 0 ? data.aws_internet_gateway.shared[0].id : aws_internet_gateway.shared[0].id
+  route_table_id = length(try(data.aws_route_table.shared, [])) > 0 ? data.aws_route_table.shared[0].id : aws_route_table.shared[0].id
 }

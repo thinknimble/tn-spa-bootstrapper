@@ -21,11 +21,12 @@ resource "aws_ecs_cluster" "main" {
 
 # External data source to check if shared VPC exists (doesn't fail if not found)
 data "external" "check_shared_vpc" {
-  count = local.is_shared_vpc_env ? 1 : 0
+  count = 1
   
   program = ["bash", "-c", <<-EOF
     # Get the oldest VPC by creation time to ensure deterministic selection
-    VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${local.shared_vpc_name}" "Name=state,Values=available" "Name=tag:Environment,Values=shared-development" --query 'sort_by(Vpcs, &CreationTime)[0].VpcId' --output text 2>/dev/null || echo "None")
+    ENV_TAG=$([ "${var.environment}" = "staging" ] || [ "${var.environment}" = "production" ] && echo "shared-${var.environment}" || echo "shared-development")
+    VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${local.shared_vpc_name}" "Name=state,Values=available" "Name=tag:Environment,Values=$ENV_TAG" --query 'sort_by(Vpcs, &CreationTime)[0].VpcId' --output text 2>/dev/null || echo "None")
     if [ "$VPC_ID" = "None" ] || [ "$VPC_ID" = "null" ]; then
       echo '{"exists": "false", "vpc_id": ""}'
     else
@@ -38,7 +39,7 @@ EOF
 # Data source to find existing shared VPC (only if it exists)
 # Uses the VPC ID from external data source to avoid multiple matches
 data "aws_vpc" "shared" {
-  count = local.is_shared_vpc_env && try(data.external.check_shared_vpc[0].result.exists, "false") == "true" ? 1 : 0
+  count = try(data.external.check_shared_vpc[0].result.exists, "false") == "true" ? 1 : 0
   
   filter {
     name   = "vpc-id"
@@ -48,19 +49,19 @@ data "aws_vpc" "shared" {
 
 # Create shared VPC for development environments (only if it doesn't exist)
 resource "aws_vpc" "shared" {
-  count      = local.is_shared_vpc_env && try(data.external.check_shared_vpc[0].result.exists, "false") == "false" ? 1 : 0
+  count      = try(data.external.check_shared_vpc[0].result.exists, "false") == "false" ? 1 : 0
   cidr_block = "10.0.0.0/16"
 
   tags = {
     Name = local.shared_vpc_name
-    Environment = "shared-development"
-    Purpose = "Shared VPC for development and PR environments"
+    Environment = var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}" : "shared-development"
+    Purpose = var.environment == "staging" || var.environment == "production" ? "Shared VPC for ${var.environment} environments" : "Shared VPC for development and PR environments"
   }
 }
 
 # Create dedicated VPC for production/staging environments  
 resource "aws_vpc" "main" {
-  count      = local.is_shared_vpc_env ? 0 : 1
+  count      = 0
   cidr_block = "10.0.0.0/16"
 
   tags = {
@@ -68,20 +69,14 @@ resource "aws_vpc" "main" {
   }
 }
 
-# Local to get the correct VPC ID
-locals {
-  vpc_id = local.is_shared_vpc_env ? (
-    length(try(data.aws_vpc.shared, [])) > 0 ? data.aws_vpc.shared[0].id : aws_vpc.shared[0].id
-  ) : aws_vpc.main[0].id
-}
 
 # Data source to find existing shared Internet Gateway (only if VPC exists)
 data "aws_internet_gateway" "shared" {
-  count = local.is_shared_vpc_env && try(data.external.check_shared_vpc[0].result.exists, "false") == "true" ? 1 : 0
+  count = try(data.external.check_shared_vpc[0].result.exists, "false") == "true" ? 1 : 0
   
   filter {
     name   = "tag:Name"
-    values = ["shared-dev-igw"]
+    values = [var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}-igw" : "shared-dev-igw"]
   }
   
   filter {
@@ -92,18 +87,18 @@ data "aws_internet_gateway" "shared" {
 
 # Create shared Internet Gateway (only if it doesn't exist)
 resource "aws_internet_gateway" "shared" {
-  count  = local.is_shared_vpc_env && try(data.external.check_shared_vpc[0].result.exists, "false") == "false" ? 1 : 0
+  count  = try(data.external.check_shared_vpc[0].result.exists, "false") == "false" ? 1 : 0
   vpc_id = local.vpc_id
 
   tags = {
-    Name = "shared-dev-igw"
-    Environment = "shared-development"
+    Name = var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}-igw" : "shared-dev-igw"
+    Environment = var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}" : "shared-development"
   }
 }
 
 # Create dedicated Internet Gateway for production/staging
 resource "aws_internet_gateway" "main" {
-  count  = local.is_shared_vpc_env ? 0 : 1
+  count  = 0
   vpc_id = local.vpc_id
 
   tags = {
@@ -111,20 +106,14 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
-# Local to get the correct Internet Gateway ID
-locals {
-  igw_id = local.is_shared_vpc_env ? (
-    length(try(data.aws_internet_gateway.shared, [])) > 0 ? data.aws_internet_gateway.shared[0].id : aws_internet_gateway.shared[0].id
-  ) : aws_internet_gateway.main[0].id
-}
 
 # Data source to find existing shared route table (only if VPC exists)
 data "aws_route_table" "shared" {
-  count = local.is_shared_vpc_env && try(data.external.check_shared_vpc[0].result.exists, "false") == "true" ? 1 : 0
+  count = try(data.external.check_shared_vpc[0].result.exists, "false") == "true" ? 1 : 0
   
   filter {
     name   = "tag:Name"
-    values = ["shared-dev-rt"]
+    values = [var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}-rt" : "shared-dev-rt"]
   }
   
   filter {
@@ -135,7 +124,7 @@ data "aws_route_table" "shared" {
 
 # Create shared route table (only if it doesn't exist)
 resource "aws_route_table" "shared" {
-  count  = local.is_shared_vpc_env && try(data.external.check_shared_vpc[0].result.exists, "false") == "false" ? 1 : 0
+  count  = try(data.external.check_shared_vpc[0].result.exists, "false") == "false" ? 1 : 0
   vpc_id = local.vpc_id
 
   route {
@@ -144,14 +133,14 @@ resource "aws_route_table" "shared" {
   }
 
   tags = {
-    Name = "shared-dev-rt"
-    Environment = "shared-development"
+    Name = var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}-rt" : "shared-dev-rt"
+    Environment = var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}" : "shared-development"
   }
 }
 
 # Create dedicated route table for production/staging
 resource "aws_route_table" "main" {
-  count  = local.is_shared_vpc_env ? 0 : 1
+  count  = 0
   vpc_id = local.vpc_id
 
   route {
@@ -164,12 +153,6 @@ resource "aws_route_table" "main" {
   }
 }
 
-# Local to get the correct Route Table ID
-locals {
-  route_table_id = local.is_shared_vpc_env ? (
-    length(try(data.aws_route_table.shared, [])) > 0 ? data.aws_route_table.shared[0].id : aws_route_table.shared[0].id
-  ) : aws_route_table.main[0].id
-}
 
 # Create environment-specific public subnets
 resource "aws_subnet" "public" {
