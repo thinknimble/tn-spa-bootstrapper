@@ -220,7 +220,7 @@ resource "aws_db_instance" "postgres" {
   storage_encrypted      = true
 
   tags = {
-    Name = "db-${var.service}-${var.environment}}"
+    Name = "db-${var.service}-${var.environment}"
   }
 }
 
