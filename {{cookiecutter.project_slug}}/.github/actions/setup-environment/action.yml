@@ -1,0 +1,141 @@
+name: 'Setup Environment Variables'
+description: 'Set up environment variables for deployment based on trigger type'
+inputs:
+  manual_environment:
+    description: 'Manual environment from workflow_dispatch'
+    required: false
+  aws_account_id:
+    description: 'AWS Account ID fallback'
+    required: false
+    default: ''
+outputs:
+  environment:
+    description: 'Environment name'
+    value: ${{ steps.env-vars.outputs.environment }}
+  image_tag:
+    description: 'Docker image tag'
+    value: ${{ steps.env-vars.outputs.image_tag }}
+  is_pr:
+    description: 'Whether this is a PR deployment'
+    value: ${{ steps.env-vars.outputs.is_pr }}
+  aws_region:
+    description: 'AWS region'
+    value: ${{ steps.env-vars.outputs.aws_region }}
+  account:
+    description: 'Account name'
+    value: ${{ steps.env-vars.outputs.account }}
+  account_id:
+    description: 'AWS Account ID'
+    value: ${{ steps.env-vars.outputs.account_id }}
+  ecr_registry:
+    description: 'ECR registry URL'
+    value: ${{ steps.env-vars.outputs.ecr_registry }}
+  role_arn:
+    description: 'AWS role ARN'
+    value: ${{ steps.env-vars.outputs.role_arn }}
+  secrets_bucket:
+    description: 'Secrets bucket name'
+    value: ${{ steps.env-vars.outputs.secrets_bucket }}
+  base_domain:
+    description: 'Base domain'
+    value: ${{ steps.env-vars.outputs.base_domain }}
+  use_custom_domain:
+    description: 'Use custom domain'
+    value: ${{ steps.env-vars.outputs.use_custom_domain }}
+  custom_domain:
+    description: 'Custom domain'
+    value: ${{ steps.env-vars.outputs.custom_domain }}
+  route53_zone_id:
+    description: 'Route53 zone ID'
+    value: ${{ steps.env-vars.outputs.route53_zone_id }}
+  certificate_arn:
+    description: 'Certificate ARN'
+    value: ${{ steps.env-vars.outputs.certificate_arn }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set environment variables
+      id: env-vars
+      shell: bash
+      run: |
+        # Determine environment name based on trigger
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          ENV_NAME="pr-${{ github.event.number }}"
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "is_pr=true" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.manual_environment }}" ]; then
+          ENV_NAME="${{ inputs.manual_environment }}"
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "is_pr=false" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          ENV_NAME="staging"
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "is_pr=false" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+          ENV_NAME="dev"
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "is_pr=false" >> $GITHUB_OUTPUT
+        else
+          ENV_NAME="dev"
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "is_pr=false" >> $GITHUB_OUTPUT
+        fi
+        
+        # Get environment configuration from centralized config
+        echo "🔍 Looking up configuration for environment: $ENV_NAME"
+        ENV_CONFIG=$(.github/scripts/get-env-config.sh "$ENV_NAME")
+        
+        # Extract values from config
+        ACCOUNT=$(echo "$ENV_CONFIG" | grep "^account=" | cut -d= -f2)
+        ACCOUNT_ID=$(echo "$ENV_CONFIG" | grep "^account_id=" | cut -d= -f2)
+        REGION=$(echo "$ENV_CONFIG" | grep "^region=" | cut -d= -f2)  
+        ROLE_ARN=$(echo "$ENV_CONFIG" | grep "^role_arn=" | cut -d= -f2)
+        SECRETS_BUCKET=$(echo "$ENV_CONFIG" | grep "^secrets_bucket=" | cut -d= -f2)
+        
+        # Extract domain configuration
+        BASE_DOMAIN=$(echo "$ENV_CONFIG" | grep "^base_domain=" | cut -d= -f2)
+        USE_CUSTOM_DOMAIN=$(echo "$ENV_CONFIG" | grep "^use_custom_domain=" | cut -d= -f2)
+        CUSTOM_DOMAIN=$(echo "$ENV_CONFIG" | grep "^custom_domain=" | cut -d= -f2)
+        ROUTE53_ZONE_ID=$(echo "$ENV_CONFIG" | grep "^route53_zone_id=" | cut -d= -f2)
+        CERTIFICATE_ARN=$(echo "$ENV_CONFIG" | grep "^certificate_arn=" | cut -d= -f2)
+        
+        # Set outputs
+        echo "aws_region=$REGION" >> $GITHUB_OUTPUT
+        echo "account=$ACCOUNT" >> $GITHUB_OUTPUT
+        echo "secrets_bucket=$SECRETS_BUCKET" >> $GITHUB_OUTPUT
+        
+        # Domain configuration outputs
+        echo "base_domain=$BASE_DOMAIN" >> $GITHUB_OUTPUT
+        echo "use_custom_domain=$USE_CUSTOM_DOMAIN" >> $GITHUB_OUTPUT
+        echo "custom_domain=$CUSTOM_DOMAIN" >> $GITHUB_OUTPUT
+        echo "route53_zone_id=$ROUTE53_ZONE_ID" >> $GITHUB_OUTPUT
+        echo "certificate_arn=$CERTIFICATE_ARN" >> $GITHUB_OUTPUT
+        
+        # Use account_id from config, fallback to GitHub variables if empty
+        if [[ -n "$ACCOUNT_ID" ]]; then
+          echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          echo "ecr_registry=$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com" >> $GITHUB_OUTPUT
+          echo "✅ Using account ID from environment config: $ACCOUNT_ID"
+        else
+          echo "account_id=" >> $GITHUB_OUTPUT
+          echo "ecr_registry=" >> $GITHUB_OUTPUT
+          echo "⚠️  No account ID found in environment config"
+        fi
+        
+        # Use role_arn from config
+        if [[ -n "$ROLE_ARN" ]]; then
+          echo "role_arn=$ROLE_ARN" >> $GITHUB_OUTPUT
+          echo "✅ Using role ARN from environment config: $ROLE_ARN"
+        else
+          echo "❌ No role ARN found in configuration for environment: $ENV_NAME"
+          echo "💡 Please add 'role_arn' field to environments.json for this environment"
+          exit 1
+        fi
+        
+        echo "✅ Environment '$ENV_NAME' configured for account '$ACCOUNT' in region '$REGION'"

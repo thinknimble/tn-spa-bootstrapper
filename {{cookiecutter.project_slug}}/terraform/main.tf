@@ -26,7 +26,8 @@ data "external" "check_shared_vpc" {
   program = ["bash", "-c", <<-EOF
     # Get the oldest VPC by creation time to ensure deterministic selection
     ENV_TAG=$([ "${var.environment}" = "staging" ] || [ "${var.environment}" = "production" ] && echo "shared-${var.environment}" || echo "shared-development")
-    VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${local.shared_vpc_name}" "Name=state,Values=available" "Name=tag:Environment,Values=$ENV_TAG" --query 'sort_by(Vpcs, &CreationTime)[0].VpcId' --output text 2>/dev/null || echo "None")
+    VPC_NAME=$([ "${var.environment}" = "staging" ] || [ "${var.environment}" = "production" ] && echo "${var.shared_vpc_name}-${var.environment}" || echo "${var.shared_vpc_name}")
+    VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=$VPC_NAME" "Name=state,Values=available" "Name=tag:Environment,Values=$ENV_TAG" --query 'sort_by(Vpcs, &CreationTime)[0].VpcId' --output text 2>/dev/null || echo "None")
     if [ "$VPC_ID" = "None" ] || [ "$VPC_ID" = "null" ]; then
       echo '{"exists": "false", "vpc_id": ""}'
     else
