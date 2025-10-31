@@ -1,0 +1,44 @@
+name: 'Setup AWS Configuration'
+description: 'Configure AWS credentials and ECR access'
+inputs:
+  account_id:
+    description: 'AWS Account ID'
+    required: true
+  role_arn:
+    description: 'AWS Role ARN to assume'
+    required: true
+  aws_region:
+    description: 'AWS Region'
+    required: true
+  ecr_repository_name:
+    description: 'ECR Repository Name'
+    required: false
+    default: '{{cookiecutter.sanitized_tf_service_name}}-app'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.role_arn }}
+        role-session-name: GitHubActions-${{ github.run_id }}
+        aws-region: ${{ inputs.aws_region }}
+        audience: sts.amazonaws.com
+
+    - name: Create ECR repository if it doesn't exist
+      shell: bash
+      run: |
+        REPO_NAME="${{ inputs.ecr_repository_name }}"
+        echo "Checking ECR repository: $REPO_NAME"
+        
+        if ! aws ecr describe-repositories --repository-names "$REPO_NAME" >/dev/null 2>&1; then
+          echo "Creating ECR repository: $REPO_NAME"
+          aws ecr create-repository --repository-name "$REPO_NAME"
+          echo "✅ Created ECR repository: $REPO_NAME"
+        else
+          echo "✅ ECR repository already exists: $REPO_NAME"
+        fi
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
