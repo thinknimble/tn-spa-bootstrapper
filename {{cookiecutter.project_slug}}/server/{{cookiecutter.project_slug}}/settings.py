@@ -292,15 +292,6 @@ EMAIL_ALLOWLIST = json.loads(config("EMAIL_ALLOWLIST", default="[]"))
 
 # STORAGES
 # ----------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
 PRIVATE_MEDIAFILES_LOCATION = ""
 # Django Storages configuration
@@ -315,11 +306,37 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
 
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = f"{AWS_LOCATION}/media"
-    STORAGES["default"] = {
-        "BACKEND": "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage",
-    }
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "access_key": AWS_ACCESS_KEY_ID,
+                "secret_key": AWS_SECRET_ACCESS_KEY,
+                "bucket_name": AWS_STORAGE_BUCKET_NAME,
+                "region_name": AWS_S3_REGION_NAME,
+                "location": PRIVATE_MEDIAFILES_LOCATION,
+                "default_acl": None,
+                "file_overwrite": False,
+                "custom_domain": False,
+                "querystring_expire": AWS_QUERYSTRING_EXPIRE,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 # Maximum size, in bytes, of a request before it will be streamed to the
 # file system instead of into memory.
