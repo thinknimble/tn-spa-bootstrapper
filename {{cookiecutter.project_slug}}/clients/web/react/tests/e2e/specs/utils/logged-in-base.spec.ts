@@ -1,4 +1,5 @@
-import { Page, test as base } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { test as base } from '@playwright/test'
 import { fakeData } from './fake-data'
 interface AuthState {
     userStore: any
@@ -8,7 +9,7 @@ interface PageFixture {
     page: Page
 }
 
-const test = base.extend<PageFixture>({
+export const test = base.extend<PageFixture>({
     page: async ({ page }: { page: Page }, use) => {
         await page.addInitScript((state: AuthState['userStore']) => {
             window.localStorage.setItem('auth', JSON.stringify(state))
