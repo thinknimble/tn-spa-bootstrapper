@@ -54,7 +54,7 @@ server-format:
 
 [group('server')]
 server-lint:
-    uv run ruff check server
+    uv run ruff check --fix server
 
 [group('server')]
 server-legacy-format:

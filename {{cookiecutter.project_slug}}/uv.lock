@@ -710,7 +710,7 @@ wheels = [
 
 [[package]]
 name = "django-currentuser"
-version = "0.7.0"
+version = "0.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -734,7 +734,7 @@ wheels = [
 
 [[package]]
 name = "django-filter"
-version = "2.4.0"
+version = "25.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
@@ -1470,12 +1470,12 @@ requires-dist = [
     { name = "daphne", specifier = ">=4.1.2" },
     { name = "dj-database-url", specifier = "==0.5.0" },
     { name = "dj-rest-auth", specifier = "==7.0.*" },
-    { name = "django", specifier = "==4.2.*" },
+    { name = "django", specifier = "==5.2.*" },
     { name = "django-anymail", specifier = "==8.4" },
     { name = "django-cors-headers", specifier = "==3.8.0" },
-    { name = "django-currentuser", specifier = "==0.7.0" },
+    { name = "django-currentuser", specifier = ">=0.9.0" },
     { name = "django-extensions", specifier = "==3.2.*" },
-    { name = "django-filter", specifier = "==2.4.*" },
+    { name = "django-filter", specifier = ">=24.2" },
     { name = "django-model-utils", specifier = "==4.1.1" },
     { name = "django-multiselectfield", specifier = "==0.1.12" },
     { name = "django-storages", specifier = "==1.11.1" },
