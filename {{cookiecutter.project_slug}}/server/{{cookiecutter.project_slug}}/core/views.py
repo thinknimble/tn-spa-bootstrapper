@@ -4,7 +4,8 @@ from typing import Any
 import django_filters
 from django.apps import apps
 from django.conf import settings
-from django.contrib.auth import authenticate, logout as django_logout
+from django.contrib.auth import authenticate
+from django.contrib.auth import logout as django_logout
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.http import Http404
