@@ -4,7 +4,7 @@ from typing import Any
 import django_filters
 from django.apps import apps
 from django.conf import settings
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout as django_logout
 from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.http import Http404
@@ -63,6 +63,26 @@ class UserLoginView(generics.GenericAPIView):
 
         response_data = UserLoginSerializer.login(user, request)
         return Response(response_data)
+
+
+class UnifiedLogoutView(views.APIView):
+    """
+    Logout view that clears Django session authentication.
+
+    This ensures logging out from the client app also logs out of Django admin,
+    solving the issue where users remain authenticated in admin after client logout.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        # Clear the Django session (this logs out of admin too)
+        django_logout(request)
+
+        response = Response(status=status.HTTP_200_OK)
+        response.delete_cookie("sessionid")
+
+        return response
 
 
 class UserViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
