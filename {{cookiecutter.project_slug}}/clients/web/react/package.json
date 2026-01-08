@@ -17,6 +17,8 @@
     "eslint": "eslint --max-warnings=0 src"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@radix-ui/react-toast": "^1.2.15",
     "@tanstack/react-query": "^5.15.0",
     "@thinknimble/tn-forms": "^3.3.3",
     "@thinknimble/tn-forms-react": "^1.0.3",
