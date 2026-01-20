@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { App } from './app'
 import './index.css'
 import { queryClient } from './utils/query-client'
+import { ToastProvider } from './components/toast'
 
 const container = document.getElementById('root')
 const root = createRoot(container!)
@@ -11,7 +12,9 @@ const root = createRoot(container!)
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ToastProvider>
+        <App />
+      </ToastProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 )
