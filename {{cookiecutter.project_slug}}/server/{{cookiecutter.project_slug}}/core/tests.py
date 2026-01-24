@@ -41,8 +41,9 @@ def test_create_user():
     assert not user.is_superuser
 
 
+@mock.patch("{{ cookiecutter.project_slug }}.core.views.send_html_email")
 @pytest.mark.django_db
-def test_create_user_api(api_client):
+def test_create_user_api(mock_send_email, api_client):
     data = {
         "email": "example@example.com",
         "password": "password",
