@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .factories import GroupFactory, UserFactory
-from .models import EmailVerificationToken, User
+from .models import User
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
 from .views import PreviewTemplateView, request_reset_link, verify_email
 
@@ -538,38 +538,12 @@ class TestEmailVerification:
         assert "Verify your email address" in mock_send_email.call_args[0][0]
 
     def test_email_verification_token_creation(self, sample_user):
-        """Test that email verification token is created correctly"""
+        """Test that email verification context is created correctly"""
         context = sample_user.email_verification_context()
         assert "token" in context
         assert "user" in context
         assert context["user"] == sample_user
-
-        # Verify token was created in database
-        token = EmailVerificationToken.objects.filter(user=sample_user).first()
-        assert token is not None
-        assert token.token == context["token"]
-        assert token.is_valid()
-
-    def test_email_verification_token_expiration(self, sample_user):
-        """Test that email verification token expires after 24 hours"""
-        token = EmailVerificationToken.objects.create(user=sample_user)
-        assert token.is_valid()
-
-        # Manually set expiration to past
-        from django.utils import timezone
-        from datetime import timedelta
-        token.expires_at = timezone.now() - timedelta(hours=1)
-        token.save()
-
-        assert not token.is_valid()
-
-    def test_email_verification_token_used(self, sample_user):
-        """Test that used tokens are marked as invalid"""
-        token = EmailVerificationToken.objects.create(user=sample_user)
-        assert token.is_valid()
-
-        token.mark_as_used()
-        assert not token.is_valid()
+        assert context["token"]  # Token should be non-empty
 
     @pytest.mark.use_requests
     def test_verify_email_success(self, caplog, api_client, sample_user):
@@ -587,31 +561,9 @@ class TestEmailVerification:
         sample_user.refresh_from_db()
         assert sample_user.email_verified is True
 
-        # Check that token is marked as used
-        token = EmailVerificationToken.objects.get(token=context["token"])
-        assert not token.is_valid()
-
     def test_verify_email_invalid_token(self, api_client, sample_user):
         """Test email verification with invalid token"""
         verification_url = f"/api/verify-email/{sample_user.id}/invalid-token/"
-        response = api_client.post(verification_url)
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-        # User should still be unverified
-        sample_user.refresh_from_db()
-        assert sample_user.email_verified is False
-
-    def test_verify_email_expired_token(self, api_client, sample_user):
-        """Test email verification with expired token"""
-        from django.utils import timezone
-        from datetime import timedelta
-
-        # Create and expire token
-        token = EmailVerificationToken.objects.create(user=sample_user)
-        token.expires_at = timezone.now() - timedelta(hours=1)
-        token.save()
-
-        verification_url = f"/api/verify-email/{sample_user.id}/{token.token}/"
         response = api_client.post(verification_url)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 

@@ -56,9 +56,10 @@ The application requires users to verify their email address upon signup to impr
 #### How Email Verification Works
 
 1. **On Signup**: When a user registers, they receive a verification email with a unique token
-2. **Token Expiration**: Verification tokens expire after 24 hours
+2. **Token Expiration**: Verification tokens expire based on Django's `PASSWORD_RESET_TIMEOUT` setting (default: 3 days)
 3. **Verification Link**: Users click the link in the email to verify their address
 4. **Resend Option**: Unverified users can request a new verification email
+5. **Token Security**: Uses Django's built-in `default_token_generator` for secure, stateless tokens
 
 #### API Endpoints
 
