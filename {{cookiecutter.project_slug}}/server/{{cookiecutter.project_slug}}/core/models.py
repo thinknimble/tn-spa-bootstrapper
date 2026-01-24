@@ -1,4 +1,5 @@
 import logging
+import secrets
 from datetime import timedelta
 
 from django.conf import settings
@@ -118,6 +119,7 @@ class User(AbstractUser, AbstractBaseModel):
     first_name = models.CharField(blank=True, max_length=255)
     last_name = models.CharField(blank=True, max_length=255)
     has_reset_password = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
     objects = UserManager()
 
     @property
@@ -135,5 +137,47 @@ class User(AbstractUser, AbstractBaseModel):
             "token": default_token_generator.make_token(self),
         }
 
+    def email_verification_context(self):
+        """Generate context for email verification email."""
+        token = EmailVerificationToken.objects.create(user=self)
+        return {
+            "user": self,
+            "site_url": get_site_url(),
+            "support_email": settings.STAFF_EMAIL,
+            "token": token.token,
+        }
+
     class Meta:
         ordering = ["email"]
+
+
+class EmailVerificationToken(AbstractBaseModel):
+    """Token for email verification."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="verification_tokens")
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    expires_at = models.DateTimeField()
+    used = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = secrets.token_urlsafe(32)
+        if not self.expires_at:
+            # Token expires in 24 hours
+            self.expires_at = timezone.now() + timedelta(hours=24)
+        super().save(*args, **kwargs)
+
+    def is_valid(self):
+        """Check if token is still valid (not expired and not used)."""
+        return not self.used and timezone.now() < self.expires_at
+
+    def mark_as_used(self):
+        """Mark token as used."""
+        self.used = True
+        self.save()
+
+    def __str__(self):
+        return f"EmailVerificationToken for {self.user.email}"
+
+    class Meta:
+        ordering = ["-created"]

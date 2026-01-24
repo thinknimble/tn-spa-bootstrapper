@@ -1,0 +1,41 @@
+{%- raw -%}
+{% extends '_action-email-base.html' %}
+{% load tz %}
+{% comment %}
+
+Email Verification
+
+Required context variables::
+
+:site_url: so we can link to the site this URL came from
+:support_email: email address to contact for support
+:token: the verification token
+
+Content blocks::
+
+title - Large bolded title at the top of the message
+main_content - The important message
+button_link - URL for the action button on the page
+button_text - the label for the action button
+footer - closing thought on the message
+
+{% endcomment %}
+
+{% block title %}Verify your email address{% endblock %}
+
+{% block main_content %}
+<tr>
+  <td class="em_grey" align="center" valign="top" style="font-family: Arial, sans-serif; font-size: 16px; line-height: 26px; color:#434343;">Thanks for signing up! Please verify your email address to complete your registration and gain full access to your account.</td>
+</tr>
+{% endblock main_content %}
+
+{% block button_link %}{{ site_url }}/verify-email/{{ user.id }}/{{ token }}{% endblock %}
+{% block button_text %}VERIFY YOUR EMAIL{% endblock %}
+
+{% block footer %}
+<tr>
+  <td class="em_grey" align="center" valign="top" style="font-family: Arial, sans-serif; font-size: 16px; line-height: 26px; color:#434343;">If you didn&rsquo;t create an account with us, you can safely ignore this email.<br class="em_hide" />
+This verification link will expire in 24 hours.</td>
+</tr>
+{% endblock footer %}
+{%- endraw -%}

@@ -22,5 +22,15 @@ urlpatterns = [
     ),
     path(r"api/password/reset/", core_views.request_reset_link),
     path(r"api/password/change/", rest_auth_views.PasswordChangeView.as_view()),
+    path(
+        r"api/verify-email/<str:uid>/<str:token>/",
+        core_views.verify_email,
+        name="verify_email",
+    ),
+    path(
+        r"api/resend-verification-email/",
+        core_views.resend_verification_email,
+        name="resend_verification_email",
+    ),
     path(r"api/template_preview/", core_views.PreviewTemplateView.as_view()),
 ]
