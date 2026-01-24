@@ -24,7 +24,7 @@ from {{cookiecutter.project_slug}}.common.filters import MultiValueModelFilter
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 
 from .forms import PreviewTemplateForm
-from .models import User
+from .models import EmailVerificationToken, User
 from .permissions import HasUserPermissions, IsStaffOrReadOnly
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
@@ -88,6 +88,18 @@ class UserViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retriev
         serializer = UserRegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        # Send verification email
+        verification_context = user.email_verification_context()
+        send_html_email(
+            "Verify your email address",
+            "registration/email_verification.html",
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            context=verification_context,
+        )
+        logger.info(f"Sent verification email to {user.email}")
+
         # Log-in user and re-serialize response
         response_data = UserLoginSerializer.login(user, request)
         return Response(response_data, status=status.HTTP_201_CREATED)
@@ -148,6 +160,66 @@ def reset_password(request, *args, **kwargs):
     # COMMENT THIS WHEN USING THE PASSWORD RESET FLOW ON WEB ONLY FOR MOBILE - PARI BAKER
     response_data = UserLoginSerializer.login(user, request)
     return Response(response_data, status=status.HTTP_200_OK)
+
+
+@api_view(["post"])
+@permission_classes([])
+@authentication_classes([])
+def verify_email(request, *args, **kwargs):
+    """
+    Verify a user's email address using the token from the verification email.
+    """
+    user_id = kwargs.get("uid")
+    token_value = kwargs.get("token")
+
+    if not user_id or not token_value:
+        raise ValidationError(detail={"non-field-error": "Invalid or missing token"})
+
+    user = User.objects.filter(pk=user_id).first()
+    if not user:
+        raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
+
+    # Check if user is already verified
+    if user.email_verified:
+        return Response({"message": "Email already verified"}, status=status.HTTP_200_OK)
+
+    # Find and validate the token
+    token = EmailVerificationToken.objects.filter(user=user, token=token_value).first()
+    if not token or not token.is_valid():
+        raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
+
+    # Mark email as verified
+    user.email_verified = True
+    user.save()
+    token.mark_as_used()
+
+    logger.info(f"Email verified for user {user.email}")
+    return Response({"message": "Email successfully verified"}, status=status.HTTP_200_OK)
+
+
+@api_view(["post"])
+@permission_classes([permissions.IsAuthenticated])
+def resend_verification_email(request, *args, **kwargs):
+    """
+    Resend the verification email to the authenticated user.
+    """
+    user = request.user
+
+    if user.email_verified:
+        raise ValidationError(detail={"non-field-error": "Email already verified"})
+
+    # Send verification email
+    verification_context = user.email_verification_context()
+    send_html_email(
+        "Verify your email address",
+        "registration/email_verification.html",
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        context=verification_context,
+    )
+
+    logger.info(f"Resent verification email to {user.email}")
+    return Response({"message": "Verification email sent"}, status=status.HTTP_200_OK)
 
 
 class PreviewTemplateView(views.APIView):

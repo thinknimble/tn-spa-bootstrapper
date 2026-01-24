@@ -8,9 +8,9 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from .factories import GroupFactory, UserFactory
-from .models import User
+from .models import EmailVerificationToken, User
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
-from .views import PreviewTemplateView, request_reset_link
+from .views import PreviewTemplateView, request_reset_link, verify_email
 
 
 @pytest.mark.django_db
@@ -507,3 +507,166 @@ class TestUserViewSetGroupFiltering:
         # The user should appear exactly once, not multiple times
         assert occurrences == 1, f"User appeared {occurrences} times, expected 1"
         assert len(response.data["results"]) == 1
+
+
+@pytest.mark.django_db
+class TestEmailVerification:
+    """Test email verification functionality"""
+
+    def test_user_created_with_unverified_email(self):
+        """Test that newly created users have unverified email by default"""
+        user = User.objects.create_user(
+            email="test@example.com",
+            password="password",
+            first_name="Test",
+            last_name="User",
+        )
+        assert user.email_verified is False
+
+    @mock.patch("{{ cookiecutter.project_slug }}.core.views.send_html_email")
+    def test_verification_email_sent_on_signup(self, mock_send_email, api_client):
+        """Test that verification email is sent when user signs up"""
+        data = {
+            "email": "test@example.com",
+            "password": "strongpassword123",
+            "first_name": "Test",
+            "last_name": "User",
+        }
+        res = api_client.post("/api/users/", data, format="json")
+        assert res.status_code == status.HTTP_201_CREATED
+        assert mock_send_email.call_count == 1
+        assert "Verify your email address" in mock_send_email.call_args[0][0]
+
+    def test_email_verification_token_creation(self, sample_user):
+        """Test that email verification token is created correctly"""
+        context = sample_user.email_verification_context()
+        assert "token" in context
+        assert "user" in context
+        assert context["user"] == sample_user
+
+        # Verify token was created in database
+        token = EmailVerificationToken.objects.filter(user=sample_user).first()
+        assert token is not None
+        assert token.token == context["token"]
+        assert token.is_valid()
+
+    def test_email_verification_token_expiration(self, sample_user):
+        """Test that email verification token expires after 24 hours"""
+        token = EmailVerificationToken.objects.create(user=sample_user)
+        assert token.is_valid()
+
+        # Manually set expiration to past
+        from django.utils import timezone
+        from datetime import timedelta
+        token.expires_at = timezone.now() - timedelta(hours=1)
+        token.save()
+
+        assert not token.is_valid()
+
+    def test_email_verification_token_used(self, sample_user):
+        """Test that used tokens are marked as invalid"""
+        token = EmailVerificationToken.objects.create(user=sample_user)
+        assert token.is_valid()
+
+        token.mark_as_used()
+        assert not token.is_valid()
+
+    @pytest.mark.use_requests
+    def test_verify_email_success(self, caplog, api_client, sample_user):
+        """Test successful email verification"""
+        # Create verification token
+        context = sample_user.email_verification_context()
+        verification_url = f"/api/verify-email/{sample_user.id}/{context['token']}/"
+
+        # Verify email
+        response = api_client.post(verification_url)
+        assert response.status_code == status.HTTP_200_OK
+        assert "successfully verified" in response.json()["message"]
+
+        # Check that user is now verified
+        sample_user.refresh_from_db()
+        assert sample_user.email_verified is True
+
+        # Check that token is marked as used
+        token = EmailVerificationToken.objects.get(token=context["token"])
+        assert not token.is_valid()
+
+    def test_verify_email_invalid_token(self, api_client, sample_user):
+        """Test email verification with invalid token"""
+        verification_url = f"/api/verify-email/{sample_user.id}/invalid-token/"
+        response = api_client.post(verification_url)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+        # User should still be unverified
+        sample_user.refresh_from_db()
+        assert sample_user.email_verified is False
+
+    def test_verify_email_expired_token(self, api_client, sample_user):
+        """Test email verification with expired token"""
+        from django.utils import timezone
+        from datetime import timedelta
+
+        # Create and expire token
+        token = EmailVerificationToken.objects.create(user=sample_user)
+        token.expires_at = timezone.now() - timedelta(hours=1)
+        token.save()
+
+        verification_url = f"/api/verify-email/{sample_user.id}/{token.token}/"
+        response = api_client.post(verification_url)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+        # User should still be unverified
+        sample_user.refresh_from_db()
+        assert sample_user.email_verified is False
+
+    def test_verify_email_already_verified(self, api_client, sample_user):
+        """Test email verification when user is already verified"""
+        # Mark user as verified
+        sample_user.email_verified = True
+        sample_user.save()
+
+        # Try to verify again
+        context = sample_user.email_verification_context()
+        verification_url = f"/api/verify-email/{sample_user.id}/{context['token']}/"
+        response = api_client.post(verification_url)
+        assert response.status_code == status.HTTP_200_OK
+        assert "already verified" in response.json()["message"]
+
+    @mock.patch("{{ cookiecutter.project_slug }}.core.views.send_html_email")
+    def test_resend_verification_email(self, mock_send_email, api_client, sample_user):
+        """Test resending verification email"""
+        api_client.force_authenticate(sample_user)
+        response = api_client.post("/api/resend-verification-email/")
+        assert response.status_code == status.HTTP_200_OK
+        assert "Verification email sent" in response.json()["message"]
+        assert mock_send_email.call_count == 1
+
+    def test_resend_verification_email_already_verified(self, api_client, sample_user):
+        """Test that resending verification email fails if already verified"""
+        sample_user.email_verified = True
+        sample_user.save()
+
+        api_client.force_authenticate(sample_user)
+        response = api_client.post("/api/resend-verification-email/")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_resend_verification_email_unauthenticated(self, api_client):
+        """Test that unauthenticated users cannot resend verification email"""
+        response = api_client.post("/api/resend-verification-email/")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_user_serializer_includes_email_verified(self, api_client, sample_user):
+        """Test that UserSerializer includes email_verified field"""
+        api_client.force_authenticate(sample_user)
+        response = api_client.get(f"/api/users/{sample_user.pk}/")
+        assert response.status_code == status.HTTP_200_OK
+        assert "email_verified" in response.data
+        assert response.data["email_verified"] is False
+
+    @override_settings(REQUIRE_EMAIL_VERIFICATION=False)
+    def test_email_verification_disabled(self, api_client, sample_user):
+        """Test that email verification requirement can be disabled"""
+        # When REQUIRE_EMAIL_VERIFICATION is False, unverified users should have full access
+        api_client.force_authenticate(sample_user)
+        response = api_client.get(f"/api/users/{sample_user.pk}/")
+        assert response.status_code == status.HTTP_200_OK
