@@ -24,7 +24,7 @@ from {{cookiecutter.project_slug}}.common.filters import MultiValueModelFilter
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 
 from .forms import PreviewTemplateForm
-from .models import EmailVerificationToken, User
+from .models import User
 from .permissions import HasUserPermissions, IsStaffOrReadOnly
 from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
 
@@ -183,15 +183,13 @@ def verify_email(request, *args, **kwargs):
     if user.email_verified:
         return Response({"message": "Email already verified"}, status=status.HTTP_200_OK)
 
-    # Find and validate the token
-    token = EmailVerificationToken.objects.filter(user=user, token=token_value).first()
-    if not token or not token.is_valid():
+    # Validate the token using Django's token generator
+    if not default_token_generator.check_token(user, token_value):
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
 
     # Mark email as verified
     user.email_verified = True
     user.save()
-    token.mark_as_used()
 
     logger.info(f"Email verified for user {user.email}")
     return Response({"message": "Email successfully verified"}, status=status.HTTP_200_OK)
