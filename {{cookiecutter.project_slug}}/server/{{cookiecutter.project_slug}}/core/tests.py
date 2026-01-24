@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .factories import GroupFactory, UserFactory
 from .models import User
 from .serializers import UserLoginSerializer, UserRegistrationSerializer
-from .views import PreviewTemplateView, request_reset_link, verify_email
+from .views import PreviewTemplateView, request_reset_link
 
 
 @pytest.mark.django_db
