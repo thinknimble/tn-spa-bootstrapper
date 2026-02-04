@@ -3,6 +3,7 @@
 
 # Define common variables
 docker_compose := "docker compose"
+project := "{{cookiecutter.project_slug}}"
 
 # Set default recipe to list commands
 default:
@@ -45,8 +46,8 @@ server-run:
     @echo "🚀 Backend ready at http://localhost:8000"
 
 [group('server')]
-server-test:
-    uv run pytest server
+server-test: django-check-migrations
+    cd server && uv run python -m pytest --mccabe --cov={{ "{{ project }}" }} -vv {{ "{{ project }}" }} && coverage report --fail-under=20
 
 [group('server')]
 server-format:
@@ -98,6 +99,10 @@ django-makemigrations name="":
 [group('django')]
 django-migrate:
     cd server && python manage.py migrate
+
+[group('django')]
+django-check-migrations:
+    cd server && python manage.py makemigrations --check --dry-run
 
 [group('django')]
 django-shell:
