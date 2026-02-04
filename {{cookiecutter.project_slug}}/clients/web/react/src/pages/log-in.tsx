@@ -100,6 +100,7 @@ function LogInInner() {
           onClick={handleLogin}
           variant="primary"
           disabled={isPending || !form.isValid}
+          isLoading={isPending}
         >
           Log in
         </Button>
