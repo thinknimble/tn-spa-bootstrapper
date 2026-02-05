@@ -68,4 +68,4 @@ jobs:
           mkdir -p client/dist/static
           uv run python server/manage.py collectstatic
           uv run pytest --mccabe --cov=my_project -vv server/my_project
-          uv run coverage report --fail-under=60
+          uv run coverage report

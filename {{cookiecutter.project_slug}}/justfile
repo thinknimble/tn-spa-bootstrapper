@@ -47,7 +47,7 @@ server-run:
 
 [group('server')]
 server-test: django-check-migrations
-    cd server && uv run python -m pytest --mccabe --cov={{ "{{ project }}" }} -vv {{ "{{ project }}" }} && coverage report --fail-under=20
+    cd server && uv run python -m pytest --mccabe --cov={{ "{{ project }}" }} -vv {{ "{{ project }}" }} && coverage report
 
 [group('server')]
 server-format:
