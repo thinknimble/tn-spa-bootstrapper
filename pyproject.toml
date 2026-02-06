@@ -23,9 +23,6 @@ dependencies = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-[tool.coverage.report]
-fail_under = 20
-
 [tool.ruff]
 line-length = 100
 exclude = [

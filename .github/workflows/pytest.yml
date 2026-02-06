@@ -67,5 +67,5 @@ jobs:
           uv sync
           mkdir -p client/dist/static
           uv run python server/manage.py collectstatic
-          uv run pytest --mccabe --cov=my_project -vv server/my_project
+          uv run pytest --mccabe --cov=my_project --cov-config=pyproject.toml -vv server/my_project
           uv run coverage report
