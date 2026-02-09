@@ -689,6 +689,7 @@ version = "13.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
+    { name = "idna" },
     { name = "requests" },
     { name = "urllib3" },
 ]
@@ -1413,7 +1414,7 @@ wheels = [
 ]
 
 [[package]]
-name = "my-project"
+name = "{{ cookiecutter.project_slug }}
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
