@@ -6,13 +6,19 @@ import { AuthLayout } from 'src/components/auth-layout'
 import { Button } from 'src/components/button'
 import { ErrorMessage } from 'src/components/errors'
 import { userApi } from 'src/services/user'
+import { useAuth } from 'src/stores/auth'
 
 export const VerifyEmail = () => {
   const { userId, token } = useParams()
   const [error, setError] = useState('')
+  const { setNeedsEmailVerification } = useAuth.use.actions()
 
   const { mutate: verifyEmail, isSuccess, isPending } = useMutation({
     mutationFn: userApi.csc.verifyEmail,
+    onSuccess: () => {
+      // Clear the flag so user can access protected routes after logging in
+      setNeedsEmailVerification(false)
+    },
     onError: (e) => {
       if (isAxiosError(e) && e.response?.data && 'non-field-error' in e.response.data) {
         setError(e.response.data['non-field-error'])

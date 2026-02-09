@@ -16,7 +16,7 @@ import { GENERIC_REQUEST_ERROR } from 'src/utils/constants'
 
 function SignUpInner() {
   const [errors, setErrors] = useState<string[]>([])
-  const { changeToken, changeUserId } = useAuth.use.actions()
+  const { changeToken, changeUserId, setNeedsEmailVerification } = useAuth.use.actions()
   const { form, createFormFieldChangeHandler } = useTnForm<TAccountForm>()
   const navigate = useNavigate()
 
@@ -26,6 +26,7 @@ function SignUpInner() {
       if (!data.token) throw new Error('Token should be returned on user creation')
       changeToken(data.token)
       changeUserId(data.id)
+      setNeedsEmailVerification(data.needsEmailVerification)
       if (data.needsEmailVerification) {
         navigate('/check-email')
       } else {

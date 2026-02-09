@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
 import { CheckEmail, Home, Layout, LogIn, SignUp } from 'src/pages'
 import { Dashboard } from 'src/pages/dashboard'
@@ -8,11 +9,22 @@ import { ResetPassword } from 'src/pages/reset-password'
 import { VerifyEmail } from 'src/pages/verify-email'
 import { useAuth } from 'src/stores/auth'
 
+/**
+ * Guard component that redirects to /check-email if user needs email verification
+ */
+const RequireVerifiedEmail = ({ children }: { children: ReactNode }) => {
+  const needsEmailVerification = useAuth.use.needsEmailVerification()
+  if (needsEmailVerification) {
+    return <Navigate to="/check-email" replace />
+  }
+  return <>{children}</>
+}
+
 const PrivateRoutes = () => {
   return (
     <>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/chat" element={<ChatDemo />} />
+      <Route path="/dashboard" element={<RequireVerifiedEmail><Dashboard /></RequireVerifiedEmail>} />
+      <Route path="/chat" element={<RequireVerifiedEmail><ChatDemo /></RequireVerifiedEmail>} />
       <Route path="/check-email" element={<CheckEmail />} />
     </>
   )
