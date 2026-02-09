@@ -14,7 +14,7 @@ router.register("users", core_views.UserViewSet)
 urlpatterns = [
     path("api/", include(router.urls)),
     path("api/login/", core_views.UserLoginView.as_view()),
-    path(r"api/logout/", rest_auth_views.LogoutView.as_view()),
+    path(r"api/logout/", core_views.UnifiedLogoutView.as_view()),
     path(
         r"api/password/reset/confirm/<str:uid>/<str:token>/",
         core_views.reset_password,

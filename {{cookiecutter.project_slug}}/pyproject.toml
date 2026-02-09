@@ -1,5 +1,5 @@
 [project]
-name = "my-project"
+name = "{{ cookiecutter.project_slug }}"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -60,3 +60,6 @@ exclude = [
 
 [tool.ruff.lint]
 extend-select = ["I"]
+
+[tool.coverage.report]
+fail_under = 60

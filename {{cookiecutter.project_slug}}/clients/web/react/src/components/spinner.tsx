@@ -60,6 +60,7 @@ export const Spinner: FC<{
   return (
     <div
       className="animate-spin"
+      data-testid="component-loading-spinner"
       style={{
         ...defaultStyles,
         ...customStyles,
