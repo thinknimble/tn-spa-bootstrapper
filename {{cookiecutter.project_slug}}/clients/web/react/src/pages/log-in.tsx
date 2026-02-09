@@ -24,7 +24,11 @@ function LogInInner() {
     onSuccess: (data) => {
       changeToken(data.token)
       changeUserId(data.id)
-      navigate('/dashboard')
+      if (data.needsEmailVerification) {
+        navigate('/check-email')
+      } else {
+        navigate('/dashboard')
+      }
     },
     onError(e: any) {
       const errors = getErrorMessages(e)
