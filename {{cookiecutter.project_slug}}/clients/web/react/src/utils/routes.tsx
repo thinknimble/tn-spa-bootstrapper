@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { Home, Layout, LogIn, SignUp } from 'src/pages'
+import { CheckEmail, Home, Layout, LogIn, SignUp } from 'src/pages'
 import { Dashboard } from 'src/pages/dashboard'
 import { ChatDemo } from 'src/pages/chat-demo'
 import { PageNotFound } from 'src/pages/page-not-found'
@@ -13,6 +13,7 @@ const PrivateRoutes = () => {
     <>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/chat" element={<ChatDemo />} />
+      <Route path="/check-email" element={<CheckEmail />} />
     </>
   )
 }

@@ -26,7 +26,11 @@ function SignUpInner() {
       if (!data.token) throw new Error('Token should be returned on user creation')
       changeToken(data.token)
       changeUserId(data.id)
-      navigate('/home')
+      if (data.needsEmailVerification) {
+        navigate('/check-email')
+      } else {
+        navigate('/home')
+      }
     },
     onError(e: any) {
       console.error(e)
