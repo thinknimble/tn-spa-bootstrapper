@@ -15,7 +15,7 @@ import { getErrorMessages } from 'src/utils/errors'
 
 function LogInInner() {
   const [errorMessage, setErrorMessage] = useState<string[] | undefined>()
-  const { changeToken, changeUserId } = useAuth.use.actions()
+  const { changeToken, changeUserId, setNeedsEmailVerification } = useAuth.use.actions()
   const { createFormFieldChangeHandler, form } = useTnForm<TLoginForm>()
   const navigate = useNavigate()
 
@@ -24,6 +24,7 @@ function LogInInner() {
     onSuccess: (data) => {
       changeToken(data.token)
       changeUserId(data.id)
+      setNeedsEmailVerification(data.needsEmailVerification)
       if (data.needsEmailVerification) {
         navigate('/check-email')
       } else {

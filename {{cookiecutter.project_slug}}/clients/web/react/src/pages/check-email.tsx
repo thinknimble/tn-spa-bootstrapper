@@ -1,18 +1,21 @@
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { AuthLayout } from 'src/components/auth-layout'
 import { Button } from 'src/components/button'
 import { ErrorMessage } from 'src/components/errors'
 import { axiosInstance } from 'src/services/axios-instance'
+import { userApi } from 'src/services/user'
 import { useAuth } from 'src/stores/auth'
 
 export const CheckEmail = () => {
   const token = useAuth.use.token()
+  const { clearAuth } = useAuth.use.actions()
+  const navigate = useNavigate()
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const { mutate: resendEmail, isPending } = useMutation({
+  const { mutate: resendEmail, isPending: isResending } = useMutation({
     mutationFn: async () => {
       const res = await axiosInstance.post('/resend-verification-email/')
       return res.data
@@ -25,6 +28,14 @@ export const CheckEmail = () => {
       const message = e.response?.data?.['non-field-error'] || 'Failed to resend email'
       setErrorMessage(message)
       setSuccessMessage(null)
+    },
+  })
+
+  const { mutate: logout, isPending: isLoggingOut } = useMutation({
+    mutationFn: userApi.csc.logout,
+    onSettled: () => {
+      clearAuth()
+      navigate('/log-in')
     },
   })
 
@@ -46,7 +57,7 @@ export const CheckEmail = () => {
 
         <div className="flex flex-col items-center gap-4">
           <p className="text-sm text-gray-500">Didn&apos;t receive the email?</p>
-          <Button onClick={() => resendEmail()} isLoading={isPending} disabled={isPending}>
+          <Button onClick={() => resendEmail()} isLoading={isResending} disabled={isResending}>
             Resend Verification Email
           </Button>
         </div>
@@ -57,9 +68,13 @@ export const CheckEmail = () => {
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
 
         <div className="mt-4 text-center text-sm">
-          <Link to="/log-in" className="font-semibold text-primary hover:underline">
-            Back to Log In
-          </Link>
+          <button
+            onClick={() => logout()}
+            disabled={isLoggingOut}
+            className="font-semibold text-primary hover:underline"
+          >
+            {isLoggingOut ? 'Logging out...' : 'Use a different account'}
+          </button>
         </div>
       </div>
     </AuthLayout>
