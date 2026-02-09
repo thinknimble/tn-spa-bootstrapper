@@ -1414,7 +1414,7 @@ wheels = [
 ]
 
 [[package]]
-name = "{{ cookiecutter.project_slug }}
+name = "{{ cookiecutter.project_slug }}"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
