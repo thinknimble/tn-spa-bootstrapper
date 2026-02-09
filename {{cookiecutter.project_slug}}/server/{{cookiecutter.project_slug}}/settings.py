@@ -291,7 +291,7 @@ USE_EMAIL_ALLOWLIST = config("USE_EMAIL_ALLOWLIST", cast=bool, default=False)
 EMAIL_ALLOWLIST = json.loads(config("EMAIL_ALLOWLIST", default="[]"))
 
 # Email Verification
-REQUIRE_EMAIL_VERIFICATION = config("REQUIRE_EMAIL_VERIFICATION", cast=bool, default=True)
+REQUIRE_EMAIL_VERIFICATION = config("REQUIRE_EMAIL_VERIFICATION", cast=bool, default=False)
 
 # Validate email verification configuration
 if REQUIRE_EMAIL_VERIFICATION and not ENABLE_EMAILS:
