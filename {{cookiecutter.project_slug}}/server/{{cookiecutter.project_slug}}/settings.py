@@ -293,6 +293,16 @@ EMAIL_ALLOWLIST = json.loads(config("EMAIL_ALLOWLIST", default="[]"))
 # Email Verification
 REQUIRE_EMAIL_VERIFICATION = config("REQUIRE_EMAIL_VERIFICATION", cast=bool, default=True)
 
+# Validate email verification configuration
+if REQUIRE_EMAIL_VERIFICATION and not ENABLE_EMAILS:
+    logger = logging.getLogger(__name__)
+    logger.error(
+        "REQUIRE_EMAIL_VERIFICATION is True but ENABLE_EMAILS is False. "
+        "Email verification requires emails to be enabled. "
+        "Setting REQUIRE_EMAIL_VERIFICATION to False."
+    )
+    REQUIRE_EMAIL_VERIFICATION = False
+
 # STORAGES
 # ----------------------------------------------------------------------------
 
