@@ -685,15 +685,17 @@ wheels = [
 
 [[package]]
 name = "django-anymail"
-version = "8.4"
+version = "14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
+    { name = "idna" },
     { name = "requests" },
+    { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e5/d3/14ec479ba2cbbaeb1674852fc0ef22c4b662e96562d6d593cf295d5ba580/django-anymail-8.4.tar.gz", hash = "sha256:671a338de43b8e414d48c6d16aac1df54d2f24f916e1073f9f60aef5acffaf89", size = 80793 }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/cb/25aa288f7ce37331d0ebe0321f3a3079add297b037d6d4b4b363bf080e0b/django_anymail-14.0.tar.gz", hash = "sha256:ca42e52da62d2c96ce92412f9d68ef6d2067d96a384096b6e932d6a247e9fd61", size = 106257 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/68/90429d3d4a74b83ac384061e67194fff5d7217d3dc0ef8b1fdc52934b99b/django_anymail-8.4-py3-none-any.whl", hash = "sha256:2e8307e84f0a12f9283469017094a8246db9a0fc608ac17dd1027ee011ece986", size = 99990 },
+    { url = "https://files.pythonhosted.org/packages/81/83/6d92a06dba4ef471aa1bbbe2e1461103800beea6a4bf95ac5f3d0f21e167/django_anymail-14.0-py3-none-any.whl", hash = "sha256:98e5575bcff231952a92117b7d0a4dd37fab582333a343de302d415a31dc72b1", size = 146119 },
 ]
 
 [[package]]
@@ -1412,7 +1414,7 @@ wheels = [
 ]
 
 [[package]]
-name = "my-project"
+name = "{{ cookiecutter.project_slug }}
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
@@ -1471,7 +1473,7 @@ requires-dist = [
     { name = "dj-database-url", specifier = "==0.5.0" },
     { name = "dj-rest-auth", specifier = "==7.0.*" },
     { name = "django", specifier = "==5.2.*" },
-    { name = "django-anymail", specifier = "==8.4" },
+    { name = "django-anymail", specifier = ">=10.0" },
     { name = "django-cors-headers", specifier = "==3.8.0" },
     { name = "django-currentuser", specifier = ">=0.9.0" },
     { name = "django-extensions", specifier = "==3.2.*" },
