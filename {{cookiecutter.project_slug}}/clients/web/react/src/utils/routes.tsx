@@ -26,6 +26,7 @@ const PrivateRoutes = () => {
       <Route path="/dashboard" element={<RequireVerifiedEmail><Dashboard /></RequireVerifiedEmail>} />
       <Route path="/chat" element={<RequireVerifiedEmail><ChatDemo /></RequireVerifiedEmail>} />
       <Route path="/check-email" element={<CheckEmail />} />
+      <Route path="/verify-email/:userId/:token" element={<VerifyEmail />} />
     </>
   )
 }
