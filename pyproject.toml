@@ -14,7 +14,7 @@ dependencies = [
     "pytest==6.2.4",
     "pytest-cookies==0.6.1",
     "pytest-instafail==0.4.2",
-    "PyYAML==6.0.3",
+    "PyYAML==6.0.1",
     "PyGithub==1.55",
     "Jinja2==3.0.1",
     "ruff>=0.1.9"
