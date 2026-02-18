@@ -1,6 +1,6 @@
 ## Getting Started
 
-This app is bootstrapped with the TN-Bootsrapper and uses Expo as a wrapper framework around React Native. Install and run with **Node v20**.
+This app is bootstrapped with the TN-Bootsrapper and uses Expo as a wrapper framework around React Native. Install and run with **Node v22**.
 
 ## Installing and Running
 
@@ -78,13 +78,13 @@ When running the Expo mobile app inside Docker, the Metro bundler and developmen
 
 ### iOS Simulator
 
-1. **Start the iOS Simulator**  
+1. **Start the iOS Simulator**
    Open Xcode, or run:
    ```sh
    open -a Simulator
    ```
 
-2. **Install the app**  
+2. **Install the app**
    If you are using a custom dev client, run:
    ```sh
    npx expo run:ios
@@ -93,13 +93,13 @@ When running the Expo mobile app inside Docker, the Metro bundler and developmen
 
 ### Android Emulator
 
-1. **Start the Android Emulator**  
+1. **Start the Android Emulator**
    Open Android Studio and start an emulator, or run:
    ```sh
    emulator -avd <your_avd_name>
    ```
 
-2. **Install the app**  
+2. **Install the app**
    If you are using a custom dev client, run:
    ```sh
    npx expo run:android
