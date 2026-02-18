@@ -1,4 +1,5 @@
 import secrets
+import json
 from os import remove
 from os.path import exists, join
 from shutil import copy2, move, rmtree
@@ -123,6 +124,45 @@ def remove_expo_yaml_files():
             remove(file_name)
 
 
+def remove_terraform_files():
+    """Remove Terraform-related files when Heroku deployment is chosen"""
+    file_names = [
+        join(".github/workflows", "app-deploy.yml"),
+        join(".github/workflows", "SETUP.md"),
+        join(".github", "environments.json"),
+        join(".github", "app-config.json"),
+        join(".github/scripts", "get-env-config.sh"),
+        join(".github/scripts", "secrets-sync.sh"),
+        join(".github/scripts", "setup-secrets-bucket.sh"),
+        "secrets-template.json",  # Remove secrets template for Heroku deployments
+    ]
+    directories = [
+        "terraform"
+    ]
+    
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+    
+    for directory in directories:
+        if exists(directory):
+            rmtree(directory)
+
+
+def remove_heroku_files():
+    """Remove Heroku-related files when Terraform deployment is chosen"""
+    file_names = [
+        join("scripts", "deploy-on-heroku.sh"),
+        "app.json",
+        "Procfile",
+        "runtime.txt"
+    ]
+    
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
+
 def set_keys_in_envs(django_secret, postgres_secret):
     env_file_path = join(".env.example")
     pull_request_template_path = join(".github", "pull_request_template.md")
@@ -158,6 +198,39 @@ def get_secrets():
     return django_secret, postgres_secret
 
 
+def create_secrets_files():
+    """Create secrets template files for each environment when using Terraform"""
+    template_file = "secrets-template.json"
+    environments = ["development", "staging", "production"]
+    
+    if not exists(template_file):
+        print(f"{INFO}Warning: {template_file} not found, skipping secrets file creation{END}")
+        return
+    
+    print(f"{INFO}Creating secrets template files for environments: {', '.join(environments)}{END}")
+    
+    # Read the template
+    with open(template_file, 'r') as f:
+        template_content = f.read()
+    
+    for env in environments:
+        output_file = f"secrets-{env}.json"
+        
+        # Replace environment placeholder
+        env_content = template_content.replace("ENVIRONMENT_NAME", env)
+        
+        # Write the environment-specific file
+        with open(output_file, 'w') as f:
+            f.write(env_content)
+        
+        print(f"{INFO}Created {output_file}{END}")
+    
+    # Remove the template file
+    remove(template_file)
+    print(f"{INFO}Removed template file{END}")
+
+
+
 def main():
     django_secret, postgres_secret = get_secrets()
     set_keys_in_envs(django_secret, postgres_secret)
@@ -175,6 +248,24 @@ def main():
 
     clean_up_clients_folder()
 
+    # Handle deployment option choice
+    deployment_option = "{{ cookiecutter.deployment_option }}"
+    if deployment_option.lower() == "heroku":
+        remove_terraform_files()
+        print(f"{INFO}Heroku deployment selected - removed Terraform files{END}")
+    elif deployment_option.lower().startswith("terraform"):
+        remove_heroku_files()
+        print(f"{INFO}Terraform (AWS) deployment selected - removed Heroku files{END}")
+        create_secrets_files()
+        print(f"{INFO}S3 secrets management workflow configured{END}")
+        print(f"{INFO}Next steps for S3 secrets:{END}")
+        print(f"{INFO}  1. Update .github/environments.json with your AWS account IDs{END}")
+        print(f"{INFO}  2. Run terraform/scripts/setup-github-oidc-role.sh to create IAM roles{END}")
+        print(f"{INFO}  3. Set GitHub repository variables: SERVICE_NAME, ECR_REPOSITORY_NAME, AWS_ACCOUNT_ID{END}")
+        print(f"{INFO}  4. Set environment-specific role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, PROD_AWS_ROLE_ARN{END}")
+        print(f"{INFO}  5. Edit secrets-*.json files and replace CHANGE-ME values{END}")
+        print(f"{INFO}  6. Use .github/scripts/secrets-sync.sh to manage secrets{END}")
+
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")
 
@@ -184,7 +275,14 @@ def main():
     )
     print(f"{INFO}To initialize the database see {project_slug}/scripts/init-db.sh{END}")
     print(f"{INFO}To initialize the app see {project_slug}/scripts/init-app.sh{END}")
-    print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    
+    # Show deployment-specific instructions
+    if deployment_option.lower() == "heroku":
+        print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    elif deployment_option.lower().startswith("terraform"):
+        print(f"{INFO}To deploy with Terraform see {project_slug}/.github/workflows/SETUP.md{END}")
+        print(f"{INFO}Terraform configuration is in {project_slug}/terraform/{END}")
+    
     print(f"{INFO}To push the project to github {project_slug}/scripts/init-github.sh{END}")
 
 
