@@ -4,8 +4,8 @@
     "heroku-postbuild": "cd client && npm run build"
   },
   "engines": {
-    "node": "22.*.*",
-    "npm": "10.*.*"
+    "node": "22.x",
+    "npm": "10.x"
   },
   "cacheDirectories": [
     "client/node_modules",

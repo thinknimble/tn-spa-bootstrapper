@@ -57,7 +57,7 @@ jobs:
           path: my_project/
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.x
           cache: 'npm'
           cache-dependency-path: ./my_project/client/package-lock.json
       - name: 📦 Install frontend dependencies

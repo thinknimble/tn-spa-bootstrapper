@@ -84,7 +84,7 @@ jobs:
           uv run cookiecutter . --config-file $config_file --no-input -f
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.x
       - name: 📦 Install dependencies
         env:
           NPM_CONFIG_PRODUCTION: false
