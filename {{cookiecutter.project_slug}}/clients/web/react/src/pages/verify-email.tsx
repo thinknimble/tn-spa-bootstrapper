@@ -12,6 +12,8 @@ export const VerifyEmail = () => {
   const { userId, token } = useParams()
   const [error, setError] = useState('')
   const { setNeedsEmailVerification } = useAuth.use.actions()
+  const authToken = useAuth.use.token()
+  const isLoggedIn = Boolean(authToken)
 
   const { mutate: verifyEmail, isSuccess, isPending } = useMutation({
     mutationFn: userApi.csc.verifyEmail,
@@ -48,12 +50,15 @@ export const VerifyEmail = () => {
     return (
       <AuthLayout
         title="Email verified!"
-        description="Your email has been successfully verified. You can now log in to your account."
+        description={isLoggedIn
+          ? "Your email has been successfully verified."
+          : "Your email has been successfully verified. You can now log in to your account."
+        }
       >
         <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-          <Link to="/log-in">
+          <Link to={isLoggedIn ? "/home" : "/log-in"}>
             <Button variant="primary" className="w-full">
-              Go to login
+              {isLoggedIn ? "Continue" : "Go to login"}
             </Button>
           </Link>
         </div>
@@ -65,9 +70,9 @@ export const VerifyEmail = () => {
     <AuthLayout title="Verification failed" description="We couldn't verify your email address">
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
         {error ? <ErrorMessage>{error}</ErrorMessage> : null}
-        <Link to="/log-in" className="mt-4 block">
+        <Link to={isLoggedIn ? "/home" : "/log-in"} className="mt-4 block">
           <Button variant="primary" className="w-full">
-            Go to login
+            {isLoggedIn ? "Continue" : "Go to login"}
           </Button>
         </Link>
       </div>
