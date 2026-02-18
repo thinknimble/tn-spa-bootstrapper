@@ -69,9 +69,9 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
           <ToastPrimitive.Root
             key={toast.id}
             className={cn(
-              'relative rounded-lg border p-4 pr-8 shadow-lg',
-              'data-[state=open]:animate-slide-in-from-right',
-              'data-[state=closed]:animate-fade-out',
+              'relative rounded-lg border p-4 pr-8 shadow-lg transition-all duration-300 ease-out',
+              'data-[state=open]:translate-x-0 data-[state=open]:opacity-100',
+              'data-[state=closed]:translate-x-4 data-[state=closed]:opacity-0',
               toastStyles[toast.type],
             )}
             onOpenChange={(open: boolean) => {
