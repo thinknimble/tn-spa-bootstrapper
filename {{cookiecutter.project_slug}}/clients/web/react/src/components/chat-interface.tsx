@@ -1,6 +1,10 @@
-import { useState, useRef, FormEvent, useEffect } from 'react'
+import { useState, useRef, FormEvent, useEffect, useMemo } from 'react'
+import useWebSocket from 'react-use-websocket';
 import { useAuth } from 'src/stores/auth'
 import { Sidebar } from './sidebar'
+import { useQuery } from '@tanstack/react-query'
+import { chatQueries } from 'src/services/chat'
+import { Spinner } from './spinner';
 
 type Message = {
   content: string
@@ -8,30 +12,60 @@ type Message = {
 }
 
 export const ChatInterface = () => {
+  const { data: chats } = useQuery(chatQueries.list())
+
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
-  const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isConnectionError, setIsConnectionError] = useState(false)
   const [, setStreamingContent] = useState('')
   const chatHistoryRef = useRef<HTMLDivElement>(null)
   const token = useAuth.use.token()
 
-  useEffect(() => {
-    // Create WebSocket connection with auth token
+  const webSocketUrl = useMemo(() => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const host = import.meta.env.DEV ? window.location.host : window.location.host
-    const ws = new WebSocket(`${protocol}//${host}/ws/chat/?token=${token}`)
+    return `${protocol}//${host}/ws/chat/?token=${token}`
+  }, [token])
 
-    ws.onopen = () => {
-      console.log('WebSocket connected')
+  const {
+    sendJsonMessage,
+    lastJsonMessage,
+    readyState,
+  } = useWebSocket(webSocketUrl, {
+    onOpen: () => console.log('opened'),
+    //Will attempt to reconnect on all close events, such as server shutting down
+    shouldReconnect: (closeEvent) => true,
+    onError: (event) => {
+      console.error('WebSocket error:', event)
+      setIsConnectionError(true)
+      setIsLoading(false)
+
+    },
+
+  });
+
+  useEffect(() => {
+    if (readyState === WebSocket.OPEN) {
+      setIsLoading(false)
+    } else if (readyState === WebSocket.CLOSED) {
+      setIsLoading(false)
+      console.log('WebSocket is closed')
+    } else if (readyState === WebSocket.CONNECTING) {
+      console.log('WebSocket is connecting')
+      setIsLoading(true)
+    } else if (readyState === WebSocket.CLOSING) {
+      console.log('WebSocket is closing')
+      setIsLoading(true)
     }
 
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
+  }, [readyState])
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)
+  useEffect(() => {
+    if (lastJsonMessage) {
+      const data = lastJsonMessage as any
+      console.log('Last JSON message:', lastJsonMessage)
 
       if (data.error) {
         setMessages((prev) => {
@@ -63,21 +97,9 @@ export const ChatInterface = () => {
         setMessages((prev) => [...prev, { content: data.message.content, role: 'assistant' }])
       }
     }
+  }, [lastJsonMessage])
 
-    ws.onclose = (event) => {
-      console.log('WebSocket connection closed:', event.code, event.reason)
-      if (event.code === 4003) {
-        // Handle authentication failure
-        console.error('WebSocket authentication failed')
-      }
-    }
 
-    setSocket(ws)
-
-    return () => {
-      ws.close()
-    }
-  }, [token])
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -87,7 +109,7 @@ export const ChatInterface = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     const content = inputMessage.trim()
-    if (!content || !socket) return
+    if (!content) return
 
     // Add user message to conversation
     const userMessage: Message = { content, role: 'user' }
@@ -99,12 +121,13 @@ export const ChatInterface = () => {
     setMessages((prev) => [...prev, { content: '', role: 'assistant' }])
 
     // Send full conversation history through WebSocket
-    socket.send(
-      JSON.stringify({
-        messages: [...messages, userMessage], // Include previous messages plus new user message
-        stream: true,
-      }),
-    )
+    sendJsonMessage({
+
+      messages: [...messages, userMessage], // Include previous messages plus new user message
+      stream: true,
+      chat_id: chats?.results?.[0]?.id, // Use the first chat ID for now
+    })
+
   }
 
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -148,21 +171,34 @@ export const ChatInterface = () => {
           </button>
         </div>
 
+        {/* Chat Loading Overlay */}
+        {(isLoading || isConnectionError) && (<div className="relative z-100 h-full w-full">
+          <div className="h-full w-full flex items-center justify-center bg-gray-100 opacity-50">
+
+            {
+              isLoading ? (<Spinner size='lg' />) : (
+                <div className="text-red-500">
+                  <p>Connection Error</p>
+                  <p>There is an error connecting, will retry.</p>
+                </div>
+              )
+            }
+          </div>
+        </div>)}
         {/* Main Chat Area - Scrollable */}
         <div className="flex flex-1 flex-col overflow-hidden">
+
           <div ref={chatHistoryRef} className="flex-1 overflow-y-auto p-4">
             <div className="mx-auto max-w-3xl">
               {messages.map((message, index) => (
                 <div
                   key={index}
-                  className={`mb-4 flex ${
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
+                  className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'
+                    }`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg p-3 text-left ${
-                      message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'
-                    }`}
+                    className={`max-w-[80%] rounded-lg p-3 text-left ${message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'
+                      }`}
                   >
                     {message.content}
                   </div>
