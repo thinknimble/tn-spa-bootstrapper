@@ -118,6 +118,7 @@ class User(AbstractUser, AbstractBaseModel):
     first_name = models.CharField(blank=True, max_length=255)
     last_name = models.CharField(blank=True, max_length=255)
     has_reset_password = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
     objects = UserManager()
 
     @property
@@ -128,6 +129,15 @@ class User(AbstractUser, AbstractBaseModel):
         return f"{self.full_name} <{self.email}>"
 
     def reset_password_context(self):
+        return {
+            "user": self,
+            "site_url": get_site_url(),
+            "support_email": settings.STAFF_EMAIL,
+            "token": default_token_generator.make_token(self),
+        }
+
+    def email_verification_context(self):
+        """Generate context for email verification email."""
         return {
             "user": self,
             "site_url": get_site_url(),

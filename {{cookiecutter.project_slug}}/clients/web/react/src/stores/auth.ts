@@ -13,6 +13,7 @@ type AuthState = {
   user: User | null
   isClearingAuth: boolean
   tokenExpirationDate: null | string
+  needsEmailVerification: boolean
   actions: {
     hydrate: () => void
     changeToken: (t: string) => void
@@ -24,6 +25,7 @@ type AuthState = {
      */
     writeUserInStorage: (user: User) => void
     changeTokenExpirationDate: (tokenExpirationDate: string) => void
+    setNeedsEmailVerification: (needs: boolean) => void
   }
 }
 let resolveHydrationValue: (value: boolean) => void
@@ -37,6 +39,7 @@ const defaultValues: Omit<AuthState, 'actions' | 'hasHydrated'> = {
   user: null,
   isClearingAuth: false,
   tokenExpirationDate: null,
+  needsEmailVerification: false,
 }
 
 export const useAuth = createSelectors(
@@ -64,6 +67,9 @@ export const useAuth = createSelectors(
           },
           changeTokenExpirationDate(tokenExpirationDate) {
             set({ tokenExpirationDate })
+          },
+          setNeedsEmailVerification(needs) {
+            set({ needsEmailVerification: needs })
           },
         },
       }),

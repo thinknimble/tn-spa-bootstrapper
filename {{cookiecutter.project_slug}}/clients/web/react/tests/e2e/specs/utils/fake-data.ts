@@ -155,6 +155,7 @@ export class ServerUserFactory {
       email: faker.internet.email(),
       first_name: faker.person.firstName(),
       last_name: faker.person.lastName(),
+      email_verified: false,
       role: 'RESEARCH_TEAM',
       created: faker.date.past().toISOString(),
       last_edited: faker.date.recent().toISOString(),
