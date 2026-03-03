@@ -139,7 +139,7 @@ screenshots-resize device input_dir output_dir="":
     #!/usr/bin/env bash
     set -euo pipefail
 
-    case "{{ device }}" in
+    case "{{ "{{ device }}" }}" in
         iphone-67)
             width=1284; height=2778
             desc="iPhone 6.7\" (Pro Max)"
@@ -161,20 +161,20 @@ screenshots-resize device input_dir output_dir="":
             desc="Apple Watch (45mm)"
             ;;
         *)
-            echo "Unknown device: {{ device }}"
+            echo "Unknown device: {{ "{{ device }}" }}"
             echo "Valid options: iphone-67, iphone-65, ipad-11, ipad-129, watch"
             exit 1
             ;;
     esac
 
-    if [ -z "{{ output_dir }}" ]; then
-        outdir="{{ input_dir }}/{{ device }}"
+    if [ -z "{{ "{{ output_dir }}" }}" ]; then
+        outdir="{{ "{{ input_dir }}" }}/{{ "{{ device }}" }}"
     else
-        outdir="{{ output_dir }}/{{ device }}"
+        outdir="{{ "{{ output_dir }}" }}/{{ "{{ device }}" }}"
     fi
     mkdir -p "$outdir"
 
-    for file in "{{ input_dir }}"/*.png; do
+    for file in "{{ "{{ input_dir }}" }}"/*.png; do
         [ -f "$file" ] || continue
         filename=$(basename "$file")
         sips -z "$height" "$width" "$file" --out "$outdir/$filename" 2>/dev/null
@@ -186,15 +186,15 @@ screenshots-resize device input_dir output_dir="":
 [group('screenshots')]
 screenshots-resize-all input_dir output_dir="":
     #!/usr/bin/env bash
-    if [ -z "{{ output_dir }}" ]; then
-        just screenshots-resize iphone-67 "{{ input_dir }}"
-        just screenshots-resize iphone-65 "{{ input_dir }}"
-        just screenshots-resize ipad-11 "{{ input_dir }}"
-        just screenshots-resize ipad-129 "{{ input_dir }}"
+    if [ -z "{{ "{{ output_dir }}" }}" ]; then
+        just screenshots-resize iphone-67 "{{ "{{ input_dir }}" }}"
+        just screenshots-resize iphone-65 "{{ "{{ input_dir }}" }}"
+        just screenshots-resize ipad-11 "{{ "{{ input_dir }}" }}"
+        just screenshots-resize ipad-129 "{{ "{{ input_dir }}" }}"
     else
-        just screenshots-resize iphone-67 "{{ input_dir }}" "{{ output_dir }}"
-        just screenshots-resize iphone-65 "{{ input_dir }}" "{{ output_dir }}"
-        just screenshots-resize ipad-11 "{{ input_dir }}" "{{ output_dir }}"
-        just screenshots-resize ipad-129 "{{ input_dir }}" "{{ output_dir }}"
+        just screenshots-resize iphone-67 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
+        just screenshots-resize iphone-65 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
+        just screenshots-resize ipad-11 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
+        just screenshots-resize ipad-129 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
     fi
     echo "✅ All screenshots resized"
