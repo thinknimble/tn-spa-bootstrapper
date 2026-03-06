@@ -6,6 +6,7 @@ import {
   MinLengthValidator,
   RequiredValidator,
 } from '@thinknimble/tn-forms'
+import { MaxLengthValidator, NameValidator, PasswordStrengthValidator } from '../validators'
 
 export type AccountFormInputs = {
   firstName: IFormField<string>
@@ -30,7 +31,11 @@ export class AccountForm extends Form<AccountFormInputs> {
     label: 'First name',
     placeholder: 'First Name',
     type: 'text',
-    validators: [new RequiredValidator({ message: 'Please enter your first' })],
+    validators: [
+      new RequiredValidator({ message: 'Please enter your first name' }),
+      new NameValidator({ message: 'First name contains invalid characters' }),
+      new MaxLengthValidator({ maxLength: 50, message: 'First name is too long' }),
+    ],
     value: '',
   })
 
@@ -38,7 +43,11 @@ export class AccountForm extends Form<AccountFormInputs> {
     label: 'Last Name',
     placeholder: 'Last Name',
     type: 'text',
-    validators: [new RequiredValidator({ message: 'Please enter your last name' })],
+    validators: [
+      new RequiredValidator({ message: 'Please enter your last name' }),
+      new NameValidator({ message: 'Last name contains invalid characters' }),
+      new MaxLengthValidator({ maxLength: 50, message: 'Last name is too long' }),
+    ],
     value: '',
   })
 
@@ -54,12 +63,12 @@ export class AccountForm extends Form<AccountFormInputs> {
     label: 'Password',
     placeholder: 'Password',
     type: 'password',
-
     validators: [
-      new MinLengthValidator({
-        minLength: 6,
-        message: 'Please enter a password with a minimum of six characters',
+      new PasswordStrengthValidator({
+        minLength: 8,
+        message: 'Please enter a password with at least 8 characters',
       }),
+      new MaxLengthValidator({ maxLength: 128, message: 'Password is too long' }),
     ],
     value: '',
   })
@@ -69,7 +78,13 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'Confirm Password',
     type: 'password',
     value: '',
-    validators: [],
+    validators: [
+      new PasswordStrengthValidator({
+        minLength: 8,
+        message: 'Please enter a password with at least 8 characters',
+      }),
+      new MaxLengthValidator({ maxLength: 128, message: 'Password is too long' }),
+    ],
   })
 }
 export type TAccountForm = AccountForm & AccountFormInputs
