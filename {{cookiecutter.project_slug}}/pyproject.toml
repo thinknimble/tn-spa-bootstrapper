@@ -27,7 +27,7 @@ dependencies = [
     "drf-writable-nested==0.6.3",
     "gunicorn>=23.0.0",
     "openai>=1.65.0",
-    "pre-commit==2.13.*",
+    "pre-commit==4.5.*",
     "premailer>=3.10.0",
     "psycopg2-binary==2.9.*",
     "pytest-cov>=6.0.0",

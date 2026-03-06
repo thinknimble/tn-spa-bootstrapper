@@ -69,3 +69,9 @@ jobs:
           uv run python server/manage.py collectstatic
           uv run pytest --mccabe --cov=my_project --cov-config=pyproject.toml -vv server/my_project
           uv run coverage report
+
+      - name: Check migrations and migration conflicts
+        run: |
+          cd my_project
+          uv run python server/manage.py makemigrations --check --dry-run
+          uv run python server/manage.py makemigrations --merge --dry-run
