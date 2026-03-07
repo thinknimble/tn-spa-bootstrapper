@@ -1,4 +1,4 @@
-import { Validator } from '@thinknimble/tn-forms'
+import { Validator, EmailValidator } from '@thinknimble/tn-forms'
 
 export class MaxLengthValidator extends Validator<string> {
   maxLength: number
@@ -39,6 +39,42 @@ export class NameValidator extends Validator<string> {
     if (!NAME_PATTERN.test(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
+  }
+}
+
+/**
+ * Practical strict subset of RFC 5322:
+ *  - Local part: alphanumerics plus .!#$%&'*+/=?^_`{|}~-  (no quoted strings)
+ *  - No leading/trailing/consecutive dots in local part
+ *  - Local part max 64 chars, total max 254 chars
+ *  - Domain labels: alphanumeric, hyphens allowed (not leading/trailing), 1-63 chars each
+ *  - TLD must be at least 2 alpha characters (no bare IPs)
+ */
+const EMAIL_LOCAL_PART = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$/
+const EMAIL_DOMAIN =
+  /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/
+
+export class ExtendedEmailValidator extends EmailValidator {
+  call(value: string) {
+    if (!this.enableValidate && !value) return
+    if (!value) return
+
+    const fail = () => {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    }
+
+    if (value.length > 254) fail()
+
+    const atIdx = value.lastIndexOf('@')
+    if (atIdx < 1) fail()
+
+    const local = value.slice(0, atIdx)
+    const domain = value.slice(atIdx + 1)
+
+    if (local.length > 64 || local.length === 0) fail()
+    if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) fail()
+    if (!EMAIL_LOCAL_PART.test(local)) fail()
+    if (!EMAIL_DOMAIN.test(domain)) fail()
   }
 }
 

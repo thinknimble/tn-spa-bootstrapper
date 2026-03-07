@@ -6,7 +6,7 @@ import {
   MinLengthValidator,
   RequiredValidator,
 } from '@thinknimble/tn-forms'
-import { MaxLengthValidator, NameValidator, PasswordStrengthValidator } from '../validators'
+import { MaxLengthValidator, NameValidator, PasswordStrengthValidator, ExtendedEmailValidator } from '../validators'
 
 export type AccountFormInputs = {
   firstName: IFormField<string>
@@ -56,7 +56,7 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'Email',
     type: 'email',
     value: '',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
 
   static password = FormField.create({
@@ -98,7 +98,7 @@ export class EmailForgotPasswordForm extends Form<EmailForgotPasswordInput> {
     label: 'Email',
     placeholder: 'Email',
     type: 'email',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
 }
 
@@ -161,7 +161,7 @@ export class LoginForm extends Form<LoginFormInputs> {
   static email = new FormField({
     placeholder: 'Email',
     type: 'emailAddress',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
   static password = new FormField({
     validators: [new RequiredValidator({ message: 'Please enter your password' })],
@@ -179,7 +179,7 @@ export class ForgotPasswordForm extends Form<ForgotPasswordInput> {
   static email = new FormField({
     placeholder: 'Email',
     type: 'emailAddress',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
 }
 
