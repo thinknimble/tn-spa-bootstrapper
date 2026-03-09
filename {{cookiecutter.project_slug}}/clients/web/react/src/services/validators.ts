@@ -1,4 +1,4 @@
-import { Validator, EmailValidator } from '@thinknimble/tn-forms'
+import { Validator, EmailValidator, PatternValidator } from '@thinknimble/tn-forms'
 
 export class MaxLengthValidator extends Validator<string> {
   maxLength: number
@@ -24,21 +24,13 @@ export class MaxLengthValidator extends Validator<string> {
 
 const NAME_PATTERN = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/
 
-export class NameValidator extends Validator<string> {
+export class NameValidator extends PatternValidator {
   constructor({
     message = 'Name may only contain letters, hyphens, apostrophes, and spaces',
     code = 'invalidName',
     isRequired = true,
   }: { message?: string; code?: string; isRequired?: boolean } = {}) {
-    super({ message, code, isRequired })
-  }
-
-  call(value: string) {
-    if (!this.enableValidate && !value) return
-    if (!value) return
-    if (!NAME_PATTERN.test(value)) {
-      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    }
+    super({ message, code, isRequired, pattern: NAME_PATTERN })
   }
 }
 
