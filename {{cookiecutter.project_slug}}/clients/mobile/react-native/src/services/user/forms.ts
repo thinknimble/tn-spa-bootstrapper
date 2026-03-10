@@ -1,6 +1,5 @@
 import {
   Form,
-  EmailValidator,
   FormField,
   IFormField,
   MinLengthValidator,
