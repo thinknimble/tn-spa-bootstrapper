@@ -12,7 +12,7 @@ test('Login workflow', async ({ page }) => {
 
   await page.goto('/sign-up')
   await page.getByTestId('first-name').fill('playwright')
-  await page.getByTestId('last-name').fill('e2e test')
+  await page.getByTestId('last-name').fill('test')
   await page
     .getByTestId('email')
     .fill(uniqueEmail)
