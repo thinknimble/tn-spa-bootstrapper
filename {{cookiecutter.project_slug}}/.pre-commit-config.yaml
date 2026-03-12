@@ -9,52 +9,48 @@ repos:
       - id: ruff-format
         files: ^server/
 
+  # confirm that Django migrations are up to date and have no merge conflicts
+  - repo: local
+    hooks:
+    -   id: check-migrations
+        name: Check Django Migrations
+        entry: python server/manage.py makemigrations --check --dry-run
+        language: system
+        pass_filenames: false
+        
+  - repo: local
+    hooks:
+    -   id: check-migrations-merge-conflicts
+        name: Check Django Migrations Merge Conflicts
+        entry: python server/manage.py makemigrations --merge --dry-run
+        language: system
+        pass_filenames: false
+
+
   # Frontend linting and formatting for React web client
   - repo: local
     hooks:
       - id: web-prettier
         name: Web Client Prettier Format
-        entry: sh -c 'cd clients/web/react && npm run format'
+        entry: sh -c 'cd client && npm run format:write'
         language: system
-        files: ^clients/web/react/.*\.(js|jsx|ts|tsx|css|scss|json|md)$
+        files: ^client/.*\.(js|jsx|ts|tsx|css|scss|json|md)$
         pass_filenames: false
 
       - id: web-lint
         name: Web Client ESLint
-        entry: sh -c 'cd clients/web/react && npm run lint'
+        entry: sh -c 'cd client && npm run eslint'
         language: system
-        files: ^clients/web/react/.*\.(js|jsx|ts|tsx)$
+        files: ^client/.*\.(js|jsx|ts|tsx)$
         pass_filenames: false
 
       - id: web-typecheck
         name: Web Client TypeScript Check
-        entry: sh -c 'cd clients/web/react && npm run typecheck'
+        entry: sh -c 'cd client && npm run tslint'
         language: system
-        files: ^clients/web/react/.*\.(ts|tsx)$
-        pass_filenames: false
-{% if cookiecutter.include_mobile != 'n' %}
-  # Mobile client linting for React Native
-      - id: mobile-prettier
-        name: Mobile Client Prettier Format
-        entry: sh -c 'cd clients/mobile/react-native && npm run format'
-        language: system
-        files: ^clients/mobile/react-native/.*\.(js|jsx|ts|tsx)$
+        files: ^client/.*\.(ts|tsx)$
         pass_filenames: false
 
-      - id: mobile-lint
-        name: Mobile Client ESLint
-        entry: sh -c 'cd clients/mobile/react-native && npm run lint'
-        language: system
-        files: ^clients/mobile/react-native/.*\.(js|jsx|ts|tsx)$
-        pass_filenames: false
-
-      - id: mobile-typecheck
-        name: Mobile Client TypeScript Check
-        entry: sh -c 'cd clients/mobile/react-native && npm run typecheck'
-        language: system
-        files: ^clients/mobile/react-native/.*\.(ts|tsx)$
-        pass_filenames: false
-{% endif %}
   # General hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
