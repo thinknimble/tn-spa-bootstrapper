@@ -1,11 +1,16 @@
 import {
   Form,
-  EmailValidator,
   FormField,
   IFormField,
   MinLengthValidator,
   RequiredValidator,
 } from '@thinknimble/tn-forms'
+import {
+  MaxLengthValidator,
+  NameValidator,
+  PasswordStrengthValidator,
+  ExtendedEmailValidator,
+} from '../validators'
 
 export type AccountFormInputs = {
   firstName: IFormField<string>
@@ -30,7 +35,10 @@ export class AccountForm extends Form<AccountFormInputs> {
     label: 'First name',
     placeholder: 'First Name',
     type: 'text',
-    validators: [new RequiredValidator({ message: 'Please enter your first' })],
+    validators: [
+      new NameValidator({ message: 'First name contains invalid characters' }),
+      new MaxLengthValidator({ maxLength: 50, message: 'First name is too long' }),
+    ],
     value: '',
   })
 
@@ -38,7 +46,10 @@ export class AccountForm extends Form<AccountFormInputs> {
     label: 'Last Name',
     placeholder: 'Last Name',
     type: 'text',
-    validators: [new RequiredValidator({ message: 'Please enter your last name' })],
+    validators: [
+      new NameValidator({ message: 'Last name contains invalid characters' }),
+      new MaxLengthValidator({ maxLength: 50, message: 'Last name is too long' }),
+    ],
     value: '',
   })
 
@@ -47,19 +58,19 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'Email',
     type: 'email',
     value: '',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
 
   static password = FormField.create({
     label: 'Password',
     placeholder: 'Password',
     type: 'password',
-
     validators: [
-      new MinLengthValidator({
-        minLength: 6,
-        message: 'Please enter a password with a minimum of six characters',
+      new PasswordStrengthValidator({
+        minLength: 8,
+        message: 'Please enter a password with at least 8 characters',
       }),
+      new MaxLengthValidator({ maxLength: 128, message: 'Password is too long' }),
     ],
     value: '',
   })
@@ -69,7 +80,13 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'Confirm Password',
     type: 'password',
     value: '',
-    validators: [],
+    validators: [
+      new PasswordStrengthValidator({
+        minLength: 8,
+        message: 'Please enter a password with at least 8 characters',
+      }),
+      new MaxLengthValidator({ maxLength: 128, message: 'Password is too long' }),
+    ],
   })
 }
 export type TAccountForm = AccountForm & AccountFormInputs
@@ -83,7 +100,7 @@ export class EmailForgotPasswordForm extends Form<EmailForgotPasswordInput> {
     label: 'Email',
     placeholder: 'Email',
     type: 'email',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
 }
 
@@ -101,7 +118,7 @@ export class ResetPasswordForm extends Form<ResetPasswordInput> {
     label: 'Email',
     placeholder: 'Email',
     type: 'emailAddress',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
   static code = new FormField({
     placeholder: 'Verification Code',
@@ -146,7 +163,7 @@ export class LoginForm extends Form<LoginFormInputs> {
   static email = new FormField({
     placeholder: 'Email',
     type: 'emailAddress',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
   static password = new FormField({
     validators: [new RequiredValidator({ message: 'Please enter your password' })],
@@ -164,7 +181,7 @@ export class ForgotPasswordForm extends Form<ForgotPasswordInput> {
   static email = new FormField({
     placeholder: 'Email',
     type: 'emailAddress',
-    validators: [new EmailValidator({ message: 'Please enter a valid email' })],
+    validators: [new ExtendedEmailValidator({ message: 'Please enter a valid email' })],
   })
 }
 
