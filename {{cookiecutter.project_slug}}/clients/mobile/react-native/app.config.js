@@ -57,7 +57,7 @@ module.exports = {
       sentryDSN: process.env.SENTRY_DSN,
     },
     runtimeVersion: {
-      policy: 'sdkVersion',
+      policy: 'appVersion',
     },
     experiments: { tsconfigPaths: true },
   },
