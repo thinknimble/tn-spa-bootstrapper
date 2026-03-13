@@ -2,7 +2,6 @@
 id: traefik-multi-project-routing
 created: 2026-03-13T12:00:00Z
 priority: 1
-status: not_started
 ---
 
 # Traefik Multi-Project Routing
