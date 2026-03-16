@@ -1,0 +1,110 @@
+{
+  "environments": {
+    "production": {
+      "django": {
+        "debug": false,
+        "current_port": 8000,
+        "allowed_hosts": "server,localhost,127.0.0.1",
+        "enable_emails": true,
+        "staff_email": "admin@mycompany.com"
+      },
+      "aws": {
+        "use_aws_storage": true,
+        "aws_s3_region_name": "us-east-1"
+      },
+      "features": {
+        "enable_https": true,
+        "rollbar_enabled": true
+      },
+      "testing": {
+        "playwright_test_base_url": "https://myapp-production.mycompany.com"
+      },
+      "secrets_set": "PROD_SECRETS"
+    },
+    "staging": {
+      "django": {
+        "debug": true,
+        "current_port": 8000,
+        "allowed_hosts": "server,localhost,127.0.0.1",
+        "enable_emails": false,
+        "staff_email": "staging@mycompany.com"
+      },
+      "aws": {
+        "use_aws_storage": false,
+        "aws_s3_region_name": "us-east-1"
+      },
+      "features": {
+        "enable_https": true,
+        "rollbar_enabled": false
+      },
+      "testing": {
+        "playwright_test_base_url": "https://myapp-staging.mycompany.com"
+      },
+      "secrets_set": "STAGING_SECRETS"
+    }
+  },
+  "patterns": {
+    "pr-*": {
+      "django": {
+        "debug": true,
+        "current_port": 8080,
+        "allowed_hosts": "server,localhost,127.0.0.1",
+        "enable_emails": false,
+        "staff_email": "dev@mycompany.com"
+      },
+      "aws": {
+        "use_aws_storage": false,
+        "aws_s3_region_name": "us-east-1"
+      },
+      "features": {
+        "enable_https": true,
+        "rollbar_enabled": false
+      },
+      "testing": {
+        "playwright_test_base_url": "http://localhost:8080"
+      },
+      "secrets_set": "DEV_SECRETS"
+    },
+    "main": {
+      "django": {
+        "debug": true,
+        "current_port": 8080,
+        "allowed_hosts": "server,localhost,127.0.0.1",
+        "enable_emails": false,
+        "staff_email": "dev@mycompany.com"
+      },
+      "aws": {
+        "use_aws_storage": false,
+        "aws_s3_region_name": "us-east-1"
+      },
+      "features": {
+        "enable_https": true,
+        "rollbar_enabled": false
+      },
+      "secrets_set": "DEV_SECRETS"
+    }
+  },
+  "defaults": {
+    "django": {
+      "debug": true,
+      "current_port": 8080,
+      "allowed_hosts": "server,localhost,127.0.0.1",
+      "enable_emails": false,
+      "staff_email": "dev@mycompany.com"
+    },
+    "aws": {
+      "use_aws_storage": false,
+      "aws_s3_region_name": "us-east-1",
+      "aws_storage_bucket_name": "",
+      "aws_location": ""
+    },
+    "features": {
+      "enable_https": false,
+      "rollbar_enabled": false
+    },
+    "testing": {
+      "playwright_test_base_url": "http://localhost:8080"
+    },
+    "secrets_set": "DEV_SECRETS"
+  }
+}

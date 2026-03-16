@@ -1,0 +1,91 @@
+{
+  "environments": {
+    "production": {
+      "account": "prod",
+      "account_id": "345678901234",
+      "region": "us-east-1",
+      "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Production environment - isolated account",
+      "domain": {
+        "base_domain": "myapp.com",
+        "use_custom_domain": true,
+        "custom_domain": "myapp.com",
+        "route53_zone_id": "Z1D633PJN98FT9",
+        "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/prod-cert-id"
+      }
+    },
+    "staging": {
+      "account": "prod", 
+      "account_id": "345678901234",
+      "region": "us-east-1",
+      "role_arn": "arn:aws:iam::345678901234:role/github-actions-staging",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Staging environment - prod account",
+      "domain": {
+        "base_domain": "myapp.com",
+        "use_custom_domain": false,
+        "route53_zone_id": "Z1D633PJN98FT9",
+        "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/wildcard-cert-id"
+      }
+    },
+    "development": {
+      "account": "dev",
+      "account_id": "123456789012", 
+      "region": "us-east-1", 
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Development environment - dev account",
+      "domain": {
+        "base_domain": "dev.myapp.com",
+        "use_custom_domain": false,
+        "route53_zone_id": "Z06118351LUGXMN4X34BT",
+        "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/dev-wildcard-cert-id"
+      }
+    }
+  },
+  "patterns": {
+    "pr-*": {
+      "account": "dev",
+      "account_id": "123456789012",
+      "region": "us-east-1",
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Pull request environments",
+      "domain": {
+        "base_domain": "dev.myapp.com",
+        "use_custom_domain": false,
+        "route53_zone_id": "Z06118351LUGXMN4X34BT",
+        "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/dev-wildcard-cert-id"
+      }
+    },
+    "main": {
+      "account": "dev", 
+      "account_id": "123456789012",
+      "region": "us-east-1",
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+      "secrets_bucket": "myapp-terraform-secrets",
+      "description": "Main branch development",
+      "domain": {
+        "base_domain": "dev.myapp.com",
+        "use_custom_domain": false,
+        "route53_zone_id": "Z06118351LUGXMN4X34BT",
+        "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/dev-wildcard-cert-id"
+      }
+    }
+  },
+  "defaults": {
+    "account": "dev",
+    "account_id": "123456789012",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+    "secrets_bucket": "myapp-terraform-secrets",
+    "description": "Default fallback configuration",
+    "domain": {
+      "base_domain": "dev.myapp.com",
+      "use_custom_domain": false,
+      "route53_zone_id": "Z06118351LUGXMN4X34BT",
+      "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/dev-wildcard-cert-id"
+    }
+  }
+}

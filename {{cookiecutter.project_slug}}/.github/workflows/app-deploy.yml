@@ -1,0 +1,253 @@
+name: Deploy Application
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  deployments: write
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.action == 'deploy' || github.event.action != 'closed'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        id: setup-env
+        uses: ./.github/actions/setup-environment
+        with:
+          manual_environment: ${{ github.event.inputs.environment }}
+          aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Setup AWS
+        uses: ./.github/actions/setup-aws
+        with:
+          account_id: ${{ steps.setup-env.outputs.account_id }}
+          role_arn: ${{ steps.setup-env.outputs.role_arn }}
+          aws_region: ${{ env.AWS_REGION }}
+          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./compose/server/tf/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.setup-env.outputs.image_tag }}
+            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.setup-env.outputs.environment }}-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Create GitHub Deployment
+        id: deployment
+        run: |
+          echo "Creating deployment for environment: ${{ steps.setup-env.outputs.environment }}"
+          
+          gh api repos/${{ github.repository }}/deployments \
+            --method POST \
+            --field ref='${{ github.sha }}' \
+            --field environment='${{ steps.setup-env.outputs.environment }}' \
+            --field description='Deploy to ${{ steps.setup-env.outputs.environment }}' \
+            --field auto_merge=false \
+            --field required_contexts='[]'
+
+      - name: Setup Terraform
+        uses: ./.github/actions/setup-terraform
+        with:
+          environment: ${{ steps.setup-env.outputs.environment }}
+          service_name: ${{ vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}
+
+      - name: Generate Terraform Variables
+        uses: ./.github/actions/generate-terraform-vars
+        with:
+          environment: ${{ steps.setup-env.outputs.environment }}
+          mode: deploy
+
+      - name: Terraform Plan
+        run: |
+          cd terraform
+          terraform plan -detailed-exitcode
+
+      - name: Terraform Apply
+        if: github.event_name != 'pull_request'
+        run: |
+          cd terraform
+          terraform apply -auto-approve
+
+      - name: Get Application URL
+        id: app-url
+        run: |
+          cd terraform
+          APP_URL=$(terraform output -raw application_url 2>/dev/null || echo "")
+          if [[ -n "$APP_URL" ]]; then
+            echo "app_url=$APP_URL" >> $GITHUB_OUTPUT
+            echo "✅ Application URL: $APP_URL"
+          fi
+
+      - name: Add PR Comment
+        if: github.event_name == 'pull_request'
+        run: |
+          APP_URL="${{ steps.app-url.outputs.app_url }}"
+          COMMENT_BODY="🚀 **Deployment Preview**
+          
+          **Environment:** \`${{ steps.setup-env.outputs.environment }}\`
+          **Application URL:** ${APP_URL:-_URL will be available after infrastructure deployment_}
+          
+          The environment will be automatically updated with each new commit to this PR."
+          
+          gh pr comment ${{ github.event.number }} --body "$COMMENT_BODY"
+
+      - name: Update deployment status
+        if: always()
+        run: |
+          if [[ "${{ job.status }}" == "success" ]]; then
+            DEPLOYMENT_STATE="success"
+            DESCRIPTION="Deployment completed successfully"
+          else
+            DEPLOYMENT_STATE="failure" 
+            DESCRIPTION="Deployment failed"
+          fi
+          
+          gh api repos/${{ github.repository }}/deployments \
+            --method POST \
+            --field ref='${{ github.sha }}' \
+            --field environment='${{ steps.setup-env.outputs.environment }}' \
+            --field state="$DEPLOYMENT_STATE" \
+            --field description="$DESCRIPTION" \
+            --field environment_url="${{ steps.app-url.outputs.app_url }}"
+
+  cleanup-pr-environment:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment  
+        id: setup-env
+        uses: ./.github/actions/setup-environment
+        with:
+          aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Setup AWS
+        uses: ./.github/actions/setup-aws
+        with:
+          account_id: ${{ steps.setup-env.outputs.account_id }}
+          role_arn: ${{ steps.setup-env.outputs.role_arn }}
+          aws_region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: ./.github/actions/setup-terraform
+        with:
+          environment: ${{ steps.setup-env.outputs.environment }}
+          service_name: ${{ vars.SERVICE_NAME }}
+
+      - name: Generate Terraform Variables
+        uses: ./.github/actions/generate-terraform-vars
+        with:
+          environment: ${{ steps.setup-env.outputs.environment }}
+          mode: cleanup
+
+      - name: Destroy PR Environment
+        run: |
+          cd terraform
+          PR_WORKSPACE="${{ steps.setup-env.outputs.environment }}"
+          
+          if terraform workspace list | grep -q "$PR_WORKSPACE"; then
+            terraform workspace select "$PR_WORKSPACE"
+            echo "🗑️ Destroying infrastructure for environment: $PR_WORKSPACE"
+            terraform destroy -auto-approve
+            terraform workspace select default
+            terraform workspace delete "$PR_WORKSPACE"
+            echo "✅ Cleaned up PR environment: $PR_WORKSPACE"
+          else
+            echo "ℹ️  No workspace found for PR environment: $PR_WORKSPACE"
+          fi
+
+  teardown-environment:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment != ''
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        id: setup-env  
+        uses: ./.github/actions/setup-environment
+        with:
+          manual_environment: ${{ github.event.inputs.environment }}
+          aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+
+
+      - name: Setup AWS
+        uses: ./.github/actions/setup-aws
+        with:
+          account_id: ${{ steps.setup-env.outputs.account_id }}
+          role_arn: ${{ steps.setup-env.outputs.role_arn }}
+          aws_region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: ./.github/actions/setup-terraform
+        with:
+          environment: ${{ steps.setup-env.outputs.environment }}
+          service_name: ${{ vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}
+
+      - name: Generate Terraform Variables
+        uses: ./.github/actions/generate-terraform-vars
+        with:
+          environment: ${{ steps.setup-env.outputs.environment }}
+          mode: teardown
+
+      - name: Confirm and Destroy Environment
+        run: |
+          cd terraform
+          ENVIRONMENT="${{ steps.setup-env.outputs.environment }}"
+          
+          if terraform workspace list | grep -q "$ENVIRONMENT"; then
+            terraform workspace select "$ENVIRONMENT"
+            echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
+            echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
+            
+            if terraform destroy -auto-approve; then
+              echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
+              terraform workspace select default
+              terraform workspace delete "$ENVIRONMENT"
+            else
+              echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
+              exit 1
+            fi
+          else
+            echo "ℹ️  No workspace found for environment: $ENVIRONMENT"
+          fi
