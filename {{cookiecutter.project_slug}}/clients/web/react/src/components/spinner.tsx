@@ -1,10 +1,9 @@
 import { CSSProperties, FC } from 'react'
-import { colors } from 'tailwind.colors'
 
 export type SizeVariant = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 const BASE_SIZE = 12
 const BASE_BORDER = 2
-const PRIMARY_COLOR = colors.primary[500]
+const PRIMARY_COLOR = 'var(--primary-500)'
 const mapWidthHeightBySize: Record<
   SizeVariant,
   { width: number; height: number; border: string; borderTop: string }
