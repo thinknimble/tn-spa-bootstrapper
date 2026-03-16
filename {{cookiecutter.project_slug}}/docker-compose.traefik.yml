@@ -1,0 +1,14 @@
+networks:
+  proxy:
+    external: true
+
+services:
+  server:
+    networks:
+      - default
+      - proxy
+  
+  client:
+    networks:
+      - default
+      - proxy

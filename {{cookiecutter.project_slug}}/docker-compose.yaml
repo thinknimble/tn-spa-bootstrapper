@@ -4,10 +4,9 @@ volumes:
 
 services:
   postgres:
+    container_name: ${PROJECT}-postgres
     restart: always
     image: postgres:16
-    ports:
-      - 5432:5432
     env_file:
       - ".env"
     environment:
@@ -19,11 +18,11 @@ services:
       - local_postgres_data_backups:/backups
 
   redis:
+    container_name: ${PROJECT}-redis
     image: "redis:latest"
-    ports:
-      - "6379:6379"
 
   server:
+    container_name: ${PROJECT}-server
     build:
       context: .
       dockerfile: ./compose/server/Dockerfile
@@ -37,12 +36,15 @@ services:
       - ".env"
     environment:
       - DB_HOST=postgres
-    ports:
-      - "8000:8000"
-      - "5678:5678"
     user: ${DOCKER_UID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT}-api.rule=Host(`api.${PROJECT}.localhost`)"
+      - "traefik.http.routers.${PROJECT}-api.entrypoints=web"
+      - "traefik.http.services.${PROJECT}-api.loadbalancer.server.port=8000"
 
   client:
+    container_name: ${PROJECT}-client
     build:
       context: .
       dockerfile: ./compose/client/Dockerfile
@@ -50,11 +52,13 @@ services:
       - ".:/app"
       # This line avoids copying local node_modules folder to the Docker container, and uses the ones installed during build
       - "/app/client/node_modules"
-    ports:
-      - "8080:8080"
-      #- "49153:49153"
     environment:
       - CHOKIDAR_USEPOLLING=true
       {% if cookiecutter.client_app == 'React' %}
       - VITE_CACHE_DIR=./vite
       {% endif %}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT}-web.rule=Host(`${PROJECT}.localhost`)"
+      - "traefik.http.routers.${PROJECT}-web.entrypoints=web"
+      - "traefik.http.services.${PROJECT}-web.loadbalancer.server.port=8080"
