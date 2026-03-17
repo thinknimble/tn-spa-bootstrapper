@@ -315,12 +315,12 @@ test.describe('Email Verification Flow', () => {
       await expect(page).toHaveURL(/log-in/)
     })
 
-    test('redirects to login if not authenticated', async ({ page }) => {
+    test('shows 404 if not authenticated', async ({ page }) => {
       // Try to access check-email directly without being logged in
       await page.goto('/check-email')
 
-      // Should redirect to login
-      await expect(page).toHaveURL(/log-in/)
+      // Route doesn't exist for unauthenticated users, should show 404
+      await expect(page.getByTestId('page-not-found')).toBeVisible()
     })
   })
 
