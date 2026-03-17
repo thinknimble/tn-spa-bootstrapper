@@ -47,28 +47,29 @@ export const CheckEmail = () => {
     <AuthLayout title="Check Your Email">
       <div className="mt-6 flex flex-col items-center gap-6 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <p className="text-lg text-gray-700">
+          <p data-testid="verification-sent-message" className="text-lg text-gray-700">
             We&apos;ve sent a verification link to your email address.
           </p>
-          <p className="mt-2 text-gray-600">
+          <p data-testid="check-inbox-message" className="mt-2 text-gray-600">
             Please check your inbox and click the link to verify your account.
           </p>
         </div>
 
         <div className="flex flex-col items-center gap-4">
           <p className="text-sm text-gray-500">Didn&apos;t receive the email?</p>
-          <Button onClick={() => resendEmail()} isLoading={isResending} disabled={isResending}>
+          <Button data-testid="resend-verification-email" onClick={() => resendEmail()} isLoading={isResending} disabled={isResending}>
             Resend Verification Email
           </Button>
         </div>
 
         {successMessage && (
-          <p className="text-center text-sm text-green-600">{successMessage}</p>
+          <p data-testid="resend-success-message" className="text-center text-sm text-green-600">{successMessage}</p>
         )}
-        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        {errorMessage && <div data-testid="resend-error-message"><ErrorMessage>{errorMessage}</ErrorMessage></div>}
 
         <div className="mt-4 text-center text-sm">
           <button
+            data-testid="use-different-account"
             onClick={() => logout()}
             disabled={isLoggingOut}
             className="font-semibold text-primary hover:underline"

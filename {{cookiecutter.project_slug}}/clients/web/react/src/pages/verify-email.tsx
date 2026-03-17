@@ -39,7 +39,7 @@ export const VerifyEmail = () => {
   if (isPending) {
     return (
       <AuthLayout title="Verifying your email..." description="Please wait">
-        <div className="mt-6 flex justify-center">
+        <div data-testid="verify-loading" className="mt-6 flex justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         </div>
       </AuthLayout>
@@ -55,9 +55,9 @@ export const VerifyEmail = () => {
           : "Your email has been successfully verified. You can now log in to your account."
         }
       >
-        <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div data-testid="verify-success" className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
           <Link to={isLoggedIn ? "/home" : "/log-in"}>
-            <Button variant="primary" className="w-full">
+            <Button data-testid="verify-success-action" variant="primary" className="w-full">
               {isLoggedIn ? "Continue" : "Go to login"}
             </Button>
           </Link>
@@ -68,10 +68,10 @@ export const VerifyEmail = () => {
 
   return (
     <AuthLayout title="Verification failed" description="We couldn't verify your email address">
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
-        {error ? <ErrorMessage>{error}</ErrorMessage> : null}
+      <div data-testid="verify-error" className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
+        {error ? <div data-testid="verify-error-message"><ErrorMessage>{error}</ErrorMessage></div> : null}
         <Link to={isLoggedIn ? "/home" : "/log-in"} className="mt-4 block">
-          <Button variant="primary" className="w-full">
+          <Button data-testid="verify-error-action" variant="primary" className="w-full">
             {isLoggedIn ? "Continue" : "Go to login"}
           </Button>
         </Link>

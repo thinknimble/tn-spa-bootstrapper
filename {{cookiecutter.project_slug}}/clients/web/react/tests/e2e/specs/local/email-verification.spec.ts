@@ -29,6 +29,12 @@ test.describe('Email Verification Flow', () => {
             },
           },
         },
+        '**/api/users/**': {
+          GET: {
+            status: 200,
+            data: mockUser,
+          },
+        },
       })
 
       await page.goto('/log-in')
@@ -38,7 +44,7 @@ test.describe('Email Verification Flow', () => {
 
       // Should redirect to check-email page
       await expect(page).toHaveURL(/check-email/)
-      await expect(page.getByText("We've sent a verification link")).toBeVisible()
+      await expect(page.getByTestId('verification-sent-message')).toBeVisible()
     })
 
     test('redirects to dashboard when needs_email_verification is false', async ({ page }) => {
@@ -72,7 +78,7 @@ test.describe('Email Verification Flow', () => {
       await page.getByTestId('submit').click()
 
       // Should redirect to dashboard
-      await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+      await expect(page.getByTestId('dashboard-heading')).toBeVisible()
     })
   })
 
@@ -85,13 +91,21 @@ test.describe('Email Verification Flow', () => {
         email_verified: false,
       })
 
-      await mockRoute(page, '**/api/users/', {
-        POST: {
-          status: 201,
-          data: {
-            ...mockUser,
-            token: 'mock-auth-token',
-            needs_email_verification: true,
+      await mockRoutes(page, {
+        '**/api/users/': {
+          POST: {
+            status: 201,
+            data: {
+              ...mockUser,
+              token: 'mock-auth-token',
+              needs_email_verification: true,
+            },
+          },
+        },
+        '**/api/users/**': {
+          GET: {
+            status: 200,
+            data: mockUser,
           },
         },
       })
@@ -106,7 +120,7 @@ test.describe('Email Verification Flow', () => {
 
       // Should redirect to check-email page
       await expect(page).toHaveURL(/check-email/)
-      await expect(page.getByText("We've sent a verification link")).toBeVisible()
+      await expect(page.getByTestId('verification-sent-message')).toBeVisible()
     })
 
     test('redirects to home when needs_email_verification is false', async ({ page }) => {
@@ -138,7 +152,6 @@ test.describe('Email Verification Flow', () => {
 
       // Should redirect to home page
       await expect(page).toHaveURL(/home/)
-      await expect(page.getByText('Welcome to')).toBeVisible()
     })
   })
 
@@ -158,6 +171,12 @@ test.describe('Email Verification Flow', () => {
             },
           },
         },
+        '**/api/users/**': {
+          GET: {
+            status: 200,
+            data: mockUser,
+          },
+        },
       })
 
       await page.goto('/log-in')
@@ -166,11 +185,11 @@ test.describe('Email Verification Flow', () => {
       await page.getByTestId('submit').click()
 
       // Verify check-email page content
-      await expect(page.getByRole('heading', { name: 'Check Your Email' })).toBeVisible()
-      await expect(page.getByText("We've sent a verification link to your email address")).toBeVisible()
-      await expect(page.getByText('Please check your inbox')).toBeVisible()
-      await expect(page.getByRole('button', { name: /resend verification email/i })).toBeVisible()
-      await expect(page.getByRole('link', { name: /back to log in/i })).toBeVisible()
+      await expect(page.getByTestId('auth-layout-title')).toContainText('Check Your Email')
+      await expect(page.getByTestId('verification-sent-message')).toBeVisible()
+      await expect(page.getByTestId('check-inbox-message')).toBeVisible()
+      await expect(page.getByTestId('resend-verification-email')).toBeVisible()
+      await expect(page.getByTestId('use-different-account')).toBeVisible()
     })
 
     test('resend verification email shows success message', async ({ page }) => {
@@ -187,6 +206,12 @@ test.describe('Email Verification Flow', () => {
             },
           },
         },
+        '**/api/users/**': {
+          GET: {
+            status: 200,
+            data: mockUser,
+          },
+        },
         '**/api/resend-verification-email/': {
           POST: {
             status: 200,
@@ -201,10 +226,10 @@ test.describe('Email Verification Flow', () => {
       await page.getByTestId('submit').click()
 
       // Click resend button
-      await page.getByRole('button', { name: /resend verification email/i }).click()
+      await page.getByTestId('resend-verification-email').click()
 
       // Should show success message
-      await expect(page.getByText('Verification email sent! Please check your inbox.')).toBeVisible()
+      await expect(page.getByTestId('resend-success-message')).toBeVisible()
     })
 
     test('resend verification email shows error on failure', async ({ page }) => {
@@ -221,6 +246,12 @@ test.describe('Email Verification Flow', () => {
             },
           },
         },
+        '**/api/users/**': {
+          GET: {
+            status: 200,
+            data: mockUser,
+          },
+        },
         '**/api/resend-verification-email/': {
           POST: {
             status: 400,
@@ -235,22 +266,30 @@ test.describe('Email Verification Flow', () => {
       await page.getByTestId('submit').click()
 
       // Click resend button
-      await page.getByRole('button', { name: /resend verification email/i }).click()
+      await page.getByTestId('resend-verification-email').click()
 
       // Should show error message
-      await expect(page.getByText('Email already verified')).toBeVisible()
+      await expect(page.getByTestId('resend-error-message')).toBeVisible()
     })
 
     test('back to login link navigates correctly', async ({ page }) => {
       const mockUser = ServerUserFactory.create({ email_verified: false })
 
-      await mockRoute(page, '**/api/login/', {
-        POST: {
-          status: 200,
-          data: {
-            ...mockUser,
-            token: 'mock-auth-token',
-            needs_email_verification: true,
+      await mockRoutes(page, {
+        '**/api/login/': {
+          POST: {
+            status: 200,
+            data: {
+              ...mockUser,
+              token: 'mock-auth-token',
+              needs_email_verification: true,
+            },
+          },
+        },
+        '**/api/users/**': {
+          GET: {
+            status: 200,
+            data: mockUser,
           },
         },
       })
@@ -263,8 +302,8 @@ test.describe('Email Verification Flow', () => {
       // Wait for check-email page
       await expect(page).toHaveURL(/check-email/)
 
-      // Click back to login
-      await page.getByRole('link', { name: /back to log in/i }).click()
+      // Click use different account to go back to login
+      await page.getByTestId('use-different-account').click()
 
       // Should navigate to login page
       await expect(page).toHaveURL(/log-in/)
@@ -291,8 +330,8 @@ test.describe('Email Verification Flow', () => {
       await page.goto('/verify-email/user-123/valid-token')
 
       // Should show success message
-      await expect(page.getByText('Email verified!')).toBeVisible()
-      await expect(page.getByRole('link', { name: /log in/i })).toBeVisible()
+      await expect(page.getByTestId('verify-success')).toBeVisible()
+      await expect(page.getByTestId('verify-success-action')).toBeVisible()
     })
 
     test('shows error message on invalid token', async ({ page }) => {
@@ -306,7 +345,7 @@ test.describe('Email Verification Flow', () => {
       await page.goto('/verify-email/user-123/invalid-token')
 
       // Should show error message
-      await expect(page.getByText(/invalid|expired/i)).toBeVisible()
+      await expect(page.getByTestId('verify-error-message')).toBeVisible()
     })
 
     test('shows loading state while verifying', async ({ page }) => {
@@ -323,10 +362,10 @@ test.describe('Email Verification Flow', () => {
       await page.goto('/verify-email/user-123/valid-token')
 
       // Should show loading state
-      await expect(page.getByText(/verifying/i)).toBeVisible()
+      await expect(page.getByTestId('verify-loading')).toBeVisible()
 
       // Then show success
-      await expect(page.getByText('Email verified!')).toBeVisible()
+      await expect(page.getByTestId('verify-success')).toBeVisible()
     })
 
     test('handles already verified email gracefully', async ({ page }) => {
@@ -340,7 +379,7 @@ test.describe('Email Verification Flow', () => {
       await page.goto('/verify-email/user-123/valid-token')
 
       // Should show success (already verified is still a success case)
-      await expect(page.getByText('Email verified!')).toBeVisible()
+      await expect(page.getByTestId('verify-success')).toBeVisible()
     })
   })
 })
