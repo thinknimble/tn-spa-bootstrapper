@@ -316,6 +316,11 @@ test.describe('Email Verification Flow', () => {
     })
 
     test('shows 404 if not authenticated', async ({ page }) => {
+      // Ensure no auth state exists
+      await page.addInitScript(() => {
+        window.localStorage.clear()
+      })
+
       // Try to access check-email directly without being logged in
       await page.goto('/check-email')
 
