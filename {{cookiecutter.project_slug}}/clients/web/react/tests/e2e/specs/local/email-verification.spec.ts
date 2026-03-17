@@ -292,6 +292,12 @@ test.describe('Email Verification Flow', () => {
             data: mockUser,
           },
         },
+        '**/api/logout/': {
+          POST: {
+            status: 204,
+            data: {},
+          },
+        },
       })
 
       await page.goto('/log-in')
