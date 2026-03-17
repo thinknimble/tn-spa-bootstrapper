@@ -78,23 +78,20 @@ export const mockRoute = async (
  * Mock multiple API endpoints at once.
  *
  * IMPORTANT: Routes are registered sequentially in the order specified.
- * In Playwright, the FIRST registered handler that matches wins.
- * So list MORE SPECIFIC patterns BEFORE generic ones:
+ * In Playwright, the LAST registered handler that matches wins (LIFO order).
+ * If two patterns overlap (e.g. '**\/api/users/' and '**\/api/users/**'),
+ * combine them into a single pattern with multiple method handlers instead.
  *
  * @example
  * await mockRoutes(page, {
- *   // Specific user first
- *   [`**\/api/users/${userId}/`]: { data: singleUser },
- *   // Generic users list after
- *   '**\/api/users/**': { GET: { data: paginatedUsers } },
+ *   '**\/api/login/': { POST: { data: loginResponse } },
+ *   '**\/api/users/**': { GET: { data: user }, POST: { status: 201, data: newUser } },
  * })
  */
 export const mockRoutes = async (
   page: Page,
   routes: Record<string, RouteHandler | MethodHandlers>,
 ) => {
-  // Register routes sequentially to preserve order
-  // Playwright uses first-registered-first-matched, so specific routes must be registered first
   for (const [pattern, handlers] of Object.entries(routes)) {
     await mockRoute(page, pattern, handlers)
   }

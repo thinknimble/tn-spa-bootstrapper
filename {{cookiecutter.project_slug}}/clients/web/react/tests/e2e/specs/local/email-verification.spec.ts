@@ -91,22 +91,18 @@ test.describe('Email Verification Flow', () => {
         email_verified: false,
       })
 
-      await mockRoutes(page, {
-        '**/api/users/': {
-          POST: {
-            status: 201,
-            data: {
-              ...mockUser,
-              token: 'mock-auth-token',
-              needs_email_verification: true,
-            },
+      await mockRoute(page, '**/api/users/**', {
+        POST: {
+          status: 201,
+          data: {
+            ...mockUser,
+            token: 'mock-auth-token',
+            needs_email_verification: true,
           },
         },
-        '**/api/users/**': {
-          GET: {
-            status: 200,
-            data: mockUser,
-          },
+        GET: {
+          status: 200,
+          data: mockUser,
         },
       })
 
