@@ -27,7 +27,7 @@ jobs:
           else
             echo "Switching Heroku to build with $config_file instead"
             heroku plugins:install @heroku-cli/heroku-builds
-            heroku builds:cache:purge -a ${{ env.APP_NAME }}
+            heroku builds:cache:purge -a ${{ env.APP_NAME }} --confirm ${{ env.APP_NAME }}
             heroku config:set BUILDPACK_RUN="./scripts/buildpack_run.sh" --app=${{ env.APP_NAME }}
           fi
           cat $config_file
