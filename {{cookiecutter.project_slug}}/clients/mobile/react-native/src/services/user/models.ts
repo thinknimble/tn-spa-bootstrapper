@@ -22,7 +22,7 @@ export const userShape = {
  */
 export const userShapeWithToken = {
   ...userShape,
-  token: z.string().readonly(),
+  token: z.string(),
 }
 
 export type UserShape = GetInferredFromRaw<typeof userShape>
