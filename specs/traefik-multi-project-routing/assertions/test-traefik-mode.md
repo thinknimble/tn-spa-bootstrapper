@@ -2,20 +2,20 @@
 id: test-traefik-mode
 parent: traefik-multi-project-routing
 created: 2026-03-13T12:00:00Z
+updated: 2026-03-19T00:00:00Z
 priority: 1
 status: not_started
 ---
 
-# Testing: Traefik Mode
+# Testing: Traefik Mode (Auto-Detected)
 
 ## What Must Be True
 
-Traefik mode enables hostname-based routing without host port exposure.
+When the `proxy` Docker network exists, `just up` automatically routes through Traefik without any manual configuration.
 
 ## Test Prerequisites
 
-- Proxy network exists: `docker network create proxy`
-- Traefik container running and attached to `proxy` network
+- Traefik provisioned: `just setup-traefik` (creates `proxy` network + starts Traefik container)
 
 ## Test Procedure
 
@@ -25,46 +25,47 @@ Traefik mode enables hostname-based routing without host port exposure.
    cd <generated-project>
    ```
 
-2. **Configure for Traefik mode:**
+2. **Ensure Traefik is running:**
    ```bash
-   cp .env.example .env
-   # Edit .env:
-   PROJECT=testproject
-   COMPOSE_FILE=docker-compose.yaml:docker-compose.traefik.yml
+   just setup-traefik
+   docker network ls | grep proxy   # should exist
+   docker ps | grep traefik         # should be running
    ```
 
-3. **Start services:**
+3. **Start services (Traefik overlay auto-applied):**
    ```bash
-   docker-compose up -d
+   just up
+   # Output should include "PROJECT=<slug>-main"
    ```
 
-4. **Verify NO host ports:**
+4. **Verify NO host ports for app services:**
    ```bash
-   docker-compose ps
-   # Ports column should be empty or show only container ports
+   docker compose ps
+   # client and server should show no host port bindings
    ```
 
 5. **Access via hostnames:**
-   - Frontend: `http://testproject.localhost`
-   - Backend API: `http://api.testproject.localhost`
+   - Frontend: `http://<slug>-main.localhost`
+   - Backend API: `http://api.<slug>-main.localhost`
    - Both should respond successfully
 
 6. **Verify network attachment:**
    ```bash
-   docker inspect testproject-server | grep -A5 Networks
-   # Should show both "default" and "proxy"
+   docker inspect <PROJECT>-server | grep -A5 Networks
+   # Should show both "default" and "proxy" networks
    ```
 
 7. **Clean up:**
    ```bash
-   docker-compose down
+   just down
    ```
 
 ## Success Criteria
 
-- ✅ Services start without errors
-- ✅ No host ports exposed (verified by `docker-compose ps`)
+- ✅ No `.env` changes required — Traefik mode activates automatically
+- ✅ No host ports exposed for client/server (verified by `docker compose ps`)
 - ✅ Services attached to both `default` and `proxy` networks
 - ✅ Frontend accessible at `{PROJECT}.localhost`
 - ✅ Backend accessible at `api.{PROJECT}.localhost`
 - ✅ Internal services (postgres, redis) remain reachable by server
+- ✅ Vite HMR works in the browser (no WebSocket errors)

@@ -2,15 +2,16 @@
 id: base-compose-traefik-labels
 parent: traefik-multi-project-routing
 created: 2026-03-13T12:00:00Z
+updated: 2026-03-19T00:00:00Z
 priority: 1
-status: not_started
+status: done
 ---
 
-# Base Compose: Traefik Labels
+# Traefik Overlay: Labels and Network
 
 ## What Must Be True
 
-The `{{cookiecutter.project_slug}}/docker-compose.yaml` template adds Traefik labels to `server` and `client` services that enable hostname-based routing.
+`compose/docker-compose.traefik.yml` contains Traefik labels for `server` and `client` services. Labels are NOT in `docker-compose.yaml` — they are applied only when Traefik is present.
 
 ## Labels Required
 
@@ -19,8 +20,12 @@ The `{{cookiecutter.project_slug}}/docker-compose.yaml` template adds Traefik la
 ```yaml
 services:
   server:
+    networks:
+      - default
+      - proxy
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
       - "traefik.http.routers.${PROJECT}-api.rule=Host(`api.${PROJECT}.localhost`)"
       - "traefik.http.routers.${PROJECT}-api.entrypoints=web"
       - "traefik.http.services.${PROJECT}-api.loadbalancer.server.port=8000"
@@ -31,8 +36,15 @@ services:
 ```yaml
 services:
   client:
+    networks:
+      - default
+      - proxy
+    environment:
+      - VITE_DEV_BACKEND_URL=http://api.${PROJECT}.localhost
+      - VITE_HMR_HOST=${PROJECT}.localhost
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
       - "traefik.http.routers.${PROJECT}-web.rule=Host(`${PROJECT}.localhost`)"
       - "traefik.http.routers.${PROJECT}-web.entrypoints=web"
       - "traefik.http.services.${PROJECT}-web.loadbalancer.server.port=8080"
@@ -40,15 +52,15 @@ services:
 
 ## Key Properties
 
-- **Dynamic routing** via `${PROJECT}` variable — each project gets unique hostnames
-- **Inert without Traefik** — labels have no effect in standalone mode
-- **Service port specification** — tells Traefik which container port to forward to
-- **Entrypoint** — uses `web` (port 80) entrypoint
+- **Overlay only** — labels live in `compose/docker-compose.traefik.yml`, not `docker-compose.yaml`
+- `traefik.docker.network=proxy` tells Traefik which network to use for routing
+- `VITE_HMR_HOST` enables correct Vite HMR WebSocket connection through the proxy
+- Labels have no effect when the overlay is not applied (standalone mode)
 
 ## Success Criteria
 
+- ✅ Labels in `compose/docker-compose.traefik.yml`, not `docker-compose.yaml`
 - ✅ Labels use `${PROJECT}` for dynamic routing
 - ✅ Server accessible at `api.${PROJECT}.localhost` in Traefik mode
 - ✅ Client accessible at `${PROJECT}.localhost` in Traefik mode
-- ✅ Labels do not cause errors or warnings in standalone mode
 - ✅ Port specifications match actual service ports (8080 for client, 8000 for server)

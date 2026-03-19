@@ -3,7 +3,7 @@ id: override-port-mappings
 parent: traefik-multi-project-routing
 created: 2026-03-13T12:00:00Z
 priority: 1
-status: not_started
+status: done
 ---
 
 # Override File: Port Mappings
@@ -19,16 +19,16 @@ services:
   client:
     ports:
       - "8080:8080"
-  
+
   server:
     ports:
       - "8000:8000"
       - "5678:5678"  # debugpy
-  
+
   postgres:
     ports:
       - "5432:5432"
-  
+
   redis:
     ports:
       - "6379:6379"
