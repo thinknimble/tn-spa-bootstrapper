@@ -1476,7 +1476,7 @@ requires-dist = [
     { name = "dj-database-url", specifier = "==0.5.0" },
     { name = "dj-rest-auth", specifier = "==7.0.*" },
     { name = "django", specifier = "==5.2.*" },
-    { name = "django-anymail", specifier = "==13.0.1" },
+    { name = "django-anymail", specifier = "==13.0.*" },
     { name = "django-cors-headers", specifier = "==3.8.0" },
     { name = "django-currentuser", specifier = ">=0.9.0" },
     { name = "django-extensions", specifier = "==3.2.*" },
