@@ -21,7 +21,7 @@ const InnerForm = () => {
     mutationFn: userApi.csc.signup,
     onSuccess: (data) => {
       changeToken(data.token)
-      changeUserId(data.id)
+      if (data.id) changeUserId(data.id)
       goToMain()
     },
     onError(e: unknown) {
