@@ -78,7 +78,7 @@
     "react-native-web": "^0.21.0",
     "rn-bounceable": "^1.2.0",
     "tailwind-merge": "^2.6.0",
-    "zod": "3.21.4",
+    "zod": "^3.22.3",
     "zustand": "^4.3.3"
   },
   "devDependencies": {
@@ -115,5 +115,11 @@
     "expo-starter",
     "expo-template"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "overrides": {
+    "serialize-javascript": "^7.0.3",
+    "@typescript-eslint/utils": {
+      "minimatch": "^9.0.7"
+    }
+  }
 }
