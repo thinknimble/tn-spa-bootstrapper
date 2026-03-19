@@ -1,10 +1,13 @@
 const { getSentryExpoConfig } = require('@sentry/react-native/metro')
 const { withNativeWind } = require('nativewind/metro')
-const {
-  wrapWithReanimatedMetroConfig,
-} = require('react-native-reanimated/metro-config');
 
-const config = getSentryExpoConfig(__dirname, { isCSSEnabled: true })
+// Use Sentry's Expo-specific config which wraps getDefaultConfig
+const sentryConfig = getSentryExpoConfig(__dirname, {
+  isCSSEnabled: true,
+})
+sentryConfig.resolver.sourceExts.push('sql')
 
+// Apply NativeWind on top
+const config = withNativeWind(sentryConfig, { input: './global.css' })
 
-module.exports = wrapWithReanimatedMetroConfig(withNativeWind(config, { input: './global.css' }))
+module.exports = config
