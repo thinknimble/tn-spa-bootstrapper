@@ -8,7 +8,7 @@ import {
 } from '@thinknimble/tn-forms'
 import {
   MaxLengthValidator,
-  NameValidator,
+  nameValidator,
   PasswordStrengthValidator,
   ExtendedEmailValidator,
 } from '../validators'
@@ -37,7 +37,7 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'First Name',
     type: 'text',
     validators: [
-      new NameValidator({ message: 'First name contains invalid characters' }),
+      nameValidator,
       new MaxLengthValidator({ maxLength: 50, message: 'First name is too long' }),
     ],
     value: '',
@@ -48,7 +48,7 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'Last Name',
     type: 'text',
     validators: [
-      new NameValidator({ message: 'Last name contains invalid characters' }),
+      nameValidator,
       new MaxLengthValidator({ maxLength: 50, message: 'Last name is too long' }),
     ],
     value: '',

@@ -22,17 +22,14 @@ export class MaxLengthValidator extends Validator<string> {
   }
 }
 
-const NAME_PATTERN = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/
+export const NAME_PATTERN = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/
 
-export class NameValidator extends PatternValidator {
-  constructor({
-    message = 'Name may only contain letters, hyphens, apostrophes, and spaces',
-    code = 'invalidName',
-    isRequired = true,
-  }: { message?: string; code?: string; isRequired?: boolean } = {}) {
-    super({ message, code, isRequired, pattern: NAME_PATTERN })
-  }
-}
+export const nameValidator = new PatternValidator({
+  pattern: NAME_PATTERN,
+  message: "Name may only contain letters, hyphens, apostrophes, and spaces",
+  code: 'invalidName',
+  isRequired: true,
+})
 
 /**
  * Practical strict subset of RFC 5322:

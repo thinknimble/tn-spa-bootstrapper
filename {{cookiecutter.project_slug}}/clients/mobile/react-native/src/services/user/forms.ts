@@ -3,11 +3,12 @@ import {
   FormField,
   IFormField,
   MinLengthValidator,
+  PatternValidator,
   RequiredValidator,
 } from '@thinknimble/tn-forms'
 import {
   MaxLengthValidator,
-  NameValidator,
+  NAME_PATTERN,
   PasswordStrengthValidator,
   ExtendedEmailValidator,
 } from '../validators'
@@ -36,7 +37,12 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'First Name',
     type: 'text',
     validators: [
-      new NameValidator({ message: 'First name contains invalid characters' }),
+      new PatternValidator({
+        pattern: NAME_PATTERN,
+        message: 'First name contains invalid characters',
+        code: 'invalidName',
+        isRequired: true,
+      }),
       new MaxLengthValidator({ maxLength: 50, message: 'First name is too long' }),
     ],
     value: '',
@@ -47,7 +53,12 @@ export class AccountForm extends Form<AccountFormInputs> {
     placeholder: 'Last Name',
     type: 'text',
     validators: [
-      new NameValidator({ message: 'Last name contains invalid characters' }),
+      new PatternValidator({
+        pattern: NAME_PATTERN,
+        message: 'Last name contains invalid characters',
+        code: 'invalidName',
+        isRequired: true,
+      }),
       new MaxLengthValidator({ maxLength: 50, message: 'Last name is too long' }),
     ],
     value: '',
