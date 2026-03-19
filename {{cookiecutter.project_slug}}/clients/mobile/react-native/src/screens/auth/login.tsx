@@ -28,7 +28,7 @@ const LoginInner = () => {
       if (!data?.token) {
         throw 'Missing token from response'
       }
-      changeUserId(data.id)
+      if (data.id) changeUserId(data.id)
       changeToken(data.token)
       goToMain()
     },

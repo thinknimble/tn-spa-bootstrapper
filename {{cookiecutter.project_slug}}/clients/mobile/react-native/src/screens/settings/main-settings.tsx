@@ -51,7 +51,7 @@ const sections: Section[] = [
       },
       {
         title: 'Contact us',
-        icon: <AntDesign name="message1" size={24} color="black" />,
+        icon: <AntDesign name="message" size={24} color="black" />,
         args: {
           screenName: 'ContactUs',
         },
