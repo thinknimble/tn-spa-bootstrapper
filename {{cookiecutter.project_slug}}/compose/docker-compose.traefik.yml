@@ -29,7 +29,8 @@ services:
       - default
       - proxy
     environment:
-      - VITE_DEV_BACKEND_URL=http://api.${PROJECT}.localhost
+      # Uses project-scoped container name to avoid DNS collisions on shared proxy network
+      - VITE_DEV_BACKEND_URL=http://${PROJECT}-server:8000
       - VITE_HMR_HOST=${PROJECT}.localhost
     labels:
       - "traefik.enable=true"
