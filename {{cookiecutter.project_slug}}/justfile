@@ -9,6 +9,7 @@ project := "{{cookiecutter.project_slug}}"
 default:
     @just --list
 
+{% if cookiecutter.client_app|lower == "react" %}
 # Client commands
 [group('client')]
 client-serve:
@@ -38,6 +39,31 @@ client-test-single TESTPATH:
 [group('client')]
 client-test-e2e:
     cd client && npm run test:e2e
+{% endif %}
+
+{% if cookiecutter.include_mobile|lower == "y" %}
+# Mobile commands
+[group('mobile')]
+mobile-serve:
+    cd mobile && npm run start
+    @echo "🚀 Mobile app ready in Expo"
+
+[group('mobile')]
+mobile-android:
+    cd mobile && npm run start:android
+
+[group('mobile')]
+mobile-ios:
+    cd mobile && npm run start:ios
+
+[group('mobile')]
+mobile-lint:
+    cd mobile && npm run lint:eslint && npm run lint:tslint
+
+[group('mobile')]
+mobile-format:
+    cd mobile && npm run format:write
+{% endif %}
 
 # Server commands
 [group('server')]
@@ -115,15 +141,15 @@ django-runserver:
 
 # Combined commands
 [group('all')]
-format: server-format client-format
+format: server-format{% if cookiecutter.client_app|lower == "react" %} client-format{% endif %}{% if cookiecutter.include_mobile|lower == "y" %} mobile-format{% endif %}
     @echo "✅ All formatting complete"
 
 [group('all')]
-lint: server-lint client-lint
+lint: server-lint{% if cookiecutter.client_app|lower == "react" %} client-lint{% endif %}{% if cookiecutter.include_mobile|lower == "y" %} mobile-lint{% endif %}
     @echo "✅ All linting complete"
 
 [group('all')]
-test: server-test client-test
+test: server-test{% if cookiecutter.client_app|lower == "react" %} client-test{% endif %}
     @echo "✅ All tests complete"
 
 # Project setup
