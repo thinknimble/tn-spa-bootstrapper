@@ -67,3 +67,14 @@ extend-select = ["I"]
 
 [tool.coverage.report]
 fail_under = 60
+
+[tool.uv]
+constraint-dependencies = [
+    "urllib3>=2.6.3",
+    "aiohttp>=3.13.3",
+    "cryptography>=46.0.5",
+    "virtualenv>=20.36.1",
+    "filelock>=3.20.3",
+    "cbor2>=5.8.0",
+    "PyNaCl>=1.6.2",
+]
