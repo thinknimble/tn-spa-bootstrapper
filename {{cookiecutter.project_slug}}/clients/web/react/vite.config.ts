@@ -34,7 +34,14 @@ export default defineConfig(({ mode }) => {
           rewrite: path => path
         }
       },
-      port: 8080
+      port: 8080,
+      // When running behind a reverse proxy (e.g. Traefik), the HMR WebSocket
+      // must connect on the proxy's port (80), not the internal Vite port (8080).
+      // clientPort tells the browser which port to use; Vite still listens on 8080.
+      // Set VITE_HMR_HOST to the external hostname (e.g. "myapp.localhost").
+      hmr: env.VITE_HMR_HOST
+        ? { host: env.VITE_HMR_HOST, clientPort: 80, protocol: 'ws' }
+        : undefined,
     },
     cacheDir: process.env.VITE_CACHE_DIR || "node_modules/.vite",
   }

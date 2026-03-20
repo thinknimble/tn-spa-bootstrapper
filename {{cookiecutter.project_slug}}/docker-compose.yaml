@@ -16,10 +16,20 @@ services:
     volumes:
       - local_postgres_data:/var/lib/postgresql/data/
       - local_postgres_data_backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     container_name: ${PROJECT}-redis
     image: "redis:latest"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   server:
     container_name: ${PROJECT}-server
@@ -31,17 +41,13 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     env_file:
       - ".env"
     environment:
       - DB_HOST=postgres
     user: ${DOCKER_UID}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT}-api.rule=Host(`api.${PROJECT}.localhost`)"
-      - "traefik.http.routers.${PROJECT}-api.entrypoints=web"
-      - "traefik.http.services.${PROJECT}-api.loadbalancer.server.port=8000"
 
   client:
     container_name: ${PROJECT}-client
@@ -54,11 +60,7 @@ services:
       - "/app/client/node_modules"
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - VITE_DEV_BACKEND_URL=http://server:8000
       {% if cookiecutter.client_app == 'React' %}
       - VITE_CACHE_DIR=./vite
       {% endif %}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT}-web.rule=Host(`${PROJECT}.localhost`)"
-      - "traefik.http.routers.${PROJECT}-web.entrypoints=web"
-      - "traefik.http.services.${PROJECT}-web.loadbalancer.server.port=8080"

@@ -9,6 +9,20 @@ project := "{{cookiecutter.project_slug}}"
 default:
     @just --list
 
+# Derive PROJECT name from current git branch (used as inline env var for docker compose).
+# main → {{cookiecutter.project_slug}}-main
+# feature/my-thing → {{cookiecutter.project_slug}}-my-thing
+[private]
+_project:
+    #!/usr/bin/env bash
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+    if [ "$branch" = "main" ]; then
+      echo "{{cookiecutter.project_slug}}-main"
+    else
+      stripped=$(echo "$branch" | sed 's|^[a-zA-Z][a-zA-Z0-9]*[/_]||')
+      echo "{{cookiecutter.project_slug}}-$(echo "$stripped" | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')"
+    fi
+
 {% if cookiecutter.client_app|lower == "react" %}
 # Client commands
 [group('client')]
@@ -88,22 +102,50 @@ server-legacy-format:
     uv run black server && uv run isort server
 
 # Docker commands
+
+# Start all services, auto-detecting Traefik. When the shared `proxy` network exists,
+# applies compose/docker-compose.traefik.yml for hostname-based routing; otherwise
+# falls back to docker-compose.override.yml (direct port bindings).
+[group('docker')]
+up:
+    #!/usr/bin/env bash
+    project=$(just _project)
+    if docker network inspect proxy >/dev/null 2>&1; then
+      PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d
+    else
+      PROJECT=$project docker compose up -d
+    fi
+    echo "Application is starting (PROJECT=$project)..."
+
+[group('docker')]
+down:
+    #!/usr/bin/env bash
+    project=$(just _project)
+    PROJECT=$project docker compose down
+    echo "Application stopped (PROJECT=$project)"
+
 [group('docker')]
 docker-stop-all:
     docker stop $(docker ps -q)
 
 [group('docker')]
 docker-postgres-redis:
-    {{ "{{ docker_compose }}" }} up -d postgres redis
+    #!/usr/bin/env bash
+    project=$(just _project)
+    if docker network inspect proxy >/dev/null 2>&1; then
+      PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d postgres redis
+    else
+      PROJECT=$project docker compose up -d postgres redis
+    fi
 
 [group('docker')]
 docker-run-all:
-    {{ "{{ docker_compose }}" }} up -d
+    just up
 
 [group('docker')]
 docker-restart-all:
-    {{ "{{ docker_compose }}" }} down
-    {{ "{{ docker_compose }}" }} up -d
+    just down
+    just up
 
 [group('docker')]
 docker-logs:
@@ -111,7 +153,81 @@ docker-logs:
 
 [group('docker')]
 docker-create-test-data:
-	docker compose run server python server/manage.py create_test_data
+    docker compose run server python server/manage.py create_test_data
+
+# Provision shared Traefik gateway (idempotent — safe to run multiple times).
+# Creates the `proxy` Docker network and starts the Traefik container.
+[group('docker')]
+setup-traefik:
+    #!/usr/bin/env bash
+    set -e
+
+    TRAEFIK_DIR="$HOME/traefik"
+
+    if ! docker network inspect proxy >/dev/null 2>&1; then
+      echo "Creating 'proxy' Docker network..."
+      docker network create proxy
+    else
+      echo "'proxy' network already exists, skipping"
+    fi
+
+    if docker inspect traefik >/dev/null 2>&1; then
+      echo "Traefik container already exists, skipping"
+    else
+      echo "Starting Traefik gateway..."
+      docker compose -f "$TRAEFIK_DIR/docker-compose.yml" up -d
+      echo "Traefik running on port 80"
+    fi
+
+# Manage git worktrees with isolated Docker stacks.
+# Usage: just worktree add <branch>    — create worktree and run setup
+#        just worktree remove <branch> — stop Docker stack and remove worktree
+[group('docker')]
+worktree action branch:
+    #!/usr/bin/env bash
+    set -e
+
+    BRANCH="{{ "{{ branch }}" }}"
+    dir_name=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
+    worktree_path="../{{cookiecutter.project_slug}}-${dir_name}"
+
+    if [ "{{ "{{ action }}" }}" = "add" ]; then
+      echo "Creating worktree for branch '$BRANCH' at $worktree_path..."
+      if git show-ref --verify --quiet "refs/heads/$BRANCH" || git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+        git worktree add "$worktree_path" "$BRANCH"
+      else
+        git worktree add -b "$BRANCH" "$worktree_path"
+      fi
+
+      echo "Running setup in worktree..."
+      (cd "$worktree_path" && just setup-dev)
+
+      echo ""
+      echo "Worktree ready at: $worktree_path"
+      echo "  cd $worktree_path && just up"
+      echo ""
+
+    elif [ "{{ "{{ action }}" }}" = "remove" ]; then
+      if [ ! -d "$worktree_path" ]; then
+        echo "Error: worktree not found at $worktree_path"
+        exit 1
+      fi
+
+      echo "Stopping Docker services for '$BRANCH'..."
+      (cd "$worktree_path" && just down)
+
+      echo "Removing worktree..."
+      git worktree remove "$worktree_path" --force
+
+      echo ""
+      echo "Worktree '$BRANCH' removed."
+      echo "Note: branch not deleted. To delete: git branch -d $BRANCH"
+      echo ""
+
+    else
+      echo "Usage: just worktree add <branch> | just worktree remove <branch>"
+      exit 1
+    fi
 
 # Django commands
 [group('django')]
