@@ -77,7 +77,14 @@
   },
   "overrides": {
     "react-is": "^19.0.0",
-    "serialize-javascript": "^7.0.3"
+    "serialize-javascript": "^7.0.3",
+    "flatted": ">=3.4.2",
+    "webpack": ">=5.104.1",
+    "lodash": ">=4.17.23",
+    "glob": ">=10.5.0",
+    "js-yaml": ">=4.1.1",
+    "tmp": ">=0.2.4",
+    "@babel/helpers": ">=7.26.10"
   },
   "browserslist": {
     "production": [
