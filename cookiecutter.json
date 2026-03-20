@@ -3,7 +3,9 @@
   "author_name": "ThinkNimble",
   "email": "hello@thinknimble.com",
   "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
-  "_extensions": ["cookiecutter.extensions.RandomStringExtension"],
+  "_extensions": [
+    "cookiecutter.extensions.RandomStringExtension"
+  ],
   "_copy_without_render": [
     "clients/web/react/src/components",
     "clients/web/react/src/pages/app-or-auth.tsx",
@@ -11,9 +13,18 @@
     "clients/web/react/src/pages/layout.tsx",
     "*/swagger-ui.html",
     "clients/mobile/react-native/src/screens/settings/edit-profile.tsx",
-    "clients/mobile/react-native/src/screens/settings/main-settings.tsx"
+    "clients/mobile/react-native/src/screens/settings/main-settings.tsx",
+    "clients/web/react/node_modules",
+    "clients/mobile/react-native/node_modules"
   ],
-  "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
-  "client_app": ["React", "None"],
+  "mail_service": [
+    "Mailgun",
+    "Amazon SES",
+    "Custom SMTP"
+  ],
+  "client_app": [
+    "React",
+    "None"
+  ],
   "include_mobile": "n"
 }
