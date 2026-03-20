@@ -44,6 +44,50 @@ EMAIL_ALLOWLIST='["admin@thinknimble.com", "developer@thinknimble.com"]'
 - The EMAIL_ALLOWLIST must be provided as a JSON string in environment variables
 - When disabled, the system logs warnings for potentially risky email domains
 
+### Email Verification Configuration
+
+The application requires users to verify their email address upon signup to improve security and prevent spam:
+
+- `REQUIRE_EMAIL_VERIFICATION` (boolean, default: `True`): Enable/disable email verification requirement
+  - When `True`, users must verify their email address to gain full access
+  - When `False`, email verification is optional and users have immediate access
+  - Staff users bypass verification checks regardless of this setting
+
+#### How Email Verification Works
+
+1. **On Signup**: When a user registers, they receive a verification email with a unique token
+2. **Token Expiration**: Verification tokens expire based on Django's `PASSWORD_RESET_TIMEOUT` setting (default: 3 days)
+3. **Verification Link**: Users click the link in the email to verify their address
+4. **Resend Option**: Unverified users can request a new verification email
+5. **Token Security**: Uses Django's built-in `default_token_generator` for secure, stateless tokens
+
+#### API Endpoints
+
+- `POST /api/verify-email/<user_id>/<token>/` - Verify email address with token
+- `POST /api/resend-verification-email/` - Resend verification email (requires authentication)
+
+#### Example Configuration
+
+```bash
+# Require email verification (default)
+REQUIRE_EMAIL_VERIFICATION=True
+
+# Disable email verification
+REQUIRE_EMAIL_VERIFICATION=False
+```
+
+#### Testing Considerations
+
+- In development, verification emails are logged to the console by default
+- The email template can be previewed at `/api/template_preview/?template=registration/email_verification.html` (DEBUG mode only)
+- Staff users always bypass verification requirements for administrative access
+
+#### Deployment Notes
+
+- For Heroku deployments, this value is configured in `app.json`
+- Ensure proper email configuration (SMTP settings) for production environments
+- Consider keeping verification enabled in production for security
+
 ## Linting
 [WIP]
 

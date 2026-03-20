@@ -22,8 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "full_name",
+            "email_verified",
         )
-        read_only_fields = ["email"]
+        read_only_fields = ["email", "email_verified"]
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -51,6 +52,9 @@ class UserLoginSerializer(serializers.ModelSerializer):
         serializer = UserSerializer(user, context={"request": request})
         response_data = serializer.data
         response_data["token"] = auth_token.key
+        response_data["needs_email_verification"] = (
+            settings.REQUIRE_EMAIL_VERIFICATION and not user.email_verified
+        )
         return response_data
 
 
