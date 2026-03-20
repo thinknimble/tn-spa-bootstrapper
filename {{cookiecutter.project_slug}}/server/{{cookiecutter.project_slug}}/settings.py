@@ -290,6 +290,10 @@ else:
 USE_EMAIL_ALLOWLIST = config("USE_EMAIL_ALLOWLIST", cast=bool, default=False)
 EMAIL_ALLOWLIST = json.loads(config("EMAIL_ALLOWLIST", default="[]"))
 
+# Email Verification
+REQUIRE_EMAIL_VERIFICATION = config("REQUIRE_EMAIL_VERIFICATION", cast=bool, default=False)
+
+
 # STORAGES
 # ----------------------------------------------------------------------------
 
@@ -460,3 +464,13 @@ SPECTACULAR_SETTINGS = {
 # OpenAI Configuration
 #
 OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
+
+# Validate email verification configuration
+if REQUIRE_EMAIL_VERIFICATION and not ENABLE_EMAILS:
+    logger = logging.getLogger(__name__)
+    logger.warning(
+        "REQUIRE_EMAIL_VERIFICATION is True but ENABLE_EMAILS is False. "
+        "Email verification requires emails to be enabled. "
+        "Setting REQUIRE_EMAIL_VERIFICATION to False."
+    )
+    REQUIRE_EMAIL_VERIFICATION = False

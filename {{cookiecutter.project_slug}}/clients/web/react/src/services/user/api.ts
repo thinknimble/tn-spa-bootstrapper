@@ -48,11 +48,20 @@ const resetPassword = createCustomServiceCall({
   },
 })
 
+const verifyEmail = createCustomServiceCall({
+  inputShape: { userId: z.string(), token: z.string() },
+  outputShape: { message: z.string() },
+  cb: async ({ client, input }) => {
+    const res = await client.post(`/verify-email/${input.userId}/${input.token}/`)
+    return res.data
+  },
+})
+
 export const userApi = createApi({
   client: axiosInstance,
   baseUri: '/users/',
   models: {
     entity: userShape,
   },
-  customCalls: { login, logout, requestPasswordReset, resetPassword, signup },
+  customCalls: { login, logout, requestPasswordReset, resetPassword, signup, verifyEmail },
 })
