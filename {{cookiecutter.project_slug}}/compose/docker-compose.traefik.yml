@@ -1,0 +1,40 @@
+# Traefik overlay — auto-applied by `just up` when the `proxy` Docker network exists.
+# Joins services to the shared gateway and enables hostname-based routing.
+# Does NOT bind host ports.
+#
+# Hostname-based URLs (PROJECT derived from git branch):
+#   Client:  http://${PROJECT}.localhost
+#   API:     http://api.${PROJECT}.localhost
+#
+# To provision the Traefik gateway: just setup-traefik
+
+networks:
+  proxy:
+    external: true
+
+services:
+  server:
+    networks:
+      - default
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.${PROJECT}-api.rule=Host(`api.${PROJECT}.localhost`)"
+      - "traefik.http.routers.${PROJECT}-api.entrypoints=web"
+      - "traefik.http.services.${PROJECT}-api.loadbalancer.server.port=8000"
+
+  client:
+    networks:
+      - default
+      - proxy
+    environment:
+      # Uses project-scoped container name to avoid DNS collisions on shared proxy network
+      - VITE_DEV_BACKEND_URL=http://${PROJECT}-server:8000
+      - VITE_HMR_HOST=${PROJECT}.localhost
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.${PROJECT}-web.rule=Host(`${PROJECT}.localhost`)"
+      - "traefik.http.routers.${PROJECT}-web.entrypoints=web"
+      - "traefik.http.services.${PROJECT}-web.loadbalancer.server.port=8080"

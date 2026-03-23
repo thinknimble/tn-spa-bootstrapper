@@ -2,46 +2,22 @@
 id: env-compose-file-variable
 parent: traefik-multi-project-routing
 created: 2026-03-13T12:00:00Z
+updated: 2026-03-19T00:00:00Z
 priority: 1
-status: not_started
+status: superseded
 ---
 
-# Environment: COMPOSE_FILE Variable
+# SUPERSEDED: Environment: COMPOSE_FILE Variable
 
-## What Must Be True
+## Status
 
-The `{{cookiecutter.project_slug}}/.env.example` file includes a commented-out `COMPOSE_FILE` variable that enables Traefik mode.
+This assertion is superseded by the auto-detection approach. `COMPOSE_FILE` is no longer used to toggle Traefik mode.
 
-## Required Content
+## New Behavior
 
-```
-# Uncomment to enable Traefik routing (disables docker-compose.override.yml)
-# COMPOSE_FILE=docker-compose.yaml:docker-compose.traefik.yml
-```
+`just up` detects whether the `proxy` Docker network exists at runtime and automatically applies the appropriate compose files:
 
-## Behavior
+- **Proxy network absent:** `docker compose up -d` (loads `docker-compose.yaml` + `docker-compose.override.yml`)
+- **Proxy network present:** `docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d`
 
-When **commented out** (default):
-- Docker Compose loads `docker-compose.yaml` + `docker-compose.override.yml`
-- Port mappings are active (standalone mode)
-- Access via localhost:8080, localhost:8000, etc.
-
-When **uncommented**:
-- Docker Compose loads `docker-compose.yaml` + `docker-compose.traefik.yml`
-- `docker-compose.override.yml` is skipped
-- No host ports mapped
-- Access via `{project}.localhost`, `api.{project}.localhost`
-
-## Mode Switching
-
-Developers toggle modes by:
-1. Editing `.env` to uncomment/comment the line
-2. Running `docker-compose down && docker-compose up`
-
-## Success Criteria
-
-- ✅ Variable exists in `.env.example` as a comment
-- ✅ Comment explains the purpose clearly
-- ✅ Value is correct: `docker-compose.yaml:docker-compose.traefik.yml`
-- ✅ Uncommenting switches to Traefik mode (verified by no host ports in `docker-compose ps`)
-- ✅ Commenting restores standalone mode (verified by host ports returning)
+No `.env` entry or manual file switching required. See `auto-detect-traefik` assertion.

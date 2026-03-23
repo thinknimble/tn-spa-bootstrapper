@@ -2,6 +2,7 @@
 id: test-multi-project-concurrent
 parent: traefik-multi-project-routing
 created: 2026-03-13T12:00:00Z
+updated: 2026-03-19T00:00:00Z
 priority: 1
 status: not_started
 ---
@@ -10,70 +11,70 @@ status: not_started
 
 ## What Must Be True
 
-Multiple generated projects can run simultaneously in Traefik mode without conflicts.
+Multiple generated projects (or worktrees) can run simultaneously in Traefik mode without conflicts.
 
 ## Test Prerequisites
 
-- Proxy network exists: `docker network create proxy`
-- Traefik container running
+- Traefik provisioned: `just setup-traefik`
 
-## Test Procedure
+## Option A: Two separate generated projects
 
 1. **Generate two projects:**
    ```bash
-   cookiecutter <bootstrapper-path> -o ~/projects/project1
-   cookiecutter <bootstrapper-path> -o ~/projects/project2
+   cookiecutter <bootstrapper-path>  # project slug: alpha
+   cookiecutter <bootstrapper-path>  # project slug: beta
    ```
 
-2. **Configure project1:**
+2. **Start both (on main branch, each gets its own PROJECT):**
    ```bash
-   cd ~/projects/project1
-   cp .env.example .env
-   # Edit .env:
-   PROJECT=project1
-   COMPOSE_FILE=docker-compose.yaml:docker-compose.traefik.yml
-   docker-compose up -d
+   cd ~/projects/alpha && just up   # PROJECT=alpha-main
+   cd ~/projects/beta  && just up   # PROJECT=beta-main
    ```
 
-3. **Configure project2:**
+3. **Verify both running:**
    ```bash
-   cd ~/projects/project2
-   cp .env.example .env
-   # Edit .env:
-   PROJECT=project2
-   COMPOSE_FILE=docker-compose.yaml:docker-compose.traefik.yml
-   docker-compose up -d
-   ```
-
-4. **Verify both running:**
-   ```bash
-   docker ps | grep -E "(project1|project2)"
+   docker ps | grep -E "(alpha|beta)"
    # Should show containers for both projects
    ```
 
-5. **Access both projects:**
-   - Project1 frontend: `http://project1.localhost`
-   - Project1 backend: `http://api.project1.localhost`
-   - Project2 frontend: `http://project2.localhost`
-   - Project2 backend: `http://api.project2.localhost`
-   - All four URLs should respond successfully
+4. **Access both projects:**
+   - `http://alpha-main.localhost` — Alpha frontend
+   - `http://api.alpha-main.localhost` — Alpha API
+   - `http://beta-main.localhost` — Beta frontend
+   - `http://api.beta-main.localhost` — Beta API
 
-6. **Verify isolation:**
-   - Each project has its own database instance
-   - No cross-project data leakage
-   - Container names clearly differentiate projects
-
-7. **Clean up:**
+5. **Clean up:**
    ```bash
-   cd ~/projects/project1 && docker-compose down
-   cd ~/projects/project2 && docker-compose down
+   cd ~/projects/alpha && just down
+   cd ~/projects/beta  && just down
+   ```
+
+## Option B: Worktrees within one project
+
+1. **Create a worktree:**
+   ```bash
+   just worktree add feature/experiment
+   ```
+
+2. **Start both stacks:**
+   ```bash
+   just up                                         # PROJECT=<slug>-main
+   (cd ../<slug>-experiment && just up)            # PROJECT=<slug>-experiment
+   ```
+
+3. **Verify both accessible at unique hostnames with no port conflicts.**
+
+4. **Clean up:**
+   ```bash
+   just worktree remove feature/experiment
+   just down
    ```
 
 ## Success Criteria
 
-- ✅ Both projects start without errors
+- ✅ Both stacks start without errors
 - ✅ No port conflicts during startup
-- ✅ All services for both projects are accessible via unique hostnames
-- ✅ Container names include project identifier (`project1-server`, `project2-server`)
+- ✅ All services accessible via unique hostnames
+- ✅ Container names clearly differentiate projects (include PROJECT prefix)
 - ✅ Traefik routes to correct project based on hostname
 - ✅ Projects are fully isolated (separate databases, separate containers)

@@ -1,17 +1,30 @@
+# Auto-applied by Docker Compose — safe default for all environments (local dev, CI).
+# Binds host ports for direct access. No Traefik required.
+#
+# URLs:
+#   Client:  http://localhost:8080
+#   API:     http://localhost:8000
+#
+# When the shared Traefik gateway is present (`just setup-traefik` provisions it),
+# `just up` auto-detects it and applies compose/docker-compose.traefik.yml instead,
+# enabling hostname-based routing (http://${PROJECT}.localhost).
+
 services:
   client:
     ports:
       - "8080:8080"
-  
+    environment:
+      - VITE_DEV_BACKEND_URL=http://localhost:8000
+
   server:
     ports:
       - "8000:8000"
-      - "5678:5678"
-  
+      - "5678:5678"  # debugpy
+
   postgres:
     ports:
       - "5432:5432"
-  
+
   redis:
     ports:
       - "6379:6379"
