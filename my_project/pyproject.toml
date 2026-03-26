@@ -37,7 +37,7 @@ dependencies = [
     "python-decouple>=3.8",
     "python-slugify==5.0.2",
     "pytz==2021.1",
-    "requests>=2.32.4",
+    "requests>=2.33.0",
     "rollbar>=1.2.0",
     "twilio>=9.4.6",
     "whitenoise==5.3.0",
