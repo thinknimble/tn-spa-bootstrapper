@@ -4,7 +4,8 @@ parent: traefik-multi-project-routing
 created: 2026-03-13T12:00:00Z
 updated: 2026-03-19T00:00:00Z
 priority: 1
-status: not_started
+status: in_progress
+locked-by: builder-xps13-17192-1774559058
 depends-on: auto-detect-traefik
 branch: main
 ---
