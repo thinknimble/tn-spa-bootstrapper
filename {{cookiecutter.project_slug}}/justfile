@@ -117,10 +117,11 @@ server-legacy-format:
 # applies compose/docker-compose.traefik.yml for hostname-based routing; otherwise
 # falls back to docker-compose.override.yml (direct port bindings).
 [group('docker')]
-up: setup-traefik
+up:
     #!/usr/bin/env bash
     project=$(just _project)
     if docker network inspect proxy >/dev/null 2>&1; then
+      just setup-traefik
       PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d
     else
       PROJECT=$project docker compose up -d
