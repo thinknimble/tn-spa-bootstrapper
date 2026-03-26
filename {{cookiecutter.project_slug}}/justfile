@@ -50,6 +50,11 @@ client-test:
 client-test-single TESTPATH:
     cd client && npm run test:single {{ "{{TESTPATH}}" }}
 
+# Run client tests inside Docker
+[group('client')]
+client-test-docker:
+    docker compose exec client npm run test
+
 [group('client')]
 client-test-e2e:
     cd client && npm run test:e2e
@@ -89,6 +94,11 @@ server-run:
 server-test: django-check-migrations
     cd server && uv run python -m pytest --mccabe --cov={{ "{{ project }}" }} --cov-config=pyproject.toml -vv {{ "{{ project }}" }} && coverage report
 
+# Run server tests inside Docker (works in both standalone and Traefik mode)
+[group('server')]
+server-test-docker:
+    docker compose exec -w /app/server server pytest
+
 [group('server')]
 server-format:
     uv run ruff format server
@@ -107,7 +117,7 @@ server-legacy-format:
 # applies compose/docker-compose.traefik.yml for hostname-based routing; otherwise
 # falls back to docker-compose.override.yml (direct port bindings).
 [group('docker')]
-up:
+up: setup-traefik
     #!/usr/bin/env bash
     project=$(just _project)
     if docker network inspect proxy >/dev/null 2>&1; then
@@ -156,7 +166,8 @@ docker-create-test-data:
     docker compose run server python server/manage.py create_test_data
 
 # Provision shared Traefik gateway (idempotent — safe to run multiple times).
-# Creates the `proxy` Docker network and starts the Traefik container.
+# Creates the `proxy` Docker network, auto-generates ~/traefik/docker-compose.yml if missing,
+# and starts the Traefik container.
 [group('docker')]
 setup-traefik:
     #!/usr/bin/env bash
@@ -164,6 +175,7 @@ setup-traefik:
 
     TRAEFIK_DIR="$HOME/traefik"
 
+    # 1. Ensure proxy network
     if ! docker network inspect proxy >/dev/null 2>&1; then
       echo "Creating 'proxy' Docker network..."
       docker network create proxy
@@ -171,12 +183,45 @@ setup-traefik:
       echo "'proxy' network already exists, skipping"
     fi
 
+    # 2. Auto-generate ~/traefik/docker-compose.yml if missing
+    if [ ! -f "$TRAEFIK_DIR/docker-compose.yml" ]; then
+      echo "Creating $TRAEFIK_DIR/docker-compose.yml..."
+      mkdir -p "$TRAEFIK_DIR"
+      cat > "$TRAEFIK_DIR/docker-compose.yml" << 'YAML'
+    networks:
+      proxy:
+        external: true
+
+    services:
+      traefik:
+        image: traefik:v3.6
+        container_name: traefik
+        restart: unless-stopped
+        command:
+          - "--api.insecure=true"
+          - "--providers.docker=true"
+          - "--providers.docker.exposedbydefault=false"
+          - "--providers.docker.network=proxy"
+          - "--entrypoints.web.address=:80"
+        ports:
+          - "80:80"
+          - "9090:8080"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        networks:
+          - proxy
+    YAML
+    else
+      echo "$TRAEFIK_DIR/docker-compose.yml already exists, skipping"
+    fi
+
+    # 3. Start Traefik if not already running
     if docker inspect traefik >/dev/null 2>&1; then
       echo "Traefik container already exists, skipping"
     else
       echo "Starting Traefik gateway..."
       docker compose -f "$TRAEFIK_DIR/docker-compose.yml" up -d
-      echo "Traefik running on port 80"
+      echo "Traefik running — dashboard at http://localhost:9090"
     fi
 
 # Manage git worktrees with isolated Docker stacks.
@@ -267,6 +312,11 @@ lint: server-lint{% if cookiecutter.client_app|lower == "react" %} client-lint{%
 [group('all')]
 test: server-test{% if cookiecutter.client_app|lower == "react" %} client-test{% endif %}
     @echo "✅ All tests complete"
+
+# Run all tests inside Docker (works in both standalone and Traefik mode)
+[group('all')]
+test-docker: server-test-docker{% if cookiecutter.client_app|lower == "react" %} client-test-docker{% endif %}
+    @echo "✅ All tests complete (Docker)"
 
 # Project setup
 [group('setup')]
