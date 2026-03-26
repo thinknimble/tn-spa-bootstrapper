@@ -134,7 +134,6 @@
     "readdirp": { "picomatch": ">=2.3.2" },
     "jest-util": { "picomatch": ">=2.3.2" },
     "expo": { "picomatch": ">=3.0.2" },
-    "minimatch": { "brace-expansion": ">=5.0.5" },
     "yaml": ">=2.8.3"
   }
 }

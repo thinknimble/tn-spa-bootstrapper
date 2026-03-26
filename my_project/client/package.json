@@ -89,7 +89,6 @@
     "anymatch": { "picomatch": ">=2.3.2" },
     "micromatch": { "picomatch": ">=2.3.2" },
     "readdirp": { "picomatch": ">=2.3.2" },
-    "minimatch": { "brace-expansion": ">=5.0.5" },
     "yaml": ">=2.8.3",
     "@babel/runtime": ">=7.26.10"
   },
