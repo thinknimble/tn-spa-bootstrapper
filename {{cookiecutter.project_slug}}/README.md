@@ -33,100 +33,57 @@ See the [frontend README](client/README.md)
 
 ## Multi-Project Development
 
-This project supports two operational modes for Docker development:
+This project supports two operational modes for local Docker development.
 
 ### Standalone Mode (Default)
 
-Works out of the box with standard port mappings. Ideal for working on a single project.
+No configuration needed — `just up` works out of the box.
 
-**Setup:**
-1. Copy `.env.example` to `.env`
-2. Run `docker-compose up`
-3. Access the application:
-   - Frontend: `http://localhost:8080`
-   - Backend API: `http://localhost:8000`
-   - Django admin: `http://localhost:8000/staff/`
-
-**How it works:** Docker Compose automatically loads `docker-compose.yaml` and `docker-compose.override.yml`, which defines port mappings for all services.
+- Access the frontend at `http://localhost:8080`
+- Access the backend API at `http://localhost:8000`
+- Port bindings come from `docker-compose.override.yml` (loaded automatically by Docker Compose)
 
 ### Traefik Mode (Multiple Projects Simultaneously)
 
-Enables running multiple project instances at once without port conflicts. Each project is accessed via unique hostnames.
+Run multiple projects (or worktrees) at the same time without port conflicts. Each project gets a unique hostname derived from the git branch name.
 
-**Prerequisites:**
-1. Create the shared Docker network (once):
-   ```bash
-   docker network create proxy
-   ```
+**One-time setup:**
+```bash
+just setup-traefik
+```
+This creates the `proxy` Docker network, generates `~/traefik/docker-compose.yml`, and starts the Traefik gateway. It is idempotent — safe to run multiple times.
 
-2. Run Traefik (if not already running):
-   ```bash
-   docker run -d \
-     --name traefik \
-     --network proxy \
-     -p 80:80 \
-     -p 8081:8080 \
-     -v /var/run/docker.sock:/var/run/docker.sock:ro \
-     traefik:v2.10 \
-     --api.insecure=true \
-     --providers.docker=true \
-     --providers.docker.exposedbydefault=false \
-     --entrypoints.web.address=:80
-   ```
-   
-   Or use a `docker-compose.yaml` for Traefik in a dedicated directory. See [Traefik Docker Provider docs](https://doc.traefik.io/traefik/providers/docker/) for more options.
+**Then just use `just up` as normal.** It auto-detects the `proxy` network and switches to hostname routing automatically — no `.env` changes required.
 
-**Setup:**
-1. Copy `.env.example` to `.env`
-2. Edit `.env` and set:
-   ```
-   PROJECT=myproject
-   COMPOSE_FILE=docker-compose.yaml:docker-compose.traefik.yml
-   ```
-3. Run `docker-compose up`
-4. Access the application:
-   - Frontend: `http://myproject.localhost`
-   - Backend API: `http://api.myproject.localhost`
+**Access your project:**
+- `PROJECT` is derived from the current git branch automatically
+  - `main` branch → `{{cookiecutter.project_slug}}-main`
+  - `feature/auth` branch → `{{cookiecutter.project_slug}}-auth`
+- Frontend: `http://${PROJECT}.localhost`
+- Backend API: `http://api.${PROJECT}.localhost`
+- Traefik dashboard: `http://localhost:9090`
 
-**How it works:** Setting `COMPOSE_FILE` tells Docker Compose to load `docker-compose.yaml` and `docker-compose.traefik.yml` (skipping `docker-compose.override.yml`). This removes host port mappings and attaches services to the shared `proxy` network, where Traefik routes traffic based on hostnames.
+**To switch back to standalone mode:** Stop Traefik (`docker stop traefik`) and run `just up`. It falls back to port bindings automatically.
 
-**Running multiple projects:**
-- Generate or clone additional project instances
-- Give each a unique `PROJECT` value in `.env`
-- Start all projects: each will be accessible at `{PROJECT}.localhost`
-- No port conflicts!
+### Worktree Workflow
 
-### Switching Modes
+Work on multiple branches simultaneously with fully isolated Docker stacks:
 
-To switch from standalone to Traefik mode (or vice versa):
+```bash
+# Create a worktree with its own Docker stack
+just worktree add feature/experiment
 
-1. Edit `.env` to comment/uncomment the `COMPOSE_FILE` variable
-2. Restart containers:
-   ```bash
-   docker-compose down
-   docker-compose up
-   ```
+# Each worktree gets its own PROJECT from the branch name:
+#   main worktree      → PROJECT={{cookiecutter.project_slug}}-main
+#   experiment worktree → PROJECT={{cookiecutter.project_slug}}-experiment
 
-### Troubleshooting
+# Start both stacks (no port conflicts in Traefik mode)
+just up                                           # in main worktree
+cd ../{{cookiecutter.project_slug}}-experiment && just up   # in experiment worktree
 
-**Cannot reach `{project}.localhost`:**
-- Verify the `proxy` network exists: `docker network ls | grep proxy`
-- If missing: `docker network create proxy`
-- Verify Traefik is running: `docker ps | grep traefik`
-- Check service is attached to proxy network: `docker inspect {PROJECT}-server | grep -A5 Networks`
-- Verify Traefik labels: `docker inspect {PROJECT}-server | grep traefik`
-
-**Port already in use:**
-- Switch to Traefik mode (no host ports mapped)
-- Stop conflicting containers: `docker ps` and `docker stop <container>`
-- Check for other services: `lsof -i :8080`, `lsof -i :8000`
-
-**Verify Traefik routing:**
-- Access Traefik dashboard (if enabled): `http://localhost:8081` (or configured port)
-- Check Traefik logs: `docker logs traefik`
-- Test routing manually: `curl -H "Host: project.localhost" http://localhost/`
-
-For more details, see the [Traefik documentation](https://doc.traefik.io/traefik/).
+# Tear down and remove a worktree
+just worktree remove feature/experiment
+```
 
 ## Pre-commit Hooks
 

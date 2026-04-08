@@ -127,6 +127,13 @@
     "glob": ">=10.5.0",
     "js-yaml": ">=4.1.1",
     "tmp": ">=0.2.4",
-    "@babel/helpers": ">=7.26.10"
+    "@babel/helpers": ">=7.26.10",
+    "picomatch": ">=4.0.4",
+    "anymatch": { "picomatch": ">=2.3.2" },
+    "micromatch": { "picomatch": ">=2.3.2" },
+    "readdirp": { "picomatch": ">=2.3.2" },
+    "jest-util": { "picomatch": ">=2.3.2" },
+    "expo": { "picomatch": ">=3.0.2" },
+    "yaml": ">=2.8.3"
   }
 }
