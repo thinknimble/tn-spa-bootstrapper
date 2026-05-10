@@ -23,6 +23,8 @@ services:
       - "traefik.http.routers.${PROJECT}-api.rule=Host(`api.${PROJECT}.localhost`)"
       - "traefik.http.routers.${PROJECT}-api.entrypoints=web"
       - "traefik.http.services.${PROJECT}-api.loadbalancer.server.port=8000"
+    environment:
+      - ALLOWED_HOSTS=server,localhost,api.${PROJECT}.localhost,${PROJECT}.localhost,${PROJECT}-server
 
   client:
     networks:
