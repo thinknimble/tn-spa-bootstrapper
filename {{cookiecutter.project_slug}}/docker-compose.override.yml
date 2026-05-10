@@ -14,7 +14,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - VITE_DEV_BACKEND_URL=http://localhost:8000
+      - VITE_DEV_BACKEND_URL=http://server:8000
 
   server:
     ports:

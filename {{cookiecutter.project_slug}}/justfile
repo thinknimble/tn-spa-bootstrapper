@@ -245,6 +245,26 @@ worktree action branch:
         git worktree add -b "$BRANCH" "$worktree_path"
       fi
 
+      # Copy .env into the new worktree (fall back to .env.example)
+      if [ -f ".env" ]; then
+        cp .env "$worktree_path/.env"
+        echo "Copied .env into worktree"
+      elif [ -f ".env.example" ]; then
+        cp .env.example "$worktree_path/.env"
+        echo "Copied .env.example into worktree (no .env found)"
+      fi
+
+      # Patch .env so this worktree gets its own PROJECT name and database,
+      # preventing container-name and data collisions with other worktrees.
+      project_name="{{cookiecutter.project_slug}}-${dir_name}"
+      db_name="{{cookiecutter.project_slug}}_${dir_name//-/_}_db"
+      if [ -f "$worktree_path/.env" ]; then
+        echo "Patching .env for worktree (PROJECT=$project_name, DB_NAME=$db_name)..."
+        sed -i '' "s|^PROJECT=.*|PROJECT='${project_name}'|" "$worktree_path/.env"
+        sed -i '' "s|^DB_NAME=.*|DB_NAME='${db_name}'|" "$worktree_path/.env"
+        sed -i '' "s|^PLAYWRIGHT_TEST_BASE_URL=.*|PLAYWRIGHT_TEST_BASE_URL='http://${project_name}.localhost'|" "$worktree_path/.env"
+      fi
+
       echo "Running setup in worktree..."
       (cd "$worktree_path" && just setup-dev)
 

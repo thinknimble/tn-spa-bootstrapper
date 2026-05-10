@@ -742,7 +742,7 @@ requires-dist = [
     { name = "pytest-cookies", specifier = "==0.6.1" },
     { name = "pytest-instafail", specifier = "==0.4.2" },
     { name = "pyyaml", specifier = "==6.0.3" },
-    { name = "ruff", specifier = ">=0.1.9" },
+    { name = "ruff", specifier = ">=0.9.8" },
     { name = "tox", specifier = "==3.24.0" },
 ]
 
