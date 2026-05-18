@@ -1,6 +1,9 @@
 # Project Development Commands
 # ----------------------------------
 
+# Load .env file so all recipes have access to DB credentials, etc.
+set dotenv-load
+
 # Define common variables
 docker_compose := "docker compose"
 project := "{{cookiecutter.project_slug}}"
