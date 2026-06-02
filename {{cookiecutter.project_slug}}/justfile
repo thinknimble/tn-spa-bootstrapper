@@ -122,6 +122,9 @@ server-legacy-format:
 [group('docker')]
 up:
     #!/usr/bin/env bash
+    # Source .env explicitly so vars are correct even if the host shell has stale
+    # values from another worktree/project (just's dotenv-load won't override them).
+    set -a; source .env; set +a
     project=$(just _project)
     if docker network inspect proxy >/dev/null 2>&1; then
       just setup-traefik
@@ -134,6 +137,7 @@ up:
 [group('docker')]
 down:
     #!/usr/bin/env bash
+    set -a; source .env; set +a
     project=$(just _project)
     PROJECT=$project docker compose down
     echo "Application stopped (PROJECT=$project)"
@@ -145,6 +149,7 @@ docker-stop-all:
 [group('docker')]
 docker-postgres-redis:
     #!/usr/bin/env bash
+    set -a; source .env; set +a
     project=$(just _project)
     if docker network inspect proxy >/dev/null 2>&1; then
       PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d postgres redis
