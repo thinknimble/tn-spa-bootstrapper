@@ -1418,7 +1418,7 @@ wheels = [
 ]
 
 [[package]]
-name = "my-project"
+name = "{{ cookiecutter.project_slug | replace('_', '-') }}"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
