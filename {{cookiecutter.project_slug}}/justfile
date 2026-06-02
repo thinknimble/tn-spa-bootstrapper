@@ -274,7 +274,9 @@ worktree action branch:
       fi
 
       echo "Running setup in worktree..."
-      (cd "$worktree_path" && just setup-dev)
+      # Source the worktree's .env so its values override the parent project's
+      # env vars (just's dotenv-load won't override vars already in the shell).
+      (cd "$worktree_path" && set -a && source .env && set +a && just setup-dev)
 
       echo ""
       echo "Worktree ready at: $worktree_path"
@@ -288,7 +290,7 @@ worktree action branch:
       fi
 
       echo "Stopping Docker services for '$BRANCH'..."
-      (cd "$worktree_path" && just down)
+      (cd "$worktree_path" && set -a && source .env && set +a && just down)
 
       echo "Removing worktree..."
       git worktree remove "$worktree_path" --force
