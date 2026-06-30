@@ -242,7 +242,7 @@ worktree action branch:
     set -e
 
     BRANCH="{{ "{{ branch }}" }}"
-    dir_name=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
+    dir_name=$(echo "$BRANCH" | sed -E 's,^(feature|bugfix|hotfix|fix|chore|release)/,,' | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
     worktree_path="../{{cookiecutter.project_slug}}-${dir_name}"
 
     if [ "{{ "{{ action }}" }}" = "add" ]; then
@@ -274,25 +274,38 @@ worktree action branch:
       fi
 
       echo "Running setup in worktree..."
-      # Run migrations inside Docker rather than locally. This avoids:
-      # - host port conflicts (another postgres may already occupy 5432)
-      # - env var leakage from the parent project's shell
-      # - timing issues (docker compose run respects depends_on health checks)
       (
         cd "$worktree_path"
         set -a; source .env; set +a
-        project=$(just _project)
 
-        if docker network inspect proxy >/dev/null 2>&1; then
+        # Ensure Traefik is running (prevents port conflicts between worktrees)
+        if ! docker network inspect proxy >/dev/null 2>&1; then
+          echo "Setting up Traefik (required for concurrent worktree stacks)..."
           just setup-traefik
-          compose_cmd=(docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml)
-        else
-          compose_cmd=(docker compose)
         fi
 
-        PROJECT=$project "${compose_cmd[@]}" up -d postgres redis
-        PROJECT=$project "${compose_cmd[@]}" run --rm server python server/manage.py migrate
-        PROJECT=$project "${compose_cmd[@]}" run --rm server python server/manage.py create_test_data
+        # Start all services — the server container's /start entrypoint runs migrate
+        just up
+
+        # Wait for server to be fully ready (migrate done + runserver listening).
+        # Uses docker exec -w /tmp to avoid the bind mount namespace issue
+        # caused by Docker Desktop 29.x + git worktrees.
+        container="${project_name}-server"
+        echo "Waiting for server to be ready..."
+        for i in $(seq 1 120); do
+          if docker exec -w /tmp "$container" python -c \
+            "import socket; s=socket.create_connection(('localhost',8000),1); s.close()" 2>/dev/null; then
+            echo "Server is ready."
+            break
+          fi
+          if [ "$i" -eq 120 ]; then
+            echo "Warning: server did not become ready within 120s"
+          fi
+          sleep 1
+        done
+
+        # Seed data via docker compose run (not exec) to bypass the mount namespace issue
+        docker compose run --rm -T server python server/manage.py create_test_data
       )
 
       echo ""
