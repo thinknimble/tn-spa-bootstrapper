@@ -30,6 +30,7 @@ dependencies = [
     "pre-commit==4.5.*",
     "premailer>=3.10.0",
     "psycopg2-binary==2.9.*",
+    "pytest-asyncio>=0.25.0",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.8.0",
     "pytest-factoryboy>=2.8.0",
@@ -66,6 +67,13 @@ extend-select = ["I", "C90"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 12
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "my_project.test_settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = "--strict-markers --no-migrations"
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.coverage.report]
 fail_under = 60
