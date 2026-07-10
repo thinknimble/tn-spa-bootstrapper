@@ -126,22 +126,32 @@
     "lodash": ">=4.18.0",
     "glob": ">=10.5.0",
     "js-yaml": ">=4.2.0",
-    "tmp": ">=0.2.4",
+    "tmp": ">=0.2.6",
     "@babel/helpers": ">=7.26.10",
     "node-forge": ">=1.4.0",
     "undici": ">=6.27.0",
     "ws": ">=6.2.4",
-    "brace-expansion": ">=1.1.13",
+    "brace-expansion": ">=1.1.13 <2.0.0",
     "tar": ">=7.5.16",
     "fast-uri": ">=3.1.2",
     "form-data": ">=4.0.6",
     "shell-quote": ">=1.8.4",
     "picomatch": ">=4.0.4",
-    "anymatch": { "picomatch": ">=2.3.2" },
-    "micromatch": { "picomatch": ">=2.3.2" },
-    "readdirp": { "picomatch": ">=2.3.2" },
-    "jest-util": { "picomatch": ">=2.3.2" },
-    "expo": { "picomatch": ">=3.0.2" },
+    "anymatch": {
+      "picomatch": ">=2.3.2"
+    },
+    "micromatch": {
+      "picomatch": ">=2.3.2"
+    },
+    "readdirp": {
+      "picomatch": ">=2.3.2"
+    },
+    "jest-util": {
+      "picomatch": ">=2.3.2"
+    },
+    "expo": {
+      "picomatch": ">=3.0.2"
+    },
     "yaml": ">=2.8.3",
     "@xmldom/xmldom": ">=0.9.0"
   }
