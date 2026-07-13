@@ -12,7 +12,11 @@ worktree action branch:
     set -e
 
     BRANCH="{{ branch }}"
-    dir_name=$(echo "$BRANCH" | sed -E 's,^(feature|bugfix|hotfix|fix|chore|release)/,,' | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
+    # Derive the worktree dir slug with the same branch->name rule the generated
+    # project's justfile uses for PROJECT: strip a leading type prefix (word/ or
+    # word_), lowercase, slashes/underscores -> hyphens, drop other chars.
+    # e.g. feature/auth_bug -> auth-bug
+    dir_name=$(echo "$BRANCH" | sed 's|^[a-zA-Z][a-zA-Z0-9]*[/_]||' | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
     worktree_path="../tn-spa-bootstrapper-${dir_name}"
 
     if [ "{{ action }}" = "add" ]; then

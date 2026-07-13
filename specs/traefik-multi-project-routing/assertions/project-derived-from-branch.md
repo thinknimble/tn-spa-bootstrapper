@@ -20,7 +20,9 @@ The justfile includes a `_project` helper that derives `PROJECT` from the curren
 | `feature/my-thing` | `<slug>-my-thing` |
 | `fix/auth_bug` | `<slug>-auth-bug` |
 
-Rules: lowercase, slashes/underscores → hyphens, strip non-`[a-z0-9-]` chars, prefix with project slug.
+Rules: strip a leading branch-type prefix (`word/` or `word_`), lowercase, slashes/underscores → hyphens, strip non-`[a-z0-9-]` chars, prefix with project slug.
+
+This branch→name rule is the single source of truth for both `_project` (operates on the current branch) and `just worktree` (operates on its `<branch>` argument — see `worktree-command`). A worktree's directory name therefore equals its container `PROJECT` namespace.
 
 ## Implementation
 
