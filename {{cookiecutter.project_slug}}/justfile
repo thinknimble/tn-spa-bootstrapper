@@ -1,6 +1,9 @@
 # Project Development Commands
 # ----------------------------------
 
+# Load .env file so all recipes have access to DB credentials, etc.
+set dotenv-load
+
 # Define common variables
 docker_compose := "docker compose"
 project := "{{cookiecutter.project_slug}}"
@@ -119,6 +122,9 @@ server-legacy-format:
 [group('docker')]
 up:
     #!/usr/bin/env bash
+    # Source .env explicitly so vars are correct even if the host shell has stale
+    # values from another worktree/project (just's dotenv-load won't override them).
+    set -a; source .env; set +a
     project=$(just _project)
     if docker network inspect proxy >/dev/null 2>&1; then
       just setup-traefik
@@ -131,6 +137,7 @@ up:
 [group('docker')]
 down:
     #!/usr/bin/env bash
+    set -a; source .env; set +a
     project=$(just _project)
     PROJECT=$project docker compose down
     echo "Application stopped (PROJECT=$project)"
@@ -142,6 +149,7 @@ docker-stop-all:
 [group('docker')]
 docker-postgres-redis:
     #!/usr/bin/env bash
+    set -a; source .env; set +a
     project=$(just _project)
     if docker network inspect proxy >/dev/null 2>&1; then
       PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d postgres redis
@@ -248,12 +256,68 @@ worktree action branch:
         git worktree add -b "$BRANCH" "$worktree_path"
       fi
 
+      # Copy .env into the new worktree (fall back to .env.example)
+      if [ -f ".env" ]; then
+        cp .env "$worktree_path/.env"
+        echo "Copied .env into worktree"
+      elif [ -f ".env.example" ]; then
+        cp .env.example "$worktree_path/.env"
+        echo "Copied .env.example into worktree (no .env found)"
+      fi
+
+      # Patch .env so this worktree gets its own PROJECT name and database,
+      # preventing container-name and data collisions with other worktrees.
+      project_name="{{cookiecutter.project_slug}}-${dir_name}"
+      db_name="{{cookiecutter.project_slug}}_${dir_name//-/_}_db"
+      if [ -f "$worktree_path/.env" ]; then
+        echo "Patching .env for worktree (PROJECT=$project_name, DB_NAME=$db_name)..."
+        # Portable in-place edit (works on both GNU/Linux and BSD/macOS sed).
+        sed -i.bak \
+          -e "s|^PROJECT=.*|PROJECT='${project_name}'|" \
+          -e "s|^DB_NAME=.*|DB_NAME='${db_name}'|" \
+          -e "s|^PLAYWRIGHT_TEST_BASE_URL=.*|PLAYWRIGHT_TEST_BASE_URL='http://${project_name}.localhost'|" \
+          "$worktree_path/.env"
+        rm -f "$worktree_path/.env.bak"
+      fi
+
       echo "Running setup in worktree..."
-      (cd "$worktree_path" && just setup-dev)
+      (
+        cd "$worktree_path"
+        set -a; source .env; set +a
+
+        # Ensure Traefik is running (prevents port conflicts between worktrees)
+        if ! docker network inspect proxy >/dev/null 2>&1; then
+          echo "Setting up Traefik (required for concurrent worktree stacks)..."
+          just setup-traefik
+        fi
+
+        # Start all services — the server container's /start entrypoint runs migrate
+        just up
+
+        # Wait for server to be fully ready (migrate done + runserver listening).
+        # Uses docker exec -w /tmp to avoid the bind mount namespace issue
+        # caused by Docker Desktop 29.x + git worktrees.
+        container="${project_name}-server"
+        echo "Waiting for server to be ready..."
+        for i in $(seq 1 120); do
+          if docker exec -w /tmp "$container" python -c \
+            "import socket; s=socket.create_connection(('localhost',8000),1); s.close()" 2>/dev/null; then
+            echo "Server is ready."
+            break
+          fi
+          if [ "$i" -eq 120 ]; then
+            echo "Warning: server did not become ready within 120s"
+          fi
+          sleep 1
+        done
+
+        # Seed data via docker compose run (not exec) to bypass the mount namespace issue
+        docker compose run --rm -T server python server/manage.py create_test_data
+      )
 
       echo ""
-      echo "Worktree ready at: $worktree_path"
-      echo "  cd $worktree_path && just up"
+      echo "Worktree ready at: $worktree_path (stack is up)"
+      echo "  cd $worktree_path   # http://${project_name}.localhost"
       echo ""
 
     elif [ "{{ "{{ action }}" }}" = "remove" ]; then
@@ -263,7 +327,7 @@ worktree action branch:
       fi
 
       echo "Stopping Docker services for '$BRANCH'..."
-      (cd "$worktree_path" && just down)
+      (cd "$worktree_path" && set -a && source .env && set +a && just down)
 
       echo "Removing worktree..."
       git worktree remove "$worktree_path" --force
