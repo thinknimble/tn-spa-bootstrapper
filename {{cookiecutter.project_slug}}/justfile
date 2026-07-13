@@ -271,9 +271,13 @@ worktree action branch:
       db_name="{{cookiecutter.project_slug}}_${dir_name//-/_}_db"
       if [ -f "$worktree_path/.env" ]; then
         echo "Patching .env for worktree (PROJECT=$project_name, DB_NAME=$db_name)..."
-        sed -i '' "s|^PROJECT=.*|PROJECT='${project_name}'|" "$worktree_path/.env"
-        sed -i '' "s|^DB_NAME=.*|DB_NAME='${db_name}'|" "$worktree_path/.env"
-        sed -i '' "s|^PLAYWRIGHT_TEST_BASE_URL=.*|PLAYWRIGHT_TEST_BASE_URL='http://${project_name}.localhost'|" "$worktree_path/.env"
+        # Portable in-place edit (works on both GNU/Linux and BSD/macOS sed).
+        sed -i.bak \
+          -e "s|^PROJECT=.*|PROJECT='${project_name}'|" \
+          -e "s|^DB_NAME=.*|DB_NAME='${db_name}'|" \
+          -e "s|^PLAYWRIGHT_TEST_BASE_URL=.*|PLAYWRIGHT_TEST_BASE_URL='http://${project_name}.localhost'|" \
+          "$worktree_path/.env"
+        rm -f "$worktree_path/.env.bak"
       fi
 
       echo "Running setup in worktree..."
@@ -312,8 +316,8 @@ worktree action branch:
       )
 
       echo ""
-      echo "Worktree ready at: $worktree_path"
-      echo "  cd $worktree_path && just up"
+      echo "Worktree ready at: $worktree_path (stack is up)"
+      echo "  cd $worktree_path   # http://${project_name}.localhost"
       echo ""
 
     elif [ "{{ "{{ action }}" }}" = "remove" ]; then
