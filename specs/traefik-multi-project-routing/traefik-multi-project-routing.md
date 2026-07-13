@@ -44,7 +44,7 @@ Each generated project contains:
 
 ## Worktree Workflow
 
-`just worktree add <branch>` creates a git worktree with a fully isolated Docker stack. Each worktree runs its own containers under a unique `PROJECT` name with no port conflicts.
+`just worktree add <branch>` creates a git worktree with a fully isolated Docker stack. The worktree directory name and its `PROJECT` namespace are both derived from `<branch>` by the same branch→name rule (see PROJECT Isolation above), so the directory and its containers share one identifier. Each worktree runs its own containers under a unique `PROJECT` name with no port conflicts.
 
 ## Constraints
 

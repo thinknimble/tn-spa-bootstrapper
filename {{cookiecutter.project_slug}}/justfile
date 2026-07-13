@@ -242,7 +242,10 @@ worktree action branch:
     set -e
 
     BRANCH="{{ "{{ branch }}" }}"
-    dir_name=$(echo "$BRANCH" | sed -E 's,^(feature|bugfix|hotfix|fix|chore|release)/,,' | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
+    # Derive the worktree dir slug the same way _project derives PROJECT, so the
+    # directory name matches the container namespace (strip leading type prefix,
+    # e.g. feature/auth_bug -> auth-bug).
+    dir_name=$(echo "$BRANCH" | sed 's|^[a-zA-Z][a-zA-Z0-9]*[/_]||' | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
     worktree_path="../{{cookiecutter.project_slug}}-${dir_name}"
 
     if [ "{{ "{{ action }}" }}" = "add" ]; then
