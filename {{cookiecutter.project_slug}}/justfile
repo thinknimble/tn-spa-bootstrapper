@@ -248,12 +248,65 @@ worktree action branch:
         git worktree add -b "$BRANCH" "$worktree_path"
       fi
 
+      # Seed the new worktree's own .env — worktrees only carry tracked files,
+      # so .env (untracked) isn't created automatically. Without one, `just up`
+      # has no credentials/config to interpolate. Fall back to .env.example
+      # when the parent worktree has no .env yet.
+      if [ -f ".env" ]; then
+        cp .env "$worktree_path/.env"
+        echo "Copied .env into worktree"
+      elif [ -f ".env.example" ]; then
+        cp .env.example "$worktree_path/.env"
+        echo "Copied .env.example into worktree (no .env found)"
+      fi
+
+      # Point this worktree's Playwright suite at its own stack. Container and
+      # database isolation between worktrees already comes from the directory
+      # (and therefore Docker Compose project name) being distinct, but the
+      # e2e base URL must be patched explicitly or it'll target a stale/shared
+      # default.
+      project_name="{{cookiecutter.project_slug}}-${dir_name}"
+      if [ -f "$worktree_path/.env" ]; then
+        sed -i.bak "s|^PLAYWRIGHT_TEST_BASE_URL=.*|PLAYWRIGHT_TEST_BASE_URL='http://${project_name}.localhost'|" "$worktree_path/.env"
+        rm -f "$worktree_path/.env.bak"
+      fi
+
       echo "Running setup in worktree..."
-      (cd "$worktree_path" && just setup-dev)
+      (
+        cd "$worktree_path"
+
+        # Ensure Traefik is running (prevents port conflicts between worktrees)
+        if ! docker network inspect proxy >/dev/null 2>&1; then
+          just setup-traefik
+        fi
+
+        just up
+
+        # Wait for the server to be fully ready (migrate done + runserver listening).
+        # Uses `docker exec -w /tmp` to avoid a bind-mount namespace issue caused by
+        # Docker Desktop + git worktrees.
+        container="${project_name}-server"
+        echo "Waiting for server to be ready..."
+        for i in $(seq 1 120); do
+          if docker exec -w /tmp "$container" python -c \
+            "import socket; s=socket.create_connection(('localhost',8000),1); s.close()" 2>/dev/null; then
+            echo "Server is ready."
+            break
+          fi
+          if [ "$i" -eq 120 ]; then
+            echo "Warning: server did not become ready within 120s"
+          fi
+          sleep 1
+        done
+
+        # Seed via `docker compose run` (not `exec`) to bypass the mount namespace issue.
+        docker compose run --rm -T server python server/manage.py create_test_data
+      )
 
       echo ""
       echo "Worktree ready at: $worktree_path"
-      echo "  cd $worktree_path && just up"
+      echo "  Stack is already running (via 'just up'). Enter it with: cd $worktree_path"
+      echo "  App: http://${project_name}.localhost"
       echo ""
 
     elif [ "{{ "{{ action }}" }}" = "remove" ]; then
