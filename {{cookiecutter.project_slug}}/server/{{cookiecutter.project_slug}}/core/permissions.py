@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import permissions
 
 
@@ -25,3 +26,29 @@ class IsStaffOrReadOnly(permissions.BasePermission):
 
         # For other actions, use the existing permission logic
         return True
+
+
+class IsEmailVerified(permissions.BasePermission):
+    """
+    Permission to check if user's email is verified.
+    Can be disabled via REQUIRE_EMAIL_VERIFICATION setting.
+    Staff users bypass this check.
+    """
+
+    message = "Email verification required. Please verify your email address to continue."
+
+    def has_permission(self, request, view):
+        # If email verification is not required, allow access
+        if not getattr(settings, "REQUIRE_EMAIL_VERIFICATION", False):
+            return True
+
+        # Staff users bypass verification check
+        if request.user.is_staff:
+            return True
+
+        # Allow access to resend verification email endpoint
+        if view.get_view_name() == "Resend Verification Email":
+            return True
+
+        # Check if user's email is verified
+        return request.user.email_verified

@@ -4,10 +4,9 @@ volumes:
 
 services:
   postgres:
+    container_name: ${PROJECT}-postgres
     restart: always
     image: postgres:16
-    ports:
-      - 5432:5432
     env_file:
       - ".env"
     environment:
@@ -17,13 +16,23 @@ services:
     volumes:
       - local_postgres_data:/var/lib/postgresql/data/
       - local_postgres_data_backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
+    container_name: ${PROJECT}-redis
     image: "redis:latest"
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   server:
+    container_name: ${PROJECT}-server
     build:
       context: .
       dockerfile: ./compose/server/Dockerfile
@@ -32,17 +41,16 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     env_file:
       - ".env"
     environment:
       - DB_HOST=postgres
-    ports:
-      - "8000:8000"
-      - "5678:5678"
     user: ${DOCKER_UID}
 
   client:
+    container_name: ${PROJECT}-client
     build:
       context: .
       dockerfile: ./compose/client/Dockerfile
@@ -50,11 +58,9 @@ services:
       - ".:/app"
       # This line avoids copying local node_modules folder to the Docker container, and uses the ones installed during build
       - "/app/client/node_modules"
-    ports:
-      - "8080:8080"
-      #- "49153:49153"
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - VITE_DEV_BACKEND_URL=http://server:8000
       {% if cookiecutter.client_app == 'React' %}
       - VITE_CACHE_DIR=./vite
       {% endif %}

@@ -317,8 +317,6 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
 #
@@ -423,6 +421,10 @@ else:
 USE_EMAIL_ALLOWLIST = config("USE_EMAIL_ALLOWLIST", cast=bool, default=False)
 EMAIL_ALLOWLIST = json.loads(config("EMAIL_ALLOWLIST", default="[]"))
 
+# Email Verification
+REQUIRE_EMAIL_VERIFICATION = config("REQUIRE_EMAIL_VERIFICATION", cast=bool, default=False)
+
+
 # STORAGES
 # ----------------------------------------------------------------------------
 
@@ -439,16 +441,37 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
 
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = f"{AWS_LOCATION}/media"
-    DEFAULT_FILE_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.PrivateMediaStorage"
-    # STATICFILES_STORAGE = "{{ cookiecutter.project_slug }}.utils.storages.StaticRootS3Boto3Storage"
     COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
-    # STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
-#
-# STATIC
-# ------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "access_key": AWS_ACCESS_KEY_ID,
+                "secret_key": AWS_SECRET_ACCESS_KEY,
+                "bucket_name": AWS_STORAGE_BUCKET_NAME,
+                "region_name": AWS_S3_REGION_NAME,
+                "location": PRIVATE_MEDIAFILES_LOCATION,
+                "default_acl": None,
+                "file_overwrite": False,
+                "custom_domain": False,
+                "querystring_expire": AWS_QUERYSTRING_EXPIRE,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 # Maximum size, in bytes, of a request before it will be streamed to the
 # file system instead of into memory.
@@ -572,3 +595,13 @@ SPECTACULAR_SETTINGS = {
 # OpenAI Configuration
 #
 OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
+
+# Validate email verification configuration
+if REQUIRE_EMAIL_VERIFICATION and not ENABLE_EMAILS:
+    logger = logging.getLogger(__name__)
+    logger.warning(
+        "REQUIRE_EMAIL_VERIFICATION is True but ENABLE_EMAILS is False. "
+        "Email verification requires emails to be enabled. "
+        "Setting REQUIRE_EMAIL_VERIFICATION to False."
+    )
+    REQUIRE_EMAIL_VERIFICATION = False

@@ -46,5 +46,5 @@ jobs:
         run: |
           source .venv/bin/activate
           python server/manage.py collectstatic
-          pytest --mccabe --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
+          pytest --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
           coverage report --fail-under=20

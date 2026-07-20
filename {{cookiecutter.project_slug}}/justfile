@@ -1,13 +1,32 @@
 # Project Development Commands
 # ----------------------------------
 
+# Load .env file so all recipes have access to DB credentials, etc.
+set dotenv-load
+
 # Define common variables
 docker_compose := "docker compose"
+project := "{{cookiecutter.project_slug}}"
 
 # Set default recipe to list commands
 default:
     @just --list
 
+# Derive PROJECT name from current git branch (used as inline env var for docker compose).
+# main → {{cookiecutter.project_slug}}-main
+# feature/my-thing → {{cookiecutter.project_slug}}-my-thing
+[private]
+_project:
+    #!/usr/bin/env bash
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+    if [ "$branch" = "main" ]; then
+      echo "{{cookiecutter.project_slug}}-main"
+    else
+      stripped=$(echo "$branch" | sed 's|^[a-zA-Z][a-zA-Z0-9]*[/_]||')
+      echo "{{cookiecutter.project_slug}}-$(echo "$stripped" | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')"
+    fi
+
+{% if cookiecutter.client_app|lower == "react" %}
 # Client commands
 [group('client')]
 client-serve:
@@ -34,9 +53,39 @@ client-test:
 client-test-single TESTPATH:
     cd client && npm run test:single {{ "{{TESTPATH}}" }}
 
+# Run client tests inside Docker
+[group('client')]
+client-test-docker:
+    docker compose exec client npm run test
+
 [group('client')]
 client-test-e2e:
     cd client && npm run test:e2e
+{% endif %}
+
+{% if cookiecutter.include_mobile|lower == "y" %}
+# Mobile commands
+[group('mobile')]
+mobile-serve:
+    cd mobile && npm run start
+    @echo "🚀 Mobile app ready in Expo"
+
+[group('mobile')]
+mobile-android:
+    cd mobile && npm run start:android
+
+[group('mobile')]
+mobile-ios:
+    cd mobile && npm run start:ios
+
+[group('mobile')]
+mobile-lint:
+    cd mobile && npm run lint:eslint && npm run lint:tslint
+
+[group('mobile')]
+mobile-format:
+    cd mobile && npm run format:write
+{% endif %}
 
 # Server commands
 [group('server')]
@@ -45,8 +94,13 @@ server-run:
     @echo "🚀 Backend ready at http://localhost:8000"
 
 [group('server')]
-server-test:
-    uv run pytest server
+server-test: django-check-migrations
+    cd server && uv run python -m pytest --mccabe --cov={{ "{{ project }}" }} --cov-config=pyproject.toml -vv {{ "{{ project }}" }} && coverage report
+
+# Run server tests inside Docker (works in both standalone and Traefik mode)
+[group('server')]
+server-test-docker:
+    docker compose exec -w /app/server server pytest
 
 [group('server')]
 server-format:
@@ -54,29 +108,63 @@ server-format:
 
 [group('server')]
 server-lint:
-    uv run ruff check server
+    uv run ruff check --fix server
 
 [group('server')]
 server-legacy-format:
     uv run black server && uv run isort server
 
 # Docker commands
+
+# Start all services, auto-detecting Traefik. When the shared `proxy` network exists,
+# applies compose/docker-compose.traefik.yml for hostname-based routing; otherwise
+# falls back to docker-compose.override.yml (direct port bindings).
+[group('docker')]
+up:
+    #!/usr/bin/env bash
+    # Source .env explicitly so vars are correct even if the host shell has stale
+    # values from another worktree/project (just's dotenv-load won't override them).
+    set -a; source .env; set +a
+    project=$(just _project)
+    if docker network inspect proxy >/dev/null 2>&1; then
+      just setup-traefik
+      PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d
+    else
+      PROJECT=$project docker compose up -d
+    fi
+    echo "Application is starting (PROJECT=$project)..."
+
+[group('docker')]
+down:
+    #!/usr/bin/env bash
+    set -a; source .env; set +a
+    project=$(just _project)
+    PROJECT=$project docker compose down
+    echo "Application stopped (PROJECT=$project)"
+
 [group('docker')]
 docker-stop-all:
     docker stop $(docker ps -q)
 
 [group('docker')]
 docker-postgres-redis:
-    {{ "{{ docker_compose }}" }} up -d postgres redis
+    #!/usr/bin/env bash
+    set -a; source .env; set +a
+    project=$(just _project)
+    if docker network inspect proxy >/dev/null 2>&1; then
+      PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d postgres redis
+    else
+      PROJECT=$project docker compose up -d postgres redis
+    fi
 
 [group('docker')]
 docker-run-all:
-    {{ "{{ docker_compose }}" }} up -d
+    just up
 
 [group('docker')]
 docker-restart-all:
-    {{ "{{ docker_compose }}" }} down
-    {{ "{{ docker_compose }}" }} up -d
+    just down
+    just up
 
 [group('docker')]
 docker-logs:
@@ -84,7 +172,175 @@ docker-logs:
 
 [group('docker')]
 docker-create-test-data:
-	docker compose run server python server/manage.py create_test_data
+    docker compose run server python server/manage.py create_test_data
+
+# Provision shared Traefik gateway (idempotent — safe to run multiple times).
+# Creates the `proxy` Docker network, auto-generates ~/traefik/docker-compose.yml if missing,
+# and starts the Traefik container.
+[group('docker')]
+setup-traefik:
+    #!/usr/bin/env bash
+    set -e
+
+    TRAEFIK_DIR="$HOME/traefik"
+
+    # 1. Ensure proxy network
+    if ! docker network inspect proxy >/dev/null 2>&1; then
+      echo "Creating 'proxy' Docker network..."
+      docker network create proxy
+    else
+      echo "'proxy' network already exists, skipping"
+    fi
+
+    # 2. Auto-generate ~/traefik/docker-compose.yml if missing
+    if [ ! -f "$TRAEFIK_DIR/docker-compose.yml" ]; then
+      echo "Creating $TRAEFIK_DIR/docker-compose.yml..."
+      mkdir -p "$TRAEFIK_DIR"
+      cat > "$TRAEFIK_DIR/docker-compose.yml" << 'YAML'
+    networks:
+      proxy:
+        external: true
+
+    services:
+      traefik:
+        image: traefik:v3.6
+        container_name: traefik
+        restart: unless-stopped
+        command:
+          - "--api.insecure=true"
+          - "--providers.docker=true"
+          - "--providers.docker.exposedbydefault=false"
+          - "--providers.docker.network=proxy"
+          - "--entrypoints.web.address=:80"
+        ports:
+          - "80:80"
+          - "9090:8080"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+        networks:
+          - proxy
+    YAML
+    else
+      echo "$TRAEFIK_DIR/docker-compose.yml already exists, skipping"
+    fi
+
+    # 3. Start Traefik if not already running
+    if docker inspect traefik >/dev/null 2>&1; then
+      echo "Traefik container already exists, skipping"
+    else
+      echo "Starting Traefik gateway..."
+      docker compose -f "$TRAEFIK_DIR/docker-compose.yml" up -d
+      echo "Traefik running — dashboard at http://localhost:9090"
+    fi
+
+# Manage git worktrees with isolated Docker stacks.
+# Usage: just worktree add <branch>    — create worktree and run setup
+#        just worktree remove <branch> — stop Docker stack and remove worktree
+[group('docker')]
+worktree action branch:
+    #!/usr/bin/env bash
+    set -e
+
+    BRANCH="{{ "{{ branch }}" }}"
+    # Derive the worktree dir slug the same way _project derives PROJECT, so the
+    # directory name matches the container namespace (strip leading type prefix,
+    # e.g. feature/auth_bug -> auth-bug).
+    dir_name=$(echo "$BRANCH" | sed 's|^[a-zA-Z][a-zA-Z0-9]*[/_]||' | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
+    worktree_path="../{{cookiecutter.project_slug}}-${dir_name}"
+
+    if [ "{{ "{{ action }}" }}" = "add" ]; then
+      echo "Creating worktree for branch '$BRANCH' at $worktree_path..."
+      if git show-ref --verify --quiet "refs/heads/$BRANCH" || git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+        git worktree add "$worktree_path" "$BRANCH"
+      else
+        git worktree add -b "$BRANCH" "$worktree_path"
+      fi
+
+      # Copy .env into the new worktree (fall back to .env.example)
+      if [ -f ".env" ]; then
+        cp .env "$worktree_path/.env"
+        echo "Copied .env into worktree"
+      elif [ -f ".env.example" ]; then
+        cp .env.example "$worktree_path/.env"
+        echo "Copied .env.example into worktree (no .env found)"
+      fi
+
+      # Patch .env so this worktree gets its own PROJECT name and database,
+      # preventing container-name and data collisions with other worktrees.
+      project_name="{{cookiecutter.project_slug}}-${dir_name}"
+      db_name="{{cookiecutter.project_slug}}_${dir_name//-/_}_db"
+      if [ -f "$worktree_path/.env" ]; then
+        echo "Patching .env for worktree (PROJECT=$project_name, DB_NAME=$db_name)..."
+        # Portable in-place edit (works on both GNU/Linux and BSD/macOS sed).
+        sed -i.bak \
+          -e "s|^PROJECT=.*|PROJECT='${project_name}'|" \
+          -e "s|^DB_NAME=.*|DB_NAME='${db_name}'|" \
+          -e "s|^PLAYWRIGHT_TEST_BASE_URL=.*|PLAYWRIGHT_TEST_BASE_URL='http://${project_name}.localhost'|" \
+          "$worktree_path/.env"
+        rm -f "$worktree_path/.env.bak"
+      fi
+
+      echo "Running setup in worktree..."
+      (
+        cd "$worktree_path"
+        set -a; source .env; set +a
+
+        # Ensure Traefik is running (prevents port conflicts between worktrees)
+        if ! docker network inspect proxy >/dev/null 2>&1; then
+          echo "Setting up Traefik (required for concurrent worktree stacks)..."
+          just setup-traefik
+        fi
+
+        # Start all services — the server container's /start entrypoint runs migrate
+        just up
+
+        # Wait for server to be fully ready (migrate done + runserver listening).
+        # Uses docker exec -w /tmp to avoid the bind mount namespace issue
+        # caused by Docker Desktop 29.x + git worktrees.
+        container="${project_name}-server"
+        echo "Waiting for server to be ready..."
+        for i in $(seq 1 120); do
+          if docker exec -w /tmp "$container" python -c \
+            "import socket; s=socket.create_connection(('localhost',8000),1); s.close()" 2>/dev/null; then
+            echo "Server is ready."
+            break
+          fi
+          if [ "$i" -eq 120 ]; then
+            echo "Warning: server did not become ready within 120s"
+          fi
+          sleep 1
+        done
+
+        # Seed data via docker compose run (not exec) to bypass the mount namespace issue
+        docker compose run --rm -T server python server/manage.py create_test_data
+      )
+
+      echo ""
+      echo "Worktree ready at: $worktree_path (stack is up)"
+      echo "  cd $worktree_path   # http://${project_name}.localhost"
+      echo ""
+
+    elif [ "{{ "{{ action }}" }}" = "remove" ]; then
+      if [ ! -d "$worktree_path" ]; then
+        echo "Error: worktree not found at $worktree_path"
+        exit 1
+      fi
+
+      echo "Stopping Docker services for '$BRANCH'..."
+      (cd "$worktree_path" && set -a && source .env && set +a && just down)
+
+      echo "Removing worktree..."
+      git worktree remove "$worktree_path" --force
+
+      echo ""
+      echo "Worktree '$BRANCH' removed."
+      echo "Note: branch not deleted. To delete: git branch -d $BRANCH"
+      echo ""
+
+    else
+      echo "Usage: just worktree add <branch> | just worktree remove <branch>"
+      exit 1
+    fi
 
 # Django commands
 [group('django')]
@@ -100,6 +356,10 @@ django-migrate:
     cd server && python manage.py migrate
 
 [group('django')]
+django-check-migrations:
+    cd server && python manage.py makemigrations --check --dry-run
+
+[group('django')]
 django-shell:
     cd server && python manage.py shell_plus
 
@@ -110,18 +370,91 @@ django-runserver:
 
 # Combined commands
 [group('all')]
-format: server-format client-format
+format: server-format{% if cookiecutter.client_app|lower == "react" %} client-format{% endif %}{% if cookiecutter.include_mobile|lower == "y" %} mobile-format{% endif %}
     @echo "✅ All formatting complete"
 
 [group('all')]
-lint: server-lint client-lint
+lint: server-lint{% if cookiecutter.client_app|lower == "react" %} client-lint{% endif %}{% if cookiecutter.include_mobile|lower == "y" %} mobile-lint{% endif %}
     @echo "✅ All linting complete"
 
 [group('all')]
-test: server-test client-test
+test: server-test{% if cookiecutter.client_app|lower == "react" %} client-test{% endif %}
     @echo "✅ All tests complete"
+
+# Run all tests inside Docker (works in both standalone and Traefik mode)
+[group('all')]
+test-docker: server-test-docker{% if cookiecutter.client_app|lower == "react" %} client-test-docker{% endif %}
+    @echo "✅ All tests complete (Docker)"
 
 # Project setup
 [group('setup')]
 setup-dev: docker-postgres-redis django-migrate create-test-data
     @echo "✅ Development environment ready"
+
+# Screenshot commands - App Store compliant dimensions
+# Usage: just screenshots-resize <device> <input_dir> [output_dir]
+# Devices: iphone-67, iphone-65, ipad-11, ipad-129, watch
+[group('screenshots')]
+screenshots-resize device input_dir output_dir="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    case "{{ "{{ device }}" }}" in
+        iphone-67)
+            width=1284; height=2778
+            desc="iPhone 6.7\" (Pro Max)"
+            ;;
+        iphone-65)
+            width=1242; height=2688
+            desc="iPhone 6.5\" (XS Max)"
+            ;;
+        ipad-11)
+            width=2064; height=2752
+            desc="iPad Pro 11\" (4th gen+)"
+            ;;
+        ipad-129)
+            width=2048; height=2732
+            desc="iPad Pro 12.9\""
+            ;;
+        watch)
+            width=396; height=484
+            desc="Apple Watch (45mm)"
+            ;;
+        *)
+            echo "Unknown device: {{ "{{ device }}" }}"
+            echo "Valid options: iphone-67, iphone-65, ipad-11, ipad-129, watch"
+            exit 1
+            ;;
+    esac
+
+    if [ -z "{{ "{{ output_dir }}" }}" ]; then
+        outdir="{{ "{{ input_dir }}" }}/{{ "{{ device }}" }}"
+    else
+        outdir="{{ "{{ output_dir }}" }}/{{ "{{ device }}" }}"
+    fi
+    mkdir -p "$outdir"
+
+    for file in "{{ "{{ input_dir }}" }}"/*.png; do
+        [ -f "$file" ] || continue
+        filename=$(basename "$file")
+        sips -z "$height" "$width" "$file" --out "$outdir/$filename" 2>/dev/null
+        echo "✓ $filename -> ${width}x${height}"
+    done
+    echo "✅ $desc screenshots saved to $outdir"
+
+# Resize all device types at once from a single source
+[group('screenshots')]
+screenshots-resize-all input_dir output_dir="":
+    #!/usr/bin/env bash
+    if [ -z "{{ "{{ output_dir }}" }}" ]; then
+        just screenshots-resize iphone-67 "{{ "{{ input_dir }}" }}"
+        just screenshots-resize iphone-65 "{{ "{{ input_dir }}" }}"
+        just screenshots-resize ipad-11 "{{ "{{ input_dir }}" }}"
+        just screenshots-resize ipad-129 "{{ "{{ input_dir }}" }}"
+    else
+        just screenshots-resize iphone-67 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
+        just screenshots-resize iphone-65 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
+        just screenshots-resize ipad-11 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
+        just screenshots-resize ipad-129 "{{ "{{ input_dir }}" }}" "{{ "{{ output_dir }}" }}"
+    fi
+    echo "✅ All screenshots resized"

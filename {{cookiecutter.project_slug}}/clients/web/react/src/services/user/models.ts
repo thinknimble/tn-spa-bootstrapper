@@ -18,6 +18,7 @@ export const userShape = {
 export const userShapeWithToken = {
   ...userShape,
   token: z.string().readonly(),
+  needsEmailVerification: z.boolean(),
 }
 export type User = GetInferredFromRaw<typeof userShape>
 

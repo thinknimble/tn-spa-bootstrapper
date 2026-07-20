@@ -99,7 +99,7 @@ export const EditProfile = () => {
   })
 
   const handleSave = () => {
-    if (!user) return
+    if (!user?.id) return
     const [firstName, lastName] = fullName.split(' ')
     save({ id: user.id, firstName, lastName })
   }

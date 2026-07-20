@@ -1,3 +1,114 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Purple Color Palette */
+    --primary-50: #f5f0ff;
+    --primary-100: #e4d9ff;
+    --primary-200: #c5aeff;
+    --primary-300: #a583ff;
+    --primary-400: #8657ff;
+    --primary: #4d00cc;
+    --primary-500: #4d00cc;
+    --primary-600: #3e00a3;
+    --primary-700: #2e007a;
+    --primary-800: #1f0052;
+    --primary-900: #100029;
+
+    /* Accent Deep Blue Color Palette */
+    --accent-50: #e7eef5;
+    --accent-100: #d0dceb;
+    --accent-200: #a1b9d8;
+    --accent-300: #7296c4;
+    --accent-400: #4373b1;
+    --accent: #0e3a7d;
+    --accent-500: #295a94;
+    --accent-600: #1a477a;
+    --accent-700: #123c6d;
+    --accent-800: #0e3a7d;
+    --accent-900: #052044;
+
+    /* Green Color Palette */
+    --green-50: #e2f8e2;
+    --green-100: #c6f1c6;
+    --green-200: #8ce38c;
+    --green-300: #51d551;
+    --green-400: #25b925;
+    --green: #015e01;
+    --green-500: #069c06;
+    --green-600: #038003;
+    --green-700: #026502;
+    --green-800: #015e01;
+    --green-900: #003b00;
+
+    /* Neutral Cream Color Palette */
+    --cream-50: #fbf9f4;
+    --cream-100: #f4f0e4;
+    --cream: #f4f0e4;
+    --cream-200: #e8e2d4;
+    --cream-300: #d9d2c1;
+    --cream-400: #c6beaa;
+    --cream-500: #b2a891;
+    --cream-600: #99907a;
+    --cream-700: #736c5c;
+    --cream-800: #4d483e;
+    --cream-900: #27241f;
+
+    /* UI Cool Gray Color Palette */
+    --gray-50: #f8f9fa;
+    --gray-100: #e9ecef;
+    --gray-200: #dee2e6;
+    --gray-300: #ced4da;
+    --gray-400: #adb5bd;
+    --gray: #6c757d;
+    --gray-500: #6c757d;
+    --gray-600: #495057;
+    --gray-700: #343a40;
+    --gray-800: #212529;
+    --gray-900: #1a212b;
+
+    /* Utility Colors */
+    --primary-light: #4d00cc;
+    --success: #069c06;
+    --warning: #f4b942;
+    --error: #d72638;
+    --dark: #1a212b;
+
+    /* Design System Variables for Components */
+    --color-surface: #ffffff;
+    --color-surface-hover: var(--gray-50);
+    --color-border: var(--gray-200);
+    --color-border-strong: var(--gray-300);
+    --color-text-primary: var(--gray-900);
+    --color-text-secondary: var(--gray-600);
+    --color-text-tertiary: var(--gray-400);
+    --color-text-placeholder: var(--gray-500);
+    --color-brand-primary: var(--primary);
+    --color-brand-accent: var(--accent);
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-error: var(--error);
+
+    /* Typography */
+    --font-family-sans: 'Avenir', 'Helvetica', 'Arial', sans-serif;
+    --font-size-sm: 0.875rem;
+    --font-weight-medium: 500;
+
+    /* Spacing */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+
+    /* Border Radius */
+    --radius-sm: 0.125rem;
+    --radius-base: 0.375rem;
+
+    /* Shadows */
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+  }
+}

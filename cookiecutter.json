@@ -4,7 +4,9 @@
   "email": "hello@thinknimble.com",
   "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
   "sanitized_tf_service_name": "{{ cookiecutter.project_name.lower()|replace(' ', '-')|replace('_', '-')|replace('.', '-')|trim() }}",
-  "_extensions": ["cookiecutter.extensions.RandomStringExtension"],
+  "_extensions": [
+    "cookiecutter.extensions.RandomStringExtension"
+  ],
   "_copy_without_render": [
     "clients/web/react/src/components",
     "clients/web/react/src/pages/app-or-auth.tsx",
@@ -14,10 +16,22 @@
     "clients/mobile/react-native/src/screens/settings/edit-profile.tsx",
     "clients/mobile/react-native/src/screens/settings/main-settings.tsx",
     ".github/scripts/get-env-config.sh",
-     "terraform/scripts/*.sh"
+    "terraform/scripts/*.sh",
+    "clients/web/react/node_modules",
+    "clients/mobile/react-native/node_modules"
   ],
-  "mail_service": ["Mailgun", "Amazon SES", "Custom SMTP"],
-  "client_app": ["React", "None"],
+  "mail_service": [
+    "Mailgun",
+    "Amazon SES",
+    "Custom SMTP"
+  ],
+  "client_app": [
+    "React",
+    "None"
+  ],
   "include_mobile": "n",
-  "deployment_option": ["Heroku", "Terraform (AWS)"]
+  "deployment_option": [
+    "Heroku",
+    "Terraform (AWS)"
+  ]
 }
