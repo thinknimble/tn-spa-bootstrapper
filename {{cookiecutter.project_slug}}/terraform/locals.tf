@@ -1,9 +1,6 @@
 # locals
 
 locals {
-  # VPC sharing logic - always use shared VPC now
-  is_shared_vpc_env = true
-  
   # Shared VPC name for environments
   # Can be account-wide (shared-dev-vpc) or per-project (shared-dev-vpc-PROJECT)
   # Include environment in name for staging and production
@@ -57,7 +54,7 @@ locals {
     var.custom_certificate_arn != "" ? var.custom_certificate_arn : var.default_certificate_arn
   )
 
-  vpc_id = length(try(data.aws_vpc.shared, [])) > 0 ? data.aws_vpc.shared[0].id : aws_vpc.shared[0].id
-  igw_id = length(try(data.aws_internet_gateway.shared, [])) > 0 ? data.aws_internet_gateway.shared[0].id : aws_internet_gateway.shared[0].id
-  route_table_id = length(try(data.aws_route_table.shared, [])) > 0 ? data.aws_route_table.shared[0].id : aws_route_table.shared[0].id
+  vpc_id         = data.aws_vpc.shared.id
+  igw_id         = data.aws_internet_gateway.shared.id
+  route_table_id = data.aws_route_table.shared.id
 }
