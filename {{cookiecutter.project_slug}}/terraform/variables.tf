@@ -60,7 +60,7 @@ variable "secret_key" {
 
 variable "debug" {
   type        = string
-  description = "Enable debug mode for the app service backend"
+  description = "Enable Django DEBUG mode for the application"
   default     = "False"
 }
 
