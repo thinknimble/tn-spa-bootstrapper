@@ -110,12 +110,21 @@ jobs:
           certificate_arn: ${{ steps.setup-env.outputs.certificate_arn }}
 
       - name: Terraform Plan
+        id: plan
         run: |
           cd terraform
+          set +e
           terraform plan -detailed-exitcode
+          EXIT_CODE=$?
+          set -e
+          if [ $EXIT_CODE -eq 1 ]; then
+            echo "Terraform plan failed with an error"
+            exit 1
+          fi
+          echo "has_changes=$( [ $EXIT_CODE -eq 2 ] && echo true || echo false )" >> $GITHUB_OUTPUT
 
       - name: Terraform Apply
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true'
         run: |
           cd terraform
           terraform apply -auto-approve
