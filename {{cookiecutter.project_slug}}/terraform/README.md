@@ -13,46 +13,45 @@ Follow these step-by-step instructions to deploy your infrastructure:
 > - **Development & PR Environments**: Shared VPC `shared-dev-vpc` (in dev AWS account)
 > - **Subnet Allocation**: Each environment gets unique CIDR blocks (e.g., `development` = `10.0.10.0/24`, `pr-123` = `10.0.123.0/24`)
 
-### 🏗️ First-Time Account Setup (AWS Admin - Once per AWS Account)
+### 🛠️ One-Time Infrastructure Setup
 
-These steps only need to be done **once per AWS account** by an AWS account administrator:
+Follow these steps in order. Each `tn` command is a one-time setup recipe provided by [tn-cli](https://github.com/thinknimble/tn-cli).
 
-#### 1. GitHub OIDC Roles Setup (Admin Only)
+#### 1. Install tn-cli
 ```bash
-# Set up GitHub Actions OIDC roles (run once per AWS account by admin)
-# This creates reusable IAM roles that all projects can use
+# Install the TN CLI tool (provides all tn commands below)
+# See https://github.com/thinknimble/tn-cli for installation instructions
+pip install tn-cli
+```
+
+#### 2. Set Up VPC
+```bash
+# Create the shared VPC for development/PR environments (once per AWS account)
+tn aws-setup-vpc
+```
+
+> **VPC Strategy**: Development and PR environments share a single VPC to avoid AWS VPC limits (default 5 per region). Production and staging get dedicated VPCs in separate accounts.
+
+#### 3. Set Up Terraform Backend
+```bash
+# Create S3 bucket for Terraform state (once per project)
+tn aws-tf-setup-backend
+
+# Initialize Terraform with the backend
+tn aws-tf-init-backend -e development -s {{cookiecutter.project_slug}}
+```
+
+> **Backend Strategy**: Each project gets its own dedicated S3 bucket (`{account-id}-{project-name}-terraform-state`) for complete isolation and simpler permissions management.
+
+#### 4. Set Up GitHub OIDC Roles
+```bash
+# Create GitHub Actions OIDC roles (once per AWS account)
 tn aws-setup-oidc
 ```
-:warning: Future improvement will be to have a main oidc-role that is setup by TN to create the OIDC users for each project and their tfstate buckets as part of a UI bootstrapper project.
 
+> **Note**: This creates the foundational OIDC identity provider and roles. Subsequent projects automatically attach their specific policies to these existing roles.
 
-> **Note**: This step creates the foundational OIDC identity provider and roles. Subsequent projects will automatically attach their specific policies to these existing roles.
-
-### 🚀 First-Time New Project Setup
-
-#### 1. AWS CLI Setup
-```bash
-# Install AWS CLI if not already installed
-# Configure AWS CLI with your credentials
-aws configure
-```
-
-#### 2. S3 Backend Infrastructure Setup
-```bash
-# Set up Terraform state backend (run once per project)
-# Creates a dedicated S3 bucket for this project's Terraform state
-tn aws-tf-setup-backend
-```
-
-> **Backend Strategy**: Each project gets its own dedicated S3 bucket (`{account-id}-{project-name}-terraform-state`) for complete isolation and simpler permissions management. This approach provides better security boundaries between projects.
-
-#### 3. Configure Environment Mapping
-```bash
-# Update AWS account IDs in .github/environments.json
-# See Multi-Account Setup section below for details
-```
-
-#### 2. Set Up Project Secrets
+#### 5. Set Up Secrets
 ```bash
 # Create the S3 secrets bucket for your project
 tn aws-setup-secrets development
@@ -68,20 +67,25 @@ else
 fi
 ```
 
-#### 3. Configure Terraform Variables
+#### 6. Deploy
+
 ```bash
+# Configure environment mapping
+# Update AWS account IDs in .github/environments.json
+# See Multi-Account Setup section below for details
+
 # Copy and customize Terraform variables
 cp terraform.tfvars.example terraform.tfvars
 # Edit terraform.tfvars with your project-specific values
+
+# Plan and apply infrastructure
+cd terraform
+terraform plan
+terraform apply
 ```
 
-#### 4. Initialize Terraform Backend
-```bash
-# Initialize Terraform with environment-specific backend
-tn aws-tf-init-backend -e development -s {{cookiecutter.project_slug}}
-```
+#### Configure GitHub Repository Variables
 
-#### 5. Configure GitHub Repository Variables
 Add these variables in GitHub repository settings → Secrets and variables → Actions → Variables:
 
 > **💡 Naming Safety Tip**: We recommend setting these variables in GitHub Actions as a safety net to avoid issues from local terraform.tfvars changes. If not set, the deployment will automatically use the sanitized defaults from your terraform variables.
@@ -91,7 +95,7 @@ Add these variables in GitHub repository settings → Secrets and variables → 
 SERVICE_NAME="{{cookiecutter.sanitized_tf_service_name}}"
 ECR_REPOSITORY_NAME="{{cookiecutter.sanitized_tf_service_name}}-app"
 
-# Environment-specific Role ARNs (from step 2 above)
+# Environment-specific Role ARNs (from OIDC setup above)
 DEV_AWS_ROLE_ARN="arn:aws:iam::123456789012:role/github-actions-development"
 STAGING_AWS_ROLE_ARN="arn:aws:iam::234567890123:role/github-actions-staging"
 PROD_AWS_ROLE_ARN="arn:aws:iam::345678901234:role/github-actions-production"
@@ -185,6 +189,7 @@ Even with shared VPC, environments remain completely isolated through:
 
 ## 📋 Prerequisites
 
+- **[tn-cli](https://github.com/thinknimble/tn-cli)** installed — provides `tn` commands for one-time infrastructure setup
 - **AWS CLI** and **Terraform** installed
 - **AWS credentials** configured: `aws configure`
 - **GitHub repository** with Actions enabled
@@ -824,12 +829,13 @@ tn aws-tf-init-backend -e production
 
 | Tool | Purpose |
 |------|---------|
+| `tn aws-setup-vpc` | Create shared VPC for dev environments |
 | `tn aws-tf-setup-backend` | Create S3 backend for state |
 | `tn aws-tf-init-backend` | Initialize Terraform with backend |
-| `terraform/scripts/add_env_var.sh` | Add environment variables |
 | `tn aws-setup-oidc` | Create GitHub OIDC roles |
-| `.github/scripts/secrets-sync.sh` | Manage S3 secrets |
 | `tn aws-setup-secrets` | Create S3 secrets bucket |
+| `terraform/scripts/add_env_var.sh` | Add environment variables |
+| `.github/scripts/secrets-sync.sh` | Manage S3 secrets |
 
 ### Useful Aliases
 

@@ -3,7 +3,7 @@ id: docs-reference-tn-commands
 parent: aws-fargate-infra-refactor
 created: 2026-07-20T23:00:00Z
 priority: 2
-status: not_started
+status: done
 depends-on: template-extracted-scripts-removed
 branch: feature/aws-fargate
 ---
