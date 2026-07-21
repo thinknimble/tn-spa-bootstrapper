@@ -631,7 +631,7 @@ db_pass = "secure-database-password"
 django_superuser_password = "admin-password"
 
 # Domain & SSL (optional)
-company_domain = "your-company.com"
+base_domain = "your-company.com"
 default_certificate_arn = "arn:aws:acm:us-east-1:123:certificate/your-wildcard-cert"
 ```
 
@@ -640,7 +640,7 @@ default_certificate_arn = "arn:aws:acm:us-east-1:123:certificate/your-wildcard-c
 # Automatic subdomain: myapp-development.company.com
 service = "myapp"
 environment = "development"
-company_domain = "company.com"
+base_domain = "company.com"
 default_certificate_arn = "arn:aws:acm:us-east-1:123:certificate/wildcard-cert"
 route53_zone_id = "Z123456789ABC"  # Optional: for automatic DNS
 ```
@@ -652,7 +652,7 @@ service = "customer-app"
 environment = "production"
 current_domain = "app.customer.com"
 custom_certificate_arn = "arn:aws:acm:us-east-1:123:certificate/customer-cert"
-use_custom_subdomain = false
+use_custom_domain = false
 ```
 
 ## 📊 Monitoring & Debugging
