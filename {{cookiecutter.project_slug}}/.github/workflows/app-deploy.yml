@@ -90,7 +90,7 @@ jobs:
             --field environment='${{ steps.setup-env.outputs.environment }}' \
             --field description='Deploy to ${{ steps.setup-env.outputs.environment }}' \
             --field auto_merge=false \
-            --field required_contexts='[]' \
+            --field required_contexts:='[]' \
             --jq '.id')
 
           echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
