@@ -3,7 +3,7 @@ id: post-gen-setup-instructions-accurate
 parent: template-quality-security-fixes
 created: 2026-07-21T21:00:00Z
 priority: 2
-status: in_progress
+status: not_started
 branch: feature/aws-fargate
 ---
 
