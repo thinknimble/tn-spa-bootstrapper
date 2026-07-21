@@ -23,7 +23,7 @@ The current post-gen hook output references stale setup steps:
 
 ## Success Criteria
 
-- Post-gen instructions reference `tn` (or `just`) commands in correct dependency order: VPC → TF backend → OIDC → secrets bucket → environments.json → repo variables → edit secrets → push secrets
+- Post-gen instructions reference `tn` (or `just`) commands in correct dependency order: VPC → TF setup-backend → TF init-backend (per-env) → OIDC (per-env) → secrets bucket (per-env) → environments.json → repo variables → edit secrets → push secrets (per-env)
 - No mention of `DEV_AWS_ROLE_ARN`, `STAGING_AWS_ROLE_ARN`, `PROD_AWS_ROLE_ARN` as GitHub variables (role ARNs go in `environments.json`)
 - GitHub repo variables listed are only those actually used by the workflow: `SERVICE_NAME`, `ECR_REPOSITORY_NAME`, `AWS_ACCOUNT_ID`
 - Instructions mention updating `.github/environments.json` with `account_id`, `role_arn`, `secrets_bucket`, and `region` from provisioning output
@@ -35,4 +35,4 @@ The current post-gen hook output references stale setup steps:
   - `<environment>` — target environment name: `development`, `staging`, or `production`
   - `<profile>` — AWS CLI profile name (defaults to `default`)
   - `<region>` — AWS region (defaults to `us-east-1`)
-- Per-environment commands (OIDC, secrets bucket, edit secrets, push secrets) explicitly state they must be run **once per environment** (development, staging, production) and show all three invocations as examples
+- Per-environment commands (init-backend, OIDC, secrets bucket, edit secrets, push secrets) explicitly state they must be run **once per environment** (development, staging, production) and show all three invocations as examples
