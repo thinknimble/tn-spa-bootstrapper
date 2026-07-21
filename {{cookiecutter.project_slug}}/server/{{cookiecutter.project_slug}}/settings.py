@@ -98,11 +98,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ROOT_URLCONF = "{{ cookiecutter.project_slug }}.urls"
 
+# Static files (CSS, JavaScript, Images)
+# Static files will be collected into 'static' when `manage.py collectstatic` is run
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media-files")
+
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, "..", "client", "dist"),
+            STATIC_ROOT,
             os.path.join(
                 BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"
             ),  # Swagger template override
@@ -226,10 +232,6 @@ REST_FRAMEWORK = {
 # Heroku file system is destroyed during each deployment.
 #
 
-# Static files will be collected into 'static' when `manage.py collectstatic` is run
-STATIC_ROOT = os.path.join(BASE_DIR, "..", "static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media-files")
-
 # Static and media files will be served from under these paths.
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
@@ -239,7 +241,6 @@ MEDIA_URL = "/media/"
 # Django will look for client-side build files in this directory
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "..", "client", "dist"),
-    os.path.join(BASE_DIR, "..", "client", "dist", "static"),
 ]
 {% endif -%}
 {% endif -%}

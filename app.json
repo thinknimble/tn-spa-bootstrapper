@@ -11,7 +11,7 @@
       "value": "True"
     },
     "DISABLE_COLLECTSTATIC": {
-      "value": 1
+      "value": 0
     },
     "ENVIRONMENT": {
       "value": "staging"
