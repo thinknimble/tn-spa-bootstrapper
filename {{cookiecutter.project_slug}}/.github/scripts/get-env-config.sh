@@ -29,24 +29,65 @@ if ! jq empty "$CONFIG_FILE" 2>/dev/null; then
     exit 1
 fi
 
+# Function to resolve 'extends' chains via deep merge.
+# Looks up the base environment from .environments, recursively resolves it,
+# then deep-merges the child on top. Detects circular and missing references.
+resolve_extends() {
+    local config="$1"
+    local visited="$2"  # colon-separated list of already-visited env names
+
+    local extends_target
+    extends_target=$(echo "$config" | jq -r '.extends // empty')
+
+    # No extends — return config as-is
+    if [[ -z "$extends_target" ]]; then
+        echo "$config"
+        return 0
+    fi
+
+    # Circular reference check
+    if [[ ":${visited}:" == *":${extends_target}:"* ]]; then
+        echo "Error: Circular extends reference detected involving '${extends_target}'" >&2
+        return 1
+    fi
+
+    # Load the base environment
+    local base_config
+    base_config=$(jq -r --arg env "$extends_target" '.environments[$env] // empty' "$CONFIG_FILE")
+
+    if [[ -z "$base_config" || "$base_config" == "null" ]]; then
+        echo "Error: extends references non-existent environment '${extends_target}'" >&2
+        return 1
+    fi
+
+    # Recursively resolve the base (it may also have extends)
+    local resolved_base
+    if ! resolved_base=$(resolve_extends "$base_config" "${visited:+${visited}:}${extends_target}"); then
+        return 1
+    fi
+
+    # Deep merge: base * child, then strip the extends key
+    echo "$config" | jq --argjson base "$resolved_base" '$base * . | del(.extends)'
+}
+
 # Function to get config for exact environment name
 get_exact_config() {
     local env_name="$1"
     jq -r --arg env "$env_name" '.environments[$env] // empty' "$CONFIG_FILE"
 }
 
-# Function to get config for pattern match  
+# Function to get config for pattern match
 get_pattern_config() {
     local env_name="$1"
     local pattern_config=""
-    
+
     # Check if env_name matches any patterns
     if [[ "$env_name" =~ ^pr-[0-9]+$ ]]; then
         pattern_config=$(jq -r '.patterns["pr-*"] // empty' "$CONFIG_FILE")
     elif [[ "$env_name" == "main" ]]; then
         pattern_config=$(jq -r '.patterns["main"] // empty' "$CONFIG_FILE")
     fi
-    
+
     echo "$pattern_config"
 }
 
@@ -69,6 +110,11 @@ fi
 # 3. If still no match, use defaults
 if [[ -z "$CONFIG" || "$CONFIG" == "null" ]]; then
     CONFIG=$(get_default_config)
+fi
+
+# 4. Resolve extends chain (deep merge with base environment)
+if [[ -n "$CONFIG" && "$CONFIG" != "null" ]]; then
+    CONFIG=$(resolve_extends "$CONFIG" "") || exit 1
 fi
 
 # Extract individual values
