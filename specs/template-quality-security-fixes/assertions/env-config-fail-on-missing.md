@@ -3,7 +3,7 @@ id: env-config-fail-on-missing
 parent: template-quality-security-fixes
 created: 2026-07-21T00:00:00Z
 priority: 2
-status: not_started
+status: done
 branch: feature/aws-fargate
 ---
 

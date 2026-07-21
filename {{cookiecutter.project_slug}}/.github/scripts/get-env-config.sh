@@ -18,31 +18,15 @@ fi
 
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "Error: Configuration file not found: $CONFIG_FILE" >&2
-    echo "Using fallback configuration" >&2
-    # Fallback configuration if file doesn't exist
-    echo "account=dev"
-    echo "account_id="
-    echo "region=us-east-1" 
-    echo "role_arn="
-    echo "description=Fallback configuration - config file not found"
-    echo "ecr_registry=.dkr.ecr.us-east-1.amazonaws.com"
-    echo "⚠️  Using fallback config for '$ENV_NAME' - create .github/environments.json" >&2
-    exit 0
+    echo "Create .github/environments.json with your environment configuration." >&2
+    exit 1
 fi
 
 # Validate JSON file
 if ! jq empty "$CONFIG_FILE" 2>/dev/null; then
     echo "Error: Invalid JSON in configuration file: $CONFIG_FILE" >&2
-    echo "Using fallback configuration" >&2
-    # Fallback for invalid JSON
-    echo "account=dev"
-    echo "account_id="
-    echo "region=us-east-1"
-    echo "role_arn="
-    echo "description=Fallback configuration - invalid JSON"
-    echo "ecr_registry=.dkr.ecr.us-east-1.amazonaws.com"
-    echo "⚠️  Using fallback config for '$ENV_NAME' - fix JSON syntax" >&2
-    exit 0
+    echo "Fix the JSON syntax and try again." >&2
+    exit 1
 fi
 
 # Function to get config for exact environment name

@@ -59,7 +59,11 @@ get_env_config() {
         exit 1
     fi
     
-    local config_output=$("$SCRIPT_DIR/get-env-config.sh" "$env_name" 2>/dev/null)
+    local config_output
+    if ! config_output=$("$SCRIPT_DIR/get-env-config.sh" "$env_name"); then
+        print_colored $RED "❌ Failed to load environment config for '$env_name'"
+        exit 1
+    fi
     
     ACCOUNT_ID=$(echo "$config_output" | grep "^account_id=" | cut -d= -f2 || echo "")
     REGION=$(echo "$config_output" | grep "^region=" | cut -d= -f2)
