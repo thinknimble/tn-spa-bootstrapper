@@ -77,13 +77,23 @@ runs:
           echo "❌ Retrieved file contains invalid JSON"
           exit 1
         fi
+        # Validate required secrets exist and are non-null
+        REQUIRED_KEYS=("django_secret_key" "db_password" "django_superuser_password")
+        for key in "${REQUIRED_KEYS[@]}"; do
+          val=$(jq -r ".secrets.${key} // empty" secrets.json)
+          if [[ -z "$val" ]]; then
+            echo "❌ Required secret '${key}' is missing or null in secrets.json"
+            exit 1
+          fi
+        done
+
         DJANGO_SECRET_KEY=$(jq -r '.secrets.django_secret_key' secrets.json)
         DB_PASSWORD=$(jq -r '.secrets.db_password' secrets.json)
         DJANGO_SUPERUSER_PASSWORD=$(jq -r '.secrets.django_superuser_password' secrets.json)
         ROLLBAR_ACCESS_TOKEN=$(jq -r '.secrets.rollbar_access_token // ""' secrets.json)
         AWS_ACCESS_KEY_ID_VAL=$(jq -r '.secrets.aws_access_key_id // ""' secrets.json)
         AWS_SECRET_ACCESS_KEY_VAL=$(jq -r '.secrets.aws_secret_access_key // ""' secrets.json)
-        PLAYWRIGHT_TEST_USER_PASS=$(jq -r '.secrets.playwright_test_user_pass' secrets.json)
+        PLAYWRIGHT_TEST_USER_PASS=$(jq -r '.secrets.playwright_test_user_pass // ""' secrets.json)
 
         echo "::add-mask::$DJANGO_SECRET_KEY"
         echo "::add-mask::$DB_PASSWORD"
