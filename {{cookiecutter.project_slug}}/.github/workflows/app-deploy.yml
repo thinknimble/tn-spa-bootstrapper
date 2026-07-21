@@ -178,12 +178,6 @@ jobs:
           environment: ${{ steps.setup-env.outputs.environment }}
           service_name: ${{ vars.SERVICE_NAME }}
 
-      - name: Generate Terraform Variables
-        uses: ./.github/actions/generate-terraform-vars
-        with:
-          environment: ${{ steps.setup-env.outputs.environment }}
-          mode: cleanup
-
       - name: Destroy PR Environment
         run: |
           cd terraform
@@ -230,12 +224,6 @@ jobs:
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
           service_name: ${{ vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}
-
-      - name: Generate Terraform Variables
-        uses: ./.github/actions/generate-terraform-vars
-        with:
-          environment: ${{ steps.setup-env.outputs.environment }}
-          mode: teardown
 
       - name: Confirm and Destroy Environment
         run: |
