@@ -77,13 +77,29 @@ runs:
           echo "❌ Retrieved file contains invalid JSON"
           exit 1
         fi
-        echo "django_secret_key=$(jq -r '.secrets.django_secret_key' secrets.json)" >> $GITHUB_OUTPUT
-        echo "db_password=$(jq -r '.secrets.db_password' secrets.json)" >> $GITHUB_OUTPUT
-        echo "django_superuser_password=$(jq -r '.secrets.django_superuser_password' secrets.json)" >> $GITHUB_OUTPUT
-        echo "rollbar_access_token=$(jq -r '.secrets.rollbar_access_token // ""' secrets.json)" >> $GITHUB_OUTPUT
-        echo "aws_access_key_id=$(jq -r '.secrets.aws_access_key_id // ""' secrets.json)" >> $GITHUB_OUTPUT
-        echo "aws_secret_access_key=$(jq -r '.secrets.aws_secret_access_key // ""' secrets.json)" >> $GITHUB_OUTPUT
-        echo "playwright_test_user_pass=$(jq -r '.secrets.playwright_test_user_pass' secrets.json)" >> $GITHUB_OUTPUT
+        DJANGO_SECRET_KEY=$(jq -r '.secrets.django_secret_key' secrets.json)
+        DB_PASSWORD=$(jq -r '.secrets.db_password' secrets.json)
+        DJANGO_SUPERUSER_PASSWORD=$(jq -r '.secrets.django_superuser_password' secrets.json)
+        ROLLBAR_ACCESS_TOKEN=$(jq -r '.secrets.rollbar_access_token // ""' secrets.json)
+        AWS_ACCESS_KEY_ID_VAL=$(jq -r '.secrets.aws_access_key_id // ""' secrets.json)
+        AWS_SECRET_ACCESS_KEY_VAL=$(jq -r '.secrets.aws_secret_access_key // ""' secrets.json)
+        PLAYWRIGHT_TEST_USER_PASS=$(jq -r '.secrets.playwright_test_user_pass' secrets.json)
+
+        echo "::add-mask::$DJANGO_SECRET_KEY"
+        echo "::add-mask::$DB_PASSWORD"
+        echo "::add-mask::$DJANGO_SUPERUSER_PASSWORD"
+        [ -n "$ROLLBAR_ACCESS_TOKEN" ] && echo "::add-mask::$ROLLBAR_ACCESS_TOKEN"
+        [ -n "$AWS_ACCESS_KEY_ID_VAL" ] && echo "::add-mask::$AWS_ACCESS_KEY_ID_VAL"
+        [ -n "$AWS_SECRET_ACCESS_KEY_VAL" ] && echo "::add-mask::$AWS_SECRET_ACCESS_KEY_VAL"
+        echo "::add-mask::$PLAYWRIGHT_TEST_USER_PASS"
+
+        echo "django_secret_key=$DJANGO_SECRET_KEY" >> $GITHUB_OUTPUT
+        echo "db_password=$DB_PASSWORD" >> $GITHUB_OUTPUT
+        echo "django_superuser_password=$DJANGO_SUPERUSER_PASSWORD" >> $GITHUB_OUTPUT
+        echo "rollbar_access_token=$ROLLBAR_ACCESS_TOKEN" >> $GITHUB_OUTPUT
+        echo "aws_access_key_id=$AWS_ACCESS_KEY_ID_VAL" >> $GITHUB_OUTPUT
+        echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_VAL" >> $GITHUB_OUTPUT
+        echo "playwright_test_user_pass=$PLAYWRIGHT_TEST_USER_PASS" >> $GITHUB_OUTPUT
         rm -f secrets.json
 
     - name: Generate terraform.tfvars
