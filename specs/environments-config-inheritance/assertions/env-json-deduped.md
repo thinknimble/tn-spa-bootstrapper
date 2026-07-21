@@ -20,8 +20,8 @@ The template `environments.json` uses the `extends` keyword so that no config bl
 - `patterns.pr-*` uses `"extends": "development"` with no other fields (or only fields that genuinely differ)
 - `patterns.main` uses `"extends": "development"` with no other fields (or only fields that genuinely differ)
 - `defaults` uses `"extends": "development"` with no other fields (or only fields that genuinely differ)
-- `environments.staging` uses `"extends": "development"` and only overrides `role_arn`
 - `environments.production` uses `"extends": "development"` and only overrides `role_arn` and domain fields (`use_custom_domain`, `custom_domain`)
+- `environments.staging` uses `"extends": "production"` and only overrides `role_arn` — staging is "production without the custom domain", and this chain means a multi-account upgrade only requires adding `account_id` to production (staging inherits it)
 
 **Single-account default:**
 - Template defaults to a **single AWS account** — `development` is the only fully self-contained entry with all fields inline (`account_id`, `region`, `secrets_bucket`, `domain`)

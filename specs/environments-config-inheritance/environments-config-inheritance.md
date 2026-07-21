@@ -41,10 +41,6 @@ The template defaults to a **single AWS account** for all environments. Most pro
         "certificate_arn": ""
       }
     },
-    "staging": {
-      "extends": "development",
-      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-staging"
-    },
     "production": {
       "extends": "development",
       "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-production",
@@ -52,6 +48,10 @@ The template defaults to a **single AWS account** for all environments. Most pro
         "use_custom_domain": true,
         "custom_domain": ""
       }
+    },
+    "staging": {
+      "extends": "production",
+      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-staging"
     }
   },
   "patterns": {
