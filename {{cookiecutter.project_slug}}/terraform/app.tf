@@ -105,10 +105,6 @@ resource "aws_ecs_task_definition" "app" {
           value = var.playwright_test_base_url
         },
         {
-          name  = "PLAYWRIGHT_TEST_USER_PASS",
-          value = var.playwright_test_user_pass
-        },
-        {
           name  = "VPC_CIDRS",
           value = "${local.subnet_a_cidr},${local.subnet_b_cidr}"
         }
@@ -141,6 +137,10 @@ resource "aws_ecs_task_definition" "app" {
         {
           name      = "DB_PASS",
           valueFrom = aws_secretsmanager_secret_version.db_pass.arn
+        },
+        {
+          name      = "PLAYWRIGHT_TEST_USER_PASS",
+          valueFrom = aws_secretsmanager_secret_version.playwright_test_user_pass.arn
         }
       ],
       logConfiguration = {

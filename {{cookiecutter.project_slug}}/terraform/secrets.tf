@@ -63,6 +63,15 @@ resource "aws_secretsmanager_secret_version" "db_pass" {
   secret_string = var.db_pass
 }
 
+resource "aws_secretsmanager_secret" "playwright_test_user_pass" {
+  name = "${var.service}-${var.environment}-playwright_test_user_pass"
+}
+
+resource "aws_secretsmanager_secret_version" "playwright_test_user_pass" {
+  secret_id     = aws_secretsmanager_secret.playwright_test_user_pass.id
+  secret_string = var.playwright_test_user_pass
+}
+
 resource "aws_secretsmanager_secret" "rollbar_access_token" {
   name = "${var.service}-${var.environment}-rollbar_access_token"
 
