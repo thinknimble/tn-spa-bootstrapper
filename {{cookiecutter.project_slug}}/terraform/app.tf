@@ -141,6 +141,10 @@ resource "aws_ecs_task_definition" "app" {
         {
           name      = "PLAYWRIGHT_TEST_USER_PASS",
           valueFrom = aws_secretsmanager_secret_version.playwright_test_user_pass.arn
+        },
+        {
+          name      = "ROLLBAR_ACCESS_TOKEN",
+          valueFrom = aws_secretsmanager_secret_version.rollbar_access_token.arn
         }
       ],
       logConfiguration = {
