@@ -13,7 +13,24 @@ Go to your repository **Settings > Secrets and variables > Actions > Variables**
 | `COMPANY_DOMAIN` | Your company's base domain (optional if not using default) | `mycompany.com` |
 | `ECR_REPOSITORY_NAME` | ECR repository name for your app | `myapp-app` |
 | `STAFF_EMAIL` | Admin email address | `admin@mycompany.com` |
-| `TF_AWS_ROLE_ARN` | IAM role ARN for GitHub Actions OIDC | `arn:aws:iam::123456789012:role/GitHubActionsRole` |
+
+## AWS Role ARN Configuration
+
+Role ARNs are **not** configured as GitHub variables or secrets. Instead, they are defined per-environment in `.github/environments.json`. The `setup-environment` action calls `get-env-config.sh` to resolve the correct `role_arn` for each environment (production, staging, development, PR previews).
+
+Example entry in `environments.json`:
+```json
+{
+  "environments": {
+    "production": {
+      "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
+      ...
+    }
+  }
+}
+```
+
+See `.github/environments.json` for the full configuration and `.github/scripts/get-env-config.sh` for the resolution logic.
 
 ## Required GitHub Repository Secrets
 
