@@ -99,6 +99,11 @@ variable "secrets" {
   default     = []
 }
 
+variable "aws_region" {
+  type        = string
+  description = "The AWS region for log configuration"
+}
+
 variable "log_group_name" {
   type        = string
   description = "CloudWatch log group name"
