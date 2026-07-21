@@ -179,7 +179,7 @@ add_github_variable_prompt() {
     print_colored $YELLOW "For multi-account deployments, most variables are handled via Terraform."
     print_colored $YELLOW "Only add GitHub variables for:"
     print_colored $YELLOW "  - SERVICE_NAME, ECR_REPOSITORY_NAME, AWS_ACCOUNT_ID, STAFF_EMAIL"
-    print_colored $YELLOW "  - Environment-specific role ARNs (DEV_AWS_ROLE_ARN, etc.)"
+    print_colored $YELLOW "  - Role ARNs are in .github/environments.json (not GitHub variables)"
     echo ""
     
     echo -n "GitHub repository (format: owner/repo): "
@@ -424,7 +424,7 @@ show_usage() {
     echo "Multi-Account Setup:"
     echo "  • Configure regions in .github/environments.json"
     echo "  • Create environment-specific .tfvars files (terraform.tfvars.prod, etc.)"
-    echo "  • Set GitHub role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, PROD_AWS_ROLE_ARN"
+    echo "  • Set role ARNs in .github/environments.json (per-environment role_arn field)"
     echo "  • Manage secrets with: .github/scripts/secrets-sync.sh [pull|push] [environment]"
 }
 
@@ -436,7 +436,7 @@ interactive_mode() {
     print_colored $YELLOW "💡 Multi-Account Deployment Notes:"
     print_colored $YELLOW "• AWS regions are configured in .github/environments.json"
     print_colored $YELLOW "• GitHub variables use direct names (no TF_ prefix)"  
-    print_colored $YELLOW "• Environment-specific role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, etc."
+    print_colored $YELLOW "• Role ARNs are in .github/environments.json (not GitHub variables)"
     print_colored $YELLOW "• Sensitive variables are stored in S3 using secrets-sync.sh script"
     print_colored $YELLOW "• Non-sensitive variables are managed via Terraform .tfvars files"
     echo ""

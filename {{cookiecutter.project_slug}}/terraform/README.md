@@ -91,17 +91,14 @@ Add these variables in GitHub repository settings → Secrets and variables → 
 > **💡 Naming Safety Tip**: We recommend setting these variables in GitHub Actions as a safety net to avoid issues from local terraform.tfvars changes. If not set, the deployment will automatically use the sanitized defaults from your terraform variables.
 
 ```bash
-# Repository Variables (Optional - will use terraform defaults if not set)
 SERVICE_NAME="{{cookiecutter.sanitized_tf_service_name}}"
 ECR_REPOSITORY_NAME="{{cookiecutter.sanitized_tf_service_name}}-app"
-
-# Environment-specific Role ARNs (from OIDC setup above)
-DEV_AWS_ROLE_ARN="arn:aws:iam::123456789012:role/github-actions-development"
-STAGING_AWS_ROLE_ARN="arn:aws:iam::234567890123:role/github-actions-staging"
-PROD_AWS_ROLE_ARN="arn:aws:iam::345678901234:role/github-actions-production"
+AWS_ACCOUNT_ID="123456789012"
 ```
 
-> **🔧 Automatic Fallback**: If `SERVICE_NAME` or `ECR_REPOSITORY_NAME` are not set in GitHub Actions variables, the deployment will automatically use the AWS-compatible defaults from your `terraform/variables.tf` file. This ensures consistent, valid resource naming even without manual variable configuration.
+> **Note**: Role ARNs are **not** set as GitHub variables. They are defined per-environment in `.github/environments.json` (fields: `account_id`, `role_arn`, `secrets_bucket`, `region`). The `setup-environment` action resolves the correct role at deploy time.
+>
+> **🔧 Automatic Fallback**: If `SERVICE_NAME` or `ECR_REPOSITORY_NAME` are not set in GitHub Actions variables, the deployment will automatically use the AWS-compatible defaults from your `terraform/variables.tf` file.
 
 ### 🔄 Regular Development Workflow
 
@@ -423,15 +420,17 @@ Deploy to separate AWS accounts for maximum security isolation between environme
 ### Configuration
 
 **1. Update `.github/environments.json`:**
+
+Set `account_id`, `role_arn` (from OIDC setup), `secrets_bucket`, and `region` for each environment:
+
 ```json
 {
-  "service": "{{cookiecutter.project_slug}}",
   "environments": {
     "production": {
       "account": "prod",
       "account_id": "345678901234",
       "region": "us-east-1",
-      "role_arn_var": "PROD_AWS_ROLE_ARN",
+      "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
       "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
       "description": "Production environment"
     },
@@ -439,7 +438,7 @@ Deploy to separate AWS accounts for maximum security isolation between environme
       "account": "staging",
       "account_id": "234567890123",
       "region": "us-east-1",
-      "role_arn_var": "STAGING_AWS_ROLE_ARN",
+      "role_arn": "arn:aws:iam::234567890123:role/github-actions-staging",
       "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
       "description": "Staging environment"
     },
@@ -447,7 +446,7 @@ Deploy to separate AWS accounts for maximum security isolation between environme
       "account": "dev",
       "account_id": "123456789012",
       "region": "us-east-1",
-      "role_arn_var": "DEV_AWS_ROLE_ARN",
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
       "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
       "description": "Development environment"
     }
@@ -457,7 +456,7 @@ Deploy to separate AWS accounts for maximum security isolation between environme
       "account": "dev",
       "account_id": "123456789012",
       "region": "us-east-1",
-      "role_arn_var": "DEV_AWS_ROLE_ARN",
+      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
       "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
       "description": "Pull request environments"
     }
@@ -466,31 +465,29 @@ Deploy to separate AWS accounts for maximum security isolation between environme
     "account": "dev",
     "account_id": "123456789012",
     "region": "us-east-1",
-    "role_arn_var": "DEV_AWS_ROLE_ARN",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
     "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
     "description": "Default fallback configuration"
   }
 }
 ```
 
-**2. Set up OIDC roles for each account:**
+**2. Create or update OIDC roles for each account:**
 ```bash
-# Run this for each AWS account
-tn aws-setup-oidc
+# Idempotent & per-account — reuses existing roles. Re-run when a new
+# project uses a different secrets_bucket so the role's S3 policy is updated.
+# Run for each environment's AWS account (dev, staging, prod).
+tn aws-setup-oidc secrets_bucket='{{cookiecutter.project_slug}}-terraform-secrets'
 ```
 
 **3. Configure GitHub repository variables:**
 ```bash
-# Repository Variables
 SERVICE_NAME="{{cookiecutter.project_slug}}"
 ECR_REPOSITORY_NAME="{{cookiecutter.project_slug}}-app"
-AWS_ACCOUNT_ID="123456789012"  # Primary account ID
-
-# Environment-specific Role ARNs
-DEV_AWS_ROLE_ARN="arn:aws:iam::123456789012:role/github-actions-development"
-STAGING_AWS_ROLE_ARN="arn:aws:iam::234567890123:role/github-actions-staging"
-PROD_AWS_ROLE_ARN="arn:aws:iam::345678901234:role/github-actions-production"
+AWS_ACCOUNT_ID="123456789012"
 ```
+
+> Role ARNs go in `.github/environments.json` (per-environment `role_arn` field), not as GitHub variables.
 
 ### Deployment Workflows
 
