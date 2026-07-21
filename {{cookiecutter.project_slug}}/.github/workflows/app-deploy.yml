@@ -94,7 +94,12 @@ jobs:
         uses: ./.github/actions/generate-terraform-vars
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          mode: deploy
+          aws_region: ${{ steps.setup-env.outputs.aws_region }}
+          base_domain: ${{ steps.setup-env.outputs.base_domain }}
+          use_custom_domain: ${{ steps.setup-env.outputs.use_custom_domain }}
+          custom_domain: ${{ steps.setup-env.outputs.custom_domain }}
+          route53_zone_id: ${{ steps.setup-env.outputs.route53_zone_id }}
+          certificate_arn: ${{ steps.setup-env.outputs.certificate_arn }}
 
       - name: Terraform Plan
         run: |
