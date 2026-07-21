@@ -3,7 +3,7 @@ id: docs-cidr-wrapping-accuracy
 parent: template-quality-security-fixes
 created: 2026-07-21T00:00:00Z
 priority: 3
-status: draft
+status: not_started
 depends-on: tf-cidr-bounds-no-collision
 branch: feature/aws-fargate
 ---
