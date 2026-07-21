@@ -60,8 +60,8 @@ variable "secret_key" {
 
 variable "debug" {
   type        = string
-  description = "Enable debug mode for the billflow service backend"
-  default     = "True"
+  description = "Enable debug mode for the app service backend"
+  default     = "False"
 }
 
 variable "current_domain" {
