@@ -3,7 +3,7 @@ id: actions-oidc-no-vpc-permissions
 parent: aws-fargate-infra-refactor
 created: 2026-07-20T23:00:00Z
 priority: 1
-status: not_started
+status: done
 branch: feature/aws-fargate
 ---
 
