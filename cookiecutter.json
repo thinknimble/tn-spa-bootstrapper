@@ -18,7 +18,8 @@
     ".github/scripts/get-env-config.sh",
     "terraform/scripts/*.sh",
     "clients/web/react/node_modules",
-    "clients/mobile/react-native/node_modules"
+    "clients/mobile/react-native/node_modules",
+    ".venv"
   ],
   "mail_service": [
     "Mailgun",
