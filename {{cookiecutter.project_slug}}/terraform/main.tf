@@ -55,7 +55,7 @@ data "aws_route_table" "shared" {
 resource "aws_subnet" "public" {
   vpc_id                  = local.vpc_id
   cidr_block              = local.subnet_a_cidr
-  availability_zone       = "us-east-1b"
+  availability_zone       = "${var.aws_region}b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -67,7 +67,7 @@ resource "aws_subnet" "public" {
 resource "aws_subnet" "public_b" {
   vpc_id            = local.vpc_id
   cidr_block        = local.subnet_b_cidr
-  availability_zone = "us-east-1a"
+  availability_zone = "${var.aws_region}a"
   map_public_ip_on_launch = true
 
   tags = {

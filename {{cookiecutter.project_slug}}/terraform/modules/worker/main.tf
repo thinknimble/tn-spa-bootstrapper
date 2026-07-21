@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "worker" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = var.log_group_name
-          awslogs-region        = "us-east-1"
+          awslogs-region        = var.aws_region
           awslogs-stream-prefix = "worker-${var.name}"
         }
       }
