@@ -1,5 +1,4 @@
 import secrets
-import json
 from os import remove
 from os.path import exists, join
 from shutil import copy2, move, rmtree
