@@ -3,7 +3,7 @@ id: tf-variables-destroy-defaults
 parent: aws-fargate-infra-refactor
 created: 2026-07-20T23:00:00Z
 priority: 1
-status: not_started
+status: done
 depends-on: tf-locals-direct-references
 branch: feature/aws-fargate
 ---
