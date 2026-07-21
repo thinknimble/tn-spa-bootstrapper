@@ -34,7 +34,12 @@ The template defaults to a **single AWS account** for all environments. Most pro
       "region": "us-east-1",
       "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-development",
       "secrets_bucket": "CHANGE-ME-terraform-secrets",
-      "domain": { "..." : "full domain config" }
+      "domain": {
+        "base_domain": "",
+        "use_custom_domain": false,
+        "route53_zone_id": "",
+        "certificate_arn": ""
+      }
     },
     "staging": {
       "extends": "development",
@@ -43,7 +48,10 @@ The template defaults to a **single AWS account** for all environments. Most pro
     "production": {
       "extends": "development",
       "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-production",
-      "domain": { "use_custom_domain": true, "custom_domain": "CHANGE-ME.com" }
+      "domain": {
+        "use_custom_domain": true,
+        "custom_domain": ""
+      }
     }
   },
   "patterns": {
@@ -55,3 +63,18 @@ The template defaults to a **single AWS account** for all environments. Most pro
 ```
 
 With this shape, initial setup requires filling in `development` only — staging and production inherit everything except their role ARN.
+
+### Domain Model
+
+Three modes, progressively configured:
+
+1. **ALB DNS (default)** — all domain fields empty. App accessible at the raw AWS load balancer URL (`xxx.elb.amazonaws.com`). Zero setup, works out of the box.
+
+2. **Wildcard subdomain** — fill in `base_domain`, `route53_zone_id`, and `certificate_arn` on `development` once. All environments inherit it via `extends`. Each environment auto-generates a subdomain: `myapp-development.apps.example.com`, `myapp-pr-123.apps.example.com`. The Route53 zone can be:
+   - **TN-provided** — TN hosts a shared zone (e.g., `*.apps.thinknimble.com`) and provides the zone ID + wildcard cert to clients
+   - **Client-provided** — client has their own AWS account with their own Route53 zone and wildcard cert
+   - **CNAME to TN-hosted** — client creates a CNAME from their domain to a TN-hosted subdomain (like Heroku's `myapp.herokuapp.com` pattern)
+
+3. **Custom domain (typically production)** — production overrides with `use_custom_domain: true` and `custom_domain: "app.customer.com"`. Client manages their own DNS (CNAME to ALB or to a wildcard subdomain). Terraform does not create Route53 records for custom domains.
+
+The wildcard zone and cert are shared across all environments — they belong on `development` and get inherited. Only production typically diverges with its own custom domain.
