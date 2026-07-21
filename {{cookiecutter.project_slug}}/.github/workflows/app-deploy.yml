@@ -7,8 +7,16 @@ on:
     branches: [main, dev]
   workflow_dispatch:
     inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'deploy'
+        type: choice
+        options:
+          - deploy
+          - teardown
       environment:
-        description: 'Environment to deploy to'
+        description: 'Environment to deploy to or tear down'
         required: true
         default: 'dev'
         type: choice
@@ -24,13 +32,13 @@ permissions:
   deployments: write
 
 env:
-  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  AWS_REGION: {% raw %}${{ vars.AWS_REGION || 'us-east-1' }}{% endraw %}
   GH_TOKEN: ${{ github.token }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch' || github.event.inputs.action == 'deploy' || github.event.action != 'closed'
+    if: {% raw %}github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'deploy'){% endraw %}
     concurrency:
       group: deploy-{% raw %}${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'staging') || 'dev' }}{% endraw %}
       cancel-in-progress: {% raw %}${{ github.event_name == 'pull_request' }}{% endraw %}
@@ -51,7 +59,7 @@ jobs:
           account_id: ${{ steps.setup-env.outputs.account_id }}
           role_arn: ${{ steps.setup-env.outputs.role_arn }}
           aws_region: ${{ env.AWS_REGION }}
-          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}
+          ecr_repository_name: {% raw %}${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}{% endraw %}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -66,8 +74,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.setup-env.outputs.image_tag }}
-            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{{cookiecutter.sanitized_tf_service_name}}-app' }}:${{ steps.setup-env.outputs.environment }}-latest
+            {% raw %}${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.image_tag }}{% endraw %}
+            {% raw %}${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.environment }}-latest{% endraw %}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -88,7 +96,7 @@ jobs:
         uses: ./.github/actions/setup-terraform
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          service_name: ${{ vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}
+          service_name: {% raw %}${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}{% endraw %}
 
       - name: Generate Terraform Variables
         uses: ./.github/actions/generate-terraform-vars
@@ -116,7 +124,7 @@ jobs:
         id: app-url
         run: |
           cd terraform
-          APP_URL=$(terraform output -raw application_url 2>/dev/null || echo "")
+          APP_URL=$(terraform output -raw application_url 2>/dev/null {% raw %}|| echo ""){% endraw %}
           if [[ -n "$APP_URL" ]]; then
             echo "app_url=$APP_URL" >> $GITHUB_OUTPUT
             echo "✅ Application URL: $APP_URL"
@@ -200,8 +208,9 @@ jobs:
           fi
 
   teardown-environment:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment != ''
+    if: {% raw %}github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'teardown'{% endraw %}
     runs-on: ubuntu-latest
+    environment: {% raw %}${{ github.event.inputs.environment == 'production' && 'production-teardown' || github.event.inputs.environment }}{% endraw %}
     concurrency:
       group: deploy-{% raw %}${{ github.event.inputs.environment }}{% endraw %}
       cancel-in-progress: false
@@ -228,7 +237,7 @@ jobs:
         uses: ./.github/actions/setup-terraform
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          service_name: ${{ vars.SERVICE_NAME || '{{cookiecutter.sanitized_tf_service_name}}' }}
+          service_name: {% raw %}${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}{% endraw %}
 
       - name: Confirm and Destroy Environment
         run: |
