@@ -29,3 +29,10 @@ The current post-gen hook output references stale setup steps:
 - Instructions mention updating `.github/environments.json` with `account_id`, `role_arn`, `secrets_bucket`, and `region` from provisioning output
 - Instructions mention using `secrets-sync.sh push <environment>` to upload secrets after editing
 - Each step indicates what output feeds into the next step (e.g., "OIDC setup outputs the role_arn for environments.json")
+- Instructions include a **placeholder key** explaining each parameter:
+  - `<service>` — kebab-case project name used to namespace AWS resources (e.g., `my-project`). Same value as `SERVICE_NAME` GitHub variable and `sanitized_tf_service_name` from cookiecutter.
+  - `<github_org>` — GitHub organization name that owns the repository (e.g., `thinknimble`)
+  - `<environment>` — target environment name: `development`, `staging`, or `production`
+  - `<profile>` — AWS CLI profile name (defaults to `default`)
+  - `<region>` — AWS region (defaults to `us-east-1`)
+- Per-environment commands (OIDC, secrets bucket, edit secrets, push secrets) explicitly state they must be run **once per environment** (development, staging, production) and show all three invocations as examples
