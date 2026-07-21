@@ -141,14 +141,12 @@ This project includes a complete AWS ECS Fargate deployment setup with Terraform
 
 3. **Set up AWS backend infrastructure**:
    ```bash
-   cd terraform/scripts
-   ./setup_backend.sh
+   tn aws-tf-setup-backend
    ```
 
 4. **Set up GitHub OIDC roles**:
    ```bash
-   cd terraform/scripts  
-   ./setup-github-oidc-role.sh
+   tn aws-setup-oidc
    ```
 
 5. **Deploy via GitHub Actions** - Push to a branch to trigger deployment
@@ -171,10 +169,10 @@ The deployment automatically selects the correct backend based on your AWS accou
 
 ```bash
 # Initialize terraform backend
-cd terraform
-./scripts/init_backend.sh -e development -s myapp
+tn aws-tf-init-backend -e development -s myapp
 
 # Deploy
+cd terraform
 terraform plan
 terraform apply
 ```
@@ -201,9 +199,8 @@ Manage application secrets with the included secrets sync tool:
 Stream real-time logs from your deployed application:
 
 ```bash
-cd terraform/scripts
-./stream-logs.sh -s myapp -e development -t a  # All server logs
-./stream-logs.sh -s myapp -e production -t w   # All worker logs
+tn aws-stream-logs -s myapp -e development -t a  # All server logs
+tn aws-stream-logs -s myapp -e production -t w   # All worker logs
 ```
 
 ### Architecture

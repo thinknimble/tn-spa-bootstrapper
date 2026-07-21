@@ -133,7 +133,6 @@ def remove_terraform_files():
         join(".github", "app-config.json"),
         join(".github/scripts", "get-env-config.sh"),
         join(".github/scripts", "secrets-sync.sh"),
-        join(".github/scripts", "setup-secrets-bucket.sh"),
         "secrets-template.json",  # Remove secrets template for Heroku deployments
     ]
     directories = [
@@ -260,7 +259,7 @@ def main():
         print(f"{INFO}S3 secrets management workflow configured{END}")
         print(f"{INFO}Next steps for S3 secrets:{END}")
         print(f"{INFO}  1. Update .github/environments.json with your AWS account IDs{END}")
-        print(f"{INFO}  2. Run terraform/scripts/setup-github-oidc-role.sh to create IAM roles{END}")
+        print(f"{INFO}  2. Run `tn aws-setup-oidc` to create IAM roles{END}")
         print(f"{INFO}  3. Set GitHub repository variables: SERVICE_NAME, ECR_REPOSITORY_NAME, AWS_ACCOUNT_ID{END}")
         print(f"{INFO}  4. Set environment-specific role ARNs: DEV_AWS_ROLE_ARN, STAGING_AWS_ROLE_ARN, PROD_AWS_ROLE_ARN{END}")
         print(f"{INFO}  5. Edit secrets-*.json files and replace CHANGE-ME values{END}")

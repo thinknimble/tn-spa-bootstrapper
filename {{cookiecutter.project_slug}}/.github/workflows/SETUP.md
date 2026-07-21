@@ -33,7 +33,7 @@ Go to your repository **Settings > Secrets and variables > Actions > Secrets** a
 ### 1. Create an OIDC Identity Provider
 
 
-⚠️ You can skip this section and just use the helper script `terraform/scripts/setup-github-oidc-role.sh`
+⚠️ You can skip this section and just run `tn aws-setup-oidc`
 
 ```bash
 aws iam create-open-id-connect-provider \

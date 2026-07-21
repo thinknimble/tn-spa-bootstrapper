@@ -21,7 +21,25 @@ runs:
       run: |
         cd terraform
         echo "🔧 Initializing Terraform backend for environment: ${{ inputs.environment }}"
-        ./scripts/init_backend.sh -e "${{ inputs.environment }}" -s "${{ inputs.service_name }}"
+
+        # Auto-detect backend config file (account-specific or default)
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+        BACKEND_FILE=""
+        if [[ -n "$ACCOUNT_ID" && -f "backend-${ACCOUNT_ID}.hcl" ]]; then
+          BACKEND_FILE="backend-${ACCOUNT_ID}.hcl"
+          echo "📋 Using account-specific backend config: $BACKEND_FILE"
+        elif [[ -f "backend.hcl" ]]; then
+          BACKEND_FILE="backend.hcl"
+          echo "📋 Using default backend config: $BACKEND_FILE"
+        else
+          echo "❌ No backend configuration found (backend.hcl or backend-{account-id}.hcl)"
+          exit 1
+        fi
+
+        STATE_KEY="${{ inputs.environment }}/terraform.tfstate"
+        terraform init \
+          -backend-config="$BACKEND_FILE" \
+          -backend-config="key=${STATE_KEY}"
 
     - name: Check if Terraform workspace exists
       id: workspace-check
