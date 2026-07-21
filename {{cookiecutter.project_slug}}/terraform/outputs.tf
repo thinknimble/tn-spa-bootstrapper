@@ -17,7 +17,11 @@ output "application_url" {
 
 output "dns_status" {
   description = "DNS configuration status"
-  value = var.use_custom_domain ? "⚠️ Using custom domain - DNS managed externally" : (var.route53_zone_id != "" ? "✅ DNS record created: ${local.app_subdomain}" : "⚠️ No Route53 zone provided - using ALB DNS")
+  value = var.use_custom_domain ? "⚠️ Using custom domain - DNS managed externally" : (
+    var.base_domain != "" ? (
+      var.route53_zone_id != "" ? "✅ DNS record created: ${local.app_subdomain}" : "⚠️ No Route53 zone provided - using ALB DNS"
+    ) : "ℹ️ No base_domain configured - using ALB DNS directly"
+  )
 }
 
 output "database_endpoint" {

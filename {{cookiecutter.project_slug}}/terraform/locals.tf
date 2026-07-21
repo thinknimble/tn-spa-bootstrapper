@@ -49,12 +49,14 @@ locals {
   app_subdomain  = "${var.service}-${var.environment}.${var.base_domain}"
   
   # Domain logic:
-  # - If use_custom_domain = true: use current_domain (user manages DNS)
-  # - If use_custom_domain = false: use auto-generated subdomain (Route53 managed)
-  # - Fallback to ALB DNS if nothing is set
+  # - If use_custom_domain = true: use current_domain (user manages DNS), fallback to ALB DNS
+  # - If use_custom_domain = false AND base_domain set: use auto-generated subdomain (Route53 managed)
+  # - If use_custom_domain = false AND base_domain empty: fallback to ALB DNS
   current_domain = var.use_custom_domain ? (
     var.current_domain != "" ? var.current_domain : aws_lb.ecs.dns_name
-  ) : local.app_subdomain
+  ) : (
+    var.base_domain != "" ? local.app_subdomain : aws_lb.ecs.dns_name
+  )
   
   # Certificate logic with backward compatibility
   # Priority: certificate_arn -> custom_certificate_arn -> default_certificate_arn

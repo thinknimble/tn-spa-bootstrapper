@@ -3,7 +3,7 @@ id: tf-domain-fallback-alb
 parent: environments-config-inheritance
 created: 2026-07-21T22:30:00Z
 priority: 1
-status: not_started
+status: done
 branch: feature/aws-fargate
 ---
 
