@@ -1,3 +1,4 @@
+{% raw %}
 name: 'Setup Environment Variables'
 description: 'Set up environment variables for deployment based on trigger type'
 inputs:
@@ -86,37 +87,37 @@ runs:
           echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
           echo "is_pr=false" >> $GITHUB_OUTPUT
         fi
-        
+
         # Get environment configuration from centralized config
         echo "🔍 Looking up configuration for environment: $ENV_NAME"
         ENV_CONFIG=$(.github/scripts/get-env-config.sh "$ENV_NAME")
-        
+
         # Extract values from config
         ACCOUNT=$(echo "$ENV_CONFIG" | grep "^account=" | cut -d= -f2)
         ACCOUNT_ID=$(echo "$ENV_CONFIG" | grep "^account_id=" | cut -d= -f2)
-        REGION=$(echo "$ENV_CONFIG" | grep "^region=" | cut -d= -f2)  
+        REGION=$(echo "$ENV_CONFIG" | grep "^region=" | cut -d= -f2)
         ROLE_ARN=$(echo "$ENV_CONFIG" | grep "^role_arn=" | cut -d= -f2)
         SECRETS_BUCKET=$(echo "$ENV_CONFIG" | grep "^secrets_bucket=" | cut -d= -f2)
-        
+
         # Extract domain configuration
         BASE_DOMAIN=$(echo "$ENV_CONFIG" | grep "^base_domain=" | cut -d= -f2)
         USE_CUSTOM_DOMAIN=$(echo "$ENV_CONFIG" | grep "^use_custom_domain=" | cut -d= -f2)
         CUSTOM_DOMAIN=$(echo "$ENV_CONFIG" | grep "^custom_domain=" | cut -d= -f2)
         ROUTE53_ZONE_ID=$(echo "$ENV_CONFIG" | grep "^route53_zone_id=" | cut -d= -f2)
         CERTIFICATE_ARN=$(echo "$ENV_CONFIG" | grep "^certificate_arn=" | cut -d= -f2)
-        
+
         # Set outputs
         echo "aws_region=$REGION" >> $GITHUB_OUTPUT
         echo "account=$ACCOUNT" >> $GITHUB_OUTPUT
         echo "secrets_bucket=$SECRETS_BUCKET" >> $GITHUB_OUTPUT
-        
+
         # Domain configuration outputs
         echo "base_domain=$BASE_DOMAIN" >> $GITHUB_OUTPUT
         echo "use_custom_domain=$USE_CUSTOM_DOMAIN" >> $GITHUB_OUTPUT
         echo "custom_domain=$CUSTOM_DOMAIN" >> $GITHUB_OUTPUT
         echo "route53_zone_id=$ROUTE53_ZONE_ID" >> $GITHUB_OUTPUT
         echo "certificate_arn=$CERTIFICATE_ARN" >> $GITHUB_OUTPUT
-        
+
         # Use account_id from config, fallback to GitHub variables if empty
         if [[ -n "$ACCOUNT_ID" ]]; then
           echo "account_id=$ACCOUNT_ID" >> $GITHUB_OUTPUT
@@ -127,7 +128,7 @@ runs:
           echo "ecr_registry=" >> $GITHUB_OUTPUT
           echo "⚠️  No account ID found in environment config"
         fi
-        
+
         # Use role_arn from config
         if [[ -n "$ROLE_ARN" ]]; then
           echo "role_arn=$ROLE_ARN" >> $GITHUB_OUTPUT
@@ -137,5 +138,6 @@ runs:
           echo "💡 Please add 'role_arn' field to environments.json for this environment"
           exit 1
         fi
-        
+
         echo "✅ Environment '$ENV_NAME' configured for account '$ACCOUNT' in region '$REGION'"
+{% endraw %}

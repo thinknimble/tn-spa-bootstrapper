@@ -15,6 +15,7 @@ inputs:
     required: false
     default: '{{cookiecutter.sanitized_tf_service_name}}-app'
 
+{% raw %}
 runs:
   using: 'composite'
   steps:
@@ -31,7 +32,7 @@ runs:
       run: |
         REPO_NAME="${{ inputs.ecr_repository_name }}"
         echo "Checking ECR repository: $REPO_NAME"
-        
+
         if ! aws ecr describe-repositories --repository-names "$REPO_NAME" >/dev/null 2>&1; then
           echo "Creating ECR repository: $REPO_NAME"
           aws ecr create-repository --repository-name "$REPO_NAME"
@@ -42,3 +43,4 @@ runs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
+{% endraw %}

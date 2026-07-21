@@ -1,3 +1,4 @@
+{% raw %}
 name: 'Setup Terraform'
 description: 'Install Terraform, initialize backend, and manage workspace'
 inputs:
@@ -66,3 +67,4 @@ runs:
           terraform workspace new ${{ inputs.environment }}
         fi
         echo "✅ Using Terraform workspace: ${{ inputs.environment }}"
+{% endraw %}
