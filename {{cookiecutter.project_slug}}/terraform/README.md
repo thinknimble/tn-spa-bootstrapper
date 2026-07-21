@@ -154,20 +154,28 @@ git push origin feature-branch
 
 ### Subnet Allocation Strategy
 
+Each environment gets two `/24` subnets in the shared VPC (`10.0.X.0/24` and `10.0.(X+100).0/24`). PR environments use modulo wrapping to stay within valid bounds, supporting 152 unique PR slots.
+
+**Reserved third-octets:**
+- `10` — development
+- `30` — staging/production fallback
+
+**PR CIDR calculation:** `slot = (pr_number % 152) + 1`, then skip reserved octets 10 and 30.
+
 ```
 Shared Development VPC (10.0.0.0/16)
 ├── development environment
 │   ├── 10.0.10.0/24 (us-east-1b)
 │   └── 10.0.110.0/24 (us-east-1a)
-├── pr-1 environment  
-│   ├── 10.0.1.0/24 (us-east-1b)
-│   └── 10.0.101.0/24 (us-east-1a)
-├── pr-123 environment
-│   ├── 10.0.123.0/24 (us-east-1b)
-│   └── 10.0.223.0/24 (us-east-1a)
-└── pr-9999 environment
-    ├── 10.0.255.0/24 (us-east-1b)  # Wraps to 255 for large PR numbers
-    └── 10.0.255.0/24 (us-east-1a)
+├── pr-1 environment         (slot 2)
+│   ├── 10.0.2.0/24 (us-east-1b)
+│   └── 10.0.102.0/24 (us-east-1a)
+├── pr-123 environment       (slot 124 → skips 10,30 → 126)
+│   ├── 10.0.126.0/24 (us-east-1b)
+│   └── 10.0.226.0/24 (us-east-1a)
+└── pr-9999 environment      (9999 % 152 = 119, slot 120 → 122)
+    ├── 10.0.122.0/24 (us-east-1b)
+    └── 10.0.222.0/24 (us-east-1a)
 ```
 
 ### Security Isolation
