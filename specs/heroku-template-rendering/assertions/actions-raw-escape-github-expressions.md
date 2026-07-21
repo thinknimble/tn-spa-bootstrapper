@@ -3,7 +3,7 @@ id: actions-raw-escape-github-expressions
 parent: heroku-template-rendering
 created: 2026-07-21T20:00:00Z
 priority: 1
-status: not_started
+status: done
 branch: feature/aws-fargate
 ---
 

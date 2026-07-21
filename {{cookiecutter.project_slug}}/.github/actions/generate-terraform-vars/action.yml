@@ -1,3 +1,4 @@
+{% raw %}
 name: 'Generate Terraform Variables'
 description: 'Generate terraform.tfvars file for deployment'
 inputs:
@@ -133,8 +134,10 @@ runs:
         aws_access_key_id = "${{ steps.secrets.outputs.aws_access_key_id }}"
         aws_secret_access_key = "${{ steps.secrets.outputs.aws_secret_access_key }}"
         playwright_test_user_pass = "${{ steps.secrets.outputs.playwright_test_user_pass }}"
-        db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}${{ inputs.environment }}db' | tr -d '-')"
-        db_user = "{{cookiecutter.sanitized_tf_service_name}}_${{ inputs.environment }}_user"
+{% endraw %}
+        db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}{% raw %}${{ inputs.environment }}{% endraw %}db' | tr -d '-')"
+        db_user = "{{cookiecutter.sanitized_tf_service_name}}_{% raw %}${{ inputs.environment }}{% endraw %}_user"
+{% raw %}
         debug = "${{ steps.app-config.outputs.debug }}"
         current_port = "${{ steps.app-config.outputs.current_port }}"
         allowed_hosts = "${{ steps.app-config.outputs.allowed_hosts }}"
@@ -151,3 +154,4 @@ runs:
         certificate_arn = "${{ inputs.certificate_arn }}"
         aws_profile = ""
         EOF
+{% endraw %}
