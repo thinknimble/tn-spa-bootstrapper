@@ -3,7 +3,7 @@ id: template-extracted-scripts-removed
 parent: aws-fargate-infra-refactor
 created: 2026-07-20T23:00:00Z
 priority: 2
-status: not_started
+status: done
 depends-on: actions-generate-tfvars-deploy-only
 branch: feature/aws-fargate
 ---

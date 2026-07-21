@@ -21,8 +21,7 @@ These steps only need to be done **once per AWS account** by an AWS account admi
 ```bash
 # Set up GitHub Actions OIDC roles (run once per AWS account by admin)
 # This creates reusable IAM roles that all projects can use
-cd terraform/scripts
-./setup-github-oidc-role.sh # this user has access to all projects as they get added 
+tn aws-setup-oidc
 ```
 :warning: Future improvement will be to have a main oidc-role that is setup by TN to create the OIDC users for each project and their tfstate buckets as part of a UI bootstrapper project.
 
@@ -42,8 +41,7 @@ aws configure
 ```bash
 # Set up Terraform state backend (run once per project)
 # Creates a dedicated S3 bucket for this project's Terraform state
-cd terraform/scripts
-./setup_backend.sh
+tn aws-tf-setup-backend
 ```
 
 > **Backend Strategy**: Each project gets its own dedicated S3 bucket (`{account-id}-{project-name}-terraform-state`) for complete isolation and simpler permissions management. This approach provides better security boundaries between projects.
@@ -57,7 +55,7 @@ cd terraform/scripts
 #### 2. Set Up Project Secrets
 ```bash
 # Create the S3 secrets bucket for your project
-.github/scripts/setup-secrets-bucket.sh development
+tn aws-setup-secrets development
 
 # Check if secrets already exist, otherwise create template
 if .github/scripts/secrets-sync.sh pull development 2>/dev/null; then
@@ -80,8 +78,7 @@ cp terraform.tfvars.example terraform.tfvars
 #### 4. Initialize Terraform Backend
 ```bash
 # Initialize Terraform with environment-specific backend
-cd scripts
-./init_backend.sh -e development -s {{cookiecutter.project_slug}}
+tn aws-tf-init-backend -e development -s {{cookiecutter.project_slug}}
 ```
 
 #### 5. Configure GitHub Repository Variables
@@ -466,8 +463,8 @@ Deploy to separate AWS accounts for maximum security isolation between environme
 
 **2. Set up OIDC roles for each account:**
 ```bash
-# Run this script for each AWS account
-terraform/scripts/setup-github-oidc-role.sh
+# Run this for each AWS account
+tn aws-setup-oidc
 ```
 
 **3. Configure GitHub repository variables:**
@@ -660,12 +657,11 @@ use_custom_subdomain = false
 
 **Interactive log streaming:**
 ```bash
-cd terraform/scripts
-./stream-logs.sh
+tn aws-stream-logs
 
 # CLI mode examples
-./stream-logs.sh -s {{cookiecutter.project_slug}} -e development -t a -f "ERROR" -d 1h
-./stream-logs.sh -s {{cookiecutter.project_slug}} -e production -t w -d 30m
+tn aws-stream-logs -s {{cookiecutter.project_slug}} -e development -t a -f "ERROR" -d 1h
+tn aws-stream-logs -s {{cookiecutter.project_slug}} -e production -t w -d 30m
 ```
 
 **Manual log commands:**
@@ -684,12 +680,11 @@ aws logs filter-log-events \
 
 **Interactive container access:**
 ```bash
-cd terraform/scripts
-./ecs-exec.sh
+tn aws-ecs-exec
 
 # CLI mode examples
-./ecs-exec.sh -s {{cookiecutter.project_slug}} -e development -c bash
-./ecs-exec.sh -s {{cookiecutter.project_slug}} -e production -c "python manage.py shell"
+tn aws-ecs-exec -s {{cookiecutter.project_slug}} -e development -c bash
+tn aws-ecs-exec -s {{cookiecutter.project_slug}} -e production -c "python manage.py shell"
 ```
 
 **Manual ECS exec:**
@@ -798,7 +793,7 @@ aws ecs describe-services \
 
 ```bash
 # 1. Set up S3 backend (one-time per team)
-terraform/scripts/setup_backend.sh
+tn aws-tf-setup-backend
 
 # 2. Configure backend in terraform.tfvars
 terraform_state_bucket = "company-terraform-state"
@@ -807,34 +802,34 @@ terraform_state_region = "us-east-1"
 terraform_lock_table = "terraform-state-lock"
 
 # 3. Initialize with remote backend
-terraform/scripts/init_backend.sh
+tn aws-tf-init-backend
 ```
 
 ### Environment-Specific Deployments
 
 ```bash
 # Development environment
-terraform/scripts/init_backend.sh -e development
+tn aws-tf-init-backend -e development
 
 # PR review app
-terraform/scripts/init_backend.sh -e pr-123
+tn aws-tf-init-backend -e pr-123
 
-# Production environment  
-terraform/scripts/init_backend.sh -e production
+# Production environment
+tn aws-tf-init-backend -e production
 ```
 
 ## 📚 Additional Resources
 
 ### Setup Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `terraform/scripts/setup_backend.sh` | Create S3 backend for state |
-| `terraform/scripts/init_backend.sh` | Initialize Terraform with backend |
+| Tool | Purpose |
+|------|---------|
+| `tn aws-tf-setup-backend` | Create S3 backend for state |
+| `tn aws-tf-init-backend` | Initialize Terraform with backend |
 | `terraform/scripts/add_env_var.sh` | Add environment variables |
-| `terraform/scripts/setup-github-oidc-role.sh` | Create GitHub OIDC roles |
+| `tn aws-setup-oidc` | Create GitHub OIDC roles |
 | `.github/scripts/secrets-sync.sh` | Manage S3 secrets |
-| `.github/scripts/setup-secrets-bucket.sh` | Create S3 secrets bucket |
+| `tn aws-setup-secrets` | Create S3 secrets bucket |
 
 ### Useful Aliases
 
