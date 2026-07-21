@@ -31,11 +31,11 @@ locals {
     },
     {
       name  = "USE_AWS_STORAGE"
-      value = var.use_aws_storage
+      value = tostring(var.use_aws_storage)
     },
     {
       name  = "ENABLE_EMAILS"
-      value = var.enable_emails
+      value = tostring(var.enable_emails)
     },
     {
       name  = "VPC_CIDRS"
