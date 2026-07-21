@@ -41,7 +41,7 @@ jobs:
           touch .env
           cat .env.example > .env
           cat .env
-      - run: mkdir -p client/dist/static
+      - run: mkdir -p client/dist
       - name: Run tests and checks
         run: |
           source .venv/bin/activate
