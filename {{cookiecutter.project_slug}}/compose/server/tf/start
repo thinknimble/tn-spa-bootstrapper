@@ -5,7 +5,7 @@ set -o pipefail
 set -o nounset
 
 
-[ -d "/app/client/dist" ] && python manage.py collectstatic --noinput || echo "Client Folder not built skipping collect static"
+[ -d "/client/dist" ] && python manage.py collectstatic --noinput || echo "Client Folder not built skipping collect static"
 
 python manage.py migrate
 
