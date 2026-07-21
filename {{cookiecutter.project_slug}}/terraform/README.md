@@ -119,22 +119,21 @@ terraform apply
 
 #### Automated Deployments via GitHub Actions
 ```bash
-# Development environment - auto-deploys on pushes to main branch
+# Development environment - auto-deploys on pushes to dev branch
+git push origin dev
+
+# Staging environment - auto-deploys on pushes to main branch
 git push origin main
 
 # PR environments - auto-creates temporary environments for each pull request
 git push origin feature-branch
 
-# Staging environment - auto-deploys on tagged releases
-git tag v1.0.0
-git push origin v1.0.0
-
-# Production environment - manual approval required through GitHub UI
+# Production environment - deploy via workflow_dispatch in GitHub Actions UI
 ```
 
 #### Environment Management
-- **Development**: Deploys automatically on pushes to `main` branch
-- **Staging**: Deploys automatically on tagged releases
+- **Development**: Deploys automatically on pushes to `dev` branch
+- **Staging**: Deploys automatically on pushes to `main` branch
 - **Production**: Requires manual approval in GitHub Actions
 - **PR Environments**: Temporary environments created automatically for each pull request
 
