@@ -3,7 +3,7 @@ id: actions-update-deployment-status
 parent: template-quality-security-fixes
 created: 2026-07-21T00:00:00Z
 priority: 3
-status: not_started
+status: done
 branch: feature/aws-fargate
 ---
 

@@ -84,13 +84,16 @@ jobs:
         run: |
           echo "Creating deployment for environment: ${{ steps.setup-env.outputs.environment }}"
 
-          gh api repos/${{ github.repository }}/deployments \
+          DEPLOYMENT_ID=$(gh api repos/${{ github.repository }}/deployments \
             --method POST \
             --field ref='${{ github.sha }}' \
             --field environment='${{ steps.setup-env.outputs.environment }}' \
             --field description='Deploy to ${{ steps.setup-env.outputs.environment }}' \
             --field auto_merge=false \
-            --field required_contexts='[]'
+            --field required_contexts='[]' \
+            --jq '.id')
+
+          echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
 
       - name: Setup Terraform
         uses: ./.github/actions/setup-terraform
@@ -153,7 +156,7 @@ jobs:
           gh pr comment ${{ github.event.number }} --body "$COMMENT_BODY"
 
       - name: Update deployment status
-        if: always()
+        if: always() && steps.deployment.outputs.deployment_id
         run: |
           if [[ "${{ job.status }}" == "success" ]]; then
             DEPLOYMENT_STATE="success"
@@ -163,13 +166,12 @@ jobs:
             DESCRIPTION="Deployment failed"
           fi
 
-          gh api repos/${{ github.repository }}/deployments \
+          gh api repos/${{ github.repository }}/deployments/${{ steps.deployment.outputs.deployment_id }}/statuses \
             --method POST \
-            --field ref='${{ github.sha }}' \
-            --field environment='${{ steps.setup-env.outputs.environment }}' \
             --field state="$DEPLOYMENT_STATE" \
             --field description="$DESCRIPTION" \
-            --field environment_url="${{ steps.app-url.outputs.app_url }}"
+            --field environment_url="${{ steps.app-url.outputs.app_url }}" \
+            --field auto_inactive=true
 
   cleanup-pr-environment:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
