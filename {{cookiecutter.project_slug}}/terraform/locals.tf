@@ -10,10 +10,18 @@ locals {
   )
   
   # Environment-specific subnet CIDR calculation for shared VPC
-  # Extract PR number for pr-* environments, use 10 for development
+  # Reserved octets (third octet in 10.0.X.0/24):
+  #   10  → development
+  #   30  → staging/production fallback
+  # PR environments use modulo to wrap into range 1-154 (so base+100 ≤ 254),
+  # then skip reserved octets to avoid collision. This gives 152 unique PR slots.
+  pr_number = can(regex("^pr-([0-9]+)", var.environment)) ? tonumber(regex("^pr-([0-9]+)", var.environment)[0]) : 0
+  pr_slot      = (local.pr_number % 152) + 1
+  pr_skip_10   = local.pr_slot >= 10 ? local.pr_slot + 1 : local.pr_slot
+  pr_skip_30   = local.pr_skip_10 >= 30 ? local.pr_skip_10 + 1 : local.pr_skip_10
+
   env_cidr_base = var.environment == "development" ? 10 : (
-    can(regex("^pr-([0-9]+)", var.environment)) ? 
-      tonumber(regex("^pr-([0-9]+)", var.environment)[0]) : 30
+    can(regex("^pr-([0-9]+)", var.environment)) ? local.pr_skip_30 : 30
   )
   
   # Calculate subnet CIDRs for shared VPC (10.0.X.0/24 and 10.0.Y.0/24)
