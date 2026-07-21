@@ -3,7 +3,7 @@ id: env-json-deduped
 parent: environments-config-inheritance
 created: 2026-07-21T22:00:00Z
 priority: 2
-status: not_started
+status: done
 depends-on: env-config-extends-resolution
 branch: feature/aws-fargate
 ---
