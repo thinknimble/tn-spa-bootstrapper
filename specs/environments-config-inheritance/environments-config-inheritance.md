@@ -24,29 +24,26 @@ The `extends` keyword follows the same pattern as `tsconfig.json`, Docker Compos
 
 ### Target Shape
 
+The template defaults to a **single AWS account** for all environments. Most projects start this way — separate accounts are an optimization that can be added later by overriding `account_id` and `role_arn` on specific environments.
+
 ```json
 {
   "environments": {
     "development": {
-      "account": "dev",
-      "account_id": "123456789012",
+      "account_id": "CHANGE-ME",
       "region": "us-east-1",
-      "role_arn": "arn:aws:iam::123456789012:role/github-actions-myapp-development",
-      "secrets_bucket": "myapp-terraform-secrets",
+      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-development",
+      "secrets_bucket": "CHANGE-ME-terraform-secrets",
       "domain": { "..." : "full domain config" }
     },
     "staging": {
-      "extends": "production",
-      "role_arn": "arn:aws:iam::345678901234:role/github-actions-myapp-staging",
-      "domain": { "use_custom_domain": false }
+      "extends": "development",
+      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-staging"
     },
     "production": {
-      "account": "prod",
-      "account_id": "345678901234",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::345678901234:role/github-actions-myapp-production",
-      "secrets_bucket": "myapp-terraform-secrets",
-      "domain": { "..." : "full domain config" }
+      "extends": "development",
+      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-production",
+      "domain": { "use_custom_domain": true, "custom_domain": "CHANGE-ME.com" }
     }
   },
   "patterns": {
@@ -56,3 +53,5 @@ The `extends` keyword follows the same pattern as `tsconfig.json`, Docker Compos
   "defaults": { "extends": "development" }
 }
 ```
+
+With this shape, initial setup requires filling in `development` only — staging and production inherit everything except their role ARN.
