@@ -16,12 +16,23 @@ The template `environments.json` uses the `extends` keyword so that no config bl
 
 ## Success Criteria
 
+**Inheritance structure:**
 - `patterns.pr-*` uses `"extends": "development"` with no other fields (or only fields that genuinely differ)
 - `patterns.main` uses `"extends": "development"` with no other fields (or only fields that genuinely differ)
 - `defaults` uses `"extends": "development"` with no other fields (or only fields that genuinely differ)
-- Template defaults to a **single AWS account** for all environments — `development` is the only fully self-contained entry with all fields inline (`account_id`, `region`, `secrets_bucket`, `domain`)
-- `environments.staging` uses `"extends": "development"` and only overrides `role_arn` (and any domain fields that differ)
-- `environments.production` uses `"extends": "development"` and only overrides `role_arn` and domain fields (e.g., `use_custom_domain`, `custom_domain`)
-- No separate `account_id` for staging/production by default — users who need multi-account can add `account_id` overrides to those entries later
-- The template's placeholder values use `CHANGE-ME` markers (not fake account IDs like `123456789012`) to make it obvious what needs to be filled in
-- `role_arn` values in the template use the per-project-per-env naming convention: `github-actions-<service>-<environment>`
+- `environments.staging` uses `"extends": "development"` and only overrides `role_arn`
+- `environments.production` uses `"extends": "development"` and only overrides `role_arn` and domain fields (`use_custom_domain`, `custom_domain`)
+
+**Single-account default:**
+- Template defaults to a **single AWS account** — `development` is the only fully self-contained entry with all fields inline (`account_id`, `region`, `secrets_bucket`, `domain`)
+- No separate `account_id` for staging/production by default — users who need multi-account add `account_id` overrides later
+
+**Domain inheritance:**
+- Domain config (`base_domain`, `route53_zone_id`, `certificate_arn`) is defined once on `development` and inherited by all environments via `extends`
+- Default domain fields are all empty strings / false — the "ALB DNS only" mode works with zero domain setup
+- Only `production` overrides domain with `use_custom_domain: true` and `custom_domain: ""` (client fills in their domain)
+- Wildcard subdomain mode is enabled by filling in `base_domain`, `route53_zone_id`, and `certificate_arn` on `development` — all environments inherit it automatically
+
+**Placeholder values:**
+- The template uses `CHANGE-ME` markers (not fake account IDs like `123456789012`) to make it obvious what needs to be filled in
+- `role_arn` values use the per-project-per-env naming convention: `github-actions-<service>-<environment>`
