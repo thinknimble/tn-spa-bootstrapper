@@ -3,7 +3,7 @@ id: actions-generate-tfvars-deploy-only
 parent: aws-fargate-infra-refactor
 created: 2026-07-20T23:00:00Z
 priority: 1
-status: not_started
+status: done
 depends-on: actions-teardown-no-tfvars
 branch: feature/aws-fargate
 ---
