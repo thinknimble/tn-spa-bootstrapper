@@ -3,7 +3,7 @@ id: tf-rollbar-secret-injected-or-removed
 parent: template-quality-security-fixes
 created: 2026-07-21T00:00:00Z
 priority: 3
-status: draft
+status: not_started
 branch: feature/aws-fargate
 ---
 

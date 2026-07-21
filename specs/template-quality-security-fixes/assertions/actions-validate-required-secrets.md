@@ -3,7 +3,7 @@ id: actions-validate-required-secrets
 parent: template-quality-security-fixes
 created: 2026-07-21T00:00:00Z
 priority: 1
-status: draft
+status: not_started
 depends-on: actions-mask-secret-outputs
 branch: feature/aws-fargate
 ---
