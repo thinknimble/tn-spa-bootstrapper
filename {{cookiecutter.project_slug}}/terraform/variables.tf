@@ -104,7 +104,7 @@ variable "db_pass" {
 }
 
 variable "use_aws_storage" {
-  type        = string
+  type        = bool
   description = "Use AWS S3 storage for the app service backend"
   default     = false
 }
@@ -137,7 +137,7 @@ variable "aws_secret_access_key" {
 }
 
 variable "enable_emails" {
-  type        = string
+  type        = bool
   description = "Enable email sending for the app service backend"
   default     = false
 }
