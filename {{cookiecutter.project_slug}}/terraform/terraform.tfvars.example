@@ -8,9 +8,7 @@ environment                   = "development"
 
 
 # Certificate Configuration
-default_certificate_arn       = "arn:aws:acm:us-east-1:123456789012:certificate/your-wildcard-cert-id"  # Required: Wildcard certificate ARN
-custom_certificate_arn        = ""               # Optional: Override with custom certificate
-# company_domain removed - use current_domain instead for custom domains
+certificate_arn               = "arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id"  # ARN of the SSL certificate for HTTPS
 enable_https                  = true             # HTTPS enabled by default
 route53_zone_id               = ""               # Leave blank if you are part of TN
 
