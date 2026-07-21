@@ -46,7 +46,7 @@ data "aws_route_table" "shared" {
 
   filter {
     name   = "tag:Name"
-    values = [var.environment == "staging" || var.environment == "production" ? "shared-${var.environment}-rt" : "shared-dev-rt"]
+    values = ["${local.shared_vpc_name}-rt"]
   }
 }
 

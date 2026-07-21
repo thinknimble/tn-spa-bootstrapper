@@ -3,7 +3,7 @@ id: tf-mandatory-vpc-data-sources
 parent: aws-fargate-infra-refactor
 created: 2026-07-20T23:00:00Z
 priority: 1
-status: not_started
+status: done
 depends-on: tf-no-vpc-resources
 branch: feature/aws-fargate
 ---
