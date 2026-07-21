@@ -31,6 +31,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.action == 'deploy' || github.event.action != 'closed'
+    concurrency:
+      group: deploy-{% raw %}${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'staging') || 'dev' }}{% endraw %}
+      cancel-in-progress: {% raw %}${{ github.event_name == 'pull_request' }}{% endraw %}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -149,7 +152,9 @@ jobs:
   cleanup-pr-environment:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
-    
+    concurrency:
+      group: deploy-pr-{% raw %}${{ github.event.number }}{% endraw %}
+      cancel-in-progress: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -198,7 +203,9 @@ jobs:
   teardown-environment:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment != ''
     runs-on: ubuntu-latest
-    
+    concurrency:
+      group: deploy-{% raw %}${{ github.event.inputs.environment }}{% endraw %}
+      cancel-in-progress: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
