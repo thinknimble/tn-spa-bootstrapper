@@ -3,7 +3,7 @@ id: trust-policy-repo-scoped
 parent: oidc-per-project-isolation
 created: 2026-07-21T22:00:00Z
 priority: 2
-status: draft
+status: not_started
 branch: feature/aws-fargate
 ---
 
