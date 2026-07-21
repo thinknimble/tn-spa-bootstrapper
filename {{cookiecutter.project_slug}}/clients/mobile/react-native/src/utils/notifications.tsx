@@ -5,7 +5,6 @@ import {
   AndroidImportance,
   getExpoPushTokenAsync,
   getPermissionsAsync,
-  removeNotificationSubscription,
   requestPermissionsAsync,
   setNotificationChannelAsync,
 } from 'expo-notifications'
@@ -36,8 +35,8 @@ export const useListenLogNotification = () => {
     })
 
     return () => {
-      notificationListener.current && removeNotificationSubscription(notificationListener.current)
-      responseListener.current && removeNotificationSubscription(responseListener.current)
+      notificationListener.current?.remove()
+      responseListener.current?.remove()
     }
   }, [])
 }

@@ -34,6 +34,9 @@
     },
     "EMAIL_ALLOWLIST": {
       "value": "[\"admin@thinknimble.com\"]"
+    },
+    "REQUIRE_EMAIL_VERIFICATION": {
+      "value": "True"
     }
   },
   "addons": [
