@@ -23,7 +23,8 @@ The current post-gen hook output references stale setup steps:
 
 ## Success Criteria
 
-- Post-gen instructions reference `tn` (or `just`) commands in correct dependency order: VPC → TF setup-backend → TF init-backend (per-env) → OIDC (per-env) → secrets bucket (per-env) → environments.json → repo variables → edit secrets → push secrets (per-env)
+- Post-gen instructions reference `tn` (or `just`) commands in correct dependency order: VPC → TF setup-backend → TF init-backend (per-env) → secrets bucket (per-env) → OIDC (per-env, with `secrets_bucket` param) → environments.json → repo variables → edit secrets → push secrets (per-env)
+- `aws-setup-oidc` must be called with the `secrets_bucket` parameter (e.g., `secrets_bucket='<service>-terraform-secrets'`) so the OIDC role includes the S3 secrets access policy. The secrets bucket must be created before OIDC setup so the bucket exists when the policy is attached.
 - No mention of `DEV_AWS_ROLE_ARN`, `STAGING_AWS_ROLE_ARN`, `PROD_AWS_ROLE_ARN` as GitHub variables (role ARNs go in `environments.json`)
 - GitHub repo variables listed are only those actually used by the workflow: `SERVICE_NAME`, `ECR_REPOSITORY_NAME`, `AWS_ACCOUNT_ID`
 - Instructions mention updating `.github/environments.json` with `account_id`, `role_arn`, `secrets_bucket`, and `region` from provisioning output
@@ -35,4 +36,5 @@ The current post-gen hook output references stale setup steps:
   - `<environment>` — target environment name: `development`, `staging`, or `production`
   - `<profile>` — AWS CLI profile name (defaults to `default`)
   - `<region>` — AWS region (defaults to `us-east-1`)
+  - `<secrets_bucket>` — S3 bucket for secrets storage, conventionally `<service>-terraform-secrets` (created by `aws-setup-secrets`)
 - Per-environment commands (init-backend, OIDC, secrets bucket, edit secrets, push secrets) explicitly state they must be run **once per environment** (development, staging, production) and show all three invocations as examples
