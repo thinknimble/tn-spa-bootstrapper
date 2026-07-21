@@ -1,4 +1,4 @@
-name: Deploy Application
+{% raw %}name: Deploy Application
 
 on:
   push:
@@ -32,16 +32,16 @@ permissions:
   deployments: write
 
 env:
-  AWS_REGION: {% raw %}${{ vars.AWS_REGION || 'us-east-1' }}{% endraw %}
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
   GH_TOKEN: ${{ github.token }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: {% raw %}github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'deploy'){% endraw %}
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'deploy')
     concurrency:
-      group: deploy-{% raw %}${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'staging') || 'dev' }}{% endraw %}
-      cancel-in-progress: {% raw %}${{ github.event_name == 'pull_request' }}{% endraw %}
+      group: deploy-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'staging') || 'dev' }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
           account_id: ${{ steps.setup-env.outputs.account_id }}
           role_arn: ${{ steps.setup-env.outputs.role_arn }}
           aws_region: ${{ env.AWS_REGION }}
-          ecr_repository_name: {% raw %}${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}{% endraw %}
+          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -74,8 +74,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            {% raw %}${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.image_tag }}{% endraw %}
-            {% raw %}${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.environment }}-latest{% endraw %}
+            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.image_tag }}
+            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.environment }}-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -83,7 +83,7 @@ jobs:
         id: deployment
         run: |
           echo "Creating deployment for environment: ${{ steps.setup-env.outputs.environment }}"
-          
+
           gh api repos/${{ github.repository }}/deployments \
             --method POST \
             --field ref='${{ github.sha }}' \
@@ -96,7 +96,7 @@ jobs:
         uses: ./.github/actions/setup-terraform
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          service_name: {% raw %}${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}{% endraw %}
+          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}
 
       - name: Generate Terraform Variables
         uses: ./.github/actions/generate-terraform-vars
@@ -124,7 +124,7 @@ jobs:
         id: app-url
         run: |
           cd terraform
-          APP_URL=$(terraform output -raw application_url 2>/dev/null {% raw %}|| echo ""){% endraw %}
+          APP_URL=$(terraform output -raw application_url 2>/dev/null || echo "")
           if [[ -n "$APP_URL" ]]; then
             echo "app_url=$APP_URL" >> $GITHUB_OUTPUT
             echo "✅ Application URL: $APP_URL"
@@ -135,12 +135,12 @@ jobs:
         run: |
           APP_URL="${{ steps.app-url.outputs.app_url }}"
           COMMENT_BODY="🚀 **Deployment Preview**
-          
+
           **Environment:** \`${{ steps.setup-env.outputs.environment }}\`
           **Application URL:** ${APP_URL:-_URL will be available after infrastructure deployment_}
-          
+
           The environment will be automatically updated with each new commit to this PR."
-          
+
           gh pr comment ${{ github.event.number }} --body "$COMMENT_BODY"
 
       - name: Update deployment status
@@ -150,10 +150,10 @@ jobs:
             DEPLOYMENT_STATE="success"
             DESCRIPTION="Deployment completed successfully"
           else
-            DEPLOYMENT_STATE="failure" 
+            DEPLOYMENT_STATE="failure"
             DESCRIPTION="Deployment failed"
           fi
-          
+
           gh api repos/${{ github.repository }}/deployments \
             --method POST \
             --field ref='${{ github.sha }}' \
@@ -166,13 +166,13 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     concurrency:
-      group: deploy-pr-{% raw %}${{ github.event.number }}{% endraw %}
+      group: deploy-pr-${{ github.event.number }}
       cancel-in-progress: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Environment  
+      - name: Setup Environment
         id: setup-env
         uses: ./.github/actions/setup-environment
         with:
@@ -195,7 +195,7 @@ jobs:
         run: |
           cd terraform
           PR_WORKSPACE="${{ steps.setup-env.outputs.environment }}"
-          
+
           if terraform workspace list | grep -q "$PR_WORKSPACE"; then
             terraform workspace select "$PR_WORKSPACE"
             echo "🗑️ Destroying infrastructure for environment: $PR_WORKSPACE"
@@ -208,18 +208,18 @@ jobs:
           fi
 
   teardown-environment:
-    if: {% raw %}github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'teardown'{% endraw %}
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'teardown'
     runs-on: ubuntu-latest
-    environment: {% raw %}${{ github.event.inputs.environment == 'production' && 'production-teardown' || github.event.inputs.environment }}{% endraw %}
+    environment: ${{ github.event.inputs.environment == 'production' && 'production-teardown' || github.event.inputs.environment }}
     concurrency:
-      group: deploy-{% raw %}${{ github.event.inputs.environment }}{% endraw %}
+      group: deploy-${{ github.event.inputs.environment }}
       cancel-in-progress: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Environment
-        id: setup-env  
+        id: setup-env
         uses: ./.github/actions/setup-environment
         with:
           manual_environment: ${{ github.event.inputs.environment }}
@@ -237,18 +237,18 @@ jobs:
         uses: ./.github/actions/setup-terraform
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          service_name: {% raw %}${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}{% endraw %}
+          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}
 
       - name: Confirm and Destroy Environment
         run: |
           cd terraform
           ENVIRONMENT="${{ steps.setup-env.outputs.environment }}"
-          
+
           if terraform workspace list | grep -q "$ENVIRONMENT"; then
             terraform workspace select "$ENVIRONMENT"
             echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
             echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
-            
+
             if terraform destroy -auto-approve; then
               echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
               terraform workspace select default
@@ -259,4 +259,4 @@ jobs:
             fi
           else
             echo "ℹ️  No workspace found for environment: $ENVIRONMENT"
-          fi
+          fi{% endraw %}

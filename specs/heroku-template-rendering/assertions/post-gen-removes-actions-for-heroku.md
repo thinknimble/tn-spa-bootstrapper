@@ -3,7 +3,7 @@ id: post-gen-removes-actions-for-heroku
 parent: heroku-template-rendering
 created: 2026-07-21T20:00:00Z
 priority: 1
-status: not_started
+status: done
 depends-on: actions-raw-escape-github-expressions
 branch: feature/aws-fargate
 ---

@@ -136,7 +136,8 @@ def remove_terraform_files():
         "secrets-template.json",  # Remove secrets template for Heroku deployments
     ]
     directories = [
-        "terraform"
+        "terraform",
+        join(".github", "actions"),
     ]
     
     for file_name in file_names:

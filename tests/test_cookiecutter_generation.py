@@ -109,6 +109,25 @@ def test_project_generation(cookies, context, context_override):
 # END TODO
 
 
+def test_heroku_removes_github_actions_directory(cookies, context):
+    """Heroku deployment should remove .github/actions/ directory."""
+    result = cookies.bake(extra_context={**context, "deployment_option": "Heroku"})
+    assert result.exit_code == 0
+    actions_dir = result.project_path / ".github" / "actions"
+    assert not actions_dir.exists(), ".github/actions/ should be removed for Heroku"
+
+
+def test_terraform_keeps_github_actions_directory(cookies, context):
+    """Terraform deployment should keep .github/actions/ directory with all four subdirs."""
+    result = cookies.bake(extra_context={**context, "deployment_option": "Terraform (AWS)"})
+    assert result.exit_code == 0
+    actions_dir = result.project_path / ".github" / "actions"
+    assert actions_dir.exists(), ".github/actions/ should exist for Terraform"
+    expected = {"generate-terraform-vars", "setup-aws", "setup-environment", "setup-terraform"}
+    actual = {d.name for d in actions_dir.iterdir() if d.is_dir()}
+    assert expected == actual
+
+
 @pytest.mark.parametrize("slug", ["project slug", "Project_Slug"])
 def test_invalid_slug(cookies, context, slug):
     """Invalid slug should failed pre-generation hook."""
