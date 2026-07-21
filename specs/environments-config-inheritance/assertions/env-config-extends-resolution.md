@@ -3,7 +3,7 @@ id: env-config-extends-resolution
 parent: environments-config-inheritance
 created: 2026-07-21T22:00:00Z
 priority: 1
-status: not_started
+status: done
 branch: feature/aws-fargate
 ---
 
