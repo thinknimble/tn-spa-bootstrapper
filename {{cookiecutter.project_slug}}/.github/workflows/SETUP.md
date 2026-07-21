@@ -38,12 +38,35 @@ Go to your repository **Settings > Secrets and variables > Actions > Secrets** a
 
 | Secret Name | Description |
 |-------------|-------------|
-| `DJANGO_SECRET_KEY` | Django secret key (generate a secure random string) |
-| `DB_PASSWORD` | Database password for your RDS instance |
-| `DJANGO_SUPERUSER_PASSWORD` | Password for Django admin superuser |
-| `PLAYWRIGHT_TEST_USER_PASS` | Password for Playwright test user |
-| `AWS_ACCESS_KEY_ID` | AWS Access Key ID for S3 storage (if using) |
-| `AWS_SECRET_ACCESS_KEY` | AWS Secret Access Key for S3 storage (if using) |
+| `PLAYWRIGHT_TEST_USER_PASS` | Password for Playwright test user (used by the Playwright workflow) |
+
+## Application Secrets (S3-Based)
+
+Application secrets (`DJANGO_SECRET_KEY`, `DB_PASSWORD`, `DJANGO_SUPERUSER_PASSWORD`, etc.) are **not** stored as GitHub repository secrets. They are managed via an S3 bucket and synced using `.github/scripts/secrets-sync.sh`.
+
+### Setting Up Secrets
+
+1. **Generate a template** for your environment:
+   ```bash
+   .github/scripts/secrets-sync.sh template <environment>
+   ```
+   This creates a `secrets-<environment>.json` file with placeholder values.
+
+2. **Edit the file** and replace all `CHANGE-ME` values with real credentials.
+
+3. **Upload to S3:**
+   ```bash
+   .github/scripts/secrets-sync.sh push <environment>
+   ```
+
+4. **Verify the upload:**
+   ```bash
+   .github/scripts/secrets-sync.sh list <environment>
+   ```
+
+Environments: `production`, `staging`, `development`. PR environments automatically fall back to `development` secrets.
+
+See `.github/scripts/secrets-sync.sh --help` for all options.
 
 ## AWS IAM Setup for GitHub Actions
 
