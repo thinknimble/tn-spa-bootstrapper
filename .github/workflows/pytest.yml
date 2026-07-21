@@ -65,7 +65,7 @@ jobs:
         run: |
           cd my_project
           uv sync
-          mkdir -p client/dist/static
+          mkdir -p client/dist
           uv run python server/manage.py collectstatic
           uv run pytest --cov=my_project --cov-config=pyproject.toml -vv server/my_project
           uv run coverage report
