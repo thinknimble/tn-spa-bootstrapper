@@ -1,6 +1,6 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.exceptions import TemplateDoesNotExist
-from django.http import JsonResponse
 from rest_framework import status
 
 

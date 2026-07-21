@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
+
 from {{ cookiecutter.project_slug }}.common.views import health_check
 
 admin.site.site_header = "{{ cookiecutter.project_name }} Admin"
