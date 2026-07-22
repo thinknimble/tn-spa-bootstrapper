@@ -41,7 +41,7 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed') || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'deploy')
     concurrency:
       group: deploy-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'staging') || 'dev' }}
-      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+      cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
 
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./compose/server/tf/Dockerfile
@@ -105,32 +105,29 @@ jobs:
           custom_domain: ${{ steps.setup-env.outputs.custom_domain }}
           route53_zone_id: ${{ steps.setup-env.outputs.route53_zone_id }}
           certificate_arn: ${{ steps.setup-env.outputs.certificate_arn }}
+          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}
+          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}
 
       - name: Terraform Plan
         id: plan
         run: |
           cd terraform
-          set +e
-          terraform plan -detailed-exitcode
-          EXIT_CODE=$?
-          set -e
-          if [ $EXIT_CODE -eq 1 ]; then
-            echo "Terraform plan failed with an error"
-            exit 1
-          fi
-          echo "has_changes=$( [ $EXIT_CODE -eq 2 ] && echo true || echo false )" >> $GITHUB_OUTPUT
+          terraform plan -out=tfplan
+          echo "has_changes=$( [ -s tfplan ] && echo true || echo false )" >> $GITHUB_OUTPUT
 
       - name: Terraform Apply
         if: github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true'
         run: |
           cd terraform
-          terraform apply -auto-approve
+          terraform apply tfplan
 
       - name: Get Application URL
         id: app-url
         run: |
           cd terraform
-          APP_URL=$(terraform output -raw application_url 2>/dev/null || echo "")
+          APP_URL=$(terraform output -raw application_url 2>/dev/null || true)
+          # Strip any Terraform warning text that isn't a URL
+          [[ "$APP_URL" != http* ]] && APP_URL=""
           if [[ -n "$APP_URL" ]]; then
             echo "app_url=$APP_URL" >> $GITHUB_OUTPUT
             echo "✅ Application URL: $APP_URL"

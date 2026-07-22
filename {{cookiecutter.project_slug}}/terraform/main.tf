@@ -32,59 +32,17 @@ data "aws_vpc" "shared" {
   }
 }
 
-# Look up the shared Internet Gateway
-data "aws_internet_gateway" "shared" {
+# Look up existing subnets in the shared VPC
+data "aws_subnets" "shared" {
   filter {
-    name   = "attachment.vpc-id"
+    name   = "vpc-id"
     values = [data.aws_vpc.shared.id]
   }
-}
-
-# Look up the shared route table
-data "aws_route_table" "shared" {
-  vpc_id = data.aws_vpc.shared.id
 
   filter {
-    name   = "tag:Name"
-    values = ["${local.shared_vpc_name}-rt"]
+    name   = "map-public-ip-on-launch"
+    values = ["true"]
   }
-}
-
-
-# Create environment-specific public subnets
-resource "aws_subnet" "public" {
-  vpc_id                  = local.vpc_id
-  cidr_block              = local.subnet_a_cidr
-  availability_zone       = "${var.aws_region}b"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "subnet-${var.service}-${var.environment}-a"
-    Environment = var.environment
-  }
-}
-
-resource "aws_subnet" "public_b" {
-  vpc_id            = local.vpc_id
-  cidr_block        = local.subnet_b_cidr
-  availability_zone = "${var.aws_region}a"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "subnet-${var.service}-${var.environment}-b"
-    Environment = var.environment
-  }
-}
-
-# Route table associations for the subnets
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = local.route_table_id
-}
-
-resource "aws_route_table_association" "public_b" {
-  subnet_id      = aws_subnet.public_b.id
-  route_table_id = local.route_table_id
 }
 
 
@@ -93,7 +51,7 @@ resource "aws_route_table_association" "public_b" {
 # Create a subnet group for the RDS instance
 resource "aws_db_subnet_group" "database" {
   name       = "db-sng-${var.service}-${var.environment}"
-  subnet_ids = [aws_subnet.public.id, aws_subnet.public_b.id]
+  subnet_ids = data.aws_subnets.shared.ids
 
   tags = {
     Name = "db-sng-${var.service}-${var.environment}"
@@ -152,7 +110,7 @@ resource "aws_lb" "ecs" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_load_balancer.id]
-  subnets            = [aws_subnet.public.id, aws_subnet.public_b.id]
+  subnets            = data.aws_subnets.shared.ids
 
   enable_deletion_protection = false
 
@@ -195,7 +153,7 @@ resource "aws_lb_listener" "https" {
 # Redis ElastiCache Subnet Group
 resource "aws_elasticache_subnet_group" "redis" {
   name       = "redis-subnet-group-${var.service}-${var.environment}"
-  subnet_ids = [aws_subnet.public.id, aws_subnet.public_b.id]
+  subnet_ids = data.aws_subnets.shared.ids
 
   tags = {
     Name = "redis-subnet-group-${var.service}-${var.environment}"
