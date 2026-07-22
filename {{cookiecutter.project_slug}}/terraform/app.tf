@@ -169,7 +169,7 @@ resource "aws_lb_target_group" "app" {
 
   health_check {
     protocol = "HTTP"
-    path     = "/health"
+    path     = "/health/"
     matcher  = "200-399"  # Accept redirects and success responses
   }
 
