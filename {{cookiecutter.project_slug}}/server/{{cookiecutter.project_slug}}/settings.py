@@ -83,36 +83,32 @@ if IS_AWS_ENVIRONMENT:
     print(f"ECS_CONTAINER_METADATA_URI_V4: {METADATA_URI_V4}")
     print(f"ECS_CONTAINER_METADATA_URI: {METADATA_URI}")
 
-    # Method 1: Try ECS Metadata API v4 (newer)
+    # Method 1: Try ECS Metadata API v4 (newer) - /task endpoint returns all containers
     if METADATA_URI_V4:
         try:
             resp = requests.get(f"{METADATA_URI_V4}/task", timeout=5)
             data = resp.json()
-            print(f"Metadata v4 response: {data}")
-            
-            # Look for our container
+
+            # Get IP from any container in the task
             for container in data.get('Containers', []):
-                if 'server-' in container.get('Name', ''):
-                    networks = container.get('Networks', [])
-                    if networks:
-                        EC2_PRIVATE_IP = networks[0]['IPv4Addresses'][0]
-                        print(f"✅ Found container IP via metadata v4: {EC2_PRIVATE_IP}")
-                        break
+                networks = container.get('Networks', [])
+                if networks and networks[0].get('IPv4Addresses'):
+                    EC2_PRIVATE_IP = networks[0]['IPv4Addresses'][0]
+                    print(f"✅ Found container IP via metadata v4: {EC2_PRIVATE_IP}")
+                    break
         except Exception as e:
             print(f"❌ Metadata v4 failed: {e}")
 
-    # Method 2: Try ECS Metadata API v2 (fallback)
+    # Method 2: Try ECS Metadata API v3 (fallback) - returns single container directly
     if not EC2_PRIVATE_IP and METADATA_URI:
         try:
             resp = requests.get(METADATA_URI, timeout=5)
             data = resp.json()
-            print(f"Metadata v2 response: {data}")
-            
-            container_meta = data['Containers'][0]
-            EC2_PRIVATE_IP = container_meta['Networks'][0]['IPv4Addresses'][0]
-            print(f"✅ Found container IP via metadata v2: {EC2_PRIVATE_IP}")
+
+            EC2_PRIVATE_IP = data['Networks'][0]['IPv4Addresses'][0]
+            print(f"✅ Found container IP via metadata v3: {EC2_PRIVATE_IP}")
         except Exception as e:
-            print(f"❌ Metadata v2 failed: {e}")
+            print(f"❌ Metadata v3 failed: {e}")
 
     # Method 3: Try hostname -i command
     if not EC2_PRIVATE_IP:
