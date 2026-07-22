@@ -1,13 +1,13 @@
 # locals
 
 locals {
-  # Shared VPC name for environments
-  # Can be account-wide (shared-dev-vpc) or per-project (shared-dev-vpc-PROJECT)
-  # Include environment in name for staging and production
-  shared_vpc_name =  (
-    var.environment == "staging" || var.environment == "production" ? 
-      "${var.shared_vpc_name}-${var.environment}" : var.shared_vpc_name
+  # Map environment to VPC name suffix
+  # PR environments (pr-*) and dev share the dev VPC
+  vpc_environment = (
+    var.environment == "staging" || var.environment == "production"
+      ? var.environment : "dev"
   )
+  shared_vpc_name = "${var.shared_vpc_name}-${local.vpc_environment}"
   
   # Resource name components (with length limits for AWS services)
   # ALB names: max 32 chars, alphanumeric and hyphens only
