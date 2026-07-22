@@ -106,7 +106,7 @@ resource "aws_ecs_task_definition" "app" {
         },
         {
           name  = "VPC_CIDRS",
-          value = "${local.subnet_a_cidr},${local.subnet_b_cidr}"
+          value = data.aws_vpc.shared.cidr_block
         }
       ],
       secrets = [
@@ -194,7 +194,7 @@ resource "aws_ecs_service" "app" {
   enable_execute_command = true
 
   network_configuration {
-    subnets          = [aws_subnet.public.id, aws_subnet.public_b.id]
+    subnets          = data.aws_subnets.shared.ids
     security_groups  = [aws_security_group.app.id]
     assign_public_ip = true
   }

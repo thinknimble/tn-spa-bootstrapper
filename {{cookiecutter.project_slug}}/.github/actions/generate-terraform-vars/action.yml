@@ -28,6 +28,14 @@ inputs:
     description: 'ACM certificate ARN'
     required: false
     default: ''
+  service_name:
+    description: 'Service name for Terraform'
+    required: false
+    default: '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}'
+  ecr_repository_name:
+    description: 'ECR repository name'
+    required: false
+    default: '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app'
 
 runs:
   using: 'composite'
@@ -118,8 +126,8 @@ runs:
       run: |
         cd terraform
 
-        SERVICE_NAME="${{ vars.SERVICE_NAME }}"
-        ECR_REPOSITORY_NAME="${{ vars.ECR_REPOSITORY_NAME }}"
+        SERVICE_NAME="${{ inputs.service_name }}"
+        ECR_REPOSITORY_NAME="${{ inputs.ecr_repository_name }}"
         [ -n "$SERVICE_NAME" ] && echo "service = \"$SERVICE_NAME\"" >> terraform.tfvars
         [ -n "$ECR_REPOSITORY_NAME" ] && echo "ecr_app_repository_name = \"$ECR_REPOSITORY_NAME\"" >> terraform.tfvars
 
@@ -136,7 +144,7 @@ runs:
         playwright_test_user_pass = "${{ steps.secrets.outputs.playwright_test_user_pass }}"
 {% endraw %}
         db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}{% raw %}${{ inputs.environment }}{% endraw %}db' | tr -d '-')"
-        db_user = "{{cookiecutter.sanitized_tf_service_name}}_{% raw %}${{ inputs.environment }}{% endraw %}_user"
+        db_user = "$(echo '{{cookiecutter.sanitized_tf_service_name}}_{% raw %}${{ inputs.environment }}{% endraw %}_user' | tr '-' '_')"
 {% raw %}
         debug = "${{ steps.app-config.outputs.debug }}"
         current_port = "${{ steps.app-config.outputs.current_port }}"
