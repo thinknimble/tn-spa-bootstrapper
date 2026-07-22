@@ -123,6 +123,45 @@ def remove_expo_yaml_files():
             remove(file_name)
 
 
+def remove_terraform_files():
+    """Remove Terraform-related files when Heroku deployment is chosen"""
+    file_names = [
+        join(".github/workflows", "app-deploy.yml"),
+        join(".github/workflows", "SETUP.md"),
+        join(".github", "environments.json"),
+        join(".github", "app-config.json"),
+        join(".github/scripts", "get-env-config.sh"),
+        join(".github/scripts", "secrets-sync.sh"),
+        "secrets-template.json",  # Remove secrets template for Heroku deployments
+    ]
+    directories = [
+        "terraform",
+        join(".github", "actions"),
+    ]
+    
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+    
+    for directory in directories:
+        if exists(directory):
+            rmtree(directory)
+
+
+def remove_heroku_files():
+    """Remove Heroku-related files when Terraform deployment is chosen"""
+    file_names = [
+        join("scripts", "deploy-on-heroku.sh"),
+        "app.json",
+        "Procfile",
+        "runtime.txt"
+    ]
+    
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
+
 def set_keys_in_envs(django_secret, postgres_secret):
     env_file_path = join(".env.example")
     pull_request_template_path = join(".github", "pull_request_template.md")
@@ -158,6 +197,39 @@ def get_secrets():
     return django_secret, postgres_secret
 
 
+def create_secrets_files():
+    """Create secrets template files for each environment when using Terraform"""
+    template_file = "secrets-template.json"
+    environments = ["development", "staging", "production"]
+    
+    if not exists(template_file):
+        print(f"{INFO}Warning: {template_file} not found, skipping secrets file creation{END}")
+        return
+    
+    print(f"{INFO}Creating secrets template files for environments: {', '.join(environments)}{END}")
+    
+    # Read the template
+    with open(template_file, 'r') as f:
+        template_content = f.read()
+    
+    for env in environments:
+        output_file = f"secrets-{env}.json"
+        
+        # Replace environment placeholder
+        env_content = template_content.replace("ENVIRONMENT_NAME", env)
+        
+        # Write the environment-specific file
+        with open(output_file, 'w') as f:
+            f.write(env_content)
+        
+        print(f"{INFO}Created {output_file}{END}")
+    
+    # Remove the template file
+    remove(template_file)
+    print(f"{INFO}Removed template file{END}")
+
+
+
 def main():
     django_secret, postgres_secret = get_secrets()
     set_keys_in_envs(django_secret, postgres_secret)
@@ -175,6 +247,84 @@ def main():
 
     clean_up_clients_folder()
 
+    # Handle deployment option choice
+    deployment_option = "{{ cookiecutter.deployment_option }}"
+    if deployment_option.lower() == "heroku":
+        remove_terraform_files()
+        print(f"{INFO}Heroku deployment selected - removed Terraform files{END}")
+    elif deployment_option.lower().startswith("terraform"):
+        remove_heroku_files()
+        print(f"{INFO}Terraform (AWS) deployment selected - removed Heroku files{END}")
+        create_secrets_files()
+        print(f"{INFO}S3 secrets management workflow configured{END}")
+        print(f"\n{INFO}{'=' * 60}{END}")
+        print(f"{INFO}  Terraform (AWS) Setup — follow these steps in order{END}")
+        print(f"{INFO}{'=' * 60}{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Placeholder Key:{END}")
+        print(f"{INFO}    <service>        — kebab-case project name (e.g., my-project).{END}")
+        print(f"{INFO}                       Same as SERVICE_NAME and sanitized_tf_service_name.{END}")
+        print(f"{INFO}    <github_org>     — GitHub org that owns the repo (e.g., thinknimble){END}")
+        print(f"{INFO}    <environment>    — target environment: development, staging, or production{END}")
+        print(f"{INFO}    <profile>        — AWS CLI profile name (defaults to 'default'){END}")
+        print(f"{INFO}    <region>         — AWS region (defaults to 'us-east-1'){END}")
+        print(f"{INFO}    <secrets_bucket> — S3 bucket for secrets, conventionally{END}")
+        print(f"{INFO}                       <service>-terraform-secrets (created in step 5){END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 1. Create shared VPC (once per AWS account){END}")
+        print(f"{INFO}    tn aws-setup-vpc{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 2. Create Terraform state backend (once per project){END}")
+        print(f"{INFO}    tn aws-tf-setup-backend{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 3. Initialize Terraform backend (once per environment){END}")
+        print(f"{INFO}    → Connects Terraform to the S3 state bucket from step 2.{END}")
+        print(f"{INFO}    tn aws-tf-init-backend -e development -s <service>{END}")
+        print(f"{INFO}    tn aws-tf-init-backend -e staging    -s <service>{END}")
+        print(f"{INFO}    tn aws-tf-init-backend -e production -s <service>{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 4. Create OIDC roles (once per environment){END}")
+        print(f"{INFO}    → Creates per-project-per-environment roles named{END}")
+        print(f"{INFO}      github-actions-<service>-<environment> (e.g.,{END}")
+        print(f"{INFO}      github-actions-my-project-development). Idempotent —{END}")
+        print(f"{INFO}      re-running updates trust policy and attached policies{END}")
+        print(f"{INFO}      without error.{END}")
+        print(f"{INFO}    → Outputs: role_arn for environments.json (step 6).{END}")
+        print(f"{INFO}    tn aws-setup-oidc secrets_bucket='<service>-terraform-secrets'  # development account{END}")
+        print(f"{INFO}    tn aws-setup-oidc secrets_bucket='<service>-terraform-secrets'  # staging account{END}")
+        print(f"{INFO}    tn aws-setup-oidc secrets_bucket='<service>-terraform-secrets'  # production account{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 5. Create secrets bucket (once per environment){END}")
+        print(f"{INFO}    → Must run after OIDC (step 4): bucket policy references{END}")
+        print(f"{INFO}      the OIDC role ARN, and AWS validates the principal exists.{END}")
+        print(f"{INFO}    → Outputs: <secrets_bucket> name for environments.json (step 6).{END}")
+        print(f"{INFO}    tn aws-setup-secrets development{END}")
+        print(f"{INFO}    tn aws-setup-secrets staging{END}")
+        print(f"{INFO}    tn aws-setup-secrets production{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 6. Update .github/environments.json{END}")
+        print(f"{INFO}    → Set account_id, role_arn (from step 4), secrets_bucket,{END}")
+        print(f"{INFO}      and region for each environment (development, staging, production).{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 7. Set GitHub repository variables{END}")
+        print(f"{INFO}    → Settings > Secrets and variables > Actions > Variables:{END}")
+        print(f"{INFO}      SERVICE_NAME, ECR_REPOSITORY_NAME, AWS_ACCOUNT_ID{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 8. Edit secrets files (once per environment){END}")
+        print(f"{INFO}    → secrets-development.json, secrets-staging.json, and{END}")
+        print(f"{INFO}      secrets-production.json were created above.{END}")
+        print(f"{INFO}      Replace all CHANGE-ME values with real credentials.{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Step 9. Push secrets to S3 (once per environment){END}")
+        print(f"{INFO}    → Uploads edited secrets to the bucket created in step 5.{END}")
+        print(f"{INFO}    .github/scripts/secrets-sync.sh push development{END}")
+        print(f"{INFO}    .github/scripts/secrets-sync.sh push staging{END}")
+        print(f"{INFO}    .github/scripts/secrets-sync.sh push production{END}")
+        print(f"{INFO}{END}")
+        print(f"{INFO}  Full setup docs: .github/workflows/SETUP.md{END}")
+        print(f"{INFO}  Terraform docs:  terraform/README.md{END}")
+        print(f"{INFO}{'=' * 60}{END}")
+
     print_thankyou()
     print(f"\n{SUCCESS}Awesome! Project initialized...{END}\n")
 
@@ -184,7 +334,14 @@ def main():
     )
     print(f"{INFO}To initialize the database see {project_slug}/scripts/init-db.sh{END}")
     print(f"{INFO}To initialize the app see {project_slug}/scripts/init-app.sh{END}")
-    print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    
+    # Show deployment-specific instructions
+    if deployment_option.lower() == "heroku":
+        print(f"{INFO}To deploy on Heroku see {project_slug}/scripts/deploy-on-heroku.sh{END}")
+    elif deployment_option.lower().startswith("terraform"):
+        print(f"{INFO}Setup docs: {project_slug}/.github/workflows/SETUP.md{END}")
+        print(f"{INFO}Terraform docs: {project_slug}/terraform/README.md{END}")
+    
     print(f"{INFO}To push the project to github {project_slug}/scripts/init-github.sh{END}")
 
 

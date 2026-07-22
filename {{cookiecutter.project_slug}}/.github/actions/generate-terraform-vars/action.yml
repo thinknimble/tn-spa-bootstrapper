@@ -1,0 +1,165 @@
+{% raw %}
+name: 'Generate Terraform Variables'
+description: 'Generate terraform.tfvars file for deployment'
+inputs:
+  environment:
+    description: 'Environment name'
+    required: true
+  aws_region:
+    description: 'AWS region'
+    required: true
+  base_domain:
+    description: 'Base domain for the environment'
+    required: false
+    default: ''
+  use_custom_domain:
+    description: 'Whether to use a custom domain'
+    required: false
+    default: 'false'
+  custom_domain:
+    description: 'Custom domain name'
+    required: false
+    default: ''
+  route53_zone_id:
+    description: 'Route53 hosted zone ID'
+    required: false
+    default: ''
+  certificate_arn:
+    description: 'ACM certificate ARN'
+    required: false
+    default: ''
+  service_name:
+    description: 'Service name for Terraform'
+    required: false
+    default: '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}'
+  ecr_repository_name:
+    description: 'ECR repository name'
+    required: false
+    default: '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Retrieve app configuration
+      id: app-config
+      shell: bash
+      run: |
+        CONFIG_FILE=".github/app-config.json"
+        if [[ -f "$CONFIG_FILE" ]]; then
+          CONFIG=$(jq -r --arg env "${{ inputs.environment }}" '.environments[$env] // empty' "$CONFIG_FILE")
+          if [[ -z "$CONFIG" || "$CONFIG" == "null" ]]; then
+            if [[ "${{ inputs.environment }}" =~ ^pr-[0-9]+$ ]]; then
+              CONFIG=$(jq -r '.patterns["pr-*"] // empty' "$CONFIG_FILE")
+            elif [[ "${{ inputs.environment }}" == "main" ]]; then
+              CONFIG=$(jq -r '.patterns["main"] // empty' "$CONFIG_FILE")
+            fi
+          fi
+          [[ -z "$CONFIG" || "$CONFIG" == "null" ]] && CONFIG=$(jq -r '.defaults' "$CONFIG_FILE")
+          echo "debug=$(echo "$CONFIG" | jq -r '.django.debug // true')" >> $GITHUB_OUTPUT
+          echo "current_port=$(echo "$CONFIG" | jq -r '.django.current_port // 8000')" >> $GITHUB_OUTPUT
+          echo "allowed_hosts=$(echo "$CONFIG" | jq -r '.django.allowed_hosts // "server,localhost,127.0.0.1"')" >> $GITHUB_OUTPUT
+          echo "enable_emails=$(echo "$CONFIG" | jq -r '.django.enable_emails // false')" >> $GITHUB_OUTPUT
+          echo "staff_email=$(echo "$CONFIG" | jq -r '.django.staff_email // "admin@example.com"')" >> $GITHUB_OUTPUT
+          echo "use_aws_storage=$(echo "$CONFIG" | jq -r '.aws.use_aws_storage // false')" >> $GITHUB_OUTPUT
+          echo "aws_s3_region_name=$(echo "$CONFIG" | jq -r '.aws.aws_s3_region_name // ""')" >> $GITHUB_OUTPUT
+          echo "enable_https=$(echo "$CONFIG" | jq -r '.features.enable_https // true')" >> $GITHUB_OUTPUT
+        else
+          echo "debug=true" >> $GITHUB_OUTPUT
+          echo "current_port=8000" >> $GITHUB_OUTPUT
+          echo "allowed_hosts=server,localhost,127.0.0.1" >> $GITHUB_OUTPUT
+          echo "enable_emails=false" >> $GITHUB_OUTPUT
+          echo "staff_email=admin@example.com" >> $GITHUB_OUTPUT
+          echo "use_aws_storage=false" >> $GITHUB_OUTPUT
+          echo "aws_s3_region_name=" >> $GITHUB_OUTPUT
+          echo "enable_https=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Retrieve secrets from S3
+      id: secrets
+      shell: bash
+      run: |
+        if ! .github/scripts/secrets-sync.sh pull "${{ inputs.environment }}" --file secrets.json; then
+          echo "❌ Failed to retrieve secrets for environment: ${{ inputs.environment }}"
+          exit 1
+        fi
+        if ! jq empty secrets.json 2>/dev/null; then
+          echo "❌ Retrieved file contains invalid JSON"
+          exit 1
+        fi
+        # Validate required secrets exist and are non-null
+        REQUIRED_KEYS=("django_secret_key" "db_password" "django_superuser_password")
+        for key in "${REQUIRED_KEYS[@]}"; do
+          val=$(jq -r ".secrets.${key} // empty" secrets.json)
+          if [[ -z "$val" ]]; then
+            echo "❌ Required secret '${key}' is missing or null in secrets.json"
+            exit 1
+          fi
+        done
+
+        DJANGO_SECRET_KEY=$(jq -r '.secrets.django_secret_key' secrets.json)
+        DB_PASSWORD=$(jq -r '.secrets.db_password' secrets.json)
+        DJANGO_SUPERUSER_PASSWORD=$(jq -r '.secrets.django_superuser_password' secrets.json)
+        ROLLBAR_ACCESS_TOKEN=$(jq -r '.secrets.rollbar_access_token // ""' secrets.json)
+        AWS_ACCESS_KEY_ID_VAL=$(jq -r '.secrets.aws_access_key_id // ""' secrets.json)
+        AWS_SECRET_ACCESS_KEY_VAL=$(jq -r '.secrets.aws_secret_access_key // ""' secrets.json)
+        PLAYWRIGHT_TEST_USER_PASS=$(jq -r '.secrets.playwright_test_user_pass // ""' secrets.json)
+
+        echo "::add-mask::$DJANGO_SECRET_KEY"
+        echo "::add-mask::$DB_PASSWORD"
+        echo "::add-mask::$DJANGO_SUPERUSER_PASSWORD"
+        [ -n "$ROLLBAR_ACCESS_TOKEN" ] && echo "::add-mask::$ROLLBAR_ACCESS_TOKEN"
+        [ -n "$AWS_ACCESS_KEY_ID_VAL" ] && echo "::add-mask::$AWS_ACCESS_KEY_ID_VAL"
+        [ -n "$AWS_SECRET_ACCESS_KEY_VAL" ] && echo "::add-mask::$AWS_SECRET_ACCESS_KEY_VAL"
+        echo "::add-mask::$PLAYWRIGHT_TEST_USER_PASS"
+
+        echo "django_secret_key=$DJANGO_SECRET_KEY" >> $GITHUB_OUTPUT
+        echo "db_password=$DB_PASSWORD" >> $GITHUB_OUTPUT
+        echo "django_superuser_password=$DJANGO_SUPERUSER_PASSWORD" >> $GITHUB_OUTPUT
+        echo "rollbar_access_token=$ROLLBAR_ACCESS_TOKEN" >> $GITHUB_OUTPUT
+        echo "aws_access_key_id=$AWS_ACCESS_KEY_ID_VAL" >> $GITHUB_OUTPUT
+        echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_VAL" >> $GITHUB_OUTPUT
+        echo "playwright_test_user_pass=$PLAYWRIGHT_TEST_USER_PASS" >> $GITHUB_OUTPUT
+        rm -f secrets.json
+
+    - name: Generate terraform.tfvars
+      shell: bash
+      run: |
+        cd terraform
+
+        SERVICE_NAME="${{ inputs.service_name }}"
+        ECR_REPOSITORY_NAME="${{ inputs.ecr_repository_name }}"
+        [ -n "$SERVICE_NAME" ] && echo "service = \"$SERVICE_NAME\"" >> terraform.tfvars
+        [ -n "$ECR_REPOSITORY_NAME" ] && echo "ecr_app_repository_name = \"$ECR_REPOSITORY_NAME\"" >> terraform.tfvars
+
+        cat << EOF >> terraform.tfvars
+        environment = "${{ inputs.environment }}"
+        aws_region = "${{ inputs.aws_region }}"
+        ecr_tag = "${{ inputs.environment }}-${{ github.sha }}"
+        secret_key = "${{ steps.secrets.outputs.django_secret_key }}"
+        db_pass = "${{ steps.secrets.outputs.db_password }}"
+        django_superuser_password = "${{ steps.secrets.outputs.django_superuser_password }}"
+        rollbar_access_token = "${{ steps.secrets.outputs.rollbar_access_token }}"
+        aws_access_key_id = "${{ steps.secrets.outputs.aws_access_key_id }}"
+        aws_secret_access_key = "${{ steps.secrets.outputs.aws_secret_access_key }}"
+        playwright_test_user_pass = "${{ steps.secrets.outputs.playwright_test_user_pass }}"
+{% endraw %}
+        db_name = "$(echo '{{cookiecutter.sanitized_tf_service_name}}{% raw %}${{ inputs.environment }}{% endraw %}db' | tr -d '-')"
+        db_user = "$(echo '{{cookiecutter.sanitized_tf_service_name}}_{% raw %}${{ inputs.environment }}{% endraw %}_user' | tr '-' '_')"
+{% raw %}
+        debug = "${{ steps.app-config.outputs.debug }}"
+        current_port = "${{ steps.app-config.outputs.current_port }}"
+        allowed_hosts = "${{ steps.app-config.outputs.allowed_hosts }}"
+        enable_emails = "${{ steps.app-config.outputs.enable_emails }}"
+        staff_email = "${{ steps.app-config.outputs.staff_email }}"
+        use_aws_storage = "${{ steps.app-config.outputs.use_aws_storage }}"
+        aws_s3_region_name = "${{ steps.app-config.outputs.aws_s3_region_name }}"
+        enable_https = ${{ steps.app-config.outputs.enable_https }}
+        playwright_test_base_url = "http://localhost:8000"
+        base_domain = "${{ inputs.base_domain }}"
+        use_custom_domain = ${{ inputs.use_custom_domain }}
+        current_domain = "${{ inputs.custom_domain }}"
+        route53_zone_id = "${{ inputs.route53_zone_id }}"
+        certificate_arn = "${{ inputs.certificate_arn }}"
+        aws_profile = ""
+        EOF
+{% endraw %}
