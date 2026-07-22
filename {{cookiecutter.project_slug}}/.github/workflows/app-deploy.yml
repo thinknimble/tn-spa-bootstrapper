@@ -84,14 +84,8 @@ jobs:
         run: |
           echo "Creating deployment for environment: ${{ steps.setup-env.outputs.environment }}"
 
-          DEPLOYMENT_ID=$(gh api repos/${{ github.repository }}/deployments \
-            --method POST \
-            --field ref='${{ github.sha }}' \
-            --field environment='${{ steps.setup-env.outputs.environment }}' \
-            --field description='Deploy to ${{ steps.setup-env.outputs.environment }}' \
-            --field auto_merge:=false \
-            --field required_contexts:='[]' \
-            --jq '.id')
+          DEPLOYMENT_ID=$(echo '{"ref":"${{ github.sha }}","environment":"${{ steps.setup-env.outputs.environment }}","description":"Deploy to ${{ steps.setup-env.outputs.environment }}","auto_merge":false,"required_contexts":[]}' \
+            | gh api repos/${{ github.repository }}/deployments --method POST --input - --jq '.id')
 
           echo "deployment_id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
 
