@@ -15,7 +15,7 @@ repos:
         exclude: "{{cookiecutter.project_slug}}/"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.9
+    rev: v0.16.0
     hooks:
       - id: ruff
         exclude: "{{cookiecutter.project_slug}}/"

@@ -12,9 +12,9 @@ project_slug = "{{ cookiecutter.project_slug }}"
 
 def main():
     if hasattr(project_slug, "isidentifier") and not project_slug.isidentifier():
-        raise Exception(f"'{project_slug}' project slug is not a valid Python identifier.")
+        raise ValueError(f"'{project_slug}' project slug is not a valid Python identifier.")
     if project_slug != project_slug.lower():
-        raise Exception(f"'{project_slug}' project slug should be all lowercase")
+        raise ValueError(f"'{project_slug}' project slug should be all lowercase")
 
     # For rerunning against an existing project: Make a backup of the env example file.
     # We'll use that to keep the existing secrets in place when post_get_project runs later

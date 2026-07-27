@@ -7,8 +7,8 @@ from django.core.asgi import get_asgi_application
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "{{ cookiecutter.project_slug }}.settings")
 django_asgi_app = get_asgi_application()
 
-from {{ cookiecutter.project_slug }}.chat.middleware import TokenAuthMiddleware  # noqa
-from {{ cookiecutter.project_slug }}.routing import websocket_urlpatterns  # noqa
+from {{ cookiecutter.project_slug }}.chat.middleware import TokenAuthMiddleware
+from {{ cookiecutter.project_slug }}.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter(
     {

@@ -24,8 +24,8 @@ def log_errors(fn):
                 # Real args start from index 1
                 return fn(*args[1:], **kwargs)
             return fn(*args, **kwargs)
-        except Exception as e:
-            logger.exception(f"Error in {fn.__name__}: {e}")
+        except Exception:
+            logger.exception(f"Error in {fn.__name__}")
             if settings.ROLLBAR_ACCESS_TOKEN:
                 rollbar.report_exc_info()
             # Re-raise the exception to ensure the task is marked as failed
@@ -35,8 +35,8 @@ def log_errors(fn):
     async def async_wrapper(*args, **kwargs):
         try:
             return await fn(*args, **kwargs)
-        except Exception as e:
-            logger.exception(f"Error in async {fn.__name__}: {e}")
+        except Exception:
+            logger.exception(f"Error in async {fn.__name__}")
             if settings.ROLLBAR_ACCESS_TOKEN:
                 rollbar.report_exc_info()
             # Re-raise the exception

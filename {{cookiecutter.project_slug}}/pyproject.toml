@@ -51,7 +51,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "debugpy>=1.8.0",
-    "ruff>=0.9.8",
+    "ruff==0.16.0",
     "pytest>=9.0.3",
     "factory-boy==3.2.*",
 ]
@@ -65,6 +65,11 @@ exclude = [
 
 [tool.ruff.lint]
 extend-select = ["I", "C90"]
+# Ruff 0.16.0 enables 413 rules by default. RUF012 flags Django/DRF framework
+# idioms (Meta.fields, admin list_filter, model REQUIRED_FIELDS, serializer
+# read_only_fields) as mutable class defaults. These are framework conventions,
+# not bugs, so silence the rule rather than annotate every attribute ClassVar.
+ignore = ["RUF012"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 12
