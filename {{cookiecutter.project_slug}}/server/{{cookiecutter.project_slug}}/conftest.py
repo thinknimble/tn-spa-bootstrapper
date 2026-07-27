@@ -7,10 +7,10 @@ from rest_framework.test import APIClient
 from {{ cookiecutter.project_slug }}.core.factories import UserFactory
 from {{ cookiecutter.project_slug }}.core.models import User
 
-JSON_RQST_HEADERS = dict(
-    content_type="application/json",
-    HTTP_ACCEPT="application/json",
-)
+JSON_RQST_HEADERS = {
+    "content_type": "application/json",
+    "HTTP_ACCEPT": "application/json",
+}
 
 
 register(UserFactory)

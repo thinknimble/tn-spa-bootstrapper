@@ -106,7 +106,7 @@ class TestUserManagerCleanupMethods:
 
         def mock_delete(self):
             if self.email == "user1@example.com":
-                raise Exception("Database error")
+                raise RuntimeError("Database error")
             return original_delete(self)
 
         with patch.object(User, "delete", mock_delete):

@@ -28,7 +28,9 @@ def get_html_body(template, context):
     return inline_css(render_to_string(template, context))
 
 
-def send_html_email(subject, template, send_from, send_to, context={}, bcc_emails=[], files=[]):
+def send_html_email(
+    subject, template, send_from, send_to, context=None, bcc_emails=None, files=None
+):
     """Generic sender to build and send an HTML email with a plain-text fallback.
 
     Args:
@@ -57,8 +59,14 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     #         if domain not in valid_domains:
     #             return
 
+    if files is None:
+        files = []
+    if bcc_emails is None:
+        bcc_emails = []
+    if context is None:
+        context = {}
     if not isinstance(send_to, (list, tuple, str)):
-        raise Exception("send_to must be an instance of list, tuple, or str")
+        raise TypeError("send_to must be an instance of list, tuple, or str")
 
     if isinstance(send_to, str):
         send_to = [send_to]
@@ -66,7 +74,7 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
     subject = "".join(subject.splitlines())
 
     # TODO: Generate plaintext version of the HTML email
-    plaintext_body = f"This is an HTML email. If you can read this, then your email client does not support HTML emails. Please contact us at {settings.STAFF_EMAIL} to report the problem."  # noqa
+    plaintext_body = f"This is an HTML email. If you can read this, then your email client does not support HTML emails. Please contact us at {settings.STAFF_EMAIL} to report the problem."
 
     email = EmailMultiAlternatives(subject, plaintext_body, send_from, send_to, bcc_emails)
     html_text = get_html_body(template, context)
@@ -78,7 +86,7 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
             # Attach in-memory files with filename
             if isinstance(f[1], StringIO.OutputType):
                 part = MIMEApplication(f[1].getvalue(), Name=f[0])
-                part["Content-Disposition"] = 'attachment; filename="%s"' % f[0]
+                part["Content-Disposition"] = f'attachment; filename="{f[0]}"'
             else:
                 # No other file type support -- only StringIO
                 continue
@@ -86,7 +94,7 @@ def send_html_email(subject, template, send_from, send_to, context={}, bcc_email
             # Read file and create attachment
             with open(f, "rb") as fil:
                 part = MIMEApplication(fil.read(), Name=os.path.basename(f))
-                part["Content-Disposition"] = 'attachment; filename="%s"' % os.path.basename(f)
+                part["Content-Disposition"] = f'attachment; filename="{os.path.basename(f)}"'
         else:
             # Ignore list elements that are neither a tuple or string
             continue

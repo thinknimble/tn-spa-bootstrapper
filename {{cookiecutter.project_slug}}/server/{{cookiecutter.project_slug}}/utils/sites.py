@@ -1,11 +1,12 @@
 from urllib.parse import urlparse
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 
 def get_site_url():
     if not settings.CURRENT_DOMAIN:
-        raise Exception("Environment variable CURRENT_DOMAIN must exist")
+        raise ImproperlyConfigured("Environment variable CURRENT_DOMAIN must exist")
     domain = settings.CURRENT_DOMAIN.strip("/").split("/")[-1]
     scheme = "http://" if settings.IN_DEV else "https://"
     site_url = urlparse(f"{scheme}{domain}")

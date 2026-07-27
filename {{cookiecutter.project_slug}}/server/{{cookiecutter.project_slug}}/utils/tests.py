@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 
 from {{ cookiecutter.project_slug }}.utils.emails import get_html_body
 from {{ cookiecutter.project_slug }}.utils.sites import get_site_url
@@ -38,7 +39,7 @@ def test_get_site_url(settings, custom_settings, expected_output):
 def test_get_site_url_negative(settings, custom_settings):
     for key in custom_settings:
         settings.__setattr__(key, custom_settings[key])
-    with pytest.raises(Exception):
+    with pytest.raises(ImproperlyConfigured):
         get_site_url()
 
 

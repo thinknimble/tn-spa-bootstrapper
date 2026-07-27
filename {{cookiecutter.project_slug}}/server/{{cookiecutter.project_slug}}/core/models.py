@@ -86,7 +86,7 @@ class UserManager(BaseUserManager):
                 user.delete()
                 deleted_users.append(email)
                 logger.info(f"Permanently deleted inactive user: {email}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 error_msg = str(e)
                 failed_deletions.append((email, error_msg))
                 logger.error(f"Failed to delete inactive user {email}: {error_msg}")

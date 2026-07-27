@@ -1,5 +1,3 @@
-from typing import Dict
-
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.filters import RelatedFieldListFilter
@@ -20,7 +18,7 @@ class AutocompleteFilter(RelatedFieldListFilter):
         self,
         field: ForeignKey,
         request: HttpRequest,
-        params: Dict[str, str],
+        params: dict[str, str],
         model: Model,
         model_admin: admin.ModelAdmin,
         field_path: str,
@@ -68,13 +66,13 @@ class AutocompleteAdminMedia:
     """
 
     i18n_name = SELECT2_TRANSLATIONS.get(get_language())
-    i18n_file = ("admin/js/vendor/select2/i18n/%s.js" % i18n_name,) if i18n_name else ()
+    i18n_file = (f"admin/js/vendor/select2/i18n/{i18n_name}.js",) if i18n_name else ()
     extra = "" if settings.DEBUG else ".min"
 
     js = (
         (
-            "admin/js/vendor/jquery/jquery%s.js" % extra,
-            "admin/js/vendor/select2/select2.full%s.js" % extra,
+            f"admin/js/vendor/jquery/jquery{extra}.js",
+            f"admin/js/vendor/select2/select2.full{extra}.js",
         )
         + i18n_file
         + (
@@ -86,7 +84,7 @@ class AutocompleteAdminMedia:
     )
     css = {
         "screen": (
-            "admin/css/vendor/select2/select2%s.css" % extra,
+            f"admin/css/vendor/select2/select2{extra}.css",
             "admin/css/autocomplete.css",
         )
     }
