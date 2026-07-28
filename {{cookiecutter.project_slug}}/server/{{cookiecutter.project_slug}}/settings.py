@@ -88,6 +88,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Keep last in this list. The Rollbar middleware is appended below, and
+    # Django calls process_exception from the bottom upwards, so Rollbar reports
+    # an exception before this middleware turns it into a JSON response.
+    "{{ cookiecutter.project_slug }}.common.api_errors.ApiJsonErrorMiddleware",
 ]
 
 OLD_PASSWORD_FIELD_ENABLED = True
