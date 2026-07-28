@@ -12,6 +12,7 @@ from rest_framework import permissions
 from rest_framework_nested import routers
 
 from {{ cookiecutter.project_slug }}.common import views as common_views
+from {{ cookiecutter.project_slug }}.common.api_errors import api_not_found
 
 router = routers.SimpleRouter()
 if settings.DEBUG:
@@ -51,6 +52,11 @@ if settings.IN_REVIEW:
     ]
 
 urlpatterns += [
+    # Last API route. Every real API route is declared above, so an API path that
+    # reaches here does not exist and must answer JSON, never the SPA bundle. The
+    # pattern has no trailing slash, so it also catches a slashless path that
+    # CommonMiddleware would otherwise redirect into the SPA.
+    re_path(r"^api/", api_not_found),
     path("", common_views.index),
     re_path(r".*/$", common_views.index),
 ]
