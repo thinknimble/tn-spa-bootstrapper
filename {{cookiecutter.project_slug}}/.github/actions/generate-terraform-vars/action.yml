@@ -63,6 +63,7 @@ runs:
           echo "use_aws_storage=$(echo "$CONFIG" | jq -r '.aws.use_aws_storage // false')" >> $GITHUB_OUTPUT
           echo "aws_s3_region_name=$(echo "$CONFIG" | jq -r '.aws.aws_s3_region_name // ""')" >> $GITHUB_OUTPUT
           echo "enable_https=$(echo "$CONFIG" | jq -r '.features.enable_https // true')" >> $GITHUB_OUTPUT
+          echo "alert_email=$(echo "$CONFIG" | jq -r '.monitoring.alert_email // ""')" >> $GITHUB_OUTPUT
         else
           echo "debug=true" >> $GITHUB_OUTPUT
           echo "current_port=8000" >> $GITHUB_OUTPUT
@@ -72,6 +73,7 @@ runs:
           echo "use_aws_storage=false" >> $GITHUB_OUTPUT
           echo "aws_s3_region_name=" >> $GITHUB_OUTPUT
           echo "enable_https=true" >> $GITHUB_OUTPUT
+          echo "alert_email=" >> $GITHUB_OUTPUT
         fi
 
     - name: Retrieve secrets from S3
@@ -160,6 +162,7 @@ runs:
         current_domain = "${{ inputs.custom_domain }}"
         route53_zone_id = "${{ inputs.route53_zone_id }}"
         certificate_arn = "${{ inputs.certificate_arn }}"
+        alert_email = "${{ steps.app-config.outputs.alert_email }}"
         aws_profile = ""
         EOF
 {% endraw %}
