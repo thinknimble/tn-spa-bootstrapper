@@ -3,7 +3,7 @@ id: tf-sns-topic-output
 parent: cloudwatch-alarms-log-viewer
 created: 2026-07-30T17:00:00Z
 priority: 1
-status: not_started
+status: done
 depends-on: tf-alarms-gated-by-email
 branch: feature/aws-fargate
 ---
