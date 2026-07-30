@@ -55,9 +55,10 @@ def check_paths(paths):
         if is_binary(path):
             continue
 
-        for line in open(path, "r"):
-            match = RE_OBJ.search(line)
-            assert match is None, f"cookiecutter variable not replaced in {path}"
+        with open(path) as handle:
+            for line in handle:
+                match = RE_OBJ.search(line)
+                assert match is None, f"cookiecutter variable not replaced in {path}"
 
 
 @pytest.mark.parametrize("context_override", SUPPORTED_COMBINATIONS, ids=_fixture_id)

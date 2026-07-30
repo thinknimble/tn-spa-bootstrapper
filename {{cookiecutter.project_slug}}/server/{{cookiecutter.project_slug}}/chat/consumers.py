@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.conf import settings
@@ -26,7 +26,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def disconnect(self, close_code):
         pass
 
-    async def receive_json(self, data: Dict[str, Any]):
+    async def receive_json(self, data: dict[str, Any]):
         try:
             logger.info(f"Received message from user {self.user.email}")
             messages = data.get("messages", [])
@@ -37,11 +37,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
             await self.handle_streaming_chat(openai_messages)
 
-        except Exception as e:
-            logger.error(f"Error in receive_json: {str(e)}")
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"Error in receive_json: {e!s}")
             await self.send_json({"error": "An error occurred while processing your request"})
 
-    async def handle_streaming_chat(self, messages: List[Dict[str, str]]):
+    async def handle_streaming_chat(self, messages: list[dict[str, str]]):
         try:
             stream = await client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -54,6 +54,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     first_choice = event.model_dump()["choices"][0]
                     await self.send_json({"delta": first_choice["delta"]})
 
-        except Exception as e:
-            logger.error(f"Error in handle_streaming_chat: {str(e)}")
+        except Exception as e:  # noqa: BLE001
+            logger.error(f"Error in handle_streaming_chat: {e!s}")
             await self.send_json({"error": "Stream interrupted"})

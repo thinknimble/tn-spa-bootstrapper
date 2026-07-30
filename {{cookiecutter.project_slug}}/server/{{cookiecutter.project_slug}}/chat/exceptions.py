@@ -28,9 +28,9 @@ def propagate_exceptions(func):
         except Exception as exception:  # any other exception
             # avoid logging the same exception multiple times
             if not getattr(exception, "caught", False):
-                setattr(exception, "caught", True)
+                exception.caught = True
                 logger.error(
-                    "Exception occurred in {}:".format(func.__qualname__),
+                    f"Exception occurred in {func.__qualname__}:",
                     exc_info=exception,
                 )
             raise  # propagate the exception

@@ -23,7 +23,7 @@ with open("README.rst") as readme_file:
 setup(
     name="tn-spa-bootstrapper",
     version=version,
-    description="A Cookiecutter template for creating customizable Django projects quickly with the option of adding client side application (React).",  # noqa
+    description="A Cookiecutter template for creating customizable Django projects quickly with the option of adding client side application (React).",
     long_description=long_description,
     author="ThinkNimble",
     author_email="support@thinknimble.com",

@@ -18,7 +18,7 @@ class GroupAdminForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(GroupAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields["users"].initial = self.instance.user_set.all()
 
@@ -26,7 +26,7 @@ class GroupAdminForm(forms.ModelForm):
         self.instance.user_set.set(self.cleaned_data["users"])
 
     def save(self, *args, **kwargs):
-        instance = super(GroupAdminForm, self).save()
+        instance = super().save()
         self.save_m2m()
         return instance
 

@@ -385,7 +385,7 @@ STATICFILES_FINDERS = [
 # https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
 ENABLE_EMAILS = config("ENABLE_EMAILS", cast=bool, default=False)
 
-INSTALLED_APPS += ["anymail"]  # noqa F405
+INSTALLED_APPS += ["anymail"]
 if ENABLE_EMAILS:
     {%- if cookiecutter.mail_service == 'Mailgun' %}
     # https://anymail.readthedocs.io/en/stable/esps/mailgun/
