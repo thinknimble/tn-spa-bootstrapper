@@ -45,3 +45,9 @@ output "certificate_type" {
   description = "Type of certificate being used"
   value       = var.custom_certificate_arn != "" ? "custom" : "default"
 }
+
+# Monitoring outputs
+output "sns_alerts_topic_arn" {
+  description = "ARN of the SNS topic for CloudWatch alarm notifications"
+  value       = var.alert_email != "" ? aws_sns_topic.alerts[0].arn : ""
+}
