@@ -3,8 +3,7 @@ id: tf-alarms-gated-by-email
 parent: cloudwatch-alarms-log-viewer
 created: 2026-07-30T17:00:00Z
 priority: 1
-status: in_progress
-locked-by: builder-MacBook-Pro.local-65472-1785447992
+status: done
 depends-on: tf-alert-email-variable
 branch: feature/aws-fargate
 ---
