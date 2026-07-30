@@ -218,6 +218,14 @@ variable "custom_certificate_arn" {
   default     = ""
 }
 
+# Monitoring / Alerting
+
+variable "alert_email" {
+  type        = string
+  description = "Email address for CloudWatch alarm notifications. Leave empty to disable alarms."
+  default     = ""
+}
+
 # VPC sharing configuration
 
 variable "shared_vpc_name" {
