@@ -1,4 +1,4 @@
-import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router'
 import { useAuth } from 'src/stores/auth'
 import { useState } from 'react'
 import { useLogout, useUser } from 'src/services/user'
