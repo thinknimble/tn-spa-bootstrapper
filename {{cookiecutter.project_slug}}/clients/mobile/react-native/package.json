@@ -104,6 +104,18 @@
     "tailwindcss": "^3.4.1",
     "typescript": "~5.9.2"
   },
+  "optionalDependencies": {
+    "lightningcss-darwin-arm64": "1.27.0",
+    "lightningcss-darwin-x64": "1.27.0",
+    "lightningcss-freebsd-x64": "1.27.0",
+    "lightningcss-linux-arm-gnueabihf": "1.27.0",
+    "lightningcss-linux-arm64-gnu": "1.27.0",
+    "lightningcss-linux-arm64-musl": "1.27.0",
+    "lightningcss-linux-x64-gnu": "1.27.0",
+    "lightningcss-linux-x64-musl": "1.27.0",
+    "lightningcss-win32-arm64-msvc": "1.27.0",
+    "lightningcss-win32-x64-msvc": "1.27.0"
+  },
   "keywords": [
     "react",
     "react-native",
