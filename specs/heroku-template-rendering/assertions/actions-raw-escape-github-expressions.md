@@ -16,6 +16,6 @@ All `${{ }}` GitHub Actions expressions in `.github/actions/**/*.yml` template f
 ## Success Criteria
 
 - Every `${{ inputs.* }}`, `${{ steps.* }}`, `${{ vars.* }}`, `${{ github.* }}` expression in `.github/actions/**/*.yml` is inside a `{% raw %}` block
-- `{{cookiecutter.sanitized_tf_service_name}}` and any other cookiecutter variables still render to their actual values
+- `{{cookiecutter._sanitized_tf_service_name}}` and any other cookiecutter variables still render to their actual values
 - `cookiecutter --no-input` with `deployment_option=Heroku` completes without rendering errors
 - `cookiecutter --no-input` with `deployment_option=Terraform (AWS)` still produces correct action files with GitHub Actions expressions intact
