@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Outlet } from 'react-router-dom'
+import { BrowserRouter as Router, Outlet } from 'react-router'
 import { AppRoutes } from './utils/routes'
 
 export const AppRoot = () => {

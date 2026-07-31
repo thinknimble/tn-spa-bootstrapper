@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Route, Routes, Navigate } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router'
 import { CheckEmail, Home, Layout, LogIn, SignUp } from 'src/pages'
 import { Dashboard } from 'src/pages/dashboard'
 import { ChatDemo } from 'src/pages/chat-demo'

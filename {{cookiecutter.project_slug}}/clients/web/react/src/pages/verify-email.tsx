@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router'
 import { AuthLayout } from 'src/components/auth-layout'
 import { Button } from 'src/components/button'
 import { ErrorMessage } from 'src/components/errors'
