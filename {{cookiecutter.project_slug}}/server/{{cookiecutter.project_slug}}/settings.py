@@ -96,7 +96,7 @@ if IS_AWS_ENVIRONMENT:
                     EC2_PRIVATE_IP = networks[0]['IPv4Addresses'][0]
                     print(f"✅ Found container IP via metadata v4: {EC2_PRIVATE_IP}")
                     break
-        except Exception as e:
+        except (requests.RequestException, KeyError, IndexError, ValueError) as e:
             print(f"❌ Metadata v4 failed: {e}")
 
     # Method 2: Try ECS Metadata API v3 (fallback) - returns single container directly
@@ -107,17 +107,17 @@ if IS_AWS_ENVIRONMENT:
 
             EC2_PRIVATE_IP = data['Networks'][0]['IPv4Addresses'][0]
             print(f"✅ Found container IP via metadata v3: {EC2_PRIVATE_IP}")
-        except Exception as e:
+        except (requests.RequestException, KeyError, IndexError, ValueError) as e:
             print(f"❌ Metadata v3 failed: {e}")
 
     # Method 3: Try hostname -i command
     if not EC2_PRIVATE_IP:
         try:
-            result = subprocess.run(['hostname', '-i'], capture_output=True, text=True, timeout=5)
+            result = subprocess.run(['hostname', '-i'], capture_output=True, text=True, timeout=5, check=False)
             if result.returncode == 0:
                 EC2_PRIVATE_IP = result.stdout.strip().split()[0]
                 print(f"✅ Found container IP via hostname: {EC2_PRIVATE_IP}")
-        except Exception as e:
+        except (OSError, subprocess.SubprocessError) as e:
             print(f"❌ Hostname method failed: {e}")
 
     # Method 4: Try socket method
@@ -126,7 +126,7 @@ if IS_AWS_ENVIRONMENT:
             hostname = socket.gethostname()
             EC2_PRIVATE_IP = socket.gethostbyname(hostname)
             print(f"✅ Found container IP via socket: {EC2_PRIVATE_IP}")
-        except Exception as e:
+        except OSError as e:
             print(f"❌ Socket method failed: {e}")
 
     # Add detected IP to ALLOWED_HOSTS
@@ -159,9 +159,7 @@ def is_public_domain(host):
         return False
     if host.startswith(('10.', '172.', '192.168.')):  # Skip private IPs
         return False
-    if host.replace('.', '').isdigit():  # Skip any IP addresses
-        return False
-    return True
+    return not host.replace('.', '').isdigit()  # Skip any IP addresses
 
 cors_allowed_hosts = [host for host in ALLOWED_HOSTS if is_public_domain(host)]
 CORS_ALLOWED_ORIGINS = [f"https://{host}" for host in cors_allowed_hosts]
