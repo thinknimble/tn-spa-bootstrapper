@@ -217,6 +217,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Keep last in this list. The Rollbar middleware is appended below, and
+    # Django calls process_exception from the bottom upwards, so Rollbar reports
+    # an exception before this middleware turns it into a JSON response.
+    "{{ cookiecutter.project_slug }}.common.api_errors.ApiJsonErrorMiddleware",
 ]
 
 OLD_PASSWORD_FIELD_ENABLED = True
@@ -238,9 +242,11 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             STATIC_ROOT,
-            os.path.join(
-                BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"
-            ),  # Swagger template override
+            # Swagger template override. Keep this comment on its own line: a
+            # trailing comment holds the call open across lines, and ruff format
+            # then joins or splits it by the length of the project name, so the
+            # generated project would fail its own format check at a short name.
+            os.path.join(BASE_DIR, "{{ cookiecutter.project_slug }}", "client", "templates"),
         ],
         "APP_DIRS": True,  # this setting must come after "DIRS"!
         "OPTIONS": {

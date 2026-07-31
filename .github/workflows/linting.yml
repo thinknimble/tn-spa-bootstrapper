@@ -2,6 +2,30 @@ name: Linter
 on: [push]
 
 jobs:
+  Lock_Files:
+    # The Heroku Python buildpack runs `uv sync --locked`, which refuses a lock
+    # file that does not agree with its pyproject.toml. Catch that here instead
+    # of in a failed deploy.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      # This check must come before `uv sync`, because a sync updates a stale
+      # lock file and thus hides the problem.
+      - name: Check bootstrapper lock file
+        run: uv lock --check
+      - name: Install dependencies
+        run: uv sync
+      - run: |
+          uv run cookiecutter . --config-file cookiecutter/react_template.yaml --no-input -f
+      - name: Check generated project lock file
+        working-directory: ./my_project
+        run: uv lock --check
+
   Ruff_bootstrapper:
     runs-on: ubuntu-latest
     steps:

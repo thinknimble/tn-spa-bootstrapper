@@ -71,6 +71,15 @@ extend-select = ["I", "C90"]
 # not bugs, so silence the rule rather than annotate every attribute ClassVar.
 ignore = ["RUF012"]
 
+[tool.ruff.lint.isort]
+# Name the project package, instead of a reliance on the same-package detection.
+# That detection needs an `__init__.py` beside the file it sorts, and a test
+# directory has none, so a test module that imports the project would sort that
+# import into the third-party block. Its correct place in that block depends on
+# where the project name falls alphabetically, so the same file would pass or fail
+# the lint by the project name alone.
+known-first-party = ["{{ cookiecutter.project_slug }}"]
+
 [tool.ruff.lint.mccabe]
 max-complexity = 12
 
