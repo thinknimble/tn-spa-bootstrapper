@@ -258,7 +258,7 @@ def main():
         print(f"{INFO}  Placeholder Key:{END}")
         print(f"{INFO}    <service>        — kebab-case project name (e.g., my-project).{END}")
         print(
-            f"{INFO}                       Same as SERVICE_NAME and sanitized_tf_service_name.{END}"
+            f"{INFO}                       Same as SERVICE_NAME (auto-derived from project_name).{END}"
         )
         print(
             f"{INFO}    <github_org>     — GitHub org that owns the repo (e.g., thinknimble){END}"

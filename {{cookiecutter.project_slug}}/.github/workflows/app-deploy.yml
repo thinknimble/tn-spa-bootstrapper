@@ -59,7 +59,7 @@ jobs:
           account_id: ${{ steps.setup-env.outputs.account_id }}
           role_arn: ${{ steps.setup-env.outputs.role_arn }}
           aws_region: ${{ env.AWS_REGION }}
-          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}
+          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}-app' }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -74,8 +74,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.image_tag }}
-            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.environment }}-latest
+            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.image_tag }}
+            ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.environment }}-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -93,7 +93,7 @@ jobs:
         uses: ./.github/actions/setup-terraform
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}
+          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}' }}
 
       - name: Generate Terraform Variables
         uses: ./.github/actions/generate-terraform-vars
@@ -105,8 +105,8 @@ jobs:
           custom_domain: ${{ steps.setup-env.outputs.custom_domain }}
           route53_zone_id: ${{ steps.setup-env.outputs.route53_zone_id }}
           certificate_arn: ${{ steps.setup-env.outputs.certificate_arn }}
-          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}
-          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}-app' }}
+          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}' }}
+          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}-app' }}
 
       - name: Terraform Plan
         id: plan
@@ -239,7 +239,7 @@ jobs:
         uses: ./.github/actions/setup-terraform
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.sanitized_tf_service_name}}{% raw %}' }}
+          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}' }}
 
       - name: Confirm and Destroy Environment
         run: |
