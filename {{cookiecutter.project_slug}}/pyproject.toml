@@ -42,7 +42,7 @@ dependencies = [
     "rollbar>=1.2.0",
     "twilio>=9.4.6",
     "whitenoise==5.3.0",
-    "pyasn1>=0.6.3",
+    "pyasn1>=0.6.4",
     "pyopenssl>=26.0.0",
     "pyjwt>=2.13.0",
     "ujson>=5.13.0",
