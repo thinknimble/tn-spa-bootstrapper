@@ -37,10 +37,11 @@ runs:
           exit 1
         fi
 
-        STATE_KEY="${{ inputs.environment }}/terraform.tfstate"
+        # Use a static key — workspaces handle environment isolation
+        # (Terraform stores state at env:/<workspace>/terraform.tfstate)
         terraform init \
           -backend-config="$BACKEND_FILE" \
-          -backend-config="key=${STATE_KEY}"
+          -backend-config="key=terraform.tfstate"
 
     - name: Check if Terraform workspace exists
       id: workspace-check
