@@ -1,5 +1,5 @@
 import React from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { Pagination } from '@thinknimble/tn-models'
 import { cn } from 'src/utils/style'
 
@@ -93,7 +93,7 @@ export const PaginationComponent: React.FC<PaginationProps> = ({
         onClick={handlePrevPage}
         data-testid="pagination-prev"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <FaChevronLeft size={14} />
         {!isMinimal && <span className="pr-1 text-xs">Prev</span>}
       </button>
 
@@ -141,7 +141,7 @@ export const PaginationComponent: React.FC<PaginationProps> = ({
         data-testid="pagination-next"
       >
         {!isMinimal && <span className="pl-1 text-xs">Next</span>}
-        <ChevronRight className="h-4 w-4" />
+        <FaChevronRight size={14} />
       </button>
     </div>
   )
