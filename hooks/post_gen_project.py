@@ -331,6 +331,8 @@ def main():
         print(f"{INFO}{END}")
         print(f"{INFO}  Full setup docs: .github/workflows/SETUP.md{END}")
         print(f"{INFO}  Terraform docs:  terraform/README.md{END}")
+        print(f"{INFO}  LLM setup guide: terraform/SETUP-PROMPT.md{END}")
+        print(f"{INFO}    (copy & paste into Claude/ChatGPT for interactive guidance){END}")
         print(f"{INFO}{'=' * 60}{END}")
 
     print_thankyou()
