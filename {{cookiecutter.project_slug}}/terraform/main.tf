@@ -146,6 +146,10 @@ resource "aws_lb_listener" "https" {
   }
   lifecycle {
     prevent_destroy = false
+    precondition {
+      condition     = local.certificate_arn != ""
+      error_message = "enable_https is true but no certificate ARN was provided. Set certificate_arn in environments.json, or set enable_https = false in app-config.json."
+    }
   }
 }
 
