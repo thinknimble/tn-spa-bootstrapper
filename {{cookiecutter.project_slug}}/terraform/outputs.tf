@@ -12,7 +12,7 @@ output "application_domain" {
 
 output "application_url" {
   description = "Full URL to access your application"
-  value       = var.enable_https ? "https://${local.current_domain}" : "http://${local.current_domain}"
+  value       = var.enable_https && local.certificate_arn != "" ? "https://${local.current_domain}" : "http://${local.current_domain}"
 }
 
 output "dns_status" {
