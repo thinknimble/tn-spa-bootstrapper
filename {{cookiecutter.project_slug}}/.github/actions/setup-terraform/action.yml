@@ -15,7 +15,7 @@ runs:
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v4
       with:
-        terraform_version: ~1.0
+        terraform_version: ~1.5
 
     - name: Terraform Init with Backend
       shell: bash
