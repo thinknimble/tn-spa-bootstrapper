@@ -116,7 +116,7 @@ jobs:
           echo "has_changes=$( [ -s tfplan ] && echo true || echo false )" >> $GITHUB_OUTPUT
 
       - name: Terraform Apply
-        if: github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true'
+        if: steps.plan.outputs.has_changes == 'true'
         run: |
           cd terraform
           terraform apply tfplan
@@ -133,7 +133,7 @@ jobs:
             echo "✅ Application URL: $APP_URL"
           fi
 
-      - name: Add PR Comment
+      - name: Add or Update PR Comment
         if: github.event_name == 'pull_request'
         run: |
           APP_URL="${{ steps.app-url.outputs.app_url }}"
@@ -144,7 +144,16 @@ jobs:
 
           The environment will be automatically updated with each new commit to this PR."
 
-          gh pr comment ${{ github.event.number }} --body "$COMMENT_BODY"
+          # Find existing deployment preview comment and update it, or create a new one
+          EXISTING_COMMENT_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.number }}/comments \
+            --jq '.[] | select(.body | contains("Deployment Preview")) | .id' | head -1)
+
+          if [[ -n "$EXISTING_COMMENT_ID" ]]; then
+            gh api repos/${{ github.repository }}/issues/comments/$EXISTING_COMMENT_ID \
+              --method PATCH --field body="$COMMENT_BODY"
+          else
+            gh pr comment ${{ github.event.number }} --body "$COMMENT_BODY"
+          fi
 
       - name: Update deployment status
         if: always() && steps.deployment.outputs.deployment_id
