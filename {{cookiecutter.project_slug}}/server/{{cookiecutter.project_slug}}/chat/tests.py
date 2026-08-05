@@ -171,3 +171,14 @@ async def test_coach_agent_history_round_trip(sample_user):
         message_history=history,
     )
     assert result_two.output
+
+
+def test_asgi_application_serves_the_agent_websocket():
+    # Import the real ASGI stack. This catches broken consumer wiring
+    # (a bad import or a stale consumer name) at test time instead of
+    # at deploy time.
+    from {{ cookiecutter.project_slug }} import asgi
+    from {{ cookiecutter.project_slug }}.chat.routing import websocket_urlpatterns
+
+    assert asgi.application is not None
+    assert any(str(p.pattern) == "ws/chat/" for p in websocket_urlpatterns)

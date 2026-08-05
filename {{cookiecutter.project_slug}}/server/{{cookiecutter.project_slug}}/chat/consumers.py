@@ -47,6 +47,9 @@ class AgentConsumer(AsyncJsonWebsocketConsumer):
             self._run_task.cancel()
 
     async def receive_json(self, data: dict[str, Any]):
+        if not isinstance(data, dict):
+            await self.send_json({"error": "Send a JSON object with a 'message' key."})
+            return
         message = str(data.get("message") or "").strip()
         if not message:
             await self.send_json({"error": "Send a JSON object with a 'message' key."})
@@ -85,7 +88,10 @@ class AgentConsumer(AsyncJsonWebsocketConsumer):
             raise
         except Exception:
             logger.exception("Agent run failed")
-            await self.send_json({"error": "An error occurred while processing your request"})
+            try:
+                await self.send_json({"error": "An error occurred while processing your request"})
+            except Exception:  # noqa: BLE001 — the socket may already be closed
+                logger.debug("Could not deliver the error frame; socket closed")
 
     async def _stream_model_request(self, node, run):
         async with node.stream(run.ctx) as stream:

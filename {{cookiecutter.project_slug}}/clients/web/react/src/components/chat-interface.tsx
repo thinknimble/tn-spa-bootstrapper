@@ -12,6 +12,7 @@ export const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('')
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isBusy, setIsBusy] = useState(false)
   const chatHistoryRef = useRef<HTMLDivElement>(null)
   const sessionIdRef = useRef<string | null>(null)
   const token = useAuth.use.token()
@@ -39,8 +40,11 @@ export const ChatInterface = () => {
         return
       }
 
-      if (data.error) {
-        setMessages((prev) => [...prev, { content: `Error: ${data.error}`, role: 'tool' }])
+      if (data.done || data.error) {
+        setIsBusy(false)
+        if (data.error) {
+          setMessages((prev) => [...prev, { content: `Error: ${data.error}`, role: 'tool' }])
+        }
         return
       }
 
@@ -77,6 +81,7 @@ export const ChatInterface = () => {
     }
 
     ws.onclose = (event) => {
+      setIsBusy(false)
       console.log('WebSocket connection closed:', event.code, event.reason)
       if (event.code === 4003) {
         // Handle authentication failure
@@ -99,8 +104,9 @@ export const ChatInterface = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     const content = inputMessage.trim()
-    if (!content || !socket) return
+    if (!content || !socket || isBusy) return
 
+    setIsBusy(true)
     setMessages((prev) => [...prev, { content, role: 'user' }])
     setInputMessage('')
 
@@ -210,9 +216,10 @@ export const ChatInterface = () => {
                   </div>
                   <button
                     type="submit"
-                    className="rounded-lg bg-primary px-6 py-2 text-white hover:bg-primaryLight focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    disabled={isBusy}
+                    className="rounded-lg bg-primary px-6 py-2 text-white hover:bg-primaryLight focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Send
+                    {isBusy ? 'Thinking…' : 'Send'}
                   </button>
                 </div>
               </form>
