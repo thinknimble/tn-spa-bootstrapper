@@ -89,8 +89,8 @@ fail_under = 60
 [tool.uv]
 constraint-dependencies = [
     "urllib3>=2.7.0",
-    "aiohttp>=3.14.1",
-    "cryptography>=48.0.1",
+    "aiohttp>=3.14.3",
+    "cryptography>=50.0.0",
     "virtualenv>=20.36.1",
     "filelock>=3.20.3",
     "cbor2>=5.9.0",
