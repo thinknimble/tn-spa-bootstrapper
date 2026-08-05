@@ -10,8 +10,8 @@
   <a href="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml"><img src="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml/badge.svg" alt="Build Status"></a>
   <a href="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml"><img src="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml/badge.svg" alt="Linting"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.12-3776AB" alt="Python"></a>
-  <a href="https://www.djangoproject.com/"><img src="https://img.shields.io/badge/Django-4.2-092E20" alt="Django"></a>
-  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18-61DAFB" alt="React"></a>
+  <a href="https://www.djangoproject.com/"><img src="https://img.shields.io/badge/Django-5.2-092E20" alt="Django"></a>
+  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-19-61DAFB" alt="React"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5-3178C6" alt="TypeScript"></a>
   <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-3-06B6D4" alt="Tailwind"></a>
 </p>
@@ -38,7 +38,7 @@
 
 ### Backend (Django)
 
-- **Django 4.2** with custom user model
+- **Django 5.2** with custom user model
 - **AI Agent Demo** built on pydantic-ai, with tool calling and streaming responses
 - **Comprehensive test suite** included
 - **API-first architecture** with Django REST Framework
@@ -53,7 +53,7 @@
 
 ### Frontend (React)
 
-- **React 18** with TypeScript
+- **React 19** with TypeScript
 - **AI Agent Demo UI** - Chat interface that shows streamed replies and live tool activity
 - **Tailwind CSS** for styling
 - **Vite** for lightning-fast builds
