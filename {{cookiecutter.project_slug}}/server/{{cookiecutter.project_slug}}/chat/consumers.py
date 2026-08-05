@@ -9,8 +9,8 @@ from .models import PromptTemplate
 
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client
-client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+# Initialize OpenAI client lazily to avoid crash when no API key is set
+client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY) if settings.OPENAI_API_KEY else None
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
