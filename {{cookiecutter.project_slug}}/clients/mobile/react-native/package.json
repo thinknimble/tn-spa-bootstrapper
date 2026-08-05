@@ -140,7 +140,7 @@
     "tmp": ">=0.2.6",
     "@babel/helpers": ">=7.26.10",
     "node-forge": ">=1.4.0",
-    "undici": ">=6.27.0",
+    "undici": ">=7.29.0",
     "ws": ">=6.2.4",
     "minimatch@3": {
       "brace-expansion": ">=1.1.18 <2.0.0"
