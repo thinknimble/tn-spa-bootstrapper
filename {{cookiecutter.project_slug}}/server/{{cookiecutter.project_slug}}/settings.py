@@ -317,7 +317,6 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
 
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = f"{AWS_LOCATION}/media"
-    COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
     STORAGES = {
