@@ -5,6 +5,12 @@ on:
     branches: [main, dev]
   pull_request:
     branches: [main, dev]
+    # `closed` is NOT in the default set (opened, synchronize, reopened). Without it
+    # the workflow never runs when a PR is merged, so cleanup-pr-environment below —
+    # whose `if` requires action == 'closed' — can never fire and the PR's RDS
+    # instance outlives the PR. The deploy job filters `closed` out explicitly, so
+    # adding it here does not cause a redeploy on merge.
+    types: [opened, synchronize, reopened, closed]
   workflow_dispatch:
     inputs:
       action:
@@ -24,6 +30,10 @@ on:
           - dev
           - staging
           - production
+      pr_number:
+        description: 'Teardown only: PR number to tear down (targets pr-<number>, overrides Environment)'
+        required: false
+        type: string
 
 permissions:
   id-token: write
@@ -204,26 +214,45 @@ jobs:
 
       - name: Destroy PR Environment
         run: |
+          set -euo pipefail
           cd terraform
-          PR_WORKSPACE="${{ steps.setup-env.outputs.environment }}"
+          PR_ENV="${{ steps.setup-env.outputs.environment }}"
 
-          if terraform workspace list | grep -q "$PR_WORKSPACE"; then
-            terraform workspace select "$PR_WORKSPACE"
-            echo "🗑️ Destroying infrastructure for environment: $PR_WORKSPACE"
-            terraform destroy -auto-approve
-            terraform workspace select default
-            terraform workspace delete "$PR_WORKSPACE"
-            echo "✅ Cleaned up PR environment: $PR_WORKSPACE"
-          else
-            echo "ℹ️  No workspace found for PR environment: $PR_WORKSPACE"
+          # Environments are isolated by Terraform state key, not by workspace — see
+          # .github/actions/setup-terraform, which has already run `terraform init`
+          # against key=$PR_ENV/terraform.tfstate. Only the `default` workspace ever
+          # exists, so a `terraform workspace list | grep` check could never match.
+          if ! RESOURCES="$(terraform state list)"; then
+            echo "❌ Could not read Terraform state for $PR_ENV."
+            exit 1
           fi
+
+          if [ -z "$RESOURCES" ]; then
+            echo "ℹ️  No Terraform state for $PR_ENV — nothing to destroy."
+            exit 0
+          fi
+
+          echo "🗑️ Destroying infrastructure for environment: $PR_ENV"
+          terraform destroy -auto-approve
+          echo "✅ Cleaned up PR environment: $PR_ENV"
+
+      - name: Delete GitHub environment
+        continue-on-error: true
+        run: |
+          PR_ENV="${{ steps.setup-env.outputs.environment }}"
+          gh api -X DELETE "repos/${{ github.repository }}/environments/${PR_ENV}" \
+            && echo "✅ Deleted GitHub environment: $PR_ENV" \
+            || echo "⚠️  Could not delete GitHub environment $PR_ENV (needs admin) — delete it manually."
 
   teardown-environment:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'teardown'
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment == 'production' && 'production-teardown' || github.event.inputs.environment }}
+    # pr_number wins when set, so a review app whose cleanup was missed can be torn
+    # down from the Actions UI. Without it there is no manual path to a pr-* env:
+    # the Environment input only offers dev / staging / production.
+    environment: ${{ github.event.inputs.pr_number != '' && format('pr-{0}', github.event.inputs.pr_number) || (github.event.inputs.environment == 'production' && 'production-teardown' || github.event.inputs.environment) }}
     concurrency:
-      group: deploy-${{ github.event.inputs.environment }}
+      group: deploy-${{ github.event.inputs.pr_number != '' && format('pr-{0}', github.event.inputs.pr_number) || github.event.inputs.environment }}
       cancel-in-progress: false
     steps:
       - name: Checkout code
@@ -233,7 +262,7 @@ jobs:
         id: setup-env
         uses: ./.github/actions/setup-environment
         with:
-          manual_environment: ${{ github.event.inputs.environment }}
+          manual_environment: ${{ github.event.inputs.pr_number != '' && format('pr-{0}', github.event.inputs.pr_number) || github.event.inputs.environment }}
           aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
 
 
@@ -252,22 +281,30 @@ jobs:
 
       - name: Confirm and Destroy Environment
         run: |
+          set -euo pipefail
           cd terraform
           ENVIRONMENT="${{ steps.setup-env.outputs.environment }}"
 
-          if terraform workspace list | grep -q "$ENVIRONMENT"; then
-            terraform workspace select "$ENVIRONMENT"
-            echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
-            echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
+          # Environments are isolated by Terraform state key, not by workspace — see
+          # .github/actions/setup-terraform, which has already run `terraform init`
+          # against key=$ENVIRONMENT/terraform.tfstate. Only the `default` workspace
+          # ever exists, so a `terraform workspace list | grep` check could never match.
+          if ! RESOURCES="$(terraform state list)"; then
+            echo "❌ Could not read Terraform state for $ENVIRONMENT."
+            exit 1
+          fi
 
-            if terraform destroy -auto-approve; then
-              echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
-              terraform workspace select default
-              terraform workspace delete "$ENVIRONMENT"
-            else
-              echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
-              exit 1
-            fi
+          if [ -z "$RESOURCES" ]; then
+            echo "ℹ️  No Terraform state for $ENVIRONMENT — nothing to destroy."
+            exit 0
+          fi
+
+          echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
+          echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
+
+          if terraform destroy -auto-approve; then
+            echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
           else
-            echo "ℹ️  No workspace found for environment: $ENVIRONMENT"
+            echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
+            exit 1
           fi{% endraw %}
