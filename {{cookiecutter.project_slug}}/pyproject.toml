@@ -25,13 +25,8 @@ dependencies = [
     "drf-spectacular>=0.28.0",
     "gunicorn>=23.0.0",
     "openai>=1.65.0",
-    "pre-commit==4.5.*",
     "premailer>=3.10.0",
     "psycopg2-binary==2.9.*",
-    "pytest-asyncio>=0.25.0",
-    "pytest-cov>=6.0.0",
-    "pytest-django>=4.8.0",
-    "pytest-factoryboy>=2.8.0",
     "python-decouple>=3.8",
     "requests>=2.33.0",
     "rollbar>=1.2.0",
@@ -39,10 +34,17 @@ dependencies = [
 ]
 
 [dependency-groups]
+# The Heroku Python buildpack installs with `uv sync --locked --no-default-groups`,
+# so this group stays off production dynos. CI and local `uv sync` include it.
 dev = [
     "debugpy>=1.8.0",
     "ruff==0.16.0",
+    "pre-commit==4.5.*",
     "pytest>=9.0.3",
+    "pytest-asyncio>=0.25.0",
+    "pytest-cov>=6.0.0",
+    "pytest-django>=4.8.0",
+    "pytest-factoryboy>=2.8.0",
     "factory-boy==3.2.*",
 ]
 
