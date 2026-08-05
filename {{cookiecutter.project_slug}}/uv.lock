@@ -17,8 +17,12 @@ constraints = [
     { name = "idna", specifier = ">=3.15" },
     { name = "lxml", specifier = ">=6.1.0" },
     { name = "msgpack", specifier = ">=1.2.1" },
+    { name = "pyasn1", specifier = ">=0.6.4" },
+    { name = "pyjwt", specifier = ">=2.13.0" },
     { name = "pynacl", specifier = ">=1.6.2" },
+    { name = "pyopenssl", specifier = ">=26.0.0" },
     { name = "twisted", specifier = ">=26.4.0" },
+    { name = "ujson", specifier = ">=5.13.0" },
     { name = "urllib3", specifier = ">=2.7.0" },
     { name = "virtualenv", specifier = ">=20.36.1" },
 ]
@@ -1638,10 +1642,7 @@ dependencies = [
     { name = "pre-commit" },
     { name = "premailer" },
     { name = "psycopg2-binary" },
-    { name = "pyasn1" },
     { name = "pydantic-ai" },
-    { name = "pyjwt" },
-    { name = "pyopenssl" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
@@ -1649,7 +1650,6 @@ dependencies = [
     { name = "python-decouple" },
     { name = "requests" },
     { name = "rollbar" },
-    { name = "ujson" },
     { name = "whitenoise" },
 ]
 
@@ -1685,10 +1685,7 @@ requires-dist = [
     { name = "pre-commit", specifier = "==4.5.*" },
     { name = "premailer", specifier = ">=3.10.0" },
     { name = "psycopg2-binary", specifier = "==2.9.*" },
-    { name = "pyasn1", specifier = ">=0.6.4" },
     { name = "pydantic-ai", specifier = ">=1.84.0" },
-    { name = "pyjwt", specifier = ">=2.13.0" },
-    { name = "pyopenssl", specifier = ">=26.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.25.0" },
     { name = "pytest-cov", specifier = ">=6.0.0" },
     { name = "pytest-django", specifier = ">=4.8.0" },
@@ -1696,7 +1693,6 @@ requires-dist = [
     { name = "python-decouple", specifier = ">=3.8" },
     { name = "requests", specifier = ">=2.33.0" },
     { name = "rollbar", specifier = ">=1.2.0" },
-    { name = "ujson", specifier = ">=5.13.0" },
     { name = "whitenoise", specifier = "==5.3.0" },
 ]
 
