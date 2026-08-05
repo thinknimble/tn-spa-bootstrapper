@@ -22,10 +22,10 @@
 
 <p align="center">
   The ThinkNimble Bootstrapper is a battle-tested cookiecutter template that generates a complete,<br>
-  production-ready Django + React application with <b>AI-powered chat demo</b>, authentication,<br>
+  production-ready Django + React application with an <b>AI agent demo</b>, authentication,<br>
   email, and deployment configurations—all following industry best practices.<br>
   <br>
-  <em>🤖 Includes a fully-functional OpenAI chat demo with streaming responses and prompt management</em>
+  <em>🤖 Includes a working pydantic-ai agent demo with tool calling, streaming responses, and prompt management</em>
 </p>
 
 ---
@@ -39,14 +39,14 @@
 ### Backend (Django)
 
 - **Django 4.2** with custom user model
-- **OpenAI Chat Demo** with streaming responses
+- **AI Agent Demo** built on pydantic-ai, with tool calling and streaming responses
 - **Comprehensive test suite** included
 - **API-first architecture** with Django REST Framework
 - **Secure by default** - SSL, CORS, CSP headers configured
 - **Email ready** - Mailgun, AWS SES, or SMTP
 - **File storage** - AWS S3 Ready
 - **Background tasks** with Django Background Tasks
-- **WebSockets** with Django Channels for real-time AI chat
+- **WebSockets** with Django Channels for real-time AI agent chat
 
 </td>
 <td width="50%" valign="top">
@@ -54,7 +54,7 @@
 ### Frontend (React)
 
 - **React 18** with TypeScript
-- **AI Chat Demo UI** - Complete chat interface component
+- **AI Agent Demo UI** - Chat interface that shows streamed replies and live tool activity
 - **Tailwind CSS** for styling
 - **Vite** for lightning-fast builds
 - **React Router** for navigation
@@ -82,18 +82,17 @@
 - GDPR compliance helpers
 - Comprehensive documentation
 
-### 🤖 AI Chat Demo Included
+### 🤖 AI Agent Demo Included
 
-Experience AI integration from day one with our fully-functional demo:
+Experience AI integration from day one with a working agent demo:
 
-- **Working OpenAI Chat** - Pre-configured demo app with GPT-3.5/4 (just add your API key)
-- **Real-time Streaming** - See WebSocket-based streaming responses in action
-- **Prompt Management** - Example of dynamic prompt templates with variable substitution
-- **Conversation Analytics** - Demo pattern detection and conversation categorization
+- **Goal-Coach Agent** - A pydantic-ai agent that saves, lists, and completes user goals (just add your OpenAI API key)
+- **Database-Backed Tools** - Each tool goes through a small service layer that scopes every query to the signed-in user
+- **Real-time Streaming** - WebSocket streaming of replies, tool calls, and tool results
+- **Server-Side Sessions** - Conversation history persists in pydantic-ai's own message format, so tool calls survive across turns
+- **Prompt Management** - Dynamic prompt templates with variable substitution, editable in Django admin
 - **Feedback System** - Example rating system for improving AI responses
-- **Admin Interface** - Full Django admin for managing the demo's AI configuration
-- **Multiple Agent Types** - Demonstrates configurable AI agent roles
-- **Learning Style Assessment** - Complete demo showcasing an educational chatbot
+- **Offline Tests** - The agent's tool wiring is tested with pydantic-ai's TestModel, with no network calls
 
 ---
 

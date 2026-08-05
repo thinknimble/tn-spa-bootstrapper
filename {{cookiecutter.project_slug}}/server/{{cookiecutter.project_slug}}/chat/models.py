@@ -1,6 +1,7 @@
 import logging
 
 from asgiref.sync import sync_to_async
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
@@ -9,6 +10,42 @@ from {{ cookiecutter.project_slug }}.common.models import AbstractBaseModel
 from .exceptions import BadTemplateException
 
 LOGGER = logging.getLogger(__name__)
+
+
+class Goal(AbstractBaseModel):
+    """A user goal that the coach agent manages through its tools."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="goals"
+    )
+    title = models.CharField(max_length=255, help_text="Short, action-oriented goal title")
+    is_complete = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ["created"]
+
+
+class AgentSession(AbstractBaseModel):
+    """One agent conversation, stored in pydantic-ai's own message format.
+
+    The ``messages`` column holds the JSON from ``result.all_messages_json()``.
+    The consumer feeds it back on the next turn, so tool calls and tool
+    results keep their pairing across turns.
+    """
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="agent_sessions"
+    )
+    messages = models.JSONField(default=list, blank=True)
+
+    def __str__(self):
+        return f"Session {self.id} ({self.user})"
+
+    class Meta:
+        ordering = ["-created"]
 
 
 class Fingerprint(AbstractBaseModel):

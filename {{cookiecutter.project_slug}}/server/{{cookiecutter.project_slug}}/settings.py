@@ -470,6 +470,7 @@ SPECTACULAR_SETTINGS = {
 # OpenAI Configuration
 #
 OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
+OPENAI_MODEL = config("OPENAI_MODEL", default="gpt-4.1-mini")
 
 # Validate email verification configuration
 if REQUIRE_EMAIL_VERIFICATION and not ENABLE_EMAILS:
