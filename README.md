@@ -59,8 +59,8 @@
 - **Vite** for lightning-fast builds
 - **React Router** for navigation
 - **API integration** with Axios
-- **Form handling** with react-hook-form
-- **State management** ready
+- **Form handling** with @thinknimble/tn-forms
+- **State management** with Zustand and TanStack Query
 - **Mobile responsive** from day one
 
 </td>
@@ -78,8 +78,6 @@
 - Pre-commit hooks for code quality
 - GitHub Actions CI/CD pipelines
 - Error tracking with Rollbar/Sentry
-- Performance monitoring
-- GDPR compliance helpers
 - Comprehensive documentation
 
 ### 🤖 AI Agent Demo Included
@@ -135,7 +133,6 @@ tn bootstrap
 First, install `pipx` if you don't have it ([installation guide](https://pipx.pypa.io/stable/installation/#installing-pipx)):
 
 ```bash
-pipx install cookiecutter
 pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 ```
 
@@ -154,7 +151,7 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 - **Hot module reloading** for React development with Vite
 - **Pre-configured linting** with Ruff for Python, ESLint and Prettier for JavaScript
 - **Pre-commit hooks** for code quality enforcement
-- **Test suite** with pytest for Django and testing setup for React
+- **Test suite** with pytest for Django, Vitest for React, and Playwright end-to-end tests
 - **Type safety** with TypeScript for frontend
 - **API documentation** with Swagger/OpenAPI via drf-spectacular
 - **Docker development environment** with PostgreSQL and Redis
@@ -168,7 +165,7 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 - **Database migrations** with Django's migration system
 - **Static file handling** with WhiteNoise
 - **Email services** via Mailgun, AWS SES, or custom SMTP
-- **File storage** with S3 or Google Cloud Storage support
+- **File storage** with S3 support
 
 ### Built-in Features
 
@@ -198,27 +195,19 @@ Answer the prompts with your own desired options. For example:
     2 - Amazon SES
     3 - Custom SMTP
     Choose from 1, 2, 3 [1]: 1
-    Error: "my_project" directory already exists
-    william@Williams-MacBook-Pro thinknimble % rm -rf my_project
-    william@Williams-MacBook-Pro thinknimble % cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git --checkout cleanup
-    You've downloaded /Users/william/.cookiecutters/tn-spa-cookiecutter before. Is it okay to delete and re-download it? [yes]:
-    project_name [My Project]:
-    author_name [ThinkNimble]:
-    email [hello@thinknimble.com]:
-    project_slug [my_project]:
-    Select mail_service:
-    1 - Mailgun
-    2 - Amazon SES
-    3 - Custom SMTP
-    Choose from 1, 2, 3 [1]:
+    Select client_app:
+    1 - React
+    2 - None
+    Choose from 1, 2 [1]: 1
+    include_mobile [n]: n
 
-Create a git repo and push it there::
+Create a git repo and push it there:
 
 ```bash
 git init
 git add .
 git commit -m "first awesome commit"
-git remote set-url origin git@github.com:thinknimble/the-rock.git
+git remote add origin git@github.com:thinknimble/the-rock.git
 git push -u origin main
 ```
 
