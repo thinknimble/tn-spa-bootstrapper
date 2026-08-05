@@ -107,9 +107,9 @@ Since Expo runs on a separate device, it cannot reach localhost on your computer
 OR, you can use a web proxy like [ngrok](https://ngrok.com/):
 
 1. Download and install ngrok, and set up an ngrok auth token
-2. Run ngrok: `ngrok http 8000 --subdomain <a domain>`
-3. Set your new domain in the mobile `.env` as `EXPO_PUBLIC_BACKEND_SERVER_URL`, e.g. `EXPO_PUBLIC_BACKEND_SERVER_URL="https://<your domain>.ngrok.io"`
-4. Append the domain to `ALLOWED_HOSTS` in the ROOT `.env` (a comma-separated list of hostnames), e.g. `ALLOWED_HOSTS=localhost,<your domain>.ngrok.io`
+2. Run ngrok: `ngrok http 8000 --url <your-domain>.ngrok-free.app`
+3. Set your new domain in the mobile `.env` as `EXPO_PUBLIC_BACKEND_SERVER_URL`, e.g. `EXPO_PUBLIC_BACKEND_SERVER_URL="https://<your-domain>.ngrok-free.app"`
+4. Append the domain to `ALLOWED_HOSTS` in the ROOT `.env` (a comma-separated list of hostnames), e.g. `ALLOWED_HOSTS=localhost,<your-domain>.ngrok-free.app`
 
 ## Set Up for the Apple App Store
 
