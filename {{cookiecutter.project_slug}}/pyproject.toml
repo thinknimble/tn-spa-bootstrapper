@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "boto3==1.42.*",
-    "pydantic-ai>=1.84.0",
+    "pydantic-ai>=2.24.0",
     "channels==4.2.*",
     "channels-redis==4.2",
     "daphne>=4.2.2",
@@ -24,7 +24,6 @@ dependencies = [
     "drf-nested-routers==0.93.3",
     "drf-spectacular>=0.28.0",
     "gunicorn>=23.0.0",
-    "openai>=1.65.0",
     "premailer>=3.10.0",
     "psycopg2-binary==2.9.*",
     "python-decouple>=3.8",

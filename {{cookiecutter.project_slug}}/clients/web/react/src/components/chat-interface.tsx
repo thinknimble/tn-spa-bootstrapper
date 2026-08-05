@@ -4,7 +4,7 @@ import { Sidebar } from './sidebar'
 
 type Message = {
   content: string
-  role: 'user' | 'assistant'
+  role: 'user' | 'assistant' | 'tool'
 }
 
 export const ChatInterface = () => {
@@ -12,14 +12,14 @@ export const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('')
   const [socket, setSocket] = useState<WebSocket | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [, setStreamingContent] = useState('')
   const chatHistoryRef = useRef<HTMLDivElement>(null)
+  const sessionIdRef = useRef<string | null>(null)
   const token = useAuth.use.token()
 
   useEffect(() => {
     // Create WebSocket connection with auth token
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const host = import.meta.env.DEV ? window.location.host : window.location.host
+    const host = window.location.host
     const ws = new WebSocket(`${protocol}//${host}/ws/chat/?token=${token}`)
 
     ws.onopen = () => {
@@ -33,34 +33,46 @@ export const ChatInterface = () => {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data)
 
+      if (data.session_id) {
+        // The server holds the conversation history under this id.
+        sessionIdRef.current = data.session_id
+        return
+      }
+
       if (data.error) {
+        setMessages((prev) => [...prev, { content: `Error: ${data.error}`, role: 'tool' }])
+        return
+      }
+
+      if (data.tool_call) {
+        setMessages((prev) => [...prev, { content: `Using ${data.tool_call.name}…`, role: 'tool' }])
+        return
+      }
+
+      if (data.tool_result) {
+        setMessages((prev) => [
+          ...prev,
+          { content: `${data.tool_result.name}: ${data.tool_result.content}`, role: 'tool' },
+        ])
+        return
+      }
+
+      if (data.delta?.content) {
+        // Streamed chunk: append to the trailing assistant message, or
+        // start a new one after a user message or tool activity.
         setMessages((prev) => {
           const newMessages = [...prev]
           const lastMessage = newMessages[newMessages.length - 1]
           if (lastMessage?.role === 'assistant') {
-            lastMessage.content += `\nError: ${data.error}`
+            newMessages[newMessages.length - 1] = {
+              ...lastMessage,
+              content: lastMessage.content + data.delta.content,
+            }
+          } else {
+            newMessages.push({ content: data.delta.content, role: 'assistant' })
           }
           return newMessages
         })
-        return
-      }
-
-      if (data.delta) {
-        // Handling streaming response
-        if (data.delta.content) {
-          setStreamingContent((prev) => {
-            const newContent = prev + data.delta.content
-            setMessages((messages) => {
-              const newMessages = [...messages]
-              newMessages[newMessages.length - 1].content = newContent
-              return newMessages
-            })
-            return newContent
-          })
-        }
-      } else if (data.message) {
-        // Handling regular response
-        setMessages((prev) => [...prev, { content: data.message.content, role: 'assistant' }])
       }
     }
 
@@ -89,20 +101,15 @@ export const ChatInterface = () => {
     const content = inputMessage.trim()
     if (!content || !socket) return
 
-    // Add user message to conversation
-    const userMessage: Message = { content, role: 'user' }
-    setMessages((prev) => [...prev, userMessage])
+    setMessages((prev) => [...prev, { content, role: 'user' }])
     setInputMessage('')
-    setStreamingContent('')
 
-    // Add empty assistant message that will be updated
-    setMessages((prev) => [...prev, { content: '', role: 'assistant' }])
-
-    // Send full conversation history through WebSocket
+    // The server stores the history; send only the new message and the
+    // session id from the first response.
     socket.send(
       JSON.stringify({
-        messages: [...messages, userMessage], // Include previous messages plus new user message
-        stream: true,
+        message: content,
+        session_id: sessionIdRef.current,
       }),
     )
   }
@@ -152,22 +159,30 @@ export const ChatInterface = () => {
         <div className="flex flex-1 flex-col overflow-hidden">
           <div ref={chatHistoryRef} className="flex-1 overflow-y-auto p-4">
             <div className="mx-auto max-w-3xl">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`mb-4 flex ${
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
-                >
+              {messages.map((message, index) =>
+                message.role === 'tool' ? (
+                  <div key={index} className="mb-4 flex justify-center">
+                    <div className="max-w-[80%] rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs text-gray-600">
+                      {message.content}
+                    </div>
+                  </div>
+                ) : (
                   <div
-                    className={`max-w-[80%] rounded-lg p-3 text-left ${
-                      message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'
+                    key={index}
+                    className={`mb-4 flex ${
+                      message.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    {message.content}
+                    <div
+                      className={`max-w-[80%] rounded-lg p-3 text-left ${
+                        message.role === 'user' ? 'bg-blue-50' : 'bg-gray-50'
+                      }`}
+                    >
+                      {message.content}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </div>
 
