@@ -110,10 +110,6 @@ server-format:
 server-lint:
     uv run ruff check --fix server
 
-[group('server')]
-server-legacy-format:
-    uv run black server && uv run isort server
-
 # Docker commands
 
 # Start all services, auto-detecting Traefik. When the shared `proxy` network exists,
