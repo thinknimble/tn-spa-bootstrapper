@@ -46,6 +46,32 @@ output "certificate_type" {
   value       = var.custom_certificate_arn != "" ? "custom" : "default"
 }
 
+# ECS outputs (used by CI/CD for one-off tasks)
+output "ecs_cluster_name" {
+  description = "Name of the ECS cluster"
+  value       = aws_ecs_cluster.main.name
+}
+
+output "app_task_definition_arn" {
+  description = "ARN of the app task definition"
+  value       = aws_ecs_task_definition.app.arn
+}
+
+output "app_container_name" {
+  description = "Name of the app container"
+  value       = "app-${var.service}-${var.environment}"
+}
+
+output "ecs_subnets" {
+  description = "Subnets used by ECS tasks"
+  value       = data.aws_subnets.shared.ids
+}
+
+output "ecs_security_groups" {
+  description = "Security groups used by ECS tasks"
+  value       = [aws_security_group.app.id]
+}
+
 # Monitoring outputs
 output "sns_alerts_topic_arn" {
   description = "ARN of the SNS topic for CloudWatch alarm notifications"

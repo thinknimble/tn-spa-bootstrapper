@@ -131,6 +131,37 @@ jobs:
           cd terraform
           terraform apply tfplan
 
+      - name: Seed test data
+        if: github.event_name == 'pull_request'
+        run: |
+          cd terraform
+          CLUSTER=$(terraform output -raw ecs_cluster_name)
+          TASK_DEF=$(terraform output -raw app_task_definition_arn)
+          CONTAINER=$(terraform output -raw app_container_name)
+          SUBNETS=$(terraform output -json ecs_subnets | jq -r 'join(",")')
+          SGS=$(terraform output -json ecs_security_groups | jq -r 'join(",")')
+
+          echo "Running create_test_data as one-off ECS task..."
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "$CLUSTER" \
+            --task-definition "$TASK_DEF" \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],securityGroups=[$SGS],assignPublicIp=ENABLED}" \
+            --overrides "{\"containerOverrides\":[{\"name\":\"$CONTAINER\",\"command\":[\"python\",\"manage.py\",\"create_test_data\"]}]}" \
+            --query 'tasks[0].taskArn' --output text)
+
+          echo "Waiting for task to complete: $TASK_ARN"
+          aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$TASK_ARN"
+
+          EXIT_CODE=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK_ARN" \
+            --query 'tasks[0].containers[0].exitCode' --output text)
+
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "::warning::create_test_data exited with code $EXIT_CODE"
+          else
+            echo "✅ Test data seeded successfully"
+          fi
+
       - name: Get Application URL
         id: app-url
         run: |
