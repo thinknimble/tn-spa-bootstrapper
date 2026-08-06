@@ -55,14 +55,14 @@ runs:
             fi
           fi
           [[ -z "$CONFIG" || "$CONFIG" == "null" ]] && CONFIG=$(jq -r '.defaults' "$CONFIG_FILE")
-          echo "debug=$(echo "$CONFIG" | jq -r '.django.debug // true')" >> $GITHUB_OUTPUT
+          echo "debug=$(echo "$CONFIG" | jq -r 'if .django.debug == null then true else .django.debug end')" >> $GITHUB_OUTPUT
           echo "current_port=$(echo "$CONFIG" | jq -r '.django.current_port // 8000')" >> $GITHUB_OUTPUT
           echo "allowed_hosts=$(echo "$CONFIG" | jq -r '.django.allowed_hosts // "server,localhost,127.0.0.1"')" >> $GITHUB_OUTPUT
-          echo "enable_emails=$(echo "$CONFIG" | jq -r '.django.enable_emails // false')" >> $GITHUB_OUTPUT
+          echo "enable_emails=$(echo "$CONFIG" | jq -r 'if .django.enable_emails == null then false else .django.enable_emails end')" >> $GITHUB_OUTPUT
           echo "staff_email=$(echo "$CONFIG" | jq -r '.django.staff_email // "admin@example.com"')" >> $GITHUB_OUTPUT
-          echo "use_aws_storage=$(echo "$CONFIG" | jq -r '.aws.use_aws_storage // false')" >> $GITHUB_OUTPUT
+          echo "use_aws_storage=$(echo "$CONFIG" | jq -r 'if .aws.use_aws_storage == null then false else .aws.use_aws_storage end')" >> $GITHUB_OUTPUT
           echo "aws_s3_region_name=$(echo "$CONFIG" | jq -r '.aws.aws_s3_region_name // ""')" >> $GITHUB_OUTPUT
-          echo "enable_https=$(echo "$CONFIG" | jq -r '.features.enable_https // true')" >> $GITHUB_OUTPUT
+          echo "enable_https=$(echo "$CONFIG" | jq -r 'if .features.enable_https == null then true else .features.enable_https end')" >> $GITHUB_OUTPUT
           echo "alert_email=$(echo "$CONFIG" | jq -r '.monitoring.alert_email // ""')" >> $GITHUB_OUTPUT
         else
           echo "debug=true" >> $GITHUB_OUTPUT

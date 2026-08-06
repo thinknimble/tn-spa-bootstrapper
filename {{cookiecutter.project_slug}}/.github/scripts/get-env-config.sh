@@ -127,7 +127,7 @@ DESCRIPTION=$(echo "$CONFIG" | jq -r '.description')
 
 # Extract domain configuration
 BASE_DOMAIN=$(echo "$CONFIG" | jq -r '.domain.base_domain // empty')
-USE_CUSTOM_DOMAIN=$(echo "$CONFIG" | jq -r '.domain.use_custom_domain // false')
+USE_CUSTOM_DOMAIN=$(echo "$CONFIG" | jq -r 'if .domain.use_custom_domain == null then false else .domain.use_custom_domain end')
 CUSTOM_DOMAIN=$(echo "$CONFIG" | jq -r '.domain.custom_domain // empty')
 ROUTE53_ZONE_ID=$(echo "$CONFIG" | jq -r '.domain.route53_zone_id // empty')
 CERTIFICATE_ARN=$(echo "$CONFIG" | jq -r '.domain.certificate_arn // empty')
