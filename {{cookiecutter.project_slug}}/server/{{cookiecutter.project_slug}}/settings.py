@@ -174,7 +174,16 @@ else:
             "USER": config("DB_USER"),
             "PASSWORD": config("DB_PASS", default=""),
             "HOST": config("DB_HOST"),
-            "CONN_MAX_AGE": 600,
+            # 0, not a persistent connection, because this project serves
+            # ASGI (daphne, with channels). Django closes old connections on
+            # the request_started and request_finished signals, and neither
+            # fires for a WebSocket. A long-lived socket therefore has no
+            # request boundary to release a connection on. Channels compensates
+            # by calling close_old_connections() inside database_sync_to_async,
+            # but that helper only closes once CONN_MAX_AGE has elapsed -- so a
+            # large value disables the one cleanup hook the socket path has
+            # left.
+            "CONN_MAX_AGE": 0,
         },
     }
 #

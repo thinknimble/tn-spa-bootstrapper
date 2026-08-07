@@ -22,7 +22,14 @@ if config("CI", False):
             "USER": config("TEST_DB_USER"),
             "PASSWORD": config("TEST_DB_PASS", default=""),
             "HOST": config("DB_HOST"),
-            "CONN_MAX_AGE": 600,
+            # 0 so connections close after each use. A test suite must not
+            # reuse connections: `database_sync_to_async` runs every async
+            # database call on one process-wide executor thread, and
+            # `channels.db` calls close_old_connections() around each call to
+            # clean up after it -- but that helper only closes once
+            # CONN_MAX_AGE has elapsed, so a large value made it a no-op for
+            # the whole run and leaked connections across tests.
+            "CONN_MAX_AGE": 0,
         },
     }
 
