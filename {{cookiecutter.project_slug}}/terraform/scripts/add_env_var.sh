@@ -396,7 +396,7 @@ add_non_sensitive_variable() {
     print_colored $YELLOW "📋 Next steps:"
     print_colored $YELLOW "  1. Add the actual value to your terraform.tfvars file (or use default)"
     print_colored $YELLOW "  2. For multi-account setups, also add to environment-specific .tfvars files"
-    print_colored $YELLOW "  3. Update app-config.json if this variable affects application behavior"
+    print_colored $YELLOW "  3. Update environments.json if this variable affects application behavior"
     print_colored $YELLOW "  4. Run 'terraform plan' to review changes"
     print_colored $YELLOW "  5. Run 'terraform apply' to deploy"
 }

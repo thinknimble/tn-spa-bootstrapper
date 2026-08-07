@@ -16,21 +16,19 @@ Go to your repository **Settings > Secrets and variables > Actions > Variables**
 
 ## AWS Role ARN Configuration
 
-Role ARNs are **not** configured as GitHub variables or secrets. Instead, they are defined per-environment in `.github/environments.json`. The `setup-environment` action calls `get-env-config.sh` to resolve the correct `role_arn` for each environment (production, staging, development, PR previews).
+Role ARNs are **not** configured as GitHub variables or secrets. Instead, they are defined per-environment in `.github/environments.json`. The `setup-environment` action calls `get-env-config.sh` to resolve the correct `role_arn` for each environment (production, staging, dev, PR previews).
 
 Example entry in `environments.json`:
 ```json
 {
-  "environments": {
-    "production": {
-      "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
-      ...
-    }
+  "production": {
+    "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
+    "..."
   }
 }
 ```
 
-See `.github/environments.json` for the full configuration and `.github/scripts/get-env-config.sh` for the resolution logic.
+See `.github/environments.json` for the full configuration.
 
 ## Required GitHub Repository Secrets
 

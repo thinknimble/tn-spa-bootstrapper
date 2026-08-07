@@ -71,6 +71,12 @@ runs:
           echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
           echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
           echo "is_pr=false" >> $GITHUB_OUTPUT
+        elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          TAG="${{ github.ref_name }}"
+          ENV_NAME="production"
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "image_tag=$ENV_NAME-$TAG" >> $GITHUB_OUTPUT
+          echo "is_pr=false" >> $GITHUB_OUTPUT
         elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
           ENV_NAME="staging"
           echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
