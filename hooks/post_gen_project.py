@@ -129,7 +129,6 @@ def remove_terraform_files():
         join(".github/workflows", "app-deploy.yml"),
         join(".github/workflows", "SETUP.md"),
         join(".github", "environments.json"),
-        join(".github", "app-config.json"),
         join(".github/scripts", "get-env-config.sh"),
         join(".github/scripts", "secrets-sync.sh"),
         "secrets-template.json",  # Remove secrets template for Heroku deployments

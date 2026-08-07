@@ -124,13 +124,11 @@ This project includes a complete AWS ECS Fargate deployment setup with Terraform
 1. **Configure environments.json** - Update `.github/environments.json` with your AWS account details:
    ```json
    {
-     "patterns": {
-       "pr-*": {
-         "account_id": "123456789012",
-         "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
-         "region": "us-east-1",
-         "secrets_bucket": "myapp-terraform-secrets"
-       }
+     "dev": {
+       "account_id": "123456789012",
+       "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+       "region": "us-east-1",
+       "secrets_bucket": "myapp-terraform-secrets"
      }
    }
    ```

@@ -65,36 +65,24 @@ tn aws-setup-secrets production
 ```
 
 ### Step 6. Update `.github/environments.json`
-Set `account_id`, `role_arn` (from step 4), `secrets_bucket`, and `region` for each environment. The file looks like:
+Set `account_id`, `role_arn` (from step 4), `secrets_bucket`, and `region` for each environment. Each environment is a flat key-value object:
 ```json
 {
-  "environments": {
-    "development": {
-      "account": "dev",
-      "account_id": "<AWS_ACCOUNT_ID>",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/github-actions-<service>-development",
-      "secrets_bucket": "<service>-terraform-secrets",
-      "domain": {
-        "base_domain": "<your-domain.com>",
-        "use_custom_domain": false,
-        "route53_zone_id": "<ZONE_ID>",
-        "certificate_arn": "<WILDCARD_CERT_ARN>"
-      }
-    },
-    "staging": {
-      "extends": "development",
-      "role_arn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/github-actions-<service>-staging"
-    },
-    "production": {
-      "extends": "development",
-      "role_arn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/github-actions-<service>-production",
-      "domain": {
-        "use_custom_domain": true,
-        "custom_domain": "<production-domain.com>"
-      }
-    }
-  }
+  "production": {
+    "account": "dev",
+    "account_id": "<AWS_ACCOUNT_ID>",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/github-actions-<service>-production",
+    "secrets_bucket": "<service>-terraform-secrets",
+    "base_domain": "<your-domain.com>",
+    "use_custom_domain": true,
+    "custom_domain": "<production-domain.com>",
+    "route53_zone_id": "<ZONE_ID>",
+    "certificate_arn": "<CERT_ARN>"
+  },
+  "staging": { "..." : "same structure" },
+  "dev": { "..." : "same structure" },
+  "pr": { "..." : "same structure, used for all pr-N environments" }
 }
 ```
 

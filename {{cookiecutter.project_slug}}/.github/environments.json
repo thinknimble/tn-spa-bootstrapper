@@ -1,42 +1,86 @@
 {
-  "environments": {
-    "development": {
-      "account": "dev",
-      "account_id": "CHANGE-ME",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-development",
-      "secrets_bucket": "CHANGE-ME-terraform-secrets",
-      "description": "Development environment",
-      "domain": {
-        "base_domain": "",
-        "use_custom_domain": false,
-        "custom_domain": "",
-        "route53_zone_id": "",
-        "certificate_arn": ""
-      }
-    },
-    "staging": {
-      "extends": "development",
-      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-staging"
-    },
-    "production": {
-      "extends": "development",
-      "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-production",
-      "domain": {
-        "use_custom_domain": true,
-        "custom_domain": ""
-      }
-    }
+  "production": {
+    "account": "dev",
+    "account_id": "CHANGE-ME",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-production",
+    "secrets_bucket": "CHANGE-ME-terraform-secrets",
+    "base_domain": "",
+    "use_custom_domain": true,
+    "custom_domain": "",
+    "route53_zone_id": "",
+    "certificate_arn": "",
+    "debug": false,
+    "current_port": 8000,
+    "allowed_hosts": "server,localhost,127.0.0.1",
+    "enable_emails": true,
+    "staff_email": "admin@mycompany.com",
+    "use_aws_storage": true,
+    "aws_s3_region_name": "us-east-1",
+    "enable_https": true,
+    "alert_email": "alerts@mycompany.com"
   },
-  "patterns": {
-    "pr-*": {
-      "extends": "development"
-    },
-    "main": {
-      "extends": "development"
-    }
+  "staging": {
+    "account": "dev",
+    "account_id": "CHANGE-ME",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-staging",
+    "secrets_bucket": "CHANGE-ME-terraform-secrets",
+    "base_domain": "",
+    "use_custom_domain": false,
+    "custom_domain": "",
+    "route53_zone_id": "",
+    "certificate_arn": "",
+    "debug": true,
+    "current_port": 8000,
+    "allowed_hosts": "server,localhost,127.0.0.1",
+    "enable_emails": false,
+    "staff_email": "staging@mycompany.com",
+    "use_aws_storage": false,
+    "aws_s3_region_name": "us-east-1",
+    "enable_https": true,
+    "alert_email": "alerts@mycompany.com"
   },
-  "defaults": {
-    "extends": "development"
+  "dev": {
+    "account": "dev",
+    "account_id": "CHANGE-ME",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-development",
+    "secrets_bucket": "CHANGE-ME-terraform-secrets",
+    "base_domain": "",
+    "use_custom_domain": false,
+    "custom_domain": "",
+    "route53_zone_id": "",
+    "certificate_arn": "",
+    "debug": true,
+    "current_port": 8000,
+    "allowed_hosts": "server,localhost,127.0.0.1",
+    "enable_emails": false,
+    "staff_email": "dev@mycompany.com",
+    "use_aws_storage": false,
+    "aws_s3_region_name": "us-east-1",
+    "enable_https": false,
+    "alert_email": ""
+  },
+  "pr": {
+    "account": "dev",
+    "account_id": "CHANGE-ME",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::CHANGE-ME:role/github-actions-CHANGE-ME-development",
+    "secrets_bucket": "CHANGE-ME-terraform-secrets",
+    "base_domain": "",
+    "use_custom_domain": false,
+    "custom_domain": "",
+    "route53_zone_id": "",
+    "certificate_arn": "",
+    "debug": true,
+    "current_port": 8000,
+    "allowed_hosts": "server,localhost,127.0.0.1",
+    "enable_emails": false,
+    "staff_email": "dev@mycompany.com",
+    "use_aws_storage": false,
+    "aws_s3_region_name": "us-east-1",
+    "enable_https": true,
+    "alert_email": ""
   }
 }

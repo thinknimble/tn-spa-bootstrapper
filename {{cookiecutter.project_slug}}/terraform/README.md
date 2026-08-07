@@ -231,40 +231,30 @@ Terraform will validate these requirements and provide clear error messages if i
 
 ## 🌐 Domain and DNS Configuration
 
-**New**: Domain and Route53 configuration is now managed through the centralized `environments.json` file, allowing different domain configurations per environment.
+Domain and Route53 configuration is managed per environment in `.github/environments.json`:
 
 ### Configuration Structure
 
-Domain configuration is specified in `.github/environments.json` under the `domain` key for each environment:
-
 ```json
 {
-  "environments": {
-    "production": {
-      "domain": {
-        "base_domain": "myapp.com",
-        "use_custom_domain": true,
-        "custom_domain": "myapp.com",
-        "route53_zone_id": "Z1D633PJN98FT9",
-        "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/prod-cert-id"
-      }
-    },
-    "staging": {
-      "domain": {
-        "base_domain": "myapp.com", 
-        "use_custom_domain": false,
-        "route53_zone_id": "Z1D633PJN98FT9",
-        "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/wildcard-cert-id"
-      }
-    },
-    "development": {
-      "domain": {
-        "base_domain": "dev.myapp.com",
-        "use_custom_domain": false,
-        "route53_zone_id": "Z06118351LUGXMN4X34BT", 
-        "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/dev-wildcard-cert-id"
-      }
-    }
+  "production": {
+    "base_domain": "myapp.com",
+    "use_custom_domain": true,
+    "custom_domain": "myapp.com",
+    "route53_zone_id": "Z1D633PJN98FT9",
+    "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/prod-cert-id"
+  },
+  "staging": {
+    "base_domain": "myapp.com",
+    "use_custom_domain": false,
+    "route53_zone_id": "Z1D633PJN98FT9",
+    "certificate_arn": "arn:aws:acm:us-east-1:345678901234:certificate/wildcard-cert-id"
+  },
+  "dev": {
+    "base_domain": "dev.myapp.com",
+    "use_custom_domain": false,
+    "route53_zone_id": "Z06118351LUGXMN4X34BT",
+    "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/dev-wildcard-cert-id"
   }
 }
 ```
@@ -425,49 +415,33 @@ Set `account_id`, `role_arn` (from OIDC setup), `secrets_bucket`, and `region` f
 
 ```json
 {
-  "environments": {
-    "production": {
-      "account": "prod",
-      "account_id": "345678901234",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-      "description": "Production environment"
-    },
-    "staging": {
-      "account": "staging",
-      "account_id": "234567890123",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::234567890123:role/github-actions-staging",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-      "description": "Staging environment"
-    },
-    "development": {
-      "account": "dev",
-      "account_id": "123456789012",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-      "description": "Development environment"
-    }
+  "production": {
+    "account": "prod",
+    "account_id": "345678901234",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::345678901234:role/github-actions-production",
+    "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets"
   },
-  "patterns": {
-    "pr-*": {
-      "account": "dev",
-      "account_id": "123456789012",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
-      "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-      "description": "Pull request environments"
-    }
+  "staging": {
+    "account": "staging",
+    "account_id": "234567890123",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::234567890123:role/github-actions-staging",
+    "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets"
   },
-  "defaults": {
+  "dev": {
     "account": "dev",
     "account_id": "123456789012",
     "region": "us-east-1",
     "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
-    "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets",
-    "description": "Default fallback configuration"
+    "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets"
+  },
+  "pr": {
+    "account": "dev",
+    "account_id": "123456789012",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+    "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets"
   }
 }
 ```
@@ -499,41 +473,36 @@ AWS_ACCOUNT_ID="123456789012"
 
 ## 🎯 Application Configuration
 
-Centralized Django application settings are managed through `.github/app-config.json`:
+All environment settings (infrastructure and application) are managed in `.github/environments.json` as flat key-value pairs per environment:
 
 ```json
 {
-  "service": "{{cookiecutter.project_slug}}",
-  "environments": {
-    "production": {
-      "django": {
-        "debug": false,
-        "enable_emails": true,
-        "staff_email": "admin@{{cookiecutter.project_slug}}.com"
-      },
-      "aws": {
-        "use_aws_storage": true,
-        "aws_s3_region_name": "us-east-1"
-      },
-      "features": {
-        "enable_https": true
-      }
-    },
-    "development": {
-      "django": {
-        "debug": true,
-        "enable_emails": false
-      },
-      "aws": {
-        "use_aws_storage": false
-      },
-      "features": {
-        "enable_https": false
-      }
-    }
+  "production": {
+    "account": "dev",
+    "account_id": "123456789012",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-production",
+    "debug": false,
+    "enable_emails": true,
+    "staff_email": "admin@example.com",
+    "use_aws_storage": true,
+    "enable_https": true,
+    "alert_email": "alerts@example.com"
+  },
+  "dev": {
+    "account": "dev",
+    "account_id": "123456789012",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-dev",
+    "debug": true,
+    "enable_emails": false,
+    "use_aws_storage": false,
+    "enable_https": false
   }
 }
 ```
+
+PR environments (`pr-123`, `pr-456`, etc.) map to the `"pr"` key.
 
 ## 🔧 Environment Variables Management
 
@@ -560,7 +529,7 @@ terraform/scripts/add_env_var.sh -n --name enableFeature --description 'Enable n
 **Non-Sensitive Variables (environment variables):**
 - Feature flags, URLs, configuration
 - Passed directly to containers
-- Stored in terraform.tfvars and app-config.json
+- Stored in terraform.tfvars and environments.json
 
 ### Manual Variable Addition
 

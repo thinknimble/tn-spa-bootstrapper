@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Tests for get-env-config.sh: extends resolution via deep merge
-# Validates that the extends keyword properly inherits and overrides config.
+# Tests for get-env-config.sh: flat environment lookup
+# Validates exact-match and pr-N → pr pattern mapping.
 
 set -euo pipefail
 
@@ -38,306 +38,179 @@ cleanup() {
 trap cleanup EXIT
 
 # -------------------------------------------------------
-echo "=== extends: deep merge inherits base fields ==="
+echo "=== exact match: looks up environment by name ==="
 # -------------------------------------------------------
 
 cat > "$CONFIG_FILE" << 'EOJSON'
 {
-  "environments": {
-    "development": {
-      "account": "dev",
-      "account_id": "111111111111",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::111111111111:role/github-actions-dev",
-      "secrets_bucket": "my-secrets",
-      "description": "Dev env",
-      "domain": {
-        "base_domain": "dev.example.com",
-        "use_custom_domain": false,
-        "route53_zone_id": "ZDEV",
-        "certificate_arn": "arn:aws:acm:us-east-1:111111111111:certificate/dev-cert"
-      }
-    },
-    "staging": {
-      "extends": "development",
-      "role_arn": "arn:aws:iam::111111111111:role/github-actions-staging",
-      "description": "Staging env"
-    }
-  }
-}
-EOJSON
-
-output=$("$SCRIPT_UNDER_TEST" staging 2>/dev/null)
-
-# Should inherit account_id from development
-if echo "$output" | grep -q "account_id=111111111111"; then
-    pass "staging inherits account_id from development"
-else
-    fail "staging should inherit account_id from development"
-fi
-
-# Should use its own role_arn override
-if echo "$output" | grep -q "role_arn=arn:aws:iam::111111111111:role/github-actions-staging"; then
-    pass "staging overrides role_arn"
-else
-    fail "staging should override role_arn"
-fi
-
-# Should inherit nested domain fields
-if echo "$output" | grep -q "base_domain=dev.example.com"; then
-    pass "staging inherits nested domain.base_domain"
-else
-    fail "staging should inherit nested domain.base_domain"
-fi
-
-if echo "$output" | grep -q "route53_zone_id=ZDEV"; then
-    pass "staging inherits domain.route53_zone_id"
-else
-    fail "staging should inherit domain.route53_zone_id"
-fi
-
-# -------------------------------------------------------
-echo ""
-echo "=== extends: nested object deep merge (not replace) ==="
-# -------------------------------------------------------
-
-cat > "$CONFIG_FILE" << 'EOJSON'
-{
-  "environments": {
-    "development": {
-      "account": "dev",
-      "account_id": "111111111111",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::111111111111:role/github-actions-dev",
-      "secrets_bucket": "my-secrets",
-      "description": "Dev env",
-      "domain": {
-        "base_domain": "dev.example.com",
-        "use_custom_domain": false,
-        "route53_zone_id": "ZDEV",
-        "certificate_arn": "arn:aws:acm:us-east-1:111111111111:certificate/dev-cert"
-      }
-    },
-    "production": {
-      "extends": "development",
-      "role_arn": "arn:aws:iam::111111111111:role/github-actions-prod",
-      "description": "Prod env",
-      "domain": {
-        "use_custom_domain": true,
-        "custom_domain": "app.example.com"
-      }
-    }
+  "production": {
+    "account": "prod",
+    "account_id": "222222222222",
+    "region": "us-west-2",
+    "role_arn": "arn:aws:iam::222222222222:role/github-actions-prod",
+    "secrets_bucket": "prod-secrets",
+    "base_domain": "example.com",
+    "use_custom_domain": true,
+    "custom_domain": "app.example.com",
+    "debug": false,
+    "enable_https": true,
+    "alert_email": "alerts@example.com"
+  },
+  "staging": {
+    "account": "dev",
+    "account_id": "111111111111",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::111111111111:role/github-actions-staging",
+    "secrets_bucket": "dev-secrets",
+    "debug": true,
+    "enable_https": true
+  },
+  "dev": {
+    "account": "dev",
+    "account_id": "111111111111",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::111111111111:role/github-actions-dev",
+    "secrets_bucket": "dev-secrets",
+    "debug": true,
+    "enable_https": false
+  },
+  "pr": {
+    "account": "dev",
+    "account_id": "111111111111",
+    "region": "us-east-1",
+    "role_arn": "arn:aws:iam::111111111111:role/github-actions-dev",
+    "secrets_bucket": "dev-secrets",
+    "debug": true,
+    "enable_https": true
   }
 }
 EOJSON
 
 output=$("$SCRIPT_UNDER_TEST" production 2>/dev/null)
 
-# domain.use_custom_domain should be overridden to true
+if echo "$output" | grep -q "account_id=222222222222"; then
+    pass "production returns correct account_id"
+else
+    fail "production should return account_id=222222222222"
+fi
+
+if echo "$output" | grep -q "region=us-west-2"; then
+    pass "production returns correct region"
+else
+    fail "production should return region=us-west-2"
+fi
+
+if echo "$output" | grep -q "debug=false"; then
+    pass "production returns debug=false"
+else
+    fail "production should return debug=false"
+fi
+
 if echo "$output" | grep -q "use_custom_domain=true"; then
-    pass "production overrides domain.use_custom_domain"
+    pass "production returns use_custom_domain=true"
 else
-    fail "production should override domain.use_custom_domain to true"
+    fail "production should return use_custom_domain=true"
 fi
 
-# domain.base_domain should be inherited (deep merge, not replaced)
-if echo "$output" | grep -q "base_domain=dev.example.com"; then
-    pass "production inherits domain.base_domain via deep merge"
+if echo "$output" | grep -q "alert_email=alerts@example.com"; then
+    pass "production returns alert_email"
 else
-    fail "production should inherit domain.base_domain (deep merge, not replace)"
-fi
-
-# domain.custom_domain should be set from override
-if echo "$output" | grep -q "custom_domain=app.example.com"; then
-    pass "production adds domain.custom_domain"
-else
-    fail "production should add domain.custom_domain"
-fi
-
-# domain.route53_zone_id should be inherited
-if echo "$output" | grep -q "route53_zone_id=ZDEV"; then
-    pass "production inherits domain.route53_zone_id via deep merge"
-else
-    fail "production should inherit domain.route53_zone_id"
+    fail "production should return alert_email"
 fi
 
 # -------------------------------------------------------
 echo ""
-echo "=== extends: extends key stripped from output ==="
+echo "=== exact match: staging has different values ==="
 # -------------------------------------------------------
 
-# The word "extends" should not appear in stdout output
-if echo "$output" | grep -q "extends"; then
-    fail "extends key should not appear in output"
+output=$("$SCRIPT_UNDER_TEST" staging 2>/dev/null)
+
+if echo "$output" | grep -q "account_id=111111111111"; then
+    pass "staging returns its own account_id"
 else
-    pass "extends key is stripped from output"
+    fail "staging should return account_id=111111111111"
+fi
+
+if echo "$output" | grep -q "role_arn=arn:aws:iam::111111111111:role/github-actions-staging"; then
+    pass "staging returns its own role_arn"
+else
+    fail "staging should return its own role_arn"
+fi
+
+if echo "$output" | grep -q "debug=true"; then
+    pass "staging returns debug=true"
+else
+    fail "staging should return debug=true"
 fi
 
 # -------------------------------------------------------
 echo ""
-echo "=== extends: patterns section ==="
+echo "=== pr-N pattern: maps to pr key ==="
 # -------------------------------------------------------
 
-cat > "$CONFIG_FILE" << 'EOJSON'
-{
-  "environments": {
-    "development": {
-      "account": "dev",
-      "account_id": "111111111111",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::111111111111:role/github-actions-dev",
-      "secrets_bucket": "my-secrets",
-      "description": "Dev env",
-      "domain": {
-        "base_domain": "dev.example.com",
-        "use_custom_domain": false,
-        "route53_zone_id": "ZDEV",
-        "certificate_arn": "arn:aws:acm:us-east-1:111111111111:certificate/dev-cert"
-      }
-    }
-  },
-  "patterns": {
-    "pr-*": { "extends": "development" },
-    "main": { "extends": "development" }
-  },
-  "defaults": { "extends": "development" }
-}
-EOJSON
-
-# Test pattern: pr-42 should resolve via extends
 output=$("$SCRIPT_UNDER_TEST" pr-42 2>/dev/null)
 
 if echo "$output" | grep -q "account_id=111111111111"; then
-    pass "pr-42 pattern resolves extends to development"
+    pass "pr-42 resolves to pr config"
 else
-    fail "pr-42 pattern should resolve extends to development"
+    fail "pr-42 should resolve to pr config"
 fi
 
-if echo "$output" | grep -q "base_domain=dev.example.com"; then
-    pass "pr-42 pattern inherits domain from development"
+if echo "$output" | grep -q "enable_https=true"; then
+    pass "pr-42 returns enable_https=true from pr config"
 else
-    fail "pr-42 pattern should inherit domain from development"
+    fail "pr-42 should return enable_https=true from pr config"
 fi
 
-# Test pattern: main
-output=$("$SCRIPT_UNDER_TEST" main 2>/dev/null)
+output=$("$SCRIPT_UNDER_TEST" pr-999 2>/dev/null)
 
 if echo "$output" | grep -q "account_id=111111111111"; then
-    pass "main pattern resolves extends to development"
+    pass "pr-999 also resolves to pr config"
 else
-    fail "main pattern should resolve extends to development"
-fi
-
-# Test defaults: unknown-env falls through to defaults
-output=$("$SCRIPT_UNDER_TEST" unknown-env 2>/dev/null)
-
-if echo "$output" | grep -q "account_id=111111111111"; then
-    pass "defaults section resolves extends to development"
-else
-    fail "defaults section should resolve extends to development"
+    fail "pr-999 should also resolve to pr config"
 fi
 
 # -------------------------------------------------------
 echo ""
-echo "=== extends: circular reference detection ==="
+echo "=== dev environment: different from pr ==="
 # -------------------------------------------------------
 
-cat > "$CONFIG_FILE" << 'EOJSON'
-{
-  "environments": {
-    "alpha": {
-      "extends": "beta",
-      "account": "dev",
-      "region": "us-east-1"
-    },
-    "beta": {
-      "extends": "alpha",
-      "account": "dev",
-      "region": "us-east-1"
-    }
-  }
-}
-EOJSON
+output=$("$SCRIPT_UNDER_TEST" dev 2>/dev/null)
 
-if output=$("$SCRIPT_UNDER_TEST" alpha 2>&1); then
-    fail "should exit non-zero on circular extends"
+if echo "$output" | grep -q "enable_https=false"; then
+    pass "dev returns enable_https=false (differs from pr)"
 else
-    pass "exits non-zero on circular extends"
-fi
-
-if echo "$output" | grep -qi "circular"; then
-    pass "error message mentions circular reference"
-else
-    fail "error message should mention circular reference"
+    fail "dev should return enable_https=false"
 fi
 
 # -------------------------------------------------------
 echo ""
-echo "=== extends: non-existent base detection ==="
+echo "=== unknown environment: exits non-zero ==="
 # -------------------------------------------------------
 
-cat > "$CONFIG_FILE" << 'EOJSON'
-{
-  "environments": {
-    "staging": {
-      "extends": "nonexistent",
-      "account": "dev",
-      "region": "us-east-1"
-    }
-  }
-}
-EOJSON
-
-if output=$("$SCRIPT_UNDER_TEST" staging 2>&1); then
-    fail "should exit non-zero when extends references non-existent env"
+if output=$("$SCRIPT_UNDER_TEST" unknown-env 2>&1); then
+    fail "should exit non-zero for unknown environment"
 else
-    pass "exits non-zero on non-existent extends target"
+    pass "exits non-zero for unknown environment"
 fi
 
-if echo "$output" | grep -qi "non-existent"; then
-    pass "error message mentions non-existent environment"
+if echo "$output" | grep -qi "no configuration found"; then
+    pass "error message describes the problem"
 else
-    fail "error message should mention non-existent environment"
+    fail "error message should mention missing configuration"
 fi
 
 # -------------------------------------------------------
 echo ""
-echo "=== extends: backward compatibility (no extends) ==="
+echo "=== computed values: ecr_registry ==="
 # -------------------------------------------------------
 
-cat > "$CONFIG_FILE" << 'EOJSON'
-{
-  "environments": {
-    "development": {
-      "account": "dev",
-      "account_id": "111111111111",
-      "region": "us-east-1",
-      "role_arn": "arn:aws:iam::111111111111:role/github-actions-dev",
-      "secrets_bucket": "my-secrets",
-      "description": "Dev env",
-      "domain": {
-        "base_domain": "dev.example.com",
-        "use_custom_domain": false,
-        "route53_zone_id": "ZDEV",
-        "certificate_arn": "arn:aws:acm:us-east-1:111111111111:certificate/dev-cert"
-      }
-    }
-  }
-}
-EOJSON
+output=$("$SCRIPT_UNDER_TEST" production 2>/dev/null)
 
-output=$("$SCRIPT_UNDER_TEST" development 2>/dev/null)
-
-if echo "$output" | grep -q "account_id=111111111111"; then
-    pass "entries without extends still work"
+if echo "$output" | grep -q "ecr_registry=222222222222.dkr.ecr.us-west-2.amazonaws.com"; then
+    pass "ecr_registry computed correctly"
 else
-    fail "entries without extends should still work"
-fi
-
-if echo "$output" | grep -q "base_domain=dev.example.com"; then
-    pass "entries without extends preserve nested values"
-else
-    fail "entries without extends should preserve nested values"
+    fail "ecr_registry should be computed from account_id and region"
 fi
 
 # -------------------------------------------------------

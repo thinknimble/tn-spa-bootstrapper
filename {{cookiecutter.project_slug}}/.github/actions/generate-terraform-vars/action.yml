@@ -44,37 +44,16 @@ runs:
       id: app-config
       shell: bash
       run: |
-        CONFIG_FILE=".github/app-config.json"
-        if [[ -f "$CONFIG_FILE" ]]; then
-          CONFIG=$(jq -r --arg env "${{ inputs.environment }}" '.environments[$env] // empty' "$CONFIG_FILE")
-          if [[ -z "$CONFIG" || "$CONFIG" == "null" ]]; then
-            if [[ "${{ inputs.environment }}" =~ ^pr-[0-9]+$ ]]; then
-              CONFIG=$(jq -r '.patterns["pr-*"] // empty' "$CONFIG_FILE")
-            elif [[ "${{ inputs.environment }}" == "main" ]]; then
-              CONFIG=$(jq -r '.patterns["main"] // empty' "$CONFIG_FILE")
-            fi
-          fi
-          [[ -z "$CONFIG" || "$CONFIG" == "null" ]] && CONFIG=$(jq -r '.defaults' "$CONFIG_FILE")
-          echo "debug=$(echo "$CONFIG" | jq -r 'if .django.debug == null then true else .django.debug end')" >> $GITHUB_OUTPUT
-          echo "current_port=$(echo "$CONFIG" | jq -r '.django.current_port // 8000')" >> $GITHUB_OUTPUT
-          echo "allowed_hosts=$(echo "$CONFIG" | jq -r '.django.allowed_hosts // "server,localhost,127.0.0.1"')" >> $GITHUB_OUTPUT
-          echo "enable_emails=$(echo "$CONFIG" | jq -r 'if .django.enable_emails == null then false else .django.enable_emails end')" >> $GITHUB_OUTPUT
-          echo "staff_email=$(echo "$CONFIG" | jq -r '.django.staff_email // "admin@example.com"')" >> $GITHUB_OUTPUT
-          echo "use_aws_storage=$(echo "$CONFIG" | jq -r 'if .aws.use_aws_storage == null then false else .aws.use_aws_storage end')" >> $GITHUB_OUTPUT
-          echo "aws_s3_region_name=$(echo "$CONFIG" | jq -r '.aws.aws_s3_region_name // ""')" >> $GITHUB_OUTPUT
-          echo "enable_https=$(echo "$CONFIG" | jq -r 'if .features.enable_https == null then true else .features.enable_https end')" >> $GITHUB_OUTPUT
-          echo "alert_email=$(echo "$CONFIG" | jq -r '.monitoring.alert_email // ""')" >> $GITHUB_OUTPUT
-        else
-          echo "debug=true" >> $GITHUB_OUTPUT
-          echo "current_port=8000" >> $GITHUB_OUTPUT
-          echo "allowed_hosts=server,localhost,127.0.0.1" >> $GITHUB_OUTPUT
-          echo "enable_emails=false" >> $GITHUB_OUTPUT
-          echo "staff_email=admin@example.com" >> $GITHUB_OUTPUT
-          echo "use_aws_storage=false" >> $GITHUB_OUTPUT
-          echo "aws_s3_region_name=" >> $GITHUB_OUTPUT
-          echo "enable_https=true" >> $GITHUB_OUTPUT
-          echo "alert_email=" >> $GITHUB_OUTPUT
-        fi
+        ENV_CONFIG=$(.github/scripts/get-env-config.sh "${{ inputs.environment }}")
+        echo "debug=$(echo "$ENV_CONFIG" | grep "^debug=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "current_port=$(echo "$ENV_CONFIG" | grep "^current_port=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "allowed_hosts=$(echo "$ENV_CONFIG" | grep "^allowed_hosts=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "enable_emails=$(echo "$ENV_CONFIG" | grep "^enable_emails=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "staff_email=$(echo "$ENV_CONFIG" | grep "^staff_email=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "use_aws_storage=$(echo "$ENV_CONFIG" | grep "^use_aws_storage=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "aws_s3_region_name=$(echo "$ENV_CONFIG" | grep "^aws_s3_region_name=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "enable_https=$(echo "$ENV_CONFIG" | grep "^enable_https=" | cut -d= -f2)" >> $GITHUB_OUTPUT
+        echo "alert_email=$(echo "$ENV_CONFIG" | grep "^alert_email=" | cut -d= -f2)" >> $GITHUB_OUTPUT
 
     - name: Retrieve secrets from S3
       id: secrets
