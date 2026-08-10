@@ -1,0 +1,34 @@
+name: Specs
+on: [push]
+jobs:
+  Validate_Specs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Stay green in a project that has not adopted spekk, without
+      # downloading a binary it will not use.
+      - name: Look for specs
+        id: check
+        run: |
+          if [ -d specs ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install spekk
+        if: steps.check.outputs.found == 'true'
+        env:
+          # Pinned on purpose: without it the install takes the latest
+          # release, and a stricter validator would turn this repository red
+          # with no change on its side.
+          SPEKK_VERSION: v1.22.0
+        run: curl -fsSL https://raw.githubusercontent.com/spekk-ai/spekk-cli/main/install.sh | sh
+
+      # One malformed frontmatter field fails the parse of the whole tree, so
+      # a bad line on the default branch stops every spekk command that
+      # rebuilds the index, for every branch and every user.
+      - name: Validate specs
+        if: steps.check.outputs.found == 'true'
+        run: ~/.local/bin/spekk validate
