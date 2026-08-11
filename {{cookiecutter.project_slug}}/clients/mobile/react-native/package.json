@@ -76,6 +76,7 @@
     "react-native-svg": "15.12.1",
     "react-native-tab-view": "^3.3.4",
     "react-native-web": "^0.21.0",
+    "react-native-worklets": "0.5.1",
     "rn-bounceable": "^1.2.0",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.22.3",
