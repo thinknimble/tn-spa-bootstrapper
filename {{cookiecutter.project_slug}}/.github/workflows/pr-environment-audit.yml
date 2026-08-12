@@ -35,13 +35,13 @@ jobs:
           role_arn: ${{ steps.setup-env.outputs.role_arn }}
           aws_region: ${{ env.AWS_REGION }}
 
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_version: ~1.5
-
-      - name: Terraform Init
+      - name: Detect orphaned PR environments
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
+
+          # --- Resolve the Terraform state bucket from the backend config ---
           cd terraform
 
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
@@ -55,45 +55,52 @@ jobs:
             exit 1
           fi
 
-          terraform init \
-            -backend-config="$BACKEND_FILE" \
-            -backend-config="key=terraform.tfstate"
+          STATE_BUCKET=$(grep -E '^\s*bucket\s*=' "$BACKEND_FILE" | head -1 | sed 's/.*=\s*"\(.*\)"/\1/')
 
-      - name: Detect orphaned PR environments
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
+          if [[ -z "$STATE_BUCKET" ]]; then
+            echo "::error::Could not determine state bucket from $BACKEND_FILE"
+            exit 1
+          fi
 
-          cd terraform
+          echo "State bucket: $STATE_BUCKET"
 
-          # Get all pr-* workspaces
-          PR_WORKSPACES=$(terraform workspace list | sed 's/^[* ]*//' | grep '^pr-' || true)
+          # --- List pr-*/terraform.tfstate keys in the bucket ---
+          # Environment isolation uses state keys (pr-123/terraform.tfstate),
+          # NOT Terraform workspaces.
+          PR_ENVS=$(aws s3api list-objects-v2 \
+            --bucket "$STATE_BUCKET" \
+            --prefix "pr-" \
+            --query "Contents[].Key" \
+            --output text 2>/dev/null \
+            | tr '\t' '\n' \
+            | grep '^pr-[0-9]*/terraform\.tfstate$' \
+            | sed 's|/terraform\.tfstate$||' \
+            || true)
 
-          if [[ -z "$PR_WORKSPACES" ]]; then
-            echo "No PR workspaces found — nothing to audit."
+          if [[ -z "$PR_ENVS" ]]; then
+            echo "No PR state keys found — nothing to audit."
             exit 0
           fi
 
-          echo "PR workspaces found:"
-          echo "$PR_WORKSPACES"
+          echo "PR environments found:"
+          echo "$PR_ENVS"
           echo ""
 
-          # Get open PR numbers
+          # --- Get open PR numbers ---
           OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number')
 
           echo "Open PRs: ${OPEN_PRS:-none}"
           echo ""
 
-          # Compare: any workspace without a matching open PR is orphaned
+          # --- Compare: any state key without a matching open PR is orphaned ---
           ORPHANS=""
-          while IFS= read -r ws; do
-            PR_NUM="${ws#pr-}"
+          while IFS= read -r env; do
+            PR_NUM="${env#pr-}"
             if ! echo "$OPEN_PRS" | grep -qx "$PR_NUM"; then
-              ORPHANS="${ORPHANS}${ws}\n"
-              echo "::warning::Orphaned PR environment: $ws (PR #$PR_NUM is not open)"
+              ORPHANS="${ORPHANS}${env}\n"
+              echo "::warning::Orphaned PR environment: $env (PR #$PR_NUM is not open)"
             fi
-          done <<< "$PR_WORKSPACES"
+          done <<< "$PR_ENVS"
 
           if [[ -n "$ORPHANS" ]]; then
             echo ""
@@ -105,5 +112,5 @@ jobs:
             exit 1
           fi
 
-          echo "All PR workspaces have matching open PRs."
+          echo "All PR environments have matching open PRs."
 {% endraw %}
