@@ -1,0 +1,109 @@
+{% raw %}name: PR Environment Audit
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+jobs:
+  detect-orphans:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        id: setup-env
+        uses: ./.github/actions/setup-environment
+        with:
+          manual_environment: pr-0
+          aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Setup AWS
+        uses: ./.github/actions/setup-aws
+        with:
+          account_id: ${{ steps.setup-env.outputs.account_id }}
+          role_arn: ${{ steps.setup-env.outputs.role_arn }}
+          aws_region: ${{ env.AWS_REGION }}
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ~1.5
+
+      - name: Terraform Init
+        run: |
+          cd terraform
+
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+          BACKEND_FILE=""
+          if [[ -n "$ACCOUNT_ID" && -f "backend-${ACCOUNT_ID}.hcl" ]]; then
+            BACKEND_FILE="backend-${ACCOUNT_ID}.hcl"
+          elif [[ -f "backend.hcl" ]]; then
+            BACKEND_FILE="backend.hcl"
+          else
+            echo "::error::No backend configuration found"
+            exit 1
+          fi
+
+          terraform init \
+            -backend-config="$BACKEND_FILE" \
+            -backend-config="key=terraform.tfstate"
+
+      - name: Detect orphaned PR environments
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          cd terraform
+
+          # Get all pr-* workspaces
+          PR_WORKSPACES=$(terraform workspace list | sed 's/^[* ]*//' | grep '^pr-' || true)
+
+          if [[ -z "$PR_WORKSPACES" ]]; then
+            echo "No PR workspaces found — nothing to audit."
+            exit 0
+          fi
+
+          echo "PR workspaces found:"
+          echo "$PR_WORKSPACES"
+          echo ""
+
+          # Get open PR numbers
+          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number')
+
+          echo "Open PRs: ${OPEN_PRS:-none}"
+          echo ""
+
+          # Compare: any workspace without a matching open PR is orphaned
+          ORPHANS=""
+          while IFS= read -r ws; do
+            PR_NUM="${ws#pr-}"
+            if ! echo "$OPEN_PRS" | grep -qx "$PR_NUM"; then
+              ORPHANS="${ORPHANS}${ws}\n"
+              echo "::warning::Orphaned PR environment: $ws (PR #$PR_NUM is not open)"
+            fi
+          done <<< "$PR_WORKSPACES"
+
+          if [[ -n "$ORPHANS" ]]; then
+            echo ""
+            echo "::error::Orphaned PR environments detected. Run the teardown workflow to clean them up."
+            echo ""
+            echo "To clean up, run the 'Deploy Application' workflow with:"
+            echo "  Action: teardown"
+            echo "  PR number: <number>"
+            exit 1
+          fi
+
+          echo "All PR workspaces have matching open PRs."
+{% endraw %}
