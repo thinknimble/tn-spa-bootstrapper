@@ -262,7 +262,7 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     concurrency:
-      group: deploy-pr-${{ github.event.number }}
+      group: cleanup-pr-${{ github.event.number }}
       cancel-in-progress: false
     steps:
       - name: Checkout code

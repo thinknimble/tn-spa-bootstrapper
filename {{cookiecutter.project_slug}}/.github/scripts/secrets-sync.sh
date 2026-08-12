@@ -110,23 +110,46 @@ pull_secrets() {
         return 0
     fi
     
+    # Verify AWS identity before proceeding — catches wrong profile early
+    local caller_identity
+    if ! caller_identity=$(aws sts get-caller-identity $profile_flag 2>&1); then
+        print_colored $RED "❌ AWS authentication failed. Check your credentials and profile."
+        if [[ -n "$profile_flag" ]]; then
+            print_colored $RED "   Profile used: $profile_flag"
+        else
+            print_colored $RED "   No --aws-profile specified (using default credentials)"
+        fi
+        exit 1
+    fi
+    local caller_account=$(echo "$caller_identity" | jq -r '.Account')
+    if [[ -n "$ACCOUNT_ID" && "$caller_account" != "$ACCOUNT_ID" ]]; then
+        print_colored $RED "❌ AWS account mismatch!"
+        print_colored $RED "   Expected account (from environments.json): $ACCOUNT_ID"
+        print_colored $RED "   Actual account (from AWS credentials):     $caller_account"
+        print_colored $RED ""
+        print_colored $RED "   You are likely using the wrong AWS profile."
+        print_colored $RED "   Use --aws-profile to specify the correct profile:"
+        print_colored $RED "   $0 pull $env_name --aws-profile <profile-name>"
+        exit 1
+    fi
+
     # Check if secrets exist in S3
     if ! aws s3api head-object --bucket "$SECRETS_BUCKET" --key "$s3_key" $profile_flag >/dev/null 2>&1; then
-        
+
         # For PR environments, try to fall back to development secrets
         if [[ "$env_name" =~ ^pr-[0-9]+$ ]]; then
             print_colored $YELLOW "⚠️  PR secrets not found, trying development fallback..."
             local dev_key="development/secrets.json"
             local dev_path="s3://${SECRETS_BUCKET}/${dev_key}"
-            
+
             if aws s3api head-object --bucket "$SECRETS_BUCKET" --key "$dev_key" $profile_flag >/dev/null 2>&1; then
                 print_colored $BLUE "📋 Using development secrets as fallback for PR environment"
                 print_colored $BLUE "   Development Path: $dev_path"
                 print_colored $BLUE "   Local File: $local_file"
-                
+
                 if aws s3 cp "$dev_path" "$local_file" $profile_flag; then
                     print_colored $GREEN "✅ Successfully copied development secrets for PR environment"
-                    
+
                     # Add a note to the file indicating it's from development
                     local temp_file=$(mktemp)
                     jq '. + {
@@ -134,7 +157,7 @@ pull_secrets() {
                         "fallback_source": "development",
                         "fallback_note": "This PR environment is using development secrets as a fallback. Customize as needed and push to create PR-specific secrets."
                     }' "$local_file" > "$temp_file" && mv "$temp_file" "$local_file"
-                    
+
                     print_colored $BLUE "💡 To customize secrets for this PR:"
                     print_colored $BLUE "   1. Edit $local_file"
                     print_colored $BLUE "   2. Run: $0 push $env_name"
@@ -146,10 +169,15 @@ pull_secrets() {
                 print_colored $YELLOW "⚠️  Development secrets also not found"
             fi
         fi
-        
-        print_colored $YELLOW "⚠️  Secrets not found in S3, creating template..."
-        create_secrets_template "$env_name" "$local_file"
-        return 0
+
+        print_colored $RED "❌ Secrets not found in S3: $s3_path"
+        print_colored $RED ""
+        print_colored $RED "   If this is a new environment, create a template first:"
+        print_colored $RED "   $0 template $env_name"
+        print_colored $RED ""
+        print_colored $RED "   If secrets should exist, check your AWS profile:"
+        print_colored $RED "   $0 pull $env_name --aws-profile <profile-name>"
+        exit 1
     fi
     
     # Download from S3
