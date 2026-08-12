@@ -1,6 +1,6 @@
 {% raw %}
 name: 'Setup Terraform'
-description: 'Install Terraform, initialize backend, and manage workspace'
+description: 'Install Terraform and initialize backend with environment-specific state key'
 inputs:
   environment:
     description: 'Environment name'
@@ -37,35 +37,9 @@ runs:
           exit 1
         fi
 
-        # Use a static key — workspaces handle environment isolation
-        # (Terraform stores state at env:/<workspace>/terraform.tfstate)
+        # Environment isolation via state key (NOT workspaces):
+        # each environment gets its own S3 key ({environment}/terraform.tfstate).
         terraform init \
           -backend-config="$BACKEND_FILE" \
-          -backend-config="key=terraform.tfstate"
-
-    - name: Check if Terraform workspace exists
-      id: workspace-check
-      shell: bash
-      run: |
-        cd terraform
-        if terraform workspace list | grep -q "${{ inputs.environment }}"; then
-          echo "workspace_exists=true" >> $GITHUB_OUTPUT
-          echo "✅ Workspace '${{ inputs.environment }}' exists"
-        else
-          echo "workspace_exists=false" >> $GITHUB_OUTPUT
-          echo "ℹ️  Workspace '${{ inputs.environment }}' does not exist"
-        fi
-
-    - name: Create or select Terraform workspace
-      shell: bash
-      run: |
-        cd terraform
-        if [ "${{ steps.workspace-check.outputs.workspace_exists }}" = "true" ]; then
-          echo "Selecting existing workspace: ${{ inputs.environment }}"
-          terraform workspace select ${{ inputs.environment }}
-        else
-          echo "Creating new workspace: ${{ inputs.environment }}"
-          terraform workspace new ${{ inputs.environment }}
-        fi
-        echo "✅ Using Terraform workspace: ${{ inputs.environment }}"
+          -backend-config="key=${{ inputs.environment }}/terraform.tfstate"
 {% endraw %}
