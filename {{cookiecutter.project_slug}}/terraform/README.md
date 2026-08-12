@@ -693,6 +693,61 @@ aws ecs describe-tasks \
   --tasks "TASK_ID"
 ```
 
+## 👥 Team Access Management
+
+Grant individual team members access to logs, container exec, and secrets for specific environments. Each person gets **one IAM user with one set of credentials** — environment access is controlled via IAM group membership.
+
+### 1. Set Up Environment Access Groups (once per environment)
+
+```bash
+# Create IAM groups + policies for development
+tn aws-setup-env-access {{cookiecutter.project_slug}} development <aws-profile> <region>
+
+# Create IAM groups + policies for staging
+tn aws-setup-env-access {{cookiecutter.project_slug}} staging <aws-profile> <region>
+```
+
+This creates three environment-scoped groups per environment:
+
+| Group | Access |
+|-------|--------|
+| `{service}-{env}-log-viewers` | CloudWatch logs for `/ecs/{service}/{env}` |
+| `{service}-{env}-ecs-operators` | ECS exec & diagnostics for `cluster-{service}-{env}` |
+| `{service}-{env}-secrets-readers` | S3 read for `{service}-terraform-secrets/{env}/*` |
+
+### 2. Add Team Members
+
+```bash
+# First environment — creates IAM user + generates access keys
+tn aws-add-env-user {{cookiecutter.project_slug}} development jane.doe <aws-profile> <region>
+
+# Second environment — same user, no new keys, just adds group membership
+tn aws-add-env-user {{cookiecutter.project_slug}} staging jane.doe <aws-profile> <region>
+```
+
+The developer adds the credentials (shown once) to `~/.aws/credentials`:
+
+```ini
+[{{cookiecutter.project_slug}}]
+aws_access_key_id = AKIA...
+aws_secret_access_key = wJal...
+```
+
+### 3. Team Members Can Now Use
+
+```bash
+# Stream logs
+tn aws-stream-logs {{cookiecutter.project_slug}} development {{cookiecutter.project_slug}} <region>
+
+# View ECS events & diagnostics
+tn aws-ecs-events {{cookiecutter.project_slug}} development {{cookiecutter.project_slug}} <region>
+
+# Exec into a running container
+tn aws-ecs-exec {{cookiecutter.project_slug}} development {{cookiecutter.project_slug}} <region>
+```
+
+> **Note**: Access is additive — adding a user to staging does not remove their development access. Each environment's groups are independent.
+
 ## ⚙️ Worker Management
 
 ### Background Workers
@@ -807,6 +862,8 @@ tn aws-tf-init-backend -e production
 | `tn aws-tf-init-backend` | Initialize Terraform with backend |
 | `tn aws-setup-oidc` | Create GitHub OIDC roles |
 | `tn aws-setup-secrets` | Create S3 secrets bucket |
+| `tn aws-setup-env-access` | Create environment-scoped access groups (logs, exec, secrets) |
+| `tn aws-add-env-user` | Add a team member to an environment's access groups |
 | `terraform/scripts/add_env_var.sh` | Add environment variables |
 | `.github/scripts/secrets-sync.sh` | Manage S3 secrets |
 
