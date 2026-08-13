@@ -308,8 +308,20 @@ jobs:
           fi
 
           echo "🗑️ Destroying infrastructure for environment: $PR_ENV"
-          terraform destroy -auto-approve
-          echo "✅ Cleaned up PR environment: $PR_ENV"
+          if terraform destroy -auto-approve; then
+            echo "✅ Cleaned up PR environment: $PR_ENV"
+          else
+            LOCK_ID=$(terraform destroy -auto-approve 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
+            if [[ -n "$LOCK_ID" ]]; then
+              echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
+              terraform force-unlock -force "$LOCK_ID"
+              terraform destroy -auto-approve
+              echo "✅ Cleaned up PR environment: $PR_ENV (after unlock)"
+            else
+              echo "❌ Failed to destroy PR environment: $PR_ENV"
+              exit 1
+            fi
+          fi
 
       - name: Delete GitHub environment
         continue-on-error: true
@@ -377,9 +389,25 @@ jobs:
           echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
           echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
 
+          # Force-unlock stale locks left by cancelled or crashed runs.
+          # The first destroy attempt may fail due to a stale lock; if so,
+          # extract the lock ID, force-unlock it, and retry once.
           if terraform destroy -auto-approve; then
             echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
           else
-            echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
-            exit 1
+            LOCK_ID=$(terraform destroy -auto-approve 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
+            if [[ -n "$LOCK_ID" ]]; then
+              echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
+              terraform force-unlock -force "$LOCK_ID"
+              echo "🔄 Retrying destroy..."
+              if terraform destroy -auto-approve; then
+                echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
+              else
+                echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT (after unlock)"
+                exit 1
+              fi
+            else
+              echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
+              exit 1
+            fi
           fi{% endraw %}
