@@ -1,5 +1,6 @@
 # Server ECR Repository
 data "aws_ecr_image" "app" {
+  count           = var.skip_ecr_image_lookup ? 0 : 1
   repository_name = var.ecr_app_repository_name
   # in order to trigger a new task definition revision this would need to change
   # assuming we have a ci/cd pipleline that updates the image tag we would use the tag here

@@ -308,19 +308,32 @@ jobs:
           fi
 
           echo "🗑️ Destroying infrastructure for environment: $PR_ENV"
-          if terraform destroy -auto-approve; then
-            echo "✅ Cleaned up PR environment: $PR_ENV"
-          else
-            LOCK_ID=$(terraform destroy -auto-approve 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
-            if [[ -n "$LOCK_ID" ]]; then
-              echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
-              terraform force-unlock -force "$LOCK_ID"
-              terraform destroy -auto-approve
-              echo "✅ Cleaned up PR environment: $PR_ENV (after unlock)"
-            else
-              echo "❌ Failed to destroy PR environment: $PR_ENV"
+
+          EXTRA_VARS=(-var="aws_profile=" -var="skip_ecr_image_lookup=true")
+          DESTROY_ARGS=(-auto-approve "${EXTRA_VARS[@]}")
+          PLAN_ARGS=(-destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
+
+          # Break stale locks left by cancelled or crashed CI runs.
+          LOCK_ID=$(terraform plan -destroy "${EXTRA_VARS[@]}" 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
+          if [[ -n "$LOCK_ID" ]]; then
+            echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
+            terraform force-unlock -force "$LOCK_ID"
+          fi
+
+          echo "🔍 Validating destroy plan..."
+          terraform plan "${PLAN_ARGS[@]}" || {
+            EC=$?
+            if [ $EC -eq 1 ]; then
+              echo "❌ Destroy plan failed — check variable definitions and state"
               exit 1
             fi
+          }
+
+          if terraform apply destroy.tfplan; then
+            echo "✅ Cleaned up PR environment: $PR_ENV"
+          else
+            echo "❌ Failed to destroy PR environment: $PR_ENV"
+            exit 1
           fi
 
       - name: Delete GitHub environment
@@ -389,25 +402,29 @@ jobs:
           echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
           echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
 
-          # Force-unlock stale locks left by cancelled or crashed runs.
-          # The first destroy attempt may fail due to a stale lock; if so,
-          # extract the lock ID, force-unlock it, and retry once.
-          if terraform destroy -auto-approve; then
-            echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
-          else
-            LOCK_ID=$(terraform destroy -auto-approve 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
-            if [[ -n "$LOCK_ID" ]]; then
-              echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
-              terraform force-unlock -force "$LOCK_ID"
-              echo "🔄 Retrying destroy..."
-              if terraform destroy -auto-approve; then
-                echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
-              else
-                echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT (after unlock)"
-                exit 1
-              fi
-            else
-              echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
+          EXTRA_VARS=(-var="aws_profile=" -var="skip_ecr_image_lookup=true")
+          DESTROY_ARGS=(-auto-approve "${EXTRA_VARS[@]}")
+          PLAN_ARGS=(-destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
+
+          # Break stale locks left by cancelled or crashed CI runs.
+          LOCK_ID=$(terraform plan -destroy "${EXTRA_VARS[@]}" 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
+          if [[ -n "$LOCK_ID" ]]; then
+            echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
+            terraform force-unlock -force "$LOCK_ID"
+          fi
+
+          echo "🔍 Validating destroy plan..."
+          terraform plan "${PLAN_ARGS[@]}" || {
+            EC=$?
+            if [ $EC -eq 1 ]; then
+              echo "❌ Destroy plan failed — check variable definitions and state"
               exit 1
             fi
+          }
+
+          if terraform apply destroy.tfplan; then
+            echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
+          else
+            echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
+            exit 1
           fi{% endraw %}
