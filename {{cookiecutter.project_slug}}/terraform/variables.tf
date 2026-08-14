@@ -13,7 +13,7 @@ variable "service" {
 variable "aws_profile" {
   type        = string
   description = "The AWS profile to use for deployment"
-  default     = "default"
+  default     = ""
 }
 
 variable "aws_region" {
@@ -232,4 +232,10 @@ variable "shared_vpc_name" {
   type        = string
   description = "Name of the shared VPC to use (only used when use_per_project_shared_vpc = false)"
   default     = "tn-app-io"
+}
+
+variable "skip_ecr_image_lookup" {
+  type        = bool
+  description = "Skip the data.aws_ecr_image lookup (set true during teardown)"
+  default     = false
 }
