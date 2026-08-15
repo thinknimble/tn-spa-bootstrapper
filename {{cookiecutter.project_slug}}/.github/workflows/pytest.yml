@@ -54,6 +54,19 @@ jobs:
           cat .env.example > .env
           cat .env
       - run: mkdir -p client/dist
+      # This step comes before the tests, because the tests cannot find what it
+      # finds. `--no-migrations` in pytest.ini builds the test database from the
+      # models, thus the suite passes whether or not a model change has a
+      # migration file, and nothing reports the gap until a deploy runs
+      # `migrate` against a schema that does not agree with the models.
+      #
+      # `--merge --dry-run` catches the other half: two migration branches that
+      # each apply, but not together.
+      - name: Check migrations and migration conflicts
+        run: |
+          source .venv/bin/activate
+          python server/manage.py makemigrations --check --dry-run
+          python server/manage.py makemigrations --merge --dry-run
       - name: Run tests and checks
         run: |
           source .venv/bin/activate

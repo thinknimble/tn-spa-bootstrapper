@@ -385,11 +385,20 @@ django-makemigrations name="":
 django-migrate:
     cd server && python manage.py migrate
 
+# The gate that `.github/workflows/pytest.yml` applies before it runs the
+# tests, so a developer meets it here first. The tests cannot find what this
+# finds: `--no-migrations` in pytest.ini builds the test database from the
+# models, thus a model change with no migration file keeps the suite green.
+#
 # `uv run`, not a bare `python`, because `server-test` needs this recipe and
 # must not need an activated virtual environment first.
 [group('django')]
 django-check-migrations:
-    cd server && uv run python manage.py makemigrations --check --dry-run
+    #!/usr/bin/env bash
+    set -e
+    cd server
+    uv run python manage.py makemigrations --check --dry-run
+    uv run python manage.py makemigrations --merge --dry-run
 
 [group('django')]
 django-shell:
