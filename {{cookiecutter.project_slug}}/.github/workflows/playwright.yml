@@ -1,4 +1,12 @@
 name: Playwright Tests
+# `pytest.yml`, `linting.yml` and `specs.yml` cancel the run that is in
+# progress for the same branch. This workflow does not, because it has no
+# branch to key that on: GitHub documents `github.ref` as empty for a
+# `deployment_status` event that came from a commit SHA. An empty value puts
+# every deployment in one group, thus a deployment of one environment would
+# cancel the tests of another. To add it, key the group on the environment,
+# for example `github.event.deployment_status.environment_url`, and test it
+# with two deployments that overlap.
 on:
   deployment_status:
   workflow_dispatch:
