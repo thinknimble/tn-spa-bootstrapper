@@ -17,6 +17,12 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: './src/setup-tests.ts',
+      // Undo every `vi.spyOn` after each test. Vitest 3 gave a second
+      // `vi.spyOn` on the same method a new spy with an empty call history.
+      // Vitest 4 returns the spy that is already there, history and all, so a
+      // test that asserts `not.toHaveBeenCalled()` reads the calls an earlier
+      // test in the same file made. No test should depend on either behaviour.
+      restoreMocks: true,
     },
     server: {
       host: '0.0.0.0',  // Allow connections from all interfaces
