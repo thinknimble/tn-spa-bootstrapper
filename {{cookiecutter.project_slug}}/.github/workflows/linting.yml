@@ -1,8 +1,19 @@
 name: Linter
 on: [push]
+
+# Stop the run that is in progress when a second push comes to the same
+# branch. See `pytest.yml` for why. The group holds the name of this
+# workflow, thus it cancels only its own runs.
+concurrency:
+  group: linter-{{ "${{ github.ref }}" }}
+  cancel-in-progress: true
+
 jobs:
   Ruff:
     runs-on: ubuntu-latest
+    # ruff needs seconds. 10 minutes is only a stop for a hang, which without
+    # it runs for the 6-hour GitHub default.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Install uv
@@ -14,6 +25,9 @@ jobs:
 {%- if cookiecutter.client_app == 'React' %}
   Lint_Web:
     runs-on: ubuntu-latest
+    # More than ruff, because `npm install` gets the whole dependency tree
+    # from the network, and a slow registry is not a hang.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -38,6 +52,9 @@ jobs:
 {%- if cookiecutter.include_mobile == 'y' %}
   Lint_Mobile:
     runs-on: ubuntu-latest
+    # The same as `Lint_Web`, and for the same reason. The mobile dependency
+    # tree is the larger of the two.
+    timeout-minutes: 15
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4

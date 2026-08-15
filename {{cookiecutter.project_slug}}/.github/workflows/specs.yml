@@ -1,8 +1,20 @@
 name: Specs
 on: [push]
+
+# Stop the run that is in progress when a second push comes to the same
+# branch. See `pytest.yml` for why. The group holds the name of this
+# workflow, thus it cancels only its own runs.
+concurrency:
+  group: specs-{{ "${{ github.ref }}" }}
+  cancel-in-progress: true
+
 jobs:
   Validate_Specs:
     runs-on: ubuntu-latest
+    # This job takes seconds. 5 minutes gives the download of the spekk binary
+    # all the time it needs, and stops a hang that otherwise runs for the
+    # 6-hour GitHub default.
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 

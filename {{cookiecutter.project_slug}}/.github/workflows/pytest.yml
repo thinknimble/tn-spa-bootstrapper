@@ -1,8 +1,23 @@
 name: Unit Tests
 on: [push]
+
+# A second push to the same branch makes the run that is in progress
+# worthless, because it tests a commit that nobody will merge. Stop it, so
+# that the two runs do not compete for the same runners. The group holds the
+# name of this workflow, thus it cancels only its own runs.
+concurrency:
+  group: unit-tests-{{ "${{ github.ref }}" }}
+  cancel-in-progress: true
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    # A job that hangs runs for 6 hours, which is the GitHub default, before
+    # anything stops it. That is billable time for a job that cannot pass, and
+    # it holds a runner. 20 minutes is many times what this job takes, thus it
+    # stays clear of a suite that becomes larger, and it stops a hang the same
+    # day.
+    timeout-minutes: 20
     env:
       # The fallback is what makes this job run on a Dependabot branch.
       # GitHub withholds repository secrets from a Dependabot-triggered run
