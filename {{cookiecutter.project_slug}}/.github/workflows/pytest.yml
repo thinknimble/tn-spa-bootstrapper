@@ -4,7 +4,19 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
     env:
-      SECRET_KEY: {{ "${{ secrets.SECRET_KEY }}" }}
+      # The fallback is what makes this job run on a Dependabot branch.
+      # GitHub withholds repository secrets from a Dependabot-triggered run
+      # and offers a separate Dependabot secret store, which most projects
+      # do not use. Without a fallback, SECRET_KEY arrives empty, settings.py
+      # raises "The SECRET_KEY setting must not be empty" before the first
+      # test, and every test fails on every dependabot/ branch while main
+      # stays green. That red reads as a broken pull request and is not one.
+      #
+      # A test SECRET_KEY signs nothing that outlives the job, so it needs no
+      # secrecy. It must NOT be the production key: a literal here keeps the
+      # two apart, and keeps this working in any fork or repository that has
+      # no secret set.
+      SECRET_KEY: {{ "${{ secrets.SECRET_KEY || 'ci-only-not-a-real-secret' }}" }}
     services:
       postgres:
         image: postgres:latest
