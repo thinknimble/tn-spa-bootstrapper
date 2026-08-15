@@ -72,6 +72,16 @@ output "ecs_security_groups" {
   value       = [aws_security_group.app.id]
 }
 
+output "app_service_name" {
+  description = "Name of the app ECS service"
+  value       = aws_ecs_service.app.name
+}
+
+output "app_target_group_arn" {
+  description = "ARN of the app ALB target group"
+  value       = aws_lb_target_group.app.arn
+}
+
 # Monitoring outputs
 output "sns_alerts_topic_arn" {
   description = "ARN of the SNS topic for CloudWatch alarm notifications"

@@ -151,14 +151,14 @@ jobs:
         id: plan
         run: |
           cd terraform
-          terraform plan -out=tfplan
+          terraform plan -input=false -out=tfplan
           echo "has_changes=$( [ -s tfplan ] && echo true || echo false )" >> $GITHUB_OUTPUT
 
       - name: Terraform Apply
         if: steps.plan.outputs.has_changes == 'true'
         run: |
           cd terraform
-          terraform apply tfplan
+          terraform apply -input=false tfplan
 
       - name: Seed test data
         if: github.event_name == 'pull_request'
@@ -169,6 +169,25 @@ jobs:
           CONTAINER=$(terraform output -raw app_container_name)
           SUBNETS=$(terraform output -json ecs_subnets | jq -r 'join(",")')
           SGS=$(terraform output -json ecs_security_groups | jq -r 'join(",")')
+
+          TG_ARN=$(terraform output -raw app_target_group_arn)
+
+          echo "Waiting for ALB health check (entrypoint runs migrate before gunicorn)..."
+          ELAPSED=0
+          while [ $ELAPSED -lt 300 ]; do
+            HEALTH=$(aws elbv2 describe-target-health --target-group-arn "$TG_ARN" \
+              --query 'TargetHealthDescriptions[0].TargetHealth.State' --output text 2>/dev/null || echo "none")
+            if [ "$HEALTH" = "healthy" ]; then
+              echo "Target healthy after ${ELAPSED}s"
+              break
+            fi
+            echo "  target state: $HEALTH (${ELAPSED}s)"
+            sleep 10
+            ELAPSED=$((ELAPSED + 10))
+          done
+          if [ "$HEALTH" != "healthy" ]; then
+            echo "::warning::Target not healthy after 300s — seeding anyway"
+          fi
 
           echo "Running create_test_data as one-off ECS task..."
           TASK_ARN=$(aws ecs run-task \
@@ -310,11 +329,11 @@ jobs:
           echo "🗑️ Destroying infrastructure for environment: $PR_ENV"
 
           EXTRA_VARS=(-var="aws_profile=" -var="skip_ecr_image_lookup=true")
-          DESTROY_ARGS=(-auto-approve "${EXTRA_VARS[@]}")
-          PLAN_ARGS=(-destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
+          DESTROY_ARGS=(-input=false -auto-approve "${EXTRA_VARS[@]}")
+          PLAN_ARGS=(-input=false -destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
 
           # Break stale locks left by cancelled or crashed CI runs.
-          LOCK_ID=$(terraform plan -destroy "${EXTRA_VARS[@]}" 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
+          LOCK_ID=$(terraform plan -input=false -destroy "${EXTRA_VARS[@]}" 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
           if [[ -n "$LOCK_ID" ]]; then
             echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
             terraform force-unlock -force "$LOCK_ID"
@@ -329,7 +348,7 @@ jobs:
             fi
           }
 
-          if terraform apply destroy.tfplan; then
+          if terraform apply -input=false destroy.tfplan; then
             echo "✅ Cleaned up PR environment: $PR_ENV"
           else
             echo "❌ Failed to destroy PR environment: $PR_ENV"
@@ -403,11 +422,11 @@ jobs:
           echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
 
           EXTRA_VARS=(-var="aws_profile=" -var="skip_ecr_image_lookup=true")
-          DESTROY_ARGS=(-auto-approve "${EXTRA_VARS[@]}")
-          PLAN_ARGS=(-destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
+          DESTROY_ARGS=(-input=false -auto-approve "${EXTRA_VARS[@]}")
+          PLAN_ARGS=(-input=false -destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
 
           # Break stale locks left by cancelled or crashed CI runs.
-          LOCK_ID=$(terraform plan -destroy "${EXTRA_VARS[@]}" 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
+          LOCK_ID=$(terraform plan -input=false -destroy "${EXTRA_VARS[@]}" 2>&1 | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
           if [[ -n "$LOCK_ID" ]]; then
             echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
             terraform force-unlock -force "$LOCK_ID"
@@ -422,7 +441,7 @@ jobs:
             fi
           }
 
-          if terraform apply destroy.tfplan; then
+          if terraform apply -input=false destroy.tfplan; then
             echo "✅ Successfully destroyed infrastructure for environment: $ENVIRONMENT"
           else
             echo "❌ Failed to destroy infrastructure for environment: $ENVIRONMENT"
