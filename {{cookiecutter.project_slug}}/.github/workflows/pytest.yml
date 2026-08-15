@@ -58,5 +58,16 @@ jobs:
         run: |
           source .venv/bin/activate
           python server/manage.py collectstatic
-          pytest --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
-          coverage report --fail-under=20
+          # `-n auto` starts one worker for each core, and pytest-django gives
+          # each worker its own database. `--dist loadscope` keeps all the
+          # tests of a class on one worker, so a class-scoped fixture is made
+          # one time.
+          #
+          # These two flags stay out of `addopts` in pytest.ini on purpose. A
+          # developer who sets a breakpoint wants one process, thus each caller
+          # that wants workers asks for them.
+          #
+          # `fail_under = 60` in pyproject.toml is the coverage gate. pytest-cov
+          # applies it, and this command fails below it, thus no separate
+          # `coverage report` step is necessary.
+          pytest --cov={{ cookiecutter.project_slug }} -n auto --dist loadscope server/{{ cookiecutter.project_slug }}

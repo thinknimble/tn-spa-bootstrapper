@@ -61,13 +61,18 @@ jobs:
       - run: |
           config_file="cookiecutter/${{ matrix.fe_type }}_template.yaml"
           uv run cookiecutter . --config-file $config_file --no-input -f
-      - name: Pytest, McCabe, and Coverage
+      # ruff C901 does the complexity check now, thus the name no longer
+      # speaks about McCabe.
+      - name: Pytest and Coverage
         run: |
           cd my_project
           uv sync
           mkdir -p client/dist
           uv run python server/manage.py collectstatic
-          uv run pytest --cov=my_project --cov-config=pyproject.toml -vv server/my_project
+          # The same flags as the generated project's own CI and its justfile
+          # `server-test` recipe. All three run the generated suite, thus all
+          # three must run it the same way.
+          uv run pytest --cov=my_project --cov-config=pyproject.toml -n auto --dist loadscope server/my_project
           uv run coverage report
 
       - name: Check migrations and migration conflicts
