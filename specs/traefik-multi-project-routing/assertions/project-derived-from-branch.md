@@ -26,11 +26,22 @@ This branch→name rule is the single source of truth for both `_project` (opera
 
 ## Implementation
 
+The rule lives in one recipe, `_project-for`, which takes the branch as an
+argument. `_project` calls it with HEAD. `just worktree` calls it with its
+`<branch>` argument, because HEAD inside a worktree moves whenever someone
+checks out another branch.
+
 ```just
 [private]
 _project:
     #!/usr/bin/env bash
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+    just _project-for "$branch"
+
+[private]
+_project-for branch:
+    #!/usr/bin/env bash
+    branch="{{ branch }}"
     if [ "$branch" = "main" ]; then
       echo "{{cookiecutter.project_slug}}-main"
     else
@@ -41,7 +52,8 @@ _project:
 
 ## Success Criteria
 
-- ✅ `_project` recipe exists and is private
+- ✅ `_project` and `_project-for` recipes exist and are private
+- ✅ `_project` derives its answer through `_project-for`, so the rule has one home
 - ✅ `just up` passes `PROJECT=$(just _project)` inline to `docker compose`
 - ✅ `just down` uses the same runtime PROJECT so teardown matches startup
 - ✅ Two worktrees on different branches get different PROJECT values

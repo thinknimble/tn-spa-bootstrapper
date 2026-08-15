@@ -49,7 +49,14 @@ branch.
 
 ## `remove` Behavior
 
-1. Runs `just down` in the worktree to stop Docker services
+1. Runs `docker compose down --volumes --rmi local` in the worktree, with
+   `PROJECT` derived from the `<branch>` **argument**, not from the worktree's
+   HEAD. HEAD there moves whenever someone checks out another branch, and a
+   name that no stack ever had makes `down` find nothing to stop and report
+   success while the containers, the volumes, and the network keep running.
+   `--volumes` deletes the database this worktree alone used. `--rmi local`
+   removes only images with a generated name, so the pulled `postgres` and
+   `redis` images stay.
 2. Runs `git worktree remove --force` to delete the directory
 3. Does NOT delete the branch (prints reminder)
 
@@ -60,5 +67,8 @@ branch.
 - ✅ Creates branch if it doesn't exist
 - ✅ Checks out existing branch without error
 - ✅ `just worktree remove feature/x` stops services and removes directory
+- ✅ `remove` names the stack from its `<branch>` argument, so it works after a
+  checkout inside the worktree moved HEAD
+- ✅ `remove` leaves no container, volume, network, or built image behind
 - ✅ Branch remains after remove (user must delete manually)
 - ✅ Two worktrees on different branches run concurrently without port conflicts
