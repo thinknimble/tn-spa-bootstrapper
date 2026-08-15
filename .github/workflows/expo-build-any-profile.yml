@@ -65,7 +65,10 @@ jobs:
         run: |
           cd ./my_project/mobile
           CLEAR_CACHE_FLAG=""
-          if [[ {{ "${{ github.event.inputs.clear_cache }}" }} ]]; then
+          # `clear_cache` is a boolean input, so it arrives as the string
+          # "true" or "false". `[[ false ]]` is TRUE in bash, because the
+          # string is not empty, thus the comparison is what decides it.
+          if [[ "${{ github.event.inputs.clear_cache }}" == "true" ]]; then
             CLEAR_CACHE_FLAG="--clear-cache"
           fi
-          eas build --profile {{ "${{ github.event.inputs.profile }}" }} --platform {{ "${{ github.event.inputs.platform }}" }} --non-interactive $CLEAR_CACHE_FLAG
+          eas build --profile "${{ github.event.inputs.profile }}" --platform "${{ github.event.inputs.platform }}" --non-interactive $CLEAR_CACHE_FLAG
