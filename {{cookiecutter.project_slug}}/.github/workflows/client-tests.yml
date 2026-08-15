@@ -1,0 +1,35 @@
+name: Client Tests
+on: [push]
+
+# Its own workflow, not a job in `linting.yml`. A test is not a lint: this
+# check must say what broke without a look in the log, and a lint failure
+# must not stop the tests, which is what a second step in the same job does.
+# The cost is one more `npm ci`.
+#
+# The post-generation hook removes this file when the project has no web
+# client, because `npm ci` in a directory that does not exist fails every
+# run.
+concurrency:
+  group: client-tests-{{ "${{ github.ref }}" }}
+  cancel-in-progress: true
+
+jobs:
+  Vitest:
+    runs-on: ubuntu-latest
+    # `npm ci` gets a whole dependency tree from the network, which is the
+    # long part of this job, and a slow registry is not a hang. The tests
+    # themselves run in jsdom and touch no database.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: ./client/package-lock.json
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm ci
+      - name: Run unit tests
+        working-directory: ./client
+        run: npm run test

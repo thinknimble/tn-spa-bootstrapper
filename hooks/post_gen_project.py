@@ -123,6 +123,21 @@ def remove_expo_yaml_files():
             remove(file_name)
 
 
+def remove_web_client_yaml_files():
+    """Remove the workflows that need a web client.
+
+    Both run npm in `./client`. Without a web client that directory does not
+    exist, thus every run of them fails and reports nothing about the code.
+    """
+    file_names = [
+        join(".github/workflows", "client-tests.yml"),
+        join(".github/workflows", "playwright.yml"),
+    ]
+    for file_name in file_names:
+        if exists(file_name):
+            remove(file_name)
+
+
 def set_keys_in_envs(django_secret, postgres_secret):
     env_file_path = join(".env.example")
     pull_request_template_path = join(".github", "pull_request_template.md")
@@ -165,6 +180,7 @@ def main():
     if "{{ cookiecutter.client_app }}".lower() == "none":
         rmtree(web_clients_path)
         remove(join("package.json"))
+        remove_web_client_yaml_files()
     elif "{{ cookiecutter.client_app }}".lower() == "react":
         move_web_client_to_root("react")
     if "{{ cookiecutter.include_mobile }}".lower() == "y":
