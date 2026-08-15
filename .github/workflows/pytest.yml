@@ -1,9 +1,21 @@
 name: Unit Tests
 on: [push]
 
+# A second push to the same branch makes the run that is in progress
+# worthless, because it tests a commit that nobody will merge. Stop it, so
+# that the two runs do not compete for the same runners. Every workflow in
+# this repository keeps a group name of its own, thus one workflow never
+# cancels the runs of another.
+concurrency:
+  group: unit-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Pytest_bootstrapper:
     runs-on: ubuntu-latest
+    # 0.2 to 0.3 minutes in the last three runs. The 10 minutes are for a
+    # `uv sync` with no cache, not for the 8 tests.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -26,6 +38,12 @@ jobs:
         run: uv run pytest
   Pytest:
     runs-on: ubuntu-latest
+    # The heaviest job here: it renders the template, syncs the generated
+    # project and runs the generated suite. 1.2 to 1.7 minutes in the last
+    # three runs. 15 minutes, not the 20 that the generated project gets,
+    # because the suite this job runs is the template's own and stays small,
+    # where a real project's suite grows.
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:latest

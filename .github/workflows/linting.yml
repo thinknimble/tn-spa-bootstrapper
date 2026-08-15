@@ -1,12 +1,22 @@
 name: Linter
 on: [push]
 
+# Stop the run that is in progress when a second push comes to the same
+# branch. See `pytest.yml` for why. The group name is this workflow's own.
+concurrency:
+  group: linter-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Lock_Files:
     # The Heroku Python buildpack runs `uv sync --locked`, which refuses a lock
     # file that does not agree with its pyproject.toml. Catch that here instead
     # of in a failed deploy.
     runs-on: ubuntu-latest
+    # 0.1 to 0.2 minutes in the last three runs. The 10 minutes cover two
+    # `uv` resolutions and a render of the template, which all need the
+    # network.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,6 +38,9 @@ jobs:
 
   Ruff_bootstrapper:
     runs-on: ubuntu-latest
+    # ruff on this repository alone, with no render before it. 0.2 minutes
+    # in the last three runs, thus 5 minutes is only a stop for a hang.
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -55,6 +68,9 @@ jobs:
       matrix:
         fe_type: [react]
     runs-on: ubuntu-latest
+    # More than `Ruff_bootstrapper`, because this job does a `uv sync` and a
+    # full render before it lints. 0.2 to 0.3 minutes in the last three runs.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -85,6 +101,9 @@ jobs:
       matrix:
         fe_type: [react]
     runs-on: ubuntu-latest
+    # `npm install` gets a whole dependency tree from the network, and a slow
+    # registry is not a hang. 0.5 to 0.6 minutes in the last three runs.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -123,6 +142,9 @@ jobs:
         run: npm run eslint
   Lint_Mobile:
     runs-on: ubuntu-latest
+    # The same as `Lint_Web`, and for the same reason. The mobile dependency
+    # tree is the larger of the two: 0.8 to 0.9 minutes in the last three runs.
+    timeout-minutes: 15
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
