@@ -1,8 +1,23 @@
 name: Heroku
 on: [push]
+
+# `cancel-in-progress: false`, which queues, where the test workflows cancel.
+# This job changes a Heroku application: it purges a build cache and sets a
+# config variable. A cancel part-way through can leave the application with
+# the cache purged and the variable not set, which is worse than a wait. The
+# queue also keeps two runs from making changes to the same application at
+# the same time.
+concurrency:
+  group: heroku-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   Setup:
     runs-on: ubuntu-latest
+    # 0.6 minutes in the last three runs. The 10 minutes are for the download
+    # of the Heroku CLI and a small number of API calls. This job does not
+    # wait for a Heroku build: Heroku starts that by itself after the push.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: jwalton/gh-find-current-pr@master

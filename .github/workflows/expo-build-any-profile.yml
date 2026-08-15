@@ -33,6 +33,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # No `timeout-minutes` and no `concurrency` group on purpose. `eas build`
+    # here has no `--no-wait`, thus this job waits for a build in a remote
+    # queue whose length this repository does not control. A timeout would
+    # stop the job without a stop of the remote build. A person starts this
+    # workflow by hand, so it does not pile up on a push.
 
     steps:
       - name: 🏗 Setup repo
