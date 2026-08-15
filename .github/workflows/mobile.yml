@@ -49,16 +49,17 @@ jobs:
         with:
           fetch-depth: 5
         name: check diff
+      # No `workflow_dispatch` branch here. `Setup` runs only on a successful
+      # deployment_status, and this job needs `Setup`, so a manual run never
+      # reaches this step.
       - id: checkdiff
         run: |
           git fetch origin main
-          if [ {{ "${{ github.event_name }}" }} == "workflow_dispatch" ]; then
-            echo "This workflow was triggered by a workflow_dispatch event."
-            echo "BUILD_MOBILE_APP=1" >> $GITHUB_OUTPUT
-          else
-            echo $(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)
-            echo "BUILD_MOBILE_APP=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)" >> $GITHUB_OUTPUT
-          fi
+          # `tr` strips the padding `wc -l` adds; the `publish` job compares
+          # this output against 0.
+          changed=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l | tr -d '[:space:]')
+          echo "Mobile files changed: $changed"
+          echo "BUILD_MOBILE_APP=$changed" >> $GITHUB_OUTPUT
 
   publish:
     if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
