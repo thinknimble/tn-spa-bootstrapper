@@ -328,7 +328,22 @@ jobs:
 
           echo "🗑️ Destroying infrastructure for environment: $PR_ENV"
 
-          EXTRA_VARS=(-var="aws_profile=" -var="skip_ecr_image_lookup=true")
+          # Variables needed for destroy:
+          #  - aws_profile=""       : CI uses env-var creds from OIDC, not a named profile
+          #  - skip_ecr_image_lookup: PR-specific ECR tag is usually gone by teardown
+          #  - environment          : must match the PR env so resource names resolve correctly
+          #  - route53_zone_id /
+          #    base_domain          : required so the Route53 CNAME count condition evaluates
+          #                           to 1 and Terraform includes the record in the destroy plan.
+          #                           Without these the count is 0, and the record is silently
+          #                           skipped — leaving orphaned CNAME records in Route53.
+          EXTRA_VARS=(
+            -var="aws_profile="
+            -var="skip_ecr_image_lookup=true"
+            -var="environment=$PR_ENV"
+            -var="route53_zone_id=${{ steps.setup-env.outputs.route53_zone_id }}"
+            -var="base_domain=${{ steps.setup-env.outputs.base_domain }}"
+          )
           DESTROY_ARGS=(-input=false -auto-approve "${EXTRA_VARS[@]}")
           PLAN_ARGS=(-input=false -destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
 
@@ -421,7 +436,16 @@ jobs:
           echo "🗑️ Destroying infrastructure for environment: $ENVIRONMENT"
           echo "⚠️  This will permanently delete all resources in the $ENVIRONMENT environment"
 
-          EXTRA_VARS=(-var="aws_profile=" -var="skip_ecr_image_lookup=true")
+          # Variables needed for destroy — see cleanup-pr-environment for details.
+          # route53_zone_id + base_domain ensure the CNAME count condition evaluates
+          # correctly so Route53 records are included in the destroy plan.
+          EXTRA_VARS=(
+            -var="aws_profile="
+            -var="skip_ecr_image_lookup=true"
+            -var="environment=$ENVIRONMENT"
+            -var="route53_zone_id=${{ steps.setup-env.outputs.route53_zone_id }}"
+            -var="base_domain=${{ steps.setup-env.outputs.base_domain }}"
+          )
           DESTROY_ARGS=(-input=false -auto-approve "${EXTRA_VARS[@]}")
           PLAN_ARGS=(-input=false -destroy "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
 
