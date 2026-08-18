@@ -315,6 +315,118 @@ $new_entry" "$APP_FILE"
     fi
 }
 
+# Function to print remaining manual steps with copy-paste snippets
+print_remaining_steps() {
+    local var_name=$1
+    local env_var_name=$2
+    local is_sensitive=$3
+    local default_value=$4
+    local example_value=$5
+
+    echo ""
+    print_colored $BLUE "════════════════════════════════════════════════════"
+    print_colored $BLUE "📋 Remaining manual steps (copy-paste snippets)"
+    print_colored $BLUE "════════════════════════════════════════════════════"
+
+    # ── .env.example ──
+    echo ""
+    print_colored $YELLOW "── .env.example ──"
+    echo "Add this line:"
+    echo ""
+    echo "  ${env_var_name}='${example_value:-change-me}'"
+
+    # ── server/settings.py ──
+    echo ""
+    print_colored $YELLOW "── server/settings.py ──"
+    echo "Add this config() call:"
+    echo ""
+    if [[ "$default_value" == "true" || "$default_value" == "false" ]]; then
+        local py_default
+        [[ "$default_value" == "true" ]] && py_default="True" || py_default="False"
+        echo "  ${env_var_name} = config(\"${env_var_name}\", cast=bool, default=${py_default})"
+    elif [[ -n "$default_value" ]]; then
+        echo "  ${env_var_name} = config(\"${env_var_name}\", default=\"${default_value}\")"
+    else
+        echo "  ${env_var_name} = config(\"${env_var_name}\", default=\"\")"
+    fi
+
+    if [[ "$is_sensitive" != "true" ]]; then
+        # ── .github/environments.json ──
+        echo ""
+        print_colored $YELLOW "── .github/environments.json ──"
+        echo "Add to each environment block (production, staging, dev, pr):"
+        echo ""
+        if [[ "$default_value" == "true" || "$default_value" == "false" ]]; then
+            echo "  \"${var_name}\": ${default_value},"
+        else
+            echo "  \"${var_name}\": \"${example_value:-}\","
+        fi
+
+        # ── .github/scripts/get-env-config.sh ──
+        echo ""
+        print_colored $YELLOW "── .github/scripts/get-env-config.sh ──"
+        echo "Add to the jq output block:"
+        echo ""
+        if [[ "$default_value" == "true" || "$default_value" == "false" ]]; then
+            echo '  "'"${var_name}"'=\(if .'"${var_name}"' == null then '"${default_value}"' else .'"${var_name}"' end)",'
+        else
+            echo '  "'"${var_name}"'=\(.'"${var_name}"' // "'"${default_value:-}"'")",'
+        fi
+
+        # ── .github/actions/generate-terraform-vars/action.yml ──
+        echo ""
+        print_colored $YELLOW "── .github/actions/generate-terraform-vars/action.yml ──"
+        echo "Add to the extraction step:"
+        echo ""
+        echo '  echo "'"${var_name}"'=$(echo "$ENV_CONFIG" | grep "^'"${var_name}"'=" | cut -d= -f2)" >> $GITHUB_OUTPUT'
+        echo ""
+        echo "Add to terraform.tfvars heredoc:"
+        echo ""
+        if [[ "$default_value" == "true" || "$default_value" == "false" ]]; then
+            echo '  '"${var_name}"' = ${{ steps.app-config.outputs.'"${var_name}"' }}'
+        else
+            echo '  '"${var_name}"' = "${{ steps.app-config.outputs.'"${var_name}"' }}"'
+        fi
+    fi
+
+    if [[ "$is_sensitive" == "true" ]]; then
+        # ── .github/scripts/secrets-sync.sh ──
+        echo ""
+        print_colored $YELLOW "── .github/scripts/secrets-sync.sh ──"
+        echo "Add to the template heredoc in the 'secrets' block:"
+        echo ""
+        echo "  \"${var_name}\": \"CHANGE-ME-${var_name//_/-}\","
+        echo ""
+        echo "Then sync secrets for each environment:"
+        echo ""
+        echo "  .github/scripts/secrets-sync.sh template development"
+        echo "  # Edit the secrets file with your actual value"
+        echo "  .github/scripts/secrets-sync.sh push development"
+
+        # ── .github/actions/generate-terraform-vars/action.yml (secrets) ──
+        echo ""
+        print_colored $YELLOW "── .github/actions/generate-terraform-vars/action.yml ──"
+        echo "Add to the secrets extraction step:"
+        echo ""
+        echo '  echo "'"${var_name}"'=$(jq -r '"'"'.secrets.'"${var_name}"' // ""'"'"' secrets.json)" >> $GITHUB_OUTPUT'
+        echo ""
+        echo "Add to terraform.tfvars heredoc:"
+        echo ""
+        echo '  '"${var_name}"' = "${{ steps.secrets.outputs.'"${var_name}"' }}"'
+    fi
+
+    echo ""
+    print_colored $BLUE "════════════════════════════════════════════════════"
+    print_colored $YELLOW "After all manual steps are complete:"
+    print_colored $YELLOW "  1. Run 'terraform plan' to review changes"
+    print_colored $YELLOW "  2. Run 'terraform apply' to deploy"
+    if [[ "$is_sensitive" == "true" ]]; then
+        print_colored $YELLOW "  3. Repeat secrets-sync for each environment (staging, production)"
+    else
+        print_colored $YELLOW "  3. Update all environment blocks in environments.json"
+    fi
+}
+
 # Function to add sensitive variable
 add_sensitive_variable() {
     local input_var_name=$1
@@ -342,18 +454,8 @@ add_sensitive_variable() {
     fi
     
     print_colored $GREEN "✅ Successfully added sensitive variable: $var_name"
-    
-    # Show S3 secrets guidance
-    add_s3_secrets_guidance "$var_name"
-    
-    print_colored $YELLOW "📋 Next steps:"
-    print_colored $YELLOW "  1. Add the actual value to your terraform.tfvars file"
-    print_colored $YELLOW "  2. Add the secret to S3 using: .github/scripts/secrets-sync.sh template development"
-    print_colored $YELLOW "  3. Edit the secrets file and add your value for '$var_name'"
-    print_colored $YELLOW "  4. Upload secrets: .github/scripts/secrets-sync.sh push development"
-    print_colored $YELLOW "  5. For multi-account setups, repeat for staging/production environments"
-    print_colored $YELLOW "  6. Run 'terraform plan' to review changes"
-    print_colored $YELLOW "  7. Run 'terraform apply' to deploy"
+
+    print_remaining_steps "$var_name" "$env_var_name" "true" "" "$example_value"
 }
 
 # Function to add non-sensitive variable
@@ -393,12 +495,7 @@ add_non_sensitive_variable() {
         add_github_variable_prompt "$var_name"
     fi
     
-    print_colored $YELLOW "📋 Next steps:"
-    print_colored $YELLOW "  1. Add the actual value to your terraform.tfvars file (or use default)"
-    print_colored $YELLOW "  2. For multi-account setups, also add to environment-specific .tfvars files"
-    print_colored $YELLOW "  3. Update environments.json if this variable affects application behavior"
-    print_colored $YELLOW "  4. Run 'terraform plan' to review changes"
-    print_colored $YELLOW "  5. Run 'terraform apply' to deploy"
+    print_remaining_steps "$var_name" "$env_var_name" "false" "$default_value" "$example_value"
 }
 
 # Function to show usage
