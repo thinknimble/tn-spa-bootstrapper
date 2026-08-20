@@ -36,6 +36,10 @@ inputs:
     description: 'ECR repository name'
     required: false
     default: '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}-app'
+  image_tag:
+    description: 'Docker image tag (from build job). Falls back to {environment}-{sha} if not provided.'
+    required: false
+    default: ''
 
 runs:
   using: 'composite'
@@ -115,7 +119,7 @@ runs:
         cat << EOF >> terraform.tfvars
         environment = "${{ inputs.environment }}"
         aws_region = "${{ inputs.aws_region }}"
-        ecr_tag = "${{ inputs.environment }}-${{ github.sha }}"
+        ecr_tag = "${{ inputs.image_tag != '' && inputs.image_tag || format('{0}-{1}', inputs.environment, github.sha) }}"
         secret_key = "${{ steps.secrets.outputs.django_secret_key }}"
         db_pass = "${{ steps.secrets.outputs.db_password }}"
         django_superuser_password = "${{ steps.secrets.outputs.django_superuser_password }}"
