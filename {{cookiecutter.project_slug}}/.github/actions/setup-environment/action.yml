@@ -5,6 +5,10 @@ inputs:
   manual_environment:
     description: 'Manual environment from workflow_dispatch'
     required: false
+  manual_tag:
+    description: 'Version tag for production dispatch (e.g. v1.2.0)'
+    required: false
+    default: ''
   aws_account_id:
     description: 'AWS Account ID fallback'
     required: false
@@ -68,8 +72,13 @@ runs:
           echo "is_pr=true" >> $GITHUB_OUTPUT
         elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.manual_environment }}" ]; then
           ENV_NAME="${{ inputs.manual_environment }}"
+          MANUAL_TAG="${{ inputs.manual_tag }}"
           echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
-          echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+          if [[ -n "$MANUAL_TAG" ]]; then
+            echo "image_tag=$ENV_NAME-$MANUAL_TAG" >> $GITHUB_OUTPUT
+          else
+            echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
           echo "is_pr=false" >> $GITHUB_OUTPUT
         elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
           TAG="${{ github.ref_name }}"

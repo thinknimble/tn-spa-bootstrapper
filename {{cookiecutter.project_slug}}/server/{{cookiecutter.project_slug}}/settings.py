@@ -61,11 +61,6 @@ ALLOWED_HOSTS = []
 ALLOWED_HOSTS += config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")])
 if CURRENT_DOMAIN and CURRENT_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(CURRENT_DOMAIN)
-# Add localhost for local development
-if "localhost" not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append("localhost")
-if "127.0.0.1" not in ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append("127.0.0.1")
 {% endif -%}
 
 {% if cookiecutter.deployment_option.startswith("Terraform") -%}
@@ -149,6 +144,11 @@ if IS_AWS_ENVIRONMENT:
     print("=== END CONTAINER IP DEBUG ===")
     print("🐳 Detected AWS ECS/Fargate environment")
 else:
+    # Add localhost only for local development — never in deployed environments
+    if "localhost" not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append("localhost")
+    if "127.0.0.1" not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append("127.0.0.1")
     print("💻 Detected local development environment - skipping AWS IP detection")
 
 # Used by the corsheaders app/middleware (django-cors-headers) to allow multiple domains to access the backend

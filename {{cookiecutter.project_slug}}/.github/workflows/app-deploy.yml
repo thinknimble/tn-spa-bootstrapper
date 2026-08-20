@@ -30,6 +30,11 @@ on:
         options:
           - dev
           - staging
+          - production
+      tag:
+        description: 'Required for production: version tag to deploy (e.g. v1.2.0)'
+        required: false
+        type: string
       pr_number:
         description: 'Teardown only: PR number to tear down (targets pr-<number>, overrides Environment)'
         required: false
@@ -65,6 +70,19 @@ jobs:
       route53_zone_id: ${{ steps.setup-env.outputs.route53_zone_id }}
       certificate_arn: ${{ steps.setup-env.outputs.certificate_arn }}
     steps:
+      - name: Validate production requires a tag
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [[ -z "$TAG" ]]; then
+            echo "::error::Production deployments require a version tag (e.g. v1.2.0)"
+            exit 1
+          fi
+          if [[ ! "$TAG" =~ ^v ]]; then
+            echo "::error::Tag must start with 'v' (e.g. v1.2.0)"
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -73,9 +91,11 @@ jobs:
         uses: ./.github/actions/setup-environment
         with:
           manual_environment: ${{ github.event.inputs.environment }}
+          manual_tag: ${{ github.event.inputs.tag }}
           aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
 
       - name: Setup AWS
+        if: !(github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
         uses: ./.github/actions/setup-aws
         with:
           account_id: ${{ steps.setup-env.outputs.account_id }}
@@ -84,10 +104,12 @@ jobs:
           ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}-app' }}
 
       - name: Login to Amazon ECR
+        if: !(github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image
+        if: !(github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -103,6 +125,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    environment: ${{ needs.build.outputs.environment }}
     concurrency:
       group: deploy-${{ needs.build.outputs.environment }}
       cancel-in-progress: false
@@ -146,6 +169,7 @@ jobs:
           certificate_arn: ${{ needs.build.outputs.certificate_arn }}
           service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}' }}
           ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter._sanitized_tf_service_name}}{% raw %}-app' }}
+          image_tag: ${{ needs.build.outputs.image_tag }}
 
       - name: Terraform Plan
         id: plan
