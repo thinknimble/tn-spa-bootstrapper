@@ -13,6 +13,21 @@ from .models import User
 logger = logging.getLogger(__name__)
 
 
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Validates the password chosen on the reset-confirm path.
+
+    `validate_password` runs here, not as a field validator, so it receives the
+    user the password protects. The view resolves the user from the reset token
+    and passes it in through the context.
+    """
+
+    password = serializers.CharField(write_only=True, max_length=128)
+
+    def validate_password(self, value):
+        validate_password(value, user=self.context.get("reset_user"))
+        return value
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
