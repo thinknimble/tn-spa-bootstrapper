@@ -12,7 +12,7 @@ Once db credentials are set:
 1. `source .venv/bin/activate` to activate the virtualenv shell
 1. `cd server`
 1. `python manage.py migrate` to migrate database
-1. `python manage.py runserver` to run the Django API (default - localhost:8000/admin)
+1. `python manage.py runserver` to run the Django API (admin at localhost:8000/staff/)
 
 
 ## Environment Variables
@@ -46,9 +46,10 @@ EMAIL_ALLOWLIST='["admin@thinknimble.com", "developer@thinknimble.com"]'
 
 ### Email Verification Configuration
 
-The application requires users to verify their email address upon signup to improve security and prevent spam:
+The application can require users to verify their email address upon signup to improve security and prevent spam:
 
-- `REQUIRE_EMAIL_VERIFICATION` (boolean, default: `True`): Enable/disable email verification requirement
+- `REQUIRE_EMAIL_VERIFICATION` (boolean, default: `False`): Enable/disable email verification requirement
+  - Note: when `ENABLE_EMAILS` is `False`, the application force-disables verification, because it can not send the verification email
   - When `True`, users must verify their email address to gain full access
   - When `False`, email verification is optional and users have immediate access
   - Staff users bypass verification checks regardless of this setting
@@ -63,16 +64,16 @@ The application requires users to verify their email address upon signup to impr
 
 #### API Endpoints
 
-- `POST /api/verify-email/<user_id>/<token>/` - Verify email address with token
+- `POST /api/verify-email/<uid>/<token>/` - Verify email address with token
 - `POST /api/resend-verification-email/` - Resend verification email (requires authentication)
 
 #### Example Configuration
 
 ```bash
-# Require email verification (default)
+# Require email verification
 REQUIRE_EMAIL_VERIFICATION=True
 
-# Disable email verification
+# Disable email verification (default)
 REQUIRE_EMAIL_VERIFICATION=False
 ```
 
@@ -89,7 +90,6 @@ REQUIRE_EMAIL_VERIFICATION=False
 - Consider keeping verification enabled in production for security
 
 ## Linting
-[WIP]
 
 `ruff format`
 

@@ -1,7 +1,21 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Feedback, Fingerprint, PromptTemplate
+from .models import AgentSession, Feedback, Fingerprint, Goal, PromptTemplate
+
+
+@admin.register(Goal)
+class GoalAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "is_complete", "created")
+    list_filter = ("is_complete",)
+    search_fields = ("title",)
+    readonly_fields = ("created", "last_edited")
+
+
+@admin.register(AgentSession)
+class AgentSessionAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "created", "last_edited")
+    readonly_fields = ("created", "last_edited", "messages")
 
 
 @admin.register(Fingerprint)

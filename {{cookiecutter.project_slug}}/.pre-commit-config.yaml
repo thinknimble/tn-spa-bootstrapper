@@ -51,6 +51,13 @@ repos:
         files: ^client/.*\.(ts|tsx)$
         pass_filenames: false
 
+  # Spec validation for spekk projects. The hook only runs when a staged file
+  # is under specs/, so a project that does not use spekk never invokes it.
+  - repo: https://github.com/spekk-ai/spekk-cli
+    rev: v1.22.0
+    hooks:
+      - id: spekk-validate
+
   # General hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0

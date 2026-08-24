@@ -41,7 +41,6 @@ export default tseslint.config(
     rules: {
       ...pluginReact.configs.recommended.rules,
       ...pluginReactHooks.configs.recommended.rules,
-      ...pluginQuery.rules['flat/recommended'],
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
       'react-hooks/exhaustive-deps': 'error',

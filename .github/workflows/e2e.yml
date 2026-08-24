@@ -8,10 +8,26 @@ on:
         required: false
         default: ''
 
+# The group holds the environment, not the branch. This workflow runs on
+# `deployment_status`, for which GitHub documents `github.ref` as empty when
+# the deployment came from a commit SHA, and an empty value would put every
+# deployment in one group. The URL of the environment names the thing these
+# tests point at: a second deployment to the same URL makes the run that is
+# in progress worthless, because the URL now serves other code, but a
+# deployment to a different URL must not stop it. The two fallbacks keep the
+# group full when a deployment status carries no URL, and for a
+# `workflow_dispatch` run, which has no deployment at all.
+concurrency:
+  group: e2e-${{ github.event.deployment_status.environment_url || github.event.deployment.ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Setup:
     if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    # 0.2 minutes in the last three runs. It renders the template and uploads
+    # the result as an artifact.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

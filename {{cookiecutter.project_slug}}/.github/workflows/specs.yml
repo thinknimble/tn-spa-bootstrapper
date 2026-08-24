@@ -1,0 +1,46 @@
+name: Specs
+on: [push]
+
+# Stop the run that is in progress when a second push comes to the same
+# branch. See `pytest.yml` for why. The group holds the name of this
+# workflow, thus it cancels only its own runs.
+concurrency:
+  group: specs-{{ "${{ github.ref }}" }}
+  cancel-in-progress: true
+
+jobs:
+  Validate_Specs:
+    runs-on: ubuntu-latest
+    # This job takes seconds. 5 minutes gives the download of the spekk binary
+    # all the time it needs, and stops a hang that otherwise runs for the
+    # 6-hour GitHub default.
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Stay green in a project that has not adopted spekk, without
+      # downloading a binary it will not use.
+      - name: Look for specs
+        id: check
+        run: |
+          if [ -d specs ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install spekk
+        if: steps.check.outputs.found == 'true'
+        env:
+          # Pinned on purpose: without it the install takes the latest
+          # release, and a stricter validator would turn this repository red
+          # with no change on its side.
+          SPEKK_VERSION: v1.22.0
+        run: curl -fsSL https://raw.githubusercontent.com/spekk-ai/spekk-cli/main/install.sh | sh
+
+      # One malformed frontmatter field fails the parse of the whole tree, so
+      # a bad line on the default branch stops every spekk command that
+      # rebuilds the index, for every branch and every user.
+      - name: Validate specs
+        if: steps.check.outputs.found == 'true'
+        run: ~/.local/bin/spekk validate

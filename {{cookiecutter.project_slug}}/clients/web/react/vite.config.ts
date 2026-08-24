@@ -2,6 +2,7 @@
 /// <reference types="vite/client" />
 
 import { defineConfig, loadEnv } from 'vite'
+import { defaultExclude } from 'vitest/config'
 import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
@@ -17,6 +18,22 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: './src/setup-tests.ts',
+      // Keep the Playwright specs away from Vitest. Playwright owns
+      // `tests/e2e/`: its `testDir` points there, `npm run test:e2e` runs
+      // them, and the Playwright workflow runs them on each pull request.
+      // The default `include` of Vitest also matches their `.spec.ts` names,
+      // and Vitest then loads `@playwright/test`, which supplies its own
+      // `test` and `expect`. The file cannot run, thus `npm run test` fails.
+      // This exclusion does not stop a test; it sends each file to the one
+      // runner that can run it. Keep `defaultExclude`, because a given
+      // `exclude` replaces the default list instead of adding to it.
+      exclude: [...defaultExclude, '**/tests/e2e/**'],
+      // Undo every `vi.spyOn` after each test. Vitest 3 gave a second
+      // `vi.spyOn` on the same method a new spy with an empty call history.
+      // Vitest 4 returns the spy that is already there, history and all, so a
+      // test that asserts `not.toHaveBeenCalled()` reads the calls an earlier
+      // test in the same file made. No test should depend on either behaviour.
+      restoreMocks: true,
     },
     server: {
       host: '0.0.0.0',  // Allow connections from all interfaces

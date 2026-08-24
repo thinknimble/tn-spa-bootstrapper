@@ -19,6 +19,17 @@ default:
 _project:
     #!/usr/bin/env bash
     branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+    just _project-for "$branch"
+
+# Derive the PROJECT name from a branch name given as an argument. `_project`
+# reads HEAD, which is correct while a command runs inside its own checkout.
+# `worktree remove` cannot use it: it must name the stack that `add` created,
+# and HEAD in a worktree moves whenever someone checks out another branch.
+# The sanitization lives here alone, so both callers keep the same rules.
+[private]
+_project-for branch:
+    #!/usr/bin/env bash
+    branch="{{ "{{ branch }}" }}"
     if [ "$branch" = "main" ]; then
       echo "{{cookiecutter.project_slug}}-main"
     else
@@ -93,14 +104,21 @@ server-run:
     ./server/runserver.sh
     @echo "🚀 Backend ready at http://localhost:8000"
 
+# The same command as `.github/workflows/pytest.yml` runs, thus a green run
+# here means a green run there. It runs from the project root, not from
+# `server/`, because coverage finds `fail_under = 60` in pyproject.toml only
+# from there. See that workflow for what `-n auto --dist loadscope` does.
 [group('server')]
 server-test: django-check-migrations
-    cd server && uv run python -m pytest --mccabe --cov={{ "{{ project }}" }} --cov-config=pyproject.toml -vv {{ "{{ project }}" }} && coverage report
+    uv run pytest --cov={{ "{{ project }}" }} -n auto --dist loadscope server/{{ "{{ project }}" }}
 
-# Run server tests inside Docker (works in both standalone and Traefik mode)
+# Run server tests inside Docker (works in both standalone and Traefik mode).
+# The same command again, because a test run must not depend on where it runs.
+# `/app` is the project root in the container, which the compose bind mount
+# supplies.
 [group('server')]
 server-test-docker:
-    docker compose exec -w /app/server server pytest
+    docker compose exec -w /app server pytest --cov={{ "{{ project }}" }} -n auto --dist loadscope server/{{ "{{ project }}" }}
 
 [group('server')]
 server-format:
@@ -109,10 +127,6 @@ server-format:
 [group('server')]
 server-lint:
     uv run ruff check --fix server
-
-[group('server')]
-server-legacy-format:
-    uv run black server && uv run isort server
 
 # Docker commands
 
@@ -235,7 +249,8 @@ setup-traefik:
 
 # Manage git worktrees with isolated Docker stacks.
 # Usage: just worktree add <branch>    — create worktree and run setup
-#        just worktree remove <branch> — stop Docker stack and remove worktree
+#        just worktree remove <branch> — stop the stack, delete its volumes and
+#                                        built images, and remove the worktree
 [group('docker')]
 worktree action branch:
     #!/usr/bin/env bash
@@ -247,6 +262,10 @@ worktree action branch:
     # e.g. feature/auth_bug -> auth-bug).
     dir_name=$(echo "$BRANCH" | sed 's|^[a-zA-Z][a-zA-Z0-9]*[/_]||' | tr '[:upper:]' '[:lower:]' | tr '/_' '-' | sed 's/[^a-z0-9-]//g')
     worktree_path="../{{cookiecutter.project_slug}}-${dir_name}"
+    # Name the stack from the branch argument, never from the worktree's HEAD.
+    # HEAD in a worktree moves whenever someone checks out another branch, and
+    # `remove` must name the stack that `add` created.
+    project_name=$(just _project-for "$BRANCH")
 
     if [ "{{ "{{ action }}" }}" = "add" ]; then
       echo "Creating worktree for branch '$BRANCH' at $worktree_path..."
@@ -267,7 +286,6 @@ worktree action branch:
 
       # Patch .env so this worktree gets its own PROJECT name and database,
       # preventing container-name and data collisions with other worktrees.
-      project_name="{{cookiecutter.project_slug}}-${dir_name}"
       db_name="{{cookiecutter.project_slug}}_${dir_name//-/_}_db"
       if [ -f "$worktree_path/.env" ]; then
         echo "Patching .env for worktree (PROJECT=$project_name, DB_NAME=$db_name)..."
@@ -327,7 +345,19 @@ worktree action branch:
       fi
 
       echo "Stopping Docker services for '$BRANCH'..."
-      (cd "$worktree_path" && set -a && source .env && set +a && just down)
+      # Pass PROJECT in, and do not call `just down` here. `down` reads the
+      # child's HEAD, and HEAD inside a worktree moves -- a `git checkout`
+      # there is ordinary work. When it moves, `down` gets a name that no
+      # stack ever had, finds nothing to stop, and reports success while the
+      # containers, the volumes, and the network all keep running. The branch
+      # argument cannot drift that way.
+      #
+      # `--volumes` removes the database this worktree alone used, and
+      # `--rmi local` removes the images `add` built. `--rmi local` removes
+      # only images with a generated name, thus the pulled `postgres` and
+      # `redis` images stay for the next worktree, and the build cache stays,
+      # thus the next build is still fast.
+      (cd "$worktree_path" && set -a && source .env && set +a && PROJECT=$project_name docker compose down --volumes --rmi local)
 
       echo "Removing worktree..."
       git worktree remove "$worktree_path" --force
@@ -355,9 +385,20 @@ django-makemigrations name="":
 django-migrate:
     cd server && python manage.py migrate
 
+# The gate that `.github/workflows/pytest.yml` applies before it runs the
+# tests, so a developer meets it here first. The tests cannot find what this
+# finds: `--no-migrations` in pytest.ini builds the test database from the
+# models, thus a model change with no migration file keeps the suite green.
+#
+# `uv run`, not a bare `python`, because `server-test` needs this recipe and
+# must not need an activated virtual environment first.
 [group('django')]
 django-check-migrations:
-    cd server && python manage.py makemigrations --check --dry-run
+    #!/usr/bin/env bash
+    set -e
+    cd server
+    uv run python manage.py makemigrations --check --dry-run
+    uv run python manage.py makemigrations --merge --dry-run
 
 [group('django')]
 django-shell:

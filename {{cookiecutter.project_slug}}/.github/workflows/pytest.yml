@@ -1,10 +1,37 @@
 name: Unit Tests
 on: [push]
+
+# A second push to the same branch makes the run that is in progress
+# worthless, because it tests a commit that nobody will merge. Stop it, so
+# that the two runs do not compete for the same runners. The group holds the
+# name of this workflow, thus it cancels only its own runs.
+concurrency:
+  group: unit-tests-{{ "${{ github.ref }}" }}
+  cancel-in-progress: true
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    # A job that hangs runs for 6 hours, which is the GitHub default, before
+    # anything stops it. That is billable time for a job that cannot pass, and
+    # it holds a runner. 20 minutes is many times what this job takes, thus it
+    # stays clear of a suite that becomes larger, and it stops a hang the same
+    # day.
+    timeout-minutes: 20
     env:
-      SECRET_KEY: {{ "${{ secrets.SECRET_KEY }}" }}
+      # The fallback is what makes this job run on a Dependabot branch.
+      # GitHub withholds repository secrets from a Dependabot-triggered run
+      # and offers a separate Dependabot secret store, which most projects
+      # do not use. Without a fallback, SECRET_KEY arrives empty, settings.py
+      # raises "The SECRET_KEY setting must not be empty" before the first
+      # test, and every test fails on every dependabot/ branch while main
+      # stays green. That red reads as a broken pull request and is not one.
+      #
+      # A test SECRET_KEY signs nothing that outlives the job, so it needs no
+      # secrecy. It must NOT be the production key: a literal here keeps the
+      # two apart, and keeps this working in any fork or repository that has
+      # no secret set.
+      SECRET_KEY: {{ "${{ secrets.SECRET_KEY || 'ci-only-not-a-real-secret' }}" }}
     services:
       postgres:
         image: postgres:latest
@@ -42,9 +69,33 @@ jobs:
           cat .env.example > .env
           cat .env
       - run: mkdir -p client/dist
+      # This step comes before the tests, because the tests cannot find what it
+      # finds. `--no-migrations` in pytest.ini builds the test database from the
+      # models, thus the suite passes whether or not a model change has a
+      # migration file, and nothing reports the gap until a deploy runs
+      # `migrate` against a schema that does not agree with the models.
+      #
+      # `--merge --dry-run` catches the other half: two migration branches that
+      # each apply, but not together.
+      - name: Check migrations and migration conflicts
+        run: |
+          source .venv/bin/activate
+          python server/manage.py makemigrations --check --dry-run
+          python server/manage.py makemigrations --merge --dry-run
       - name: Run tests and checks
         run: |
           source .venv/bin/activate
           python server/manage.py collectstatic
-          pytest --cov={{ cookiecutter.project_slug }} -vv server/{{ cookiecutter.project_slug }}
-          coverage report --fail-under=20
+          # `-n auto` starts one worker for each core, and pytest-django gives
+          # each worker its own database. `--dist loadscope` keeps all the
+          # tests of a class on one worker, so a class-scoped fixture is made
+          # one time.
+          #
+          # These two flags stay out of `addopts` in pytest.ini on purpose. A
+          # developer who sets a breakpoint wants one process, thus each caller
+          # that wants workers asks for them.
+          #
+          # `fail_under = 60` in pyproject.toml is the coverage gate. pytest-cov
+          # applies it, and this command fails below it, thus no separate
+          # `coverage report` step is necessary.
+          pytest --cov={{ cookiecutter.project_slug }} -n auto --dist loadscope server/{{ cookiecutter.project_slug }}

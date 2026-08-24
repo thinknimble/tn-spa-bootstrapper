@@ -76,6 +76,7 @@
     "react-native-svg": "15.12.1",
     "react-native-tab-view": "^3.3.4",
     "react-native-web": "^0.21.0",
+    "react-native-worklets": "0.5.1",
     "rn-bounceable": "^1.2.0",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.22.3",
@@ -104,6 +105,18 @@
     "tailwindcss": "^3.4.1",
     "typescript": "~5.9.2"
   },
+  "optionalDependencies": {
+    "lightningcss-darwin-arm64": "1.27.0",
+    "lightningcss-darwin-x64": "1.27.0",
+    "lightningcss-freebsd-x64": "1.27.0",
+    "lightningcss-linux-arm-gnueabihf": "1.27.0",
+    "lightningcss-linux-arm64-gnu": "1.27.0",
+    "lightningcss-linux-arm64-musl": "1.27.0",
+    "lightningcss-linux-x64-gnu": "1.27.0",
+    "lightningcss-linux-x64-musl": "1.27.0",
+    "lightningcss-win32-arm64-msvc": "1.27.0",
+    "lightningcss-win32-x64-msvc": "1.27.0"
+  },
   "keywords": [
     "react",
     "react-native",
@@ -128,11 +141,22 @@
     "tmp": ">=0.2.6",
     "@babel/helpers": ">=7.26.10",
     "node-forge": ">=1.4.0",
-    "undici": ">=6.27.0",
+    "undici": ">=7.29.0",
     "ws": ">=6.2.4",
-    "brace-expansion": ">=1.1.13 <2.0.0",
+    "minimatch@3": {
+      "brace-expansion": ">=1.1.18 <2.0.0"
+    },
+    "minimatch@9": {
+      "brace-expansion": ">=2.1.4 <3.0.0"
+    },
+    "minimatch@10": {
+      "brace-expansion": ">=5.0.8"
+    },
+    "xcode": {
+      "uuid": ">=11.1.1 <12.0.0"
+    },
     "tar": ">=7.5.21",
-    "fast-uri": ">=4.1.1",
+    "fast-uri": ">=3.1.5 <4.0.0",
     "postcss": ">=8.5.18",
     "form-data": ">=4.0.6",
     "shell-quote": ">=1.8.4",
@@ -153,6 +177,6 @@
       "picomatch": ">=3.0.2"
     },
     "yaml": ">=2.8.3",
-    "@xmldom/xmldom": ">=0.9.0"
+    "@xmldom/xmldom": ">=0.8.13 <0.9.0"
   }
 }

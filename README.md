@@ -10,8 +10,8 @@
   <a href="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml"><img src="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/pytest.yml/badge.svg" alt="Build Status"></a>
   <a href="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml"><img src="https://github.com/thinknimble/tn-spa-bootstrapper/actions/workflows/linting.yml/badge.svg" alt="Linting"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.12-3776AB" alt="Python"></a>
-  <a href="https://www.djangoproject.com/"><img src="https://img.shields.io/badge/Django-4.2-092E20" alt="Django"></a>
-  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18-61DAFB" alt="React"></a>
+  <a href="https://www.djangoproject.com/"><img src="https://img.shields.io/badge/Django-5.2-092E20" alt="Django"></a>
+  <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-19-61DAFB" alt="React"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5-3178C6" alt="TypeScript"></a>
   <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-3-06B6D4" alt="Tailwind"></a>
 </p>
@@ -22,10 +22,10 @@
 
 <p align="center">
   The ThinkNimble Bootstrapper is a battle-tested cookiecutter template that generates a complete,<br>
-  production-ready Django + React application with <b>AI-powered chat demo</b>, authentication,<br>
+  production-ready Django + React application with an <b>AI agent demo</b>, authentication,<br>
   email, and deployment configurations—all following industry best practices.<br>
   <br>
-  <em>🤖 Includes a fully-functional OpenAI chat demo with streaming responses and prompt management</em>
+  <em>🤖 Includes a working pydantic-ai agent demo with tool calling, streaming responses, and prompt management</em>
 </p>
 
 ---
@@ -38,29 +38,29 @@
 
 ### Backend (Django)
 
-- **Django 4.2** with custom user model
-- **OpenAI Chat Demo** with streaming responses
+- **Django 5.2** with custom user model
+- **AI Agent Demo** built on pydantic-ai, with tool calling and streaming responses
 - **Comprehensive test suite** included
 - **API-first architecture** with Django REST Framework
 - **Secure by default** - SSL, CORS, CSP headers configured
 - **Email ready** - Mailgun, AWS SES, or SMTP
 - **File storage** - AWS S3 Ready
 - **Background tasks** with Django Background Tasks
-- **WebSockets** with Django Channels for real-time AI chat
+- **WebSockets** with Django Channels for real-time AI agent chat
 
 </td>
 <td width="50%" valign="top">
 
 ### Frontend (React)
 
-- **React 18** with TypeScript
-- **AI Chat Demo UI** - Complete chat interface component
+- **React 19** with TypeScript
+- **AI Agent Demo UI** - Chat interface that shows streamed replies and live tool activity
 - **Tailwind CSS** for styling
 - **Vite** for lightning-fast builds
 - **React Router** for navigation
 - **API integration** with Axios
-- **Form handling** with react-hook-form
-- **State management** ready
+- **Form handling** with @thinknimble/tn-forms
+- **State management** with Zustand and TanStack Query
 - **Mobile responsive** from day one
 
 </td>
@@ -78,22 +78,19 @@
 - Pre-commit hooks for code quality
 - GitHub Actions CI/CD pipelines
 - Error tracking with Rollbar/Sentry
-- Performance monitoring
-- GDPR compliance helpers
 - Comprehensive documentation
 
-### 🤖 AI Chat Demo Included
+### 🤖 AI Agent Demo Included
 
-Experience AI integration from day one with our fully-functional demo:
+Experience AI integration from day one with a working agent demo:
 
-- **Working OpenAI Chat** - Pre-configured demo app with GPT-3.5/4 (just add your API key)
-- **Real-time Streaming** - See WebSocket-based streaming responses in action
-- **Prompt Management** - Example of dynamic prompt templates with variable substitution
-- **Conversation Analytics** - Demo pattern detection and conversation categorization
+- **Goal-Coach Agent** - A pydantic-ai agent that saves, lists, and completes user goals (just add your OpenAI API key)
+- **Database-Backed Tools** - Each tool goes through a small service layer that scopes every query to the signed-in user
+- **Real-time Streaming** - WebSocket streaming of replies, tool calls, and tool results
+- **Server-Side Sessions** - Conversation history persists in pydantic-ai's own message format, so tool calls survive across turns
+- **Prompt Management** - Dynamic prompt templates with variable substitution, editable in Django admin
 - **Feedback System** - Example rating system for improving AI responses
-- **Admin Interface** - Full Django admin for managing the demo's AI configuration
-- **Multiple Agent Types** - Demonstrates configurable AI agent roles
-- **Learning Style Assessment** - Complete demo showcasing an educational chatbot
+- **Offline Tests** - The agent's tool wiring is tested with pydantic-ai's TestModel, with no network calls
 
 ---
 
@@ -136,7 +133,6 @@ tn bootstrap
 First, install `pipx` if you don't have it ([installation guide](https://pipx.pypa.io/stable/installation/#installing-pipx)):
 
 ```bash
-pipx install cookiecutter
 pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 ```
 
@@ -155,7 +151,7 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 - **Hot module reloading** for React development with Vite
 - **Pre-configured linting** with Ruff for Python, ESLint and Prettier for JavaScript
 - **Pre-commit hooks** for code quality enforcement
-- **Test suite** with pytest for Django and testing setup for React
+- **Test suite** with pytest for Django, Vitest for React, and Playwright end-to-end tests
 - **Type safety** with TypeScript for frontend
 - **API documentation** with Swagger/OpenAPI via drf-spectacular
 - **Docker development environment** with PostgreSQL and Redis
@@ -169,7 +165,7 @@ pipx run cookiecutter gh:thinknimble/tn-spa-bootstrapper
 - **Database migrations** with Django's migration system
 - **Static file handling** with WhiteNoise
 - **Email services** via Mailgun, AWS SES, or custom SMTP
-- **File storage** with S3 or Google Cloud Storage support
+- **File storage** with S3 support
 
 ### Built-in Features
 
@@ -199,27 +195,19 @@ Answer the prompts with your own desired options. For example:
     2 - Amazon SES
     3 - Custom SMTP
     Choose from 1, 2, 3 [1]: 1
-    Error: "my_project" directory already exists
-    william@Williams-MacBook-Pro thinknimble % rm -rf my_project
-    william@Williams-MacBook-Pro thinknimble % cookiecutter git@github.com:thinknimble/tn-spa-cookiecutter.git --checkout cleanup
-    You've downloaded /Users/william/.cookiecutters/tn-spa-cookiecutter before. Is it okay to delete and re-download it? [yes]:
-    project_name [My Project]:
-    author_name [ThinkNimble]:
-    email [hello@thinknimble.com]:
-    project_slug [my_project]:
-    Select mail_service:
-    1 - Mailgun
-    2 - Amazon SES
-    3 - Custom SMTP
-    Choose from 1, 2, 3 [1]:
+    Select client_app:
+    1 - React
+    2 - None
+    Choose from 1, 2 [1]: 1
+    include_mobile [n]: n
 
-Create a git repo and push it there::
+Create a git repo and push it there:
 
 ```bash
 git init
 git add .
 git commit -m "first awesome commit"
-git remote set-url origin git@github.com:thinknimble/the-rock.git
+git remote add origin git@github.com:thinknimble/the-rock.git
 git push -u origin main
 ```
 

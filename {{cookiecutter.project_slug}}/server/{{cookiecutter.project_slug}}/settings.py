@@ -301,7 +301,16 @@ else:
             "USER": config("DB_USER"),
             "PASSWORD": config("DB_PASS", default=""),
             "HOST": config("DB_HOST"),
-            "CONN_MAX_AGE": 600,
+            # 0, not a persistent connection, because this project serves
+            # ASGI (daphne, with channels). Django closes old connections on
+            # the request_started and request_finished signals, and neither
+            # fires for a WebSocket. A long-lived socket therefore has no
+            # request boundary to release a connection on. Channels compensates
+            # by calling close_old_connections() inside database_sync_to_async,
+            # but that helper only closes once CONN_MAX_AGE has elapsed -- so a
+            # large value disables the one cleanup hook the socket path has
+            # left.
+            "CONN_MAX_AGE": 0,
         },
     }
 #
@@ -444,7 +453,6 @@ if config("USE_AWS_STORAGE", cast=bool, default=False):
 
     # Default file storage is private
     PRIVATE_MEDIAFILES_LOCATION = f"{AWS_LOCATION}/media"
-    COLLECTFAST_STRATEGY = "collectfast.strategies.boto3.Boto3Strategy"
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
     STORAGES = {
@@ -601,6 +609,7 @@ SPECTACULAR_SETTINGS = {
 # OpenAI Configuration
 #
 OPENAI_API_KEY = config("OPENAI_API_KEY", default="")
+OPENAI_MODEL = config("OPENAI_MODEL", default="gpt-4.1-mini")
 
 # Validate email verification configuration
 if REQUIRE_EMAIL_VERIFICATION and not ENABLE_EMAILS:

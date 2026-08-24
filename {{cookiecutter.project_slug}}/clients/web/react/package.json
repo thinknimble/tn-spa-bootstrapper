@@ -8,8 +8,7 @@
     "build": "vite build --base=/static/",
     "test": "vitest run",
     "test:e2e": "npx playwright test --reporter=html",
-    "test:dev": "vitest",
-    "test:watch": "vitest run",
+    "test:watch": "vitest",
     "test:single": "vitest $0",
     "format:write": "prettier --write ./src",
     "format:check": "prettier --check ./src",
@@ -29,11 +28,11 @@
     "axios": "^1.18.1",
     "clsx": "^2.1.1",
     "qs": "^6.15.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "react-icons": "^4.10.1",
     "react-resizable-panels": "^4.6.1",
-    "react-router-dom": "^6.30.4",
+    "react-router": "^8.3.0",
     "tailwind-merge": "^3.2.0",
     "zod": "^3.24.1",
     "zustand": "^4.4.0"
@@ -50,7 +49,6 @@
     "@types/qs": "^6.9.15",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "@vitejs/plugin-react-swc": "^4.3.1",
@@ -82,7 +80,7 @@
     "flatted": ">=3.4.2",
     "webpack": ">=5.104.1",
     "shell-quote": ">=1.9.0",
-    "fast-uri": ">=4.1.1",
+    "fast-uri": ">=3.1.5 <4.0.0",
     "form-data": ">=4.0.6",
     "lodash": ">=4.18.0",
     "glob": ">=10.5.0",
@@ -102,7 +100,7 @@
     "@babel/runtime": ">=7.26.10",
     "@babel/core": ">7.29.0",
     "ws": ">=8.21.0",
-    "brace-expansion": ">=1.1.13 <2.0.0"
+    "brace-expansion": ">=1.1.18 <2.0.0"
   },
   "browserslist": {
     "production": [

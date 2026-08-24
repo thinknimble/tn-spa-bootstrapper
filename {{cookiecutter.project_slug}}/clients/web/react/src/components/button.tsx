@@ -1,5 +1,5 @@
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react'
-import { Link, LinkProps } from 'react-router-dom'
+import { Link, LinkProps } from 'react-router'
 import { Spinner } from './spinner'
 import { cn } from 'src/utils/style'
 

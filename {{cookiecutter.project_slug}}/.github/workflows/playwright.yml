@@ -7,6 +7,27 @@ on:
         description: 'Base URL to test against'
         required: false
         default: ''
+
+# The group holds the environment, not the branch. `pytest.yml`,
+# `linting.yml` and `specs.yml` key their group on `github.ref`, and this
+# workflow cannot: GitHub documents `github.ref` as empty for a
+# `deployment_status` event that came from a commit SHA, and an empty value
+# would put every deployment in one group.
+#
+# The URL of the environment names the thing these tests point at. A second
+# deployment to the same URL makes the run that is in progress worthless,
+# because the URL now serves other code, but a deployment to a different URL
+# must not stop it. A group of the deployment's ref alone is not sufficient:
+# a staging environment and a production environment that both deploy `main`
+# have one ref and two URLs, and they would stop each other.
+#
+# The two fallbacks keep the group full: `deployment.ref` for a deployment
+# status that carries no URL, and `github.ref` for a `workflow_dispatch` run,
+# which has no deployment at all.
+concurrency:
+  group: playwright-{{ "${{ github.event.deployment_status.environment_url || github.event.deployment.ref || github.ref }}" }}
+  cancel-in-progress: true
+
 jobs:
   test:
     timeout-minutes: 60

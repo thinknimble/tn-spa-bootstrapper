@@ -81,7 +81,8 @@ just worktree add feature/experiment
 just up                                           # in main worktree
 cd ../{{cookiecutter.project_slug}}-experiment && just up   # in experiment worktree
 
-# Tear down and remove a worktree
+# Tear down and remove a worktree. This deletes the stack, its volumes (the
+# worktree database goes with them), and the images the worktree built.
 just worktree remove feature/experiment
 ```
 
@@ -104,8 +105,8 @@ The pre-commit configuration includes:
 
 1. `uv sync`
 1. `uv run pytest server`
-1. `uv run black server`
-1. `uv run isort server --diff` (shows you what isort is expecting)
+1. `uv run ruff format server`
+1. `uv run ruff check server` (add `--fix` to apply the fixes)
 
 ## Frontend E2E Testing with Playwright
 

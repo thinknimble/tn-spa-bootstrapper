@@ -6,10 +6,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "boto3==1.42.*",
-    "pydantic-ai>=1.84.0",
+    "pydantic-ai>=2.24.0",
     "channels==4.2.*",
     "channels-redis==4.2",
-    "daphne>=4.1.2",
+    "daphne>=4.2.2",
     "dj-database-url==0.5.0",
     "dj-rest-auth==7.0.*",
     "django>=5.2.14",
@@ -18,41 +18,33 @@ dependencies = [
     "django-currentuser>=0.9.0",
     "django-extensions==3.2.*",
     "django-filter>=24.2",
-    "django-model-utils==4.1.1",
-    "django-multiselectfield==0.1.12",
     "django-storages==1.11.1",
     "django4-background-tasks>=1.2.10",
     "djangorestframework==3.15.*",
     "drf-nested-routers==0.93.3",
     "drf-spectacular>=0.28.0",
-    "drf-writable-nested==0.6.3",
     "gunicorn>=23.0.0",
-    "openai>=1.65.0",
-    "pre-commit==4.5.*",
     "premailer>=3.10.0",
     "psycopg2-binary==2.9.*",
+    "python-decouple>=3.8",
+    "requests>=2.33.0",
+    "rollbar>=1.2.0",
+    "whitenoise==5.3.0",
+]
+
+[dependency-groups]
+# The Heroku Python buildpack installs with `uv sync --locked --no-default-groups`,
+# so this group stays off production dynos. CI and local `uv sync` include it.
+dev = [
+    "debugpy>=1.8.0",
+    "ruff==0.16.0",
+    "pre-commit==4.5.*",
+    "pytest>=9.0.3",
     "pytest-asyncio>=0.25.0",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.8.0",
     "pytest-factoryboy>=2.8.0",
-    "python-decouple>=3.8",
-    "python-slugify==5.0.2",
-    "pytz==2021.1",
-    "requests>=2.33.0",
-    "rollbar>=1.2.0",
-    "twilio>=9.4.6",
-    "whitenoise==5.3.0",
-    "pyasn1>=0.6.3",
-    "pyopenssl>=26.0.0",
-    "pyjwt>=2.13.0",
-    "ujson>=5.13.0",
-]
-
-[dependency-groups]
-dev = [
-    "debugpy>=1.8.0",
-    "ruff==0.16.0",
-    "pytest>=9.0.3",
+    "pytest-xdist>=3.6.0",
     "factory-boy==3.2.*",
 ]
 
@@ -87,10 +79,17 @@ max-complexity = 12
 fail_under = 60
 
 [tool.uv]
+# Floors for transitive packages, set by past security fixes. A constraint only
+# applies when some other package requires the name, so a dropped dependency
+# chain does not keep an unused package installed.
 constraint-dependencies = [
     "urllib3>=2.7.0",
-    "aiohttp>=3.14.1",
-    "cryptography>=48.0.1",
+    "pyasn1>=0.6.4",
+    "pyopenssl>=26.0.0",
+    "pyjwt>=2.13.0",
+    "ujson>=5.13.0",
+    "aiohttp>=3.14.3",
+    "cryptography>=50.0.0",
     "virtualenv>=20.36.1",
     "filelock>=3.20.3",
     "cbor2>=5.9.0",
@@ -99,4 +98,5 @@ constraint-dependencies = [
     "lxml>=6.1.0",
     "idna>=3.15",
     "msgpack>=1.2.1",
+    "sqlparse>=0.6.0",
 ]

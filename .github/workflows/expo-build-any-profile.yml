@@ -33,6 +33,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # No `timeout-minutes` and no `concurrency` group on purpose. `eas build`
+    # here has no `--no-wait`, thus this job waits for a build in a remote
+    # queue whose length this repository does not control. A timeout would
+    # stop the job without a stop of the remote build. A person starts this
+    # workflow by hand, so it does not pile up on a push.
 
     steps:
       - name: 🏗 Setup repo
@@ -60,7 +65,10 @@ jobs:
         run: |
           cd ./my_project/mobile
           CLEAR_CACHE_FLAG=""
-          if [[ {{ "${{ github.event.inputs.clear_cache }}" }} ]]; then
+          # `clear_cache` is a boolean input, so it arrives as the string
+          # "true" or "false". `[[ false ]]` is TRUE in bash, because the
+          # string is not empty, thus the comparison is what decides it.
+          if [[ "${{ github.event.inputs.clear_cache }}" == "true" ]]; then
             CLEAR_CACHE_FLAG="--clear-cache"
           fi
-          eas build --profile {{ "${{ github.event.inputs.profile }}" }} --platform {{ "${{ github.event.inputs.platform }}" }} --non-interactive $CLEAR_CACHE_FLAG
+          eas build --profile "${{ github.event.inputs.profile }}" --platform "${{ github.event.inputs.platform }}" --non-interactive $CLEAR_CACHE_FLAG

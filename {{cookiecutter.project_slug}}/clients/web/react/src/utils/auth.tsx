@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 
 // create a mechanism for authenticating each request that is sent
 // 1. verify token that's stored in localStorage

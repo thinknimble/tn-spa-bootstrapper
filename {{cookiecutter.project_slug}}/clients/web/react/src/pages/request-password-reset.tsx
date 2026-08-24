@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { AuthLayout } from 'src/components/auth-layout'
 import { Button } from 'src/components/button'
 import { ErrorMessage, ErrorsList } from 'src/components/errors'
