@@ -1,0 +1,135 @@
+{% raw %}name: Cleanup PR Environment
+
+# Uses `pull_request_target` so the run survives head-branch deletion on merge.
+# Separate workflow from app-deploy.yml to avoid giving PR code access to secrets.
+
+on:
+  pull_request_target:
+    branches: [main, dev]
+    types: [closed]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  GH_TOKEN: ${{ github.token }}
+
+# Own group — shared group with deploy caused teardowns to queue behind deploys.
+concurrency:
+  group: cleanup-pr-${{ github.event.number }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup-pr-environment:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        id: setup-env
+        uses: ./.github/actions/setup-environment
+        with:
+          aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Setup AWS
+        uses: ./.github/actions/setup-aws
+        with:
+          account_id: ${{ steps.setup-env.outputs.account_id }}
+          role_arn: ${{ steps.setup-env.outputs.role_arn }}
+          aws_region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: ./.github/actions/setup-terraform
+        with:
+          environment: ${{ steps.setup-env.outputs.environment }}
+          service_name: ${{ vars.SERVICE_NAME }}
+
+      - name: Destroy PR Environment
+        run: |
+          set -euo pipefail
+          cd terraform
+          PR_ENV="${{ steps.setup-env.outputs.environment }}"
+
+          # Isolation is by state key, not workspace.
+          # A missing state file means the PR never deployed — nothing to destroy.
+          STATE_OUTPUT=""
+          STATE_EC=0
+          STATE_OUTPUT="$(terraform state list 2>&1)" || STATE_EC=$?
+
+          if [ $STATE_EC -ne 0 ]; then
+            if echo "$STATE_OUTPUT" | grep -qi "No state file was found"; then
+              echo "ℹ️  No state file for $PR_ENV — PR never deployed, nothing to destroy."
+              exit 0
+            fi
+            echo "❌ Could not read Terraform state for $PR_ENV:"
+            echo "$STATE_OUTPUT"
+            exit 1
+          fi
+          RESOURCES="$STATE_OUTPUT"
+
+          if [ -z "$RESOURCES" ]; then
+            echo "ℹ️  No Terraform state for $PR_ENV — nothing to destroy."
+            exit 0
+          fi
+
+          echo "🗑️ Destroying infrastructure for environment: $PR_ENV"
+
+          # route53_zone_id + base_domain: without them the CNAME count is 0
+          # and Route53 records are silently skipped from the destroy plan.
+          EXTRA_VARS=(
+            -var="aws_profile="
+            -var="skip_ecr_image_lookup=true"
+            -var="environment=$PR_ENV"
+            -var="route53_zone_id=${{ steps.setup-env.outputs.route53_zone_id }}"
+            -var="base_domain=${{ steps.setup-env.outputs.base_domain }}"
+          )
+          PLAN_ARGS=(-destroy -input=false "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
+
+          # Break stale locks; capture output so non-lock errors are visible.
+          PROBE_OUTPUT=$(terraform plan -destroy -input=false "${EXTRA_VARS[@]}" 2>&1) || true
+          LOCK_ID=$(echo "$PROBE_OUTPUT" | grep -oP 'ID:\s+\K[0-9a-f-]+' | head -1 || true)
+          if [[ -n "$LOCK_ID" ]]; then
+            echo "🔓 Stale lock detected ($LOCK_ID), force-unlocking..."
+            if ! terraform force-unlock -force "$LOCK_ID"; then
+              echo "⚠️  force-unlock failed — proceeding, plan will fail if lock is still held"
+            fi
+          elif echo "$PROBE_OUTPUT" | grep -qi "error"; then
+            echo "⚠️  Lock probe hit non-lock errors:"
+            echo "$PROBE_OUTPUT" | tail -20
+          fi
+
+          echo "🔍 Validating destroy plan..."
+          PLAN_EC=0
+          terraform plan "${PLAN_ARGS[@]}" || PLAN_EC=$?
+
+          if [ $PLAN_EC -eq 1 ]; then
+            echo "❌ Destroy plan failed — check variable definitions and state"
+            exit 1
+          elif [ $PLAN_EC -eq 0 ]; then
+            # State showed resources but plan found nothing to destroy.
+            # Likely a variable mismatch causing Terraform not to recognise them.
+            echo "❌ State contains resources but plan shows nothing to destroy — likely a variable mismatch"
+            exit 1
+          fi
+          # exit code 2 = plan succeeded, changes present
+
+          if terraform apply destroy.tfplan; then
+            echo "✅ Cleaned up PR environment: $PR_ENV"
+          else
+            echo "❌ Failed to destroy PR environment: $PR_ENV"
+            exit 1
+          fi
+
+      - name: Delete GitHub environment
+        # Requires admin; must not fail the destroy above.
+        continue-on-error: true
+        run: |
+          PR_ENV="${{ steps.setup-env.outputs.environment }}"
+          RESPONSE=$(gh api -X DELETE "repos/${{ github.repository }}/environments/${PR_ENV}" 2>&1) \
+            && echo "✅ Deleted GitHub environment: $PR_ENV" \
+            || echo "⚠️  Could not delete GitHub environment $PR_ENV: $RESPONSE — delete manually at Settings > Environments."
+{% endraw %}

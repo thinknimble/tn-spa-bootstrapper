@@ -64,8 +64,8 @@ runs:
       id: env-vars
       shell: bash
       run: |
-        # Determine environment name based on trigger
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
+        # Determine environment name based on trigger.
+        if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "pull_request_target" ]; then
           ENV_NAME="pr-${{ github.event.number }}"
           echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
           echo "image_tag=$ENV_NAME-${{ github.sha }}" >> $GITHUB_OUTPUT
