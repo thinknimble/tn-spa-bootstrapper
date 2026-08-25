@@ -23,8 +23,15 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
     exit 1
 fi
 
-if ! jq empty "$CONFIG_FILE" 2>/dev/null; then
+if ! command -v jq >/dev/null 2>&1; then
+    echo "Error: jq is required by $0 but is not installed" >&2
+    echo "Install it with: apt-get install jq | brew install jq" >&2
+    exit 127
+fi
+
+if ! jq_error=$(jq empty "$CONFIG_FILE" 2>&1); then
     echo "Error: Invalid JSON in configuration file: $CONFIG_FILE" >&2
+    echo "$jq_error" >&2
     exit 1
 fi
 
