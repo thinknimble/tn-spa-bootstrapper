@@ -12,7 +12,7 @@ from ..models import User
 from ..serializers import UserLoginSerializer, UserRegistrationSerializer
 from ..views import PreviewTemplateView, request_reset_link
 
-PASSWORD = 'DTdoZspHzGE2GV-F3'
+PASSWORD = "DTdoZspHzGE2GV-F3"
 
 
 @pytest.mark.django_db
@@ -161,11 +161,15 @@ def test_password_reset(caplog, api_client, sample_user):
     password_reset_url = f"/api/password/reset/confirm/{password_reset_creds}/"
 
     # Verify the link works for reseting the password
-    response = api_client.post(password_reset_url, data={"password": "PDdoZspHfAhJ-F3"}, format="json")
+    response = api_client.post(
+        password_reset_url, data={"password": "PDdoZspHfAhJ-F3"}, format="json"
+    )
     assert response.status_code == status.HTTP_200_OK
 
     # New Password should now work for authentication
-    serializer = UserLoginSerializer(data={"email": sample_user.email, "password": "PDdoZspHfAhJ-F3"})
+    serializer = UserLoginSerializer(
+        data={"email": sample_user.email, "password": "PDdoZspHfAhJ-F3"}
+    )
     serializer.is_valid()
     assert authenticate(**serializer.validated_data)
 
@@ -289,7 +293,9 @@ class TestPreviewTemplateView:
 
     @override_settings(DEBUG=True)
     def test_enabled_if_debug(self, client):
-        with mock.patch("{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()) as mocked_render:
+        with mock.patch(
+            "{{ cookiecutter.project_slug }}.core.views.render", return_value=Response()
+        ) as mocked_render:
             client.get(f"{self.url}?template=core/index-placeholder.html")
         assert mocked_render.call_count == 1
 
