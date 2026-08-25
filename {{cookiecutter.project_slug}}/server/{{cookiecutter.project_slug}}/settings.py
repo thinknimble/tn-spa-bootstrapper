@@ -5,7 +5,6 @@ import os
 import socket
 import subprocess
 {% endif %}
-
 import dj_database_url
 {% if cookiecutter.deployment_option.startswith("Terraform") -%}
 import requests
