@@ -4,7 +4,7 @@ import os
 {% if cookiecutter.deployment_option.startswith("Terraform") -%}
 import socket
 import subprocess
-{% endif -%}
+{% endif %}
 
 import dj_database_url
 {% if cookiecutter.deployment_option.startswith("Terraform") -%}
