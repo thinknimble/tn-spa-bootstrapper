@@ -12,12 +12,14 @@ from ..models import User
 from ..serializers import UserLoginSerializer, UserRegistrationSerializer
 from ..views import PreviewTemplateView, request_reset_link
 
+PASSWORD = 'DTdoZspHzGE2GV-F3'
+
 
 @pytest.mark.django_db
 def test_create_user():
     user = User.objects.create_user(
         email="test@example.com",
-        password="password",
+        password=PASSWORD,
         first_name="Leslie",
         last_name="Burke",
     )
@@ -46,7 +48,7 @@ def test_create_user():
 def test_create_user_api(mock_send_email, api_client):
     data = {
         "email": "example@example.com",
-        "password": "password",
+        "password": PASSWORD,
         "first_name": "Test",
         "last_name": "User",
     }
@@ -58,7 +60,7 @@ def test_create_user_api(mock_send_email, api_client):
 def test_create_superuser():
     superuser = User.objects.create_superuser(
         email="test@example.com",
-        password="password",
+        password=PASSWORD,
         first_name="Leslie",
         last_name="Burke",
     )
@@ -76,7 +78,7 @@ def test_create_user_from_factory(sample_user):
 def test_user_can_login(api_client, sample_user):
     res = api_client.post(
         "/api/login/",
-        {"email": sample_user.email, "password": "password"},
+        {"email": sample_user.email, "password": PASSWORD},
         format="json",
     )
     assert res.status_code == status.HTTP_200_OK
@@ -86,7 +88,7 @@ def test_user_can_login(api_client, sample_user):
 def test_wrong_email(api_client, sample_user):
     res = api_client.post(
         "/api/login/",
-        {"email": "wrong@example.com", "password": "password"},
+        {"email": "wrong@example.com", "password": PASSWORD},
         format="json",
     )
     assert res.status_code == status.HTTP_400_BAD_REQUEST
@@ -123,7 +125,7 @@ def test_update_user(api_client, sample_user):
     api_client.force_authenticate(sample_user)
     data = {
         "email": "example@example.com",
-        "password": "password",
+        "password": PASSWORD,
         "first_name": "Test",
         "last_name": "User",
     }
@@ -159,11 +161,11 @@ def test_password_reset(caplog, api_client, sample_user):
     password_reset_url = f"/api/password/reset/confirm/{password_reset_creds}/"
 
     # Verify the link works for reseting the password
-    response = api_client.post(password_reset_url, data={"password": "new_password"}, format="json")
+    response = api_client.post(password_reset_url, data={"password": "PDdoZspHfAhJ-F3"}, format="json")
     assert response.status_code == status.HTTP_200_OK
 
     # New Password should now work for authentication
-    serializer = UserLoginSerializer(data={"email": sample_user.email, "password": "new_password"})
+    serializer = UserLoginSerializer(data={"email": sample_user.email, "password": "PDdoZspHfAhJ-F3"})
     serializer.is_valid()
     assert authenticate(**serializer.validated_data)
 
@@ -182,7 +184,7 @@ class TestEmailValidation:
         serializer = UserRegistrationSerializer(
             data={
                 "email": "valid@example.com",
-                "password": "strongpassword123",
+                "password": PASSWORD,
                 "first_name": "Test",
                 "last_name": "User",
             }
@@ -194,7 +196,7 @@ class TestEmailValidation:
         serializer = UserRegistrationSerializer(
             data={
                 "email": "invalidemail",
-                "password": "strongpassword123",
+                "password": PASSWORD,
                 "first_name": "Test",
                 "last_name": "User",
             }
@@ -208,7 +210,7 @@ class TestEmailValidation:
         serializer = UserRegistrationSerializer(
             data={
                 "email": "allowed@example.com",
-                "password": "strongpassword123",
+                "password": PASSWORD,
                 "first_name": "Test",
                 "last_name": "User",
             }
@@ -221,7 +223,7 @@ class TestEmailValidation:
         serializer = UserRegistrationSerializer(
             data={
                 "email": "notallowed@example.com",
-                "password": "strongpassword123",
+                "password": PASSWORD,
                 "first_name": "Test",
                 "last_name": "User",
             }
@@ -235,7 +237,7 @@ class TestEmailValidation:
         serializer = UserRegistrationSerializer(
             data={
                 "email": "any@example.com",
-                "password": "strongpassword123",
+                "password": PASSWORD,
                 "first_name": "Test",
                 "last_name": "User",
             }
@@ -249,7 +251,7 @@ class TestEmailValidation:
         serializer = UserRegistrationSerializer(
             data={
                 "email": "test@suspicious.xyz",
-                "password": "strongpassword123",
+                "password": PASSWORD,
                 "first_name": "Test",
                 "last_name": "User",
             }
@@ -265,7 +267,7 @@ class TestEmailValidation:
         serializer = UserRegistrationSerializer(
             data={
                 "email": "test@example.com",
-                "password": "strongpassword123",
+                "password": PASSWORD,
                 "first_name": "Test123",
                 "last_name": "User!@#",
             }
