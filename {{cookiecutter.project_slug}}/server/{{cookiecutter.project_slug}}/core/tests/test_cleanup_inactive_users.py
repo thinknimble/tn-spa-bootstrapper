@@ -30,7 +30,9 @@ class TestUserManagerCleanupMethods:
         recent_inactive.save()
 
         # Create old inactive user - should be returned
-        old_inactive = User.objects.create_user(email="old@example.com", password="DTdoZspHzGE2GV-F3")
+        old_inactive = User.objects.create_user(
+            email="old@example.com", password="DTdoZspHzGE2GV-F3"
+        )
         old_inactive.is_active = False
         old_inactive.save()
         # Manually set last_edited to 31 days ago
@@ -68,7 +70,9 @@ class TestUserManagerCleanupMethods:
 
         # Create old inactive users - should be deleted
         for i in range(3):
-            user = User.objects.create_user(email=f"old{i}@example.com", password="DTdoZspHzGE2GV-F3")
+            user = User.objects.create_user(
+                email=f"old{i}@example.com", password="DTdoZspHzGE2GV-F3"
+            )
             user.is_active = False
             user.save()
             old_date = timezone.now() - timedelta(days=31 + i)
@@ -169,7 +173,9 @@ class TestCleanupInactiveUsersCommand:
     def test_command_with_custom_days(self):
         """Test command with custom days parameter."""
         # Create user inactive for 15 days
-        user = User.objects.create_user(email="inactive15@example.com", password="DTdoZspHzGE2GV-F3")
+        user = User.objects.create_user(
+            email="inactive15@example.com", password="DTdoZspHzGE2GV-F3"
+        )
         user.is_active = False
         user.save()
         old_date = timezone.now() - timedelta(days=15)
