@@ -26,7 +26,7 @@ def test_create_user():
 
     assert user.email == "test@example.com"
     assert user.password
-    assert user.password != "password", "Password is stored as plain text"
+    assert user.password != PASSWORD, "Password is stored as plain text"
     assert user.first_name == "Leslie"
     assert user.last_name == "Burke"
 
@@ -520,7 +520,7 @@ class TestEmailVerification:
         """Test that newly created users have unverified email by default"""
         user = User.objects.create_user(
             email="test@example.com",
-            password="password",
+            password=PASSWORD,
             first_name="Test",
             last_name="User",
         )
@@ -531,7 +531,7 @@ class TestEmailVerification:
         """Test that verification email is sent when user signs up"""
         data = {
             "email": "test@example.com",
-            "password": "strongpassword123",
+            "password": PASSWORD,
             "first_name": "Test",
             "last_name": "User",
         }

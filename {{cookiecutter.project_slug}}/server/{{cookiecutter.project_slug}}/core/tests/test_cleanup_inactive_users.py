@@ -20,17 +20,17 @@ class TestUserManagerCleanupMethods:
     def test_get_inactive_users_returns_correct_users(self):
         """Test that get_inactive_users returns only the correct users."""
         # Create active user - should not be returned
-        User.objects.create_user(email="active@example.com", password="password123")
+        User.objects.create_user(email="active@example.com", password="DTdoZspHzGE2GV-F3")
 
         # Create recently deactivated user - should not be returned
         recent_inactive = User.objects.create_user(
-            email="recent@example.com", password="password123"
+            email="recent@example.com", password="DTdoZspHzGE2GV-F3"
         )
         recent_inactive.is_active = False
         recent_inactive.save()
 
         # Create old inactive user - should be returned
-        old_inactive = User.objects.create_user(email="old@example.com", password="password123")
+        old_inactive = User.objects.create_user(email="old@example.com", password="DTdoZspHzGE2GV-F3")
         old_inactive.is_active = False
         old_inactive.save()
         # Manually set last_edited to 31 days ago
@@ -48,7 +48,7 @@ class TestUserManagerCleanupMethods:
         """Test get_inactive_users with custom days parameter."""
         # Create user inactive for 15 days
         user_15_days = User.objects.create_user(
-            email="inactive15@example.com", password="password123"
+            email="inactive15@example.com", password="DTdoZspHzGE2GV-F3"
         )
         user_15_days.is_active = False
         user_15_days.save()
@@ -64,11 +64,11 @@ class TestUserManagerCleanupMethods:
     def test_cleanup_inactive_users_deletes_correct_users(self):
         """Test that cleanup_inactive_users deletes only the correct users."""
         # Create active user - should not be deleted
-        User.objects.create_user(email="active@example.com", password="password123")
+        User.objects.create_user(email="active@example.com", password="DTdoZspHzGE2GV-F3")
 
         # Create old inactive users - should be deleted
         for i in range(3):
-            user = User.objects.create_user(email=f"old{i}@example.com", password="password123")
+            user = User.objects.create_user(email=f"old{i}@example.com", password="DTdoZspHzGE2GV-F3")
             user.is_active = False
             user.save()
             old_date = timezone.now() - timedelta(days=31 + i)
@@ -89,11 +89,11 @@ class TestUserManagerCleanupMethods:
     def test_cleanup_inactive_users_handles_deletion_errors(self):
         """Test that cleanup_inactive_users handles deletion errors gracefully."""
         # Create two old inactive users
-        user1 = User.objects.create_user(email="user1@example.com", password="password123")
+        user1 = User.objects.create_user(email="user1@example.com", password="DTdoZspHzGE2GV-F3")
         user1.is_active = False
         user1.save()
 
-        user2 = User.objects.create_user(email="user2@example.com", password="password123")
+        user2 = User.objects.create_user(email="user2@example.com", password="DTdoZspHzGE2GV-F3")
         user2.is_active = False
         user2.save()
 
@@ -132,7 +132,7 @@ class TestCleanupInactiveUsersCommand:
     def test_command_runs_successfully(self):
         """Test that the command runs without errors."""
         # Create test data
-        user = User.objects.create_user(email="old@example.com", password="password123")
+        user = User.objects.create_user(email="old@example.com", password="DTdoZspHzGE2GV-F3")
         user.is_active = False
         user.save()
         old_date = timezone.now() - timedelta(days=31)
@@ -150,7 +150,7 @@ class TestCleanupInactiveUsersCommand:
     def test_command_dry_run_mode(self):
         """Test that dry run mode doesn't delete users."""
         # Create test data
-        user = User.objects.create_user(email="dryrun@example.com", password="password123")
+        user = User.objects.create_user(email="dryrun@example.com", password="DTdoZspHzGE2GV-F3")
         user.is_active = False
         user.save()
         old_date = timezone.now() - timedelta(days=31)
@@ -169,7 +169,7 @@ class TestCleanupInactiveUsersCommand:
     def test_command_with_custom_days(self):
         """Test command with custom days parameter."""
         # Create user inactive for 15 days
-        user = User.objects.create_user(email="inactive15@example.com", password="password123")
+        user = User.objects.create_user(email="inactive15@example.com", password="DTdoZspHzGE2GV-F3")
         user.is_active = False
         user.save()
         old_date = timezone.now() - timedelta(days=15)

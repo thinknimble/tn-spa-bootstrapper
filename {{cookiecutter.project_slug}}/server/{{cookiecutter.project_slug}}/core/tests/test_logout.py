@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 LOGOUT_URL = "/api/logout/"
-FACTORY_PASSWORD = "password"
+FACTORY_PASSWORD = "DTdoZspHzGE2GV-F3"
 
 
 def log_in(user):

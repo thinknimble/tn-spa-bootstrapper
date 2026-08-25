@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
-ORIGINAL_PASSWORD = "password"
+ORIGINAL_PASSWORD = "DTdoZspHzGE2GV-F3"
 NEW_PASSWORD = "orchid-lantern-42"
 
 
