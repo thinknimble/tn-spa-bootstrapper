@@ -40,6 +40,10 @@ locals {
     {
       name  = "VPC_CIDRS"
       value = data.aws_vpc.shared.cidr_block
+    },
+    {
+      name  = "ENVIRONMENT"
+      value = var.environment
     }
   ]
 
