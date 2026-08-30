@@ -14,7 +14,7 @@ class GroupFactory(factory.django.DjangoModelFactory):
 
 class UserFactory(factory.django.DjangoModelFactory):
     email = factory.faker.Faker("email")
-    password = factory.PostGenerationMethodCall("set_password", "password")
+    password = factory.PostGenerationMethodCall("set_password", "DTdoZspHzGE2GV-F3")
     first_name = factory.faker.Faker("first_name")
     last_name = factory.faker.Faker("last_name")
     is_staff = False
