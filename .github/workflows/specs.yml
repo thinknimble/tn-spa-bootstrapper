@@ -1,0 +1,36 @@
+name: Specs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # Stay green in a branch that has no specs yet, without downloading a
+      # binary it will not use.
+      - name: Look for specs
+        id: check
+        run: |
+          if [ -d specs ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pinned on purpose. Without a pin the install takes the latest
+      # release, and a stricter validator in a future version would fail
+      # this repository with no change on its side. Raise it deliberately.
+      - name: Install spekk
+        if: steps.check.outputs.found == 'true'
+        env:
+          SPEKK_VERSION: v1.26.0
+        run: curl -fsSL https://raw.githubusercontent.com/spekk-ai/spekk-cli/main/install.sh | sh
+
+      - name: Validate specs
+        if: steps.check.outputs.found == 'true'
+        run: ~/.local/bin/spekk validate
