@@ -32,3 +32,10 @@ repos:
         always_run: true
         verbose: true
         stages: [pre-commit]
+
+  # Spec validation. The hook only runs when a staged file is under
+  # specs/, so a commit that touches nothing there never invokes it.
+  - repo: https://github.com/spekk-ai/spekk-cli
+    rev: v1.26.0
+    hooks:
+      - id: spekk-validate
