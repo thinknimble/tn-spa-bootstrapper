@@ -20,7 +20,7 @@ dependencies = [
     "django-filter>=24.2",
     "django-storages==1.11.1",
     "django4-background-tasks>=1.2.10",
-    "djangorestframework==3.15.*",
+    "djangorestframework==3.17.*",
     "drf-nested-routers==0.93.3",
     "drf-spectacular>=0.28.0",
     "gunicorn>=23.0.0",
