@@ -220,3 +220,11 @@ client/build/
 
 # report that scripts/test-template-linting.sh writes when it finds issues
 template-linting-fixes.json
+
+# the local spekk spec index, which spekk rebuilds from specs/
+.spekk/index.db
+
+# The project that a local `cookiecutter .` render writes. The pre-commit
+# hook rewrites it on each run. A commit of it also gives Dependabot a
+# second copy of every lock file to raise alerts against.
+my_project/
