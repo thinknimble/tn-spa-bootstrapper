@@ -13,7 +13,7 @@ inputs:
   ecr_repository_name:
     description: 'ECR Repository Name'
     required: false
-    default: '{{cookiecutter._sanitized_tf_service_name}}-app'
+    default: '{{cookiecutter.__sanitized_tf_service_name}}-app'
 
 {% raw %}
 runs:

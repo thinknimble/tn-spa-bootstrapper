@@ -42,11 +42,18 @@ jobs:
           role_arn: ${{ steps.setup-env.outputs.role_arn }}
           aws_region: ${{ env.AWS_REGION }}
 
-      - name: Setup Terraform
-        uses: ./.github/actions/setup-terraform
+      - name: Prepare Terraform
+        uses: ./.github/actions/prepare-terraform
         with:
           environment: ${{ steps.setup-env.outputs.environment }}
-          service_name: ${{ vars.SERVICE_NAME }}
+          aws_region: ${{ steps.setup-env.outputs.aws_region }}
+          base_domain: ${{ steps.setup-env.outputs.base_domain }}
+          use_custom_domain: ${{ steps.setup-env.outputs.use_custom_domain }}
+          custom_domain: ${{ steps.setup-env.outputs.custom_domain }}
+          route53_zone_id: ${{ steps.setup-env.outputs.route53_zone_id }}
+          certificate_arn: ${{ steps.setup-env.outputs.certificate_arn }}
+          service_name: ${{ vars.SERVICE_NAME || '{% endraw %}{{cookiecutter.__sanitized_tf_service_name}}{% raw %}' }}
+          ecr_repository_name: ${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.__sanitized_tf_service_name}}{% raw %}-app' }}
 
       - name: Destroy PR Environment
         run: |
@@ -78,15 +85,40 @@ jobs:
 
           echo "🗑️ Destroying infrastructure for environment: $PR_ENV"
 
-          # route53_zone_id + base_domain: without them the CNAME count is 0
-          # and Route53 records are silently skipped from the destroy plan.
+          # Prefer the exact tfvars the deploy saved to S3 over the regenerated
+          # terraform.tfvars. Regeneration drifts from deploy — a count-gated
+          # resource (e.g. the Route53 CNAME) then evaluates to 0 and is silently
+          # skipped from the destroy plan, leaving orphans. The saved file is a
+          # byte-for-byte replay. Fall back to the regenerated vars for envs
+          # deployed before this file existed.
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          BACKEND_FILE="backend.hcl"
+          [ -f "backend-${ACCOUNT_ID}.hcl" ] && BACKEND_FILE="backend-${ACCOUNT_ID}.hcl"
+          BUCKET=$(grep -E '^\s*bucket\s*=' "$BACKEND_FILE" | head -1 | sed 's/.*=\s*"\(.*\)"/\1/')
+          USE_SAVED=0
+          if aws s3 cp "s3://${BUCKET}/${PR_ENV}/deploy.tfvars" terraform.tfvars 2>/dev/null; then
+            USE_SAVED=1
+            echo "✅ Replaying saved deploy.tfvars for $PR_ENV"
+          else
+            echo "ℹ️  No saved deploy.tfvars — falling back to regenerated vars"
+          fi
+
+          # skip_ecr_image_lookup: the PR's ECR tag is usually gone by teardown.
+          # environment/aws_profile: overridden to be certain regardless of file.
           EXTRA_VARS=(
             -var="aws_profile="
             -var="skip_ecr_image_lookup=true"
             -var="environment=$PR_ENV"
-            -var="route53_zone_id=${{ steps.setup-env.outputs.route53_zone_id }}"
-            -var="base_domain=${{ steps.setup-env.outputs.base_domain }}"
           )
+          # Fallback only: the saved tfvars already carry these; without a saved
+          # file, route53_zone_id + base_domain are required or the CNAME count is
+          # 0 and Route53 records are silently skipped from the destroy plan.
+          if [ "$USE_SAVED" -ne 1 ]; then
+            EXTRA_VARS+=(
+              -var="route53_zone_id=${{ steps.setup-env.outputs.route53_zone_id }}"
+              -var="base_domain=${{ steps.setup-env.outputs.base_domain }}"
+            )
+          fi
           PLAN_ARGS=(-destroy -input=false "${EXTRA_VARS[@]}" -detailed-exitcode -out=destroy.tfplan)
 
           # Break stale locks; capture output so non-lock errors are visible.
@@ -119,6 +151,7 @@ jobs:
 
           if terraform apply destroy.tfplan; then
             echo "✅ Cleaned up PR environment: $PR_ENV"
+            aws s3 rm "s3://${BUCKET}/${PR_ENV}/deploy.tfvars" 2>/dev/null || true
           else
             echo "❌ Failed to destroy PR environment: $PR_ENV"
             exit 1

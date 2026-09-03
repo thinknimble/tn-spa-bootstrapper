@@ -1,7 +1,7 @@
 variable "service" {
   type        = string
   description = "The service name for AWS resources (lowercase, alphanumeric and hyphens only, no underscores)"
-  default     = "{{ cookiecutter._sanitized_tf_service_name }}"
+  default     = "{{ cookiecutter.__sanitized_tf_service_name }}"
   
   validation {
     condition     = can(regex("^[a-z0-9-]+$", var.service))
@@ -27,7 +27,7 @@ variable "aws_region" {
 variable "ecr_app_repository_name" {
   type        = string
   description = "The ECR repository name for the app service backend"
-  default     = "{{ cookiecutter._sanitized_tf_service_name }}-app"
+  default     = "{{ cookiecutter.__sanitized_tf_service_name }}-app"
 }
 
 
@@ -86,14 +86,14 @@ variable "db_name" {
   type        = string
   description = "The database name for the app service backend (alphanumeric only, no underscores/hyphens)"
   sensitive   = true
-  default     = "{{ cookiecutter._sanitized_tf_service_name | replace('-', '') }}db"
+  default     = "{{ cookiecutter.__sanitized_tf_service_name | replace('-', '') }}db"
 }
 
 variable "db_user" {
   type        = string
   description = "The database user for the app service backend (alphanumeric and underscores allowed)"
   sensitive   = true
-  default     = "{{ cookiecutter._sanitized_tf_service_name }}_user"
+  default     = "{{ cookiecutter.__sanitized_tf_service_name }}_user"
 }
 
 variable "db_pass" {

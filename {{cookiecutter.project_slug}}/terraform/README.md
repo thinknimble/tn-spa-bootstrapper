@@ -91,8 +91,8 @@ Add these variables in GitHub repository settings → Secrets and variables → 
 > **💡 Naming Safety Tip**: We recommend setting these variables in GitHub Actions as a safety net to avoid issues from local terraform.tfvars changes. If not set, the deployment will automatically use the sanitized defaults from your terraform variables.
 
 ```bash
-SERVICE_NAME="{{cookiecutter._sanitized_tf_service_name}}"
-ECR_REPOSITORY_NAME="{{cookiecutter._sanitized_tf_service_name}}-app"
+SERVICE_NAME="{{cookiecutter.__sanitized_tf_service_name}}"
+ECR_REPOSITORY_NAME="{{cookiecutter.__sanitized_tf_service_name}}-app"
 AWS_ACCOUNT_ID="123456789012"
 ```
 

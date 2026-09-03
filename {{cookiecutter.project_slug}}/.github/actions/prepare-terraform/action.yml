@@ -1,0 +1,66 @@
+{% raw %}
+name: 'Prepare Terraform'
+description: 'Init the Terraform backend and generate terraform.tfvars — the one path deploy and destroy jobs both go through, so they cannot drift apart on which variables get set.'
+inputs:
+  environment:
+    description: 'Environment name'
+    required: true
+  aws_region:
+    description: 'AWS region'
+    required: true
+  base_domain:
+    description: 'Base domain for the environment'
+    required: false
+    default: ''
+  use_custom_domain:
+    description: 'Whether to use a custom domain'
+    required: false
+    default: 'false'
+  custom_domain:
+    description: 'Custom domain name'
+    required: false
+    default: ''
+  route53_zone_id:
+    description: 'Route53 hosted zone ID'
+    required: false
+    default: ''
+  certificate_arn:
+    description: 'ACM certificate ARN'
+    required: false
+    default: ''
+  service_name:
+    description: 'Service name for Terraform'
+    required: false
+    default: '{% endraw %}{{cookiecutter.__sanitized_tf_service_name}}{% raw %}'
+  ecr_repository_name:
+    description: 'ECR repository name'
+    required: false
+    default: '{% endraw %}{{cookiecutter.__sanitized_tf_service_name}}{% raw %}-app'
+  image_tag:
+    description: 'Docker image tag (from build job). Falls back to {environment}-{sha} if not provided — fine for destroy jobs, which do not reference a specific image.'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Terraform
+      uses: ./.github/actions/setup-terraform
+      with:
+        environment: ${{ inputs.environment }}
+        service_name: ${{ inputs.service_name }}
+
+    - name: Generate Terraform Variables
+      uses: ./.github/actions/generate-terraform-vars
+      with:
+        environment: ${{ inputs.environment }}
+        aws_region: ${{ inputs.aws_region }}
+        base_domain: ${{ inputs.base_domain }}
+        use_custom_domain: ${{ inputs.use_custom_domain }}
+        custom_domain: ${{ inputs.custom_domain }}
+        route53_zone_id: ${{ inputs.route53_zone_id }}
+        certificate_arn: ${{ inputs.certificate_arn }}
+        service_name: ${{ inputs.service_name }}
+        ecr_repository_name: ${{ inputs.ecr_repository_name }}
+        image_tag: ${{ inputs.image_tag }}
+{% endraw %}
