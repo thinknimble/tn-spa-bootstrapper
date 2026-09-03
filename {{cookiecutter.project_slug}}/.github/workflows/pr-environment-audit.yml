@@ -113,4 +113,50 @@ jobs:
           fi
 
           echo "All PR environments have matching open PRs."
+
+      - name: Detect orphans by tag (state-independent)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # The state-key sweep above only sees environments that still have a
+          # Terraform state object. It misses envs whose state was lost, or that
+          # were left with only stray resources after a partial destroy. Terraform
+          # now stamps every resource with environment=<env> + managed_by=terraform
+          # via the provider default_tags, so the Resource Groups Tagging API can
+          # find orphans directly — no state, no name-guessing.
+          RESOURCES=$(aws resourcegroupstaggingapi get-resources \
+            --tag-filters Key=managed_by,Values=terraform \
+            --query 'ResourceTagMappingList[].[ResourceARN,Tags[?Key==`environment`]|[0].Value]' \
+            --output text 2>/dev/null || true)
+
+          if [[ -z "$RESOURCES" ]]; then
+            echo "No tagged resources returned — nothing to classify (older envs are untagged until they redeploy)."
+            exit 0
+          fi
+
+          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number')
+
+          # Distinct pr-* environments that carry live tagged resources.
+          TAGGED_ENVS=$(echo "$RESOURCES" | awk '{print $NF}' | grep -E '^pr-[0-9]+$' | sort -u || true)
+
+          ORPHAN_COUNT=0
+          while IFS= read -r env_name; do
+            [[ -z "$env_name" ]] && continue
+            PR_NUM="${env_name#pr-}"
+            if echo "$OPEN_PRS" | grep -qx "$PR_NUM"; then
+              continue
+            fi
+            COUNT=$(echo "$RESOURCES" | awk -v e="$env_name" '$NF==e' | wc -l | tr -d ' ')
+            ORPHAN_COUNT=$((ORPHAN_COUNT + 1))
+            echo "::error::TAGGED ORPHAN: $env_name (PR #$PR_NUM is closed) — $COUNT tagged resource(s) still live"
+            echo "$RESOURCES" | awk -v e="$env_name" '$NF==e {print "    " $1}'
+          done <<< "$TAGGED_ENVS"
+
+          if [[ "$ORPHAN_COUNT" -gt 0 ]]; then
+            echo "::error::$ORPHAN_COUNT tagged orphaned PR environment(s) detected. Run the teardown workflow (or terraform/cleanup-orphans.sh) to clean them up."
+            exit 1
+          fi
+          echo "No tagged orphans — every environment with live resources maps to an open PR."
 {% endraw %}

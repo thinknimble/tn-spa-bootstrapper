@@ -8,9 +8,19 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.aws_region
+  region = var.aws_region
   # Only use profile for local development, not in CI/CD
   profile = var.aws_profile != "" ? var.aws_profile : null
+
+  # Stamp every taggable resource with its environment so orphans can be found
+  # by tag (Resource Groups Tagging API) without Terraform state — the audit and
+  # cleanup scripts otherwise rely on name-guessing and miss anything non-RDS.
+  default_tags {
+    tags = {
+      environment = var.environment
+      managed_by  = "terraform"
+    }
+  }
 }
 
 # Create an ECS cluster

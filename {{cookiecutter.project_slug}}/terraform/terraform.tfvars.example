@@ -1,5 +1,5 @@
-service                       = "{{ cookiecutter._sanitized_tf_service_name }}"
-ecr_app_repository_name       = "{{ cookiecutter._sanitized_tf_service_name }}-app"
+service                       = "{{ cookiecutter.__sanitized_tf_service_name }}"
+ecr_app_repository_name       = "{{ cookiecutter.__sanitized_tf_service_name }}-app"
 
 aws_profile                   = "default"
 aws_region                    = "us-east-1"
@@ -19,8 +19,8 @@ debug                         = "True"
 current_domain                = "" # leave this blank to use the default created by the load balancer
 current_port                  = "8080"
 allowed_hosts                 = "server,localhost,127.0.0.1"
-db_name                       = "{{ cookiecutter._sanitized_tf_service_name | replace('-', '') }}db"
-db_user                       = "{{ cookiecutter._sanitized_tf_service_name }}_user"
+db_name                       = "{{ cookiecutter.__sanitized_tf_service_name | replace('-', '') }}db"
+db_user                       = "{{ cookiecutter.__sanitized_tf_service_name }}_user"
 db_pass                       = "{{ random_ascii_string(50) }}"
 use_aws_storage               = false
 aws_storage_bucket_name       = ""
