@@ -7,6 +7,9 @@ services:
     container_name: ${PROJECT}-postgres
     restart: always
     image: postgres:16
+    command:
+      - "-c"
+      - "max_locks_per_transaction=512"
     env_file:
       - ".env"
     environment:
