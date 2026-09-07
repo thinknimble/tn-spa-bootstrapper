@@ -221,8 +221,8 @@ add_s3_secrets_guidance() {
     print_colored $YELLOW "Secrets are stored in S3 for security and visibility."
     print_colored $YELLOW "This variable '$snake_case_name' will be available in your secrets file."
     print_colored $YELLOW "Use the secrets-sync.sh script to manage secrets:"
-    print_colored $BLUE "  .github/scripts/secrets-sync.sh pull development"
-    print_colored $BLUE "  .github/scripts/secrets-sync.sh push development"
+    print_colored $BLUE "  .github/scripts/secrets-sync.sh pull dev"
+    print_colored $BLUE "  .github/scripts/secrets-sync.sh push dev"
     echo ""
 }
 
@@ -399,9 +399,9 @@ print_remaining_steps() {
         echo ""
         echo "Then sync secrets for each environment:"
         echo ""
-        echo "  .github/scripts/secrets-sync.sh template development"
+        echo "  .github/scripts/secrets-sync.sh template dev"
         echo "  # Edit the secrets file with your actual value"
-        echo "  .github/scripts/secrets-sync.sh push development"
+        echo "  .github/scripts/secrets-sync.sh push dev"
 
         # ── .github/actions/generate-terraform-vars/action.yml (secrets) ──
         echo ""

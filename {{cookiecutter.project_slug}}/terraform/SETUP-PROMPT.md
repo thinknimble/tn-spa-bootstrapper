@@ -10,7 +10,7 @@ You are helping me set up AWS infrastructure for a Django + React application de
 
 - **Project name (service)**: Use kebab-case (e.g., `my-project`). This is the `SERVICE_NAME` used everywhere.
 - **Deployment**: Terraform on AWS ECS Fargate with GitHub Actions CI/CD
-- **Environments**: development, staging, production (plus ephemeral PR environments)
+- **Environments**: dev, staging, production (plus ephemeral PR environments)
 - **Secrets**: Managed via S3 buckets, not GitHub Secrets
 - **Auth**: GitHub Actions authenticates to AWS via OIDC (no static credentials)
 - **VPC strategy**: Dev/PR environments share a VPC (`shared-dev-vpc`); staging and production get dedicated VPCs in separate AWS accounts
@@ -29,7 +29,7 @@ Before starting, confirm I have:
 ```bash
 tn aws-setup-vpc
 ```
-Creates `shared-dev-vpc` for development and PR environments. Production/staging accounts need their own VPCs.
+Creates `shared-dev-vpc` for dev and PR environments. Production/staging accounts need their own VPCs.
 
 ### Step 2. Create Terraform state backend (once per project)
 ```bash
@@ -40,7 +40,7 @@ Creates an S3 bucket (`{account-id}-{service}-terraform-state`) and DynamoDB loc
 ### Step 3. Initialize Terraform backend (once per environment)
 Connects Terraform to the S3 state bucket from step 2.
 ```bash
-tn aws-tf-init-backend -e development -s <service>
+tn aws-tf-init-backend -e dev -s <service>
 tn aws-tf-init-backend -e staging    -s <service>
 tn aws-tf-init-backend -e production -s <service>
 ```
@@ -59,7 +59,7 @@ tn aws-setup-oidc secrets_bucket='<service>-terraform-secrets'
 Must run after OIDC (step 4) because the bucket policy references the OIDC role ARN.
 
 ```bash
-tn aws-setup-secrets development
+tn aws-setup-secrets dev
 tn aws-setup-secrets staging
 tn aws-setup-secrets production
 ```
@@ -95,7 +95,7 @@ Go to **Settings > Secrets and variables > Actions > Variables** and add:
 Role ARNs go in `environments.json`, NOT as GitHub variables.
 
 ### Step 8. Edit secrets files
-The files `secrets-development.json`, `secrets-staging.json`, and `secrets-production.json` were created in step 5. Replace all `CHANGE-ME` values with real credentials.
+The files `secrets-dev.json`, `secrets-staging.json`, and `secrets-production.json` were created in step 5. Replace all `CHANGE-ME` values with real credentials.
 
 Required secrets:
 - `django_secret_key` — 50+ character random string
@@ -106,7 +106,7 @@ Required secrets:
 
 ### Step 9. Push secrets to S3
 ```bash
-.github/scripts/secrets-sync.sh push development
+.github/scripts/secrets-sync.sh push dev
 .github/scripts/secrets-sync.sh push staging
 .github/scripts/secrets-sync.sh push production
 ```

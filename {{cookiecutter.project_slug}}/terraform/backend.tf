@@ -9,7 +9,7 @@ terraform {
     
     # Example configuration (uncomment and customize):
     # bucket         = "your-company-terraform-state"
-    # key            = "myapp/development/terraform.tfstate" 
+    # key            = "myapp/dev/terraform.tfstate" 
     # region         = "us-east-1"
     # dynamodb_table = "terraform-state-lock"
     # encrypt        = true

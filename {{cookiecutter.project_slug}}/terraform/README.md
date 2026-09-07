@@ -8,10 +8,10 @@ Follow these step-by-step instructions to deploy your infrastructure:
 
 > **📝 Important: Naming Constraints**: This template automatically handles AWS naming requirements. Service names are converted from `my_project` (underscores) to `my-project` (hyphens) to comply with AWS Fargate and ALB naming constraints. The original `project_slug` with underscores is still used for database names and Python identifiers where appropriate.
 
-> **🏗️ VPC Sharing Strategy**: To avoid AWS VPC limits (default 5 per region), development environments share a single VPC while maintaining isolation through environment-specific subnets, security groups, and databases:
+> **🏗️ VPC Sharing Strategy**: To avoid AWS VPC limits (default 5 per region), dev environments share a single VPC while maintaining isolation through environment-specific subnets, security groups, and databases:
 > - **Production & Staging**: Dedicated VPCs (in separate AWS accounts)
 > - **Development & PR Environments**: Shared VPC `shared-dev-vpc` (in dev AWS account)
-> - **Subnet Allocation**: Each environment gets unique CIDR blocks (e.g., `development` = `10.0.10.0/24`, `pr-123` = `10.0.123.0/24`)
+> - **Subnet Allocation**: Each environment gets unique CIDR blocks (e.g., `dev` = `10.0.10.0/24`, `pr-123` = `10.0.123.0/24`)
 
 ### 🛠️ One-Time Infrastructure Setup
 
@@ -26,7 +26,7 @@ pip install tn-cli
 
 #### 2. Set Up VPC
 ```bash
-# Create the shared VPC for development/PR environments (once per AWS account)
+# Create the shared VPC for dev/PR environments (once per AWS account)
 tn aws-setup-vpc
 ```
 
@@ -38,7 +38,7 @@ tn aws-setup-vpc
 tn aws-tf-setup-backend
 
 # Initialize Terraform with the backend
-tn aws-tf-init-backend -e development -s {{cookiecutter.project_slug}}
+tn aws-tf-init-backend -e dev -s {{cookiecutter.project_slug}}
 ```
 
 > **Backend Strategy**: Each project gets its own dedicated S3 bucket (`{account-id}-{project-name}-terraform-state`) for complete isolation and simpler permissions management.
@@ -54,16 +54,16 @@ tn aws-setup-oidc
 #### 5. Set Up Secrets
 ```bash
 # Create the S3 secrets bucket for your project
-tn aws-setup-secrets development
+tn aws-setup-secrets dev
 
 # Check if secrets already exist, otherwise create template
-if .github/scripts/secrets-sync.sh pull development 2>/dev/null; then
+if .github/scripts/secrets-sync.sh pull dev 2>/dev/null; then
   echo "Using existing secrets from S3"
 else
   echo "Creating new secrets template"
-  .github/scripts/secrets-sync.sh template development
-  # Edit secrets-development.json with your values
-  .github/scripts/secrets-sync.sh push development
+  .github/scripts/secrets-sync.sh template dev
+  # Edit secrets-dev.json with your values
+  .github/scripts/secrets-sync.sh push dev
 fi
 ```
 
@@ -140,7 +140,7 @@ git push origin feature-branch
 
 **Problem Solved**: AWS has a default limit of 5 VPCs per region. With multiple PR environments, this limit is quickly exceeded.
 
-**Solution**: Smart VPC sharing for development environments while maintaining security isolation.
+**Solution**: Smart VPC sharing for dev environments while maintaining security isolation.
 
 | Environment Type | VPC Strategy | AWS Account | Isolation Method |
 |------------------|--------------|-------------|------------------|
@@ -154,14 +154,14 @@ git push origin feature-branch
 Each environment gets two `/24` subnets in the shared VPC (`10.0.X.0/24` and `10.0.(X+100).0/24`). PR environments use modulo wrapping to stay within valid bounds, supporting 152 unique PR slots.
 
 **Reserved third-octets:**
-- `10` — development
+- `10` — dev
 - `30` — staging/production fallback
 
 **PR CIDR calculation:** `slot = (pr_number % 152) + 1`, then skip reserved octets 10 and 30.
 
 ```
 Shared Development VPC (10.0.0.0/16)
-├── development environment
+├── dev environment
 │   ├── 10.0.10.0/24 (us-east-1b)
 │   └── 10.0.110.0/24 (us-east-1a)
 ├── pr-1 environment         (slot 2)
@@ -214,7 +214,7 @@ Even with shared VPC, environments remain completely isolated through:
 ```bash
 # ✅ Good
 service = "my-app"
-environment = "development"
+environment = "dev"
 
 # ❌ Bad - will cause terraform validation errors
 service = "My_App"        # Contains uppercase and underscores
@@ -350,14 +350,14 @@ This infrastructure uses an S3-based secrets management system that provides vis
 
 **Create secrets template:**
 ```bash
-.github/scripts/secrets-sync.sh template development
+.github/scripts/secrets-sync.sh template dev
 ```
 
 **Edit secrets file:**
 ```json
 {
   "service": "{{cookiecutter.project_slug}}",
-  "environment": "development",
+  "environment": "dev",
   "secrets": {
     "django_secret_key": "your-50-character-secret-key",
     "db_password": "secure-database-password",
@@ -372,17 +372,17 @@ This infrastructure uses an S3-based secrets management system that provides vis
 
 **Upload to S3:**
 ```bash
-.github/scripts/secrets-sync.sh push development
+.github/scripts/secrets-sync.sh push dev
 ```
 
 **Download from S3:**
 ```bash
-.github/scripts/secrets-sync.sh pull development
+.github/scripts/secrets-sync.sh pull dev
 ```
 
 **Validate secrets:**
 ```bash
-.github/scripts/secrets-sync.sh validate secrets-development.json
+.github/scripts/secrets-sync.sh validate secrets-dev.json
 ```
 
 ### Secrets Management Commands
@@ -433,14 +433,14 @@ Set `account_id`, `role_arn` (from OIDC setup), `secrets_bucket`, and `region` f
     "account": "dev",
     "account_id": "123456789012",
     "region": "us-east-1",
-    "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-dev",
     "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets"
   },
   "pr": {
     "account": "dev",
     "account_id": "123456789012",
     "region": "us-east-1",
-    "role_arn": "arn:aws:iam::123456789012:role/github-actions-development",
+    "role_arn": "arn:aws:iam::123456789012:role/github-actions-dev",
     "secrets_bucket": "{{cookiecutter.project_slug}}-terraform-secrets"
   }
 }
@@ -597,7 +597,7 @@ terraform apply
 ```hcl
 # terraform.tfvars
 service = "{{cookiecutter.project_slug}}"
-environment = "development"
+environment = "dev"
 
 # Database & Security
 secret_key = "your-django-secret-key-50-chars"
@@ -611,9 +611,9 @@ default_certificate_arn = "arn:aws:acm:us-east-1:123:certificate/your-wildcard-c
 
 **Review app setup:**
 ```hcl
-# Automatic subdomain: myapp-development.company.com
+# Automatic subdomain: myapp-dev.company.com
 service = "myapp"
-environment = "development"
+environment = "dev"
 base_domain = "company.com"
 default_certificate_arn = "arn:aws:acm:us-east-1:123:certificate/wildcard-cert"
 route53_zone_id = "Z123456789ABC"  # Optional: for automatic DNS
@@ -638,18 +638,18 @@ use_custom_domain = false
 tn aws-stream-logs
 
 # CLI mode examples
-tn aws-stream-logs -s {{cookiecutter.project_slug}} -e development -t a -f "ERROR" -d 1h
+tn aws-stream-logs -s {{cookiecutter.project_slug}} -e dev -t a -f "ERROR" -d 1h
 tn aws-stream-logs -s {{cookiecutter.project_slug}} -e production -t w -d 30m
 ```
 
 **Manual log commands:**
 ```bash
 # Follow logs in real-time
-aws logs tail "/ecs/{{cookiecutter.project_slug}}/development" --follow
+aws logs tail "/ecs/{{cookiecutter.project_slug}}/dev" --follow
 
 # Filter by pattern
 aws logs filter-log-events \
-  --log-group-name "/ecs/{{cookiecutter.project_slug}}/development" \
+  --log-group-name "/ecs/{{cookiecutter.project_slug}}/dev" \
   --filter-pattern "ERROR" \
   --start-time $(date -d "1 hour ago" +%s)000
 ```
@@ -661,20 +661,20 @@ aws logs filter-log-events \
 tn aws-ecs-exec
 
 # CLI mode examples
-tn aws-ecs-exec -s {{cookiecutter.project_slug}} -e development -c bash
+tn aws-ecs-exec -s {{cookiecutter.project_slug}} -e dev -c bash
 tn aws-ecs-exec -s {{cookiecutter.project_slug}} -e production -c "python manage.py shell"
 ```
 
 **Manual ECS exec:**
 ```bash
 # Get running task ID
-aws ecs list-tasks --cluster cluster-{{cookiecutter.project_slug}}-development
+aws ecs list-tasks --cluster cluster-{{cookiecutter.project_slug}}-dev
 
 # Connect to container
 aws ecs execute-command \
-  --cluster cluster-{{cookiecutter.project_slug}}-development \
+  --cluster cluster-{{cookiecutter.project_slug}}-dev \
   --task TASK_ID \
-  --container app-{{cookiecutter.project_slug}}-development \
+  --container app-{{cookiecutter.project_slug}}-dev \
   --interactive \
   --command "/bin/bash"
 ```
@@ -684,12 +684,12 @@ aws ecs execute-command \
 ```bash
 # Check service health
 aws ecs describe-services \
-  --cluster "cluster-{{cookiecutter.project_slug}}-development" \
-  --services "service-app-{{cookiecutter.project_slug}}-development"
+  --cluster "cluster-{{cookiecutter.project_slug}}-dev" \
+  --services "service-app-{{cookiecutter.project_slug}}-dev"
 
 # Check task details
 aws ecs describe-tasks \
-  --cluster "cluster-{{cookiecutter.project_slug}}-development" \
+  --cluster "cluster-{{cookiecutter.project_slug}}-dev" \
   --tasks "TASK_ID"
 ```
 
@@ -700,8 +700,8 @@ Grant individual team members access to logs, container exec, and secrets for sp
 ### 1. Set Up Environment Access Groups (once per environment)
 
 ```bash
-# Create IAM groups + policies for development
-tn aws-setup-env-access {{cookiecutter.project_slug}} development <aws-profile> <region>
+# Create IAM groups + policies for dev
+tn aws-setup-env-access {{cookiecutter.project_slug}} dev <aws-profile> <region>
 
 # Create IAM groups + policies for staging
 tn aws-setup-env-access {{cookiecutter.project_slug}} staging <aws-profile> <region>
@@ -719,7 +719,7 @@ This creates three environment-scoped groups per environment:
 
 ```bash
 # First environment — creates IAM user + generates access keys
-tn aws-add-env-user {{cookiecutter.project_slug}} development jane.doe <aws-profile> <region>
+tn aws-add-env-user {{cookiecutter.project_slug}} dev jane.doe <aws-profile> <region>
 
 # Second environment — same user, no new keys, just adds group membership
 tn aws-add-env-user {{cookiecutter.project_slug}} staging jane.doe <aws-profile> <region>
@@ -737,16 +737,16 @@ aws_secret_access_key = wJal...
 
 ```bash
 # Stream logs
-tn aws-stream-logs {{cookiecutter.project_slug}} development {{cookiecutter.project_slug}} <region>
+tn aws-stream-logs {{cookiecutter.project_slug}} dev {{cookiecutter.project_slug}} <region>
 
 # View ECS events & diagnostics
-tn aws-ecs-events {{cookiecutter.project_slug}} development {{cookiecutter.project_slug}} <region>
+tn aws-ecs-events {{cookiecutter.project_slug}} dev {{cookiecutter.project_slug}} <region>
 
 # Exec into a running container
-tn aws-ecs-exec {{cookiecutter.project_slug}} development {{cookiecutter.project_slug}} <region>
+tn aws-ecs-exec {{cookiecutter.project_slug}} dev {{cookiecutter.project_slug}} <region>
 ```
 
-> **Note**: Access is additive — adding a user to staging does not remove their development access. Each environment's groups are independent.
+> **Note**: Access is additive — adding a user to staging does not remove their dev access. Each environment's groups are independent.
 
 ## ⚙️ Worker Management
 
@@ -816,8 +816,8 @@ resource "aws_cloudwatch_event_target" "daily_cleanup" {
 
 # Monitor workers
 aws ecs describe-services \
-  --cluster cluster-{{cookiecutter.project_slug}}-development \
-  --services service-data-processor-{{cookiecutter.project_slug}}-development
+  --cluster cluster-{{cookiecutter.project_slug}}-dev \
+  --services service-data-processor-{{cookiecutter.project_slug}}-dev
 ```
 
 ## 🔄 Team Collaboration
@@ -830,7 +830,7 @@ tn aws-tf-setup-backend
 
 # 2. Configure backend in terraform.tfvars
 terraform_state_bucket = "company-terraform-state"
-terraform_state_key = "{{cookiecutter.project_slug}}/development/terraform.tfstate"
+terraform_state_key = "{{cookiecutter.project_slug}}/dev/terraform.tfstate"
 terraform_state_region = "us-east-1"
 terraform_lock_table = "terraform-state-lock"
 
@@ -842,7 +842,7 @@ tn aws-tf-init-backend
 
 ```bash
 # Development environment
-tn aws-tf-init-backend -e development
+tn aws-tf-init-backend -e dev
 
 # PR review app
 tn aws-tf-init-backend -e pr-123
@@ -909,12 +909,12 @@ terraform force-unlock LOCK_ID
 **Container deployment failures:**
 ```bash
 # Check task definition
-aws ecs describe-task-definition --task-definition task-{{cookiecutter.project_slug}}-development
+aws ecs describe-task-definition --task-definition task-{{cookiecutter.project_slug}}-dev
 
 # Force new deployment
 aws ecs update-service \
-  --cluster cluster-{{cookiecutter.project_slug}}-development \
-  --service service-app-{{cookiecutter.project_slug}}-development \
+  --cluster cluster-{{cookiecutter.project_slug}}-dev \
+  --service service-app-{{cookiecutter.project_slug}}-dev \
   --force-new-deployment
 ```
 
@@ -933,7 +933,7 @@ aws acm describe-certificate --certificate-arn arn:aws:acm:...
 aws s3 ls s3://{{cookiecutter.project_slug}}-terraform-secrets/
 
 # Check IAM role permissions
-aws iam get-role --role-name github-actions-development
+aws iam get-role --role-name github-actions-dev
 ```
 
 For additional support, refer to the [GitHub repository issues](https://github.com/your-org/{{cookiecutter.project_slug}}/issues) or contact your infrastructure team.
