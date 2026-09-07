@@ -1,0 +1,162 @@
+{% raw %}name: PR Environment Audit
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+jobs:
+  detect-orphans:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        id: setup-env
+        uses: ./.github/actions/setup-environment
+        with:
+          manual_environment: pr-0
+          aws_account_id: ${{ vars.AWS_ACCOUNT_ID }}
+
+      - name: Setup AWS
+        uses: ./.github/actions/setup-aws
+        with:
+          account_id: ${{ steps.setup-env.outputs.account_id }}
+          role_arn: ${{ steps.setup-env.outputs.role_arn }}
+          aws_region: ${{ env.AWS_REGION }}
+
+      - name: Detect orphaned PR environments
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # --- Resolve the Terraform state bucket from the backend config ---
+          cd terraform
+
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+          BACKEND_FILE=""
+          if [[ -n "$ACCOUNT_ID" && -f "backend-${ACCOUNT_ID}.hcl" ]]; then
+            BACKEND_FILE="backend-${ACCOUNT_ID}.hcl"
+          elif [[ -f "backend.hcl" ]]; then
+            BACKEND_FILE="backend.hcl"
+          else
+            echo "::error::No backend configuration found"
+            exit 1
+          fi
+
+          STATE_BUCKET=$(grep -E '^\s*bucket\s*=' "$BACKEND_FILE" | head -1 | sed 's/.*=\s*"\(.*\)"/\1/')
+
+          if [[ -z "$STATE_BUCKET" ]]; then
+            echo "::error::Could not determine state bucket from $BACKEND_FILE"
+            exit 1
+          fi
+
+          echo "State bucket: $STATE_BUCKET"
+
+          # --- List pr-*/terraform.tfstate keys in the bucket ---
+          # Environment isolation uses state keys (pr-123/terraform.tfstate),
+          # NOT Terraform workspaces.
+          PR_ENVS=$(aws s3api list-objects-v2 \
+            --bucket "$STATE_BUCKET" \
+            --prefix "pr-" \
+            --query "Contents[].Key" \
+            --output text 2>/dev/null \
+            | tr '\t' '\n' \
+            | grep '^pr-[0-9]*/terraform\.tfstate$' \
+            | sed 's|/terraform\.tfstate$||' \
+            || true)
+
+          if [[ -z "$PR_ENVS" ]]; then
+            echo "No PR state keys found — nothing to audit."
+            exit 0
+          fi
+
+          echo "PR environments found:"
+          echo "$PR_ENVS"
+          echo ""
+
+          # --- Get open PR numbers ---
+          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number')
+
+          echo "Open PRs: ${OPEN_PRS:-none}"
+          echo ""
+
+          # --- Compare: any state key without a matching open PR is orphaned ---
+          ORPHANS=""
+          while IFS= read -r env; do
+            PR_NUM="${env#pr-}"
+            if ! echo "$OPEN_PRS" | grep -qx "$PR_NUM"; then
+              ORPHANS="${ORPHANS}${env}\n"
+              echo "::warning::Orphaned PR environment: $env (PR #$PR_NUM is not open)"
+            fi
+          done <<< "$PR_ENVS"
+
+          if [[ -n "$ORPHANS" ]]; then
+            echo ""
+            echo "::error::Orphaned PR environments detected. Run the teardown workflow to clean them up."
+            echo ""
+            echo "To clean up, run the 'Deploy Application' workflow with:"
+            echo "  Action: teardown"
+            echo "  PR number: <number>"
+            exit 1
+          fi
+
+          echo "All PR environments have matching open PRs."
+
+      - name: Detect orphans by tag (state-independent)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # The state-key sweep above only sees environments that still have a
+          # Terraform state object. It misses envs whose state was lost, or that
+          # were left with only stray resources after a partial destroy. Terraform
+          # now stamps every resource with environment=<env> + managed_by=terraform
+          # via the provider default_tags, so the Resource Groups Tagging API can
+          # find orphans directly — no state, no name-guessing.
+          RESOURCES=$(aws resourcegroupstaggingapi get-resources \
+            --tag-filters Key=managed_by,Values=terraform \
+            --query 'ResourceTagMappingList[].[ResourceARN,Tags[?Key==`environment`]|[0].Value]' \
+            --output text 2>/dev/null || true)
+
+          if [[ -z "$RESOURCES" ]]; then
+            echo "No tagged resources returned — nothing to classify (older envs are untagged until they redeploy)."
+            exit 0
+          fi
+
+          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number')
+
+          # Distinct pr-* environments that carry live tagged resources.
+          TAGGED_ENVS=$(echo "$RESOURCES" | awk '{print $NF}' | grep -E '^pr-[0-9]+$' | sort -u || true)
+
+          ORPHAN_COUNT=0
+          while IFS= read -r env_name; do
+            [[ -z "$env_name" ]] && continue
+            PR_NUM="${env_name#pr-}"
+            if echo "$OPEN_PRS" | grep -qx "$PR_NUM"; then
+              continue
+            fi
+            COUNT=$(echo "$RESOURCES" | awk -v e="$env_name" '$NF==e' | wc -l | tr -d ' ')
+            ORPHAN_COUNT=$((ORPHAN_COUNT + 1))
+            echo "::error::TAGGED ORPHAN: $env_name (PR #$PR_NUM is closed) — $COUNT tagged resource(s) still live"
+            echo "$RESOURCES" | awk -v e="$env_name" '$NF==e {print "    " $1}'
+          done <<< "$TAGGED_ENVS"
+
+          if [[ "$ORPHAN_COUNT" -gt 0 ]]; then
+            echo "::error::$ORPHAN_COUNT tagged orphaned PR environment(s) detected. Run the teardown workflow (or terraform/cleanup-orphans.sh) to clean them up."
+            exit 1
+          fi
+          echo "No tagged orphans — every environment with live resources maps to an open PR."
+{% endraw %}
