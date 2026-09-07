@@ -43,7 +43,7 @@ variable "ecr_tag" {
 variable "environment" {
   type        = string
   description = "Environment name for the app service backend (lowercase, alphanumeric and hyphens only, no underscores)"
-  default     = "development"
+  default     = "dev"
   
   validation {
     condition     = can(regex("^[a-z0-9-]+$", var.environment))

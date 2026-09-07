@@ -4,7 +4,7 @@ ecr_app_repository_name       = "{{ cookiecutter.__sanitized_tf_service_name }}-
 aws_profile                   = "default"
 aws_region                    = "us-east-1"
 ecr_tag                       = "latest"
-environment                   = "development"
+environment                   = "dev"
 
 
 # Certificate Configuration

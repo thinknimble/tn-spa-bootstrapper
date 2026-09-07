@@ -35,7 +35,7 @@ show_usage() {
     echo "  validate   Validate local secrets file"
     echo ""
     echo "Arguments:"
-    echo "  environment    Environment name (production, staging, development)"
+    echo "  environment    Environment name (production, staging, dev)"
     echo ""
     echo "Options:"
     echo "  --aws-profile PROFILE    AWS profile to use"
@@ -46,7 +46,7 @@ show_usage() {
     echo "Examples:"
     echo "  $0 pull production                      # Download prod secrets"
     echo "  $0 push staging --file my-secrets.json # Upload staging secrets"
-    echo "  $0 template development                 # Create template file"
+    echo "  $0 template dev                 # Create template file"
     echo "  $0 list production                      # List available secrets"
 }
 
@@ -136,26 +136,26 @@ pull_secrets() {
     # Check if secrets exist in S3
     if ! aws s3api head-object --bucket "$SECRETS_BUCKET" --key "$s3_key" $profile_flag >/dev/null 2>&1; then
 
-        # For PR environments, try to fall back to development secrets
+        # For PR environments, try to fall back to dev secrets
         if [[ "$env_name" =~ ^pr-[0-9]+$ ]]; then
-            print_colored $YELLOW "⚠️  PR secrets not found, trying development fallback..."
-            local dev_key="development/secrets.json"
+            print_colored $YELLOW "⚠️  PR secrets not found, trying dev fallback..."
+            local dev_key="dev/secrets.json"
             local dev_path="s3://${SECRETS_BUCKET}/${dev_key}"
 
             if aws s3api head-object --bucket "$SECRETS_BUCKET" --key "$dev_key" $profile_flag >/dev/null 2>&1; then
-                print_colored $BLUE "📋 Using development secrets as fallback for PR environment"
+                print_colored $BLUE "📋 Using dev secrets as fallback for PR environment"
                 print_colored $BLUE "   Development Path: $dev_path"
                 print_colored $BLUE "   Local File: $local_file"
 
                 if aws s3 cp "$dev_path" "$local_file" $profile_flag; then
-                    print_colored $GREEN "✅ Successfully copied development secrets for PR environment"
+                    print_colored $GREEN "✅ Successfully copied dev secrets for PR environment"
 
-                    # Add a note to the file indicating it's from development
+                    # Add a note to the file indicating it's from dev
                     local temp_file=$(mktemp)
                     jq '. + {
                         "pr_environment": "'$env_name'",
-                        "fallback_source": "development",
-                        "fallback_note": "This PR environment is using development secrets as a fallback. Customize as needed and push to create PR-specific secrets."
+                        "fallback_source": "dev",
+                        "fallback_note": "This PR environment is using dev secrets as a fallback. Customize as needed and push to create PR-specific secrets."
                     }' "$local_file" > "$temp_file" && mv "$temp_file" "$local_file"
 
                     print_colored $BLUE "💡 To customize secrets for this PR:"
@@ -163,7 +163,7 @@ pull_secrets() {
                     print_colored $BLUE "   2. Run: $0 push $env_name"
                     return 0
                 else
-                    print_colored $RED "❌ Failed to copy development secrets"
+                    print_colored $RED "❌ Failed to copy dev secrets"
                 fi
             else
                 print_colored $YELLOW "⚠️  Development secrets also not found"

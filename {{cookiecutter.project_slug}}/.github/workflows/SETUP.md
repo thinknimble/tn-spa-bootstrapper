@@ -62,7 +62,7 @@ Application secrets (`DJANGO_SECRET_KEY`, `DB_PASSWORD`, `DJANGO_SUPERUSER_PASSW
    .github/scripts/secrets-sync.sh list <environment>
    ```
 
-Environments: `production`, `staging`, `development`. PR environments automatically fall back to `development` secrets.
+Environments: `production`, `staging`, `dev`. PR environments automatically fall back to `dev` secrets.
 
 See `.github/scripts/secrets-sync.sh --help` for all options.
 
