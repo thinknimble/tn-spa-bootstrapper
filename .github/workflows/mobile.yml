@@ -12,6 +12,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          # `get_client_config.sh` compares against HEAD~1 on a staging
+          # deployment, which the default depth of 1 does not reach.
+          fetch-depth: 5
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -32,6 +36,8 @@ jobs:
           config_file=$(./scripts/get_client_config.sh)
           uv run cookiecutter . --config-file $config_file --no-input -f
           cat $config_file
+        env:
+          ENVIRONMENT_URL: ${{ github.event.deployment_status.environment_url }}
       - uses: actions/upload-artifact@v4
         with:
           name: my_project
@@ -68,16 +74,10 @@ jobs:
       - id: checkdiff
         run: |
           git fetch origin main
-          # A review app's commit sits ahead of main, so main is the base that
-          # answers "what does this pull request change". A staging
-          # deployment's commit IS main, which makes that same diff empty
-          # every time and stops the job from ever building; there the base is
-          # the commit before it.
-          if [ -n "$PR_NUMBER" ]; then
-            base="origin/main"
-          else
-            base="HEAD~1"
-          fi
+          # The same script `get_client_config.sh` uses, so the job that
+          # renders the template and the job that decides to build it cannot
+          # disagree about what changed.
+          base=$(./scripts/mobile_diff_base.sh)
           # `tr` strips the padding `wc -l` adds; the `publish` job compares
           # this output against 0.
           changed=$(git diff --name-only "$base" HEAD -- | grep "/clients/mobile/react-native/" | wc -l | tr -d '[:space:]')
@@ -85,7 +85,7 @@ jobs:
           echo "Mobile files changed: $changed"
           echo "BUILD_MOBILE_APP=$changed" >> $GITHUB_OUTPUT
         env:
-          PR_NUMBER: ${{ steps.prnumber.outputs.PR_NUMBER }}
+          ENVIRONMENT_URL: ${{ github.event.deployment_status.environment_url }}
 
   publish:
     if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
