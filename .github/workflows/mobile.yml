@@ -61,21 +61,21 @@ jobs:
           changed=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l | tr -d '[:space:]')
           echo "Mobile files changed: $changed"
           echo "BUILD_MOBILE_APP=$changed" >> $GITHUB_OUTPUT
-      # The build profile this workflow writes is named `review_<PR number>`,
-      # and the number comes from the review app's URL. A staging or
-      # production deployment has no `pr-<number>` in its URL, which leaves
-      # the name as `review_` and makes `eas build` fail. The `publish` job
-      # tests this output so that such a deployment stops here instead.
+      # A review app's URL carries `pr-<number>`; a staging deployment's does
+      # not. The `publish` job builds `review_<number>` for the first and the
+      # `staging` profile for the second. Before this output existed, a
+      # staging deployment produced the profile name `review_`, which does
+      # not exist, and `eas build` errored.
       - id: prnumber
         run: |
           pr_number=$(echo "$ENVIRONMENT_URL" | grep -oP '(?<=pr-)\d+' || true)
-          echo "PR number: ${pr_number:-<none>}"
+          echo "PR number: ${pr_number:-<none, this is a staging deployment>}"
           echo "PR_NUMBER=$pr_number" >> $GITHUB_OUTPUT
         env:
           ENVIRONMENT_URL: ${{ github.event.deployment_status.environment_url }}
 
   publish:
-    if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0 && needs.configuremobile.outputs.PR_NUMBER != ''
+    if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
     needs: configuremobile
     runs-on: ubuntu-latest
     # No `timeout-minutes` on purpose. `eas build` here has no `--no-wait`,
@@ -135,10 +135,21 @@ jobs:
       - name: Set Variables
         id: set-vars
         run: |
+          pr_number=$(echo "$ENVIRONMENT_URL" | grep -oP '(?<=pr-)\d+' || true)
+          # A review app builds its own `review_<number>` profile. A staging
+          # deployment builds `staging`, which eas.json already defines.
+          if [ -n "$pr_number" ]; then
+            build_profile="review_$pr_number"
+            channel_suffix="$pr_number"
+          else
+            build_profile="staging"
+            channel_suffix="staging"
+          fi
           echo "backend_url=${ENVIRONMENT_URL:-https://default-backend-url.com}" >> $GITHUB_ENV
-          echo "PR_NUMBER=$(echo "$ENVIRONMENT_URL" | grep -oP '(?<=pr-)\d+')" >> $GITHUB_ENV
+          echo "PR_NUMBER=$pr_number" >> $GITHUB_ENV
+          echo "BUILD_PROFILE=$build_profile" >> $GITHUB_ENV
           echo "REPO_NAME=$(echo "$REPO" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
-          echo "EXPO_CHANNEL=$(echo "$REPO-$(echo "$ENVIRONMENT_URL" | grep -oP '(?<=pr-)\d+')" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
+          echo "EXPO_CHANNEL=$(echo "$REPO-$channel_suffix" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9._-]//g')" >> $GITHUB_ENV
         env:
           ENVIRONMENT_URL: ${{ github.event.deployment_status.environment_url }}
           REPO: ${{ github.repository }}
@@ -146,8 +157,8 @@ jobs:
       - name: Update EAS Config
         working-directory: ./my_project/mobile
         run: |
-          jq --arg pr_number "$PR_NUMBER" --arg expo_channel "$EXPO_CHANNEL" --arg backend_url "$BACKEND_URL" '
-            .build["review_" + $pr_number] = {
+          jq --arg build_profile "$BUILD_PROFILE" --arg expo_channel "$EXPO_CHANNEL" --arg backend_url "$BACKEND_URL" '
+            .build[$build_profile] = ((.build[$build_profile] // {}) * {
               "developmentClient": false,
               "distribution": "internal",
               "channel": $expo_channel,
@@ -157,8 +168,8 @@ jobs:
             "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
             "SENTRY_PROJECT_NAME": "tn-spa-prod"
               }
-          } |
-          .build["review_" + $pr_number + "_dc"] = {
+          }) |
+          .build[$build_profile + "_dc"] = ((.build[$build_profile + "_dc"] // {}) * {
             "developmentClient": true,
             "distribution": "internal",
             "channel": ($expo_channel + "_dc"),
@@ -168,7 +179,7 @@ jobs:
           "SENTRY_DSN": "https://d8669d3eb6e3649cfd05069423434b86@o4508768170409984.ingest.us.sentry.io/4508768174145536",
           "SENTRY_PROJECT_NAME": "tn-spa-prod"
             }
-          }
+          })
           ' eas.json > tmp.$$.json && mv tmp.$$.json eas.json
         env:
           BACKEND_URL: ${{ github.event.deployment_status.environment_url || 'https://default-backend-url.com' }}
@@ -178,12 +189,12 @@ jobs:
         run: cat eas.json
 
       # note: you will need to register your device first using eas device:create & eas credentials to test this
-      - name: Build review app (BUILD)
+      - name: Build the app (BUILD)
         working-directory: ./my_project/mobile
         run: |
-          eas build --platform ios --profile "review_${{ env.PR_NUMBER }}" --non-interactive
+          eas build --platform ios --profile "$BUILD_PROFILE" --non-interactive
 
-      - name: Build review app (Simulator BUILD)
+      - name: Build the app (development client BUILD)
         working-directory: ./my_project/mobile
         run: |
-          eas build --platform ios --profile "review_${{ env.PR_NUMBER }}_dc" --non-interactive
+          eas build --platform ios --profile "${BUILD_PROFILE}_dc" --non-interactive
