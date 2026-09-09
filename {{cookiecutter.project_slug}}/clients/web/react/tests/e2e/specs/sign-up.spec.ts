@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const PASSWORD = 'PASSWORD'
+const PASSWORD = 'DTdoZspHzGE2GV-F3'
 
 function generateUniqueEmail() {
   const timestamp = Date.now().toString();
