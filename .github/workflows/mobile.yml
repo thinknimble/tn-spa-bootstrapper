@@ -44,6 +44,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       BUILD_MOBILE_APP: ${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}
+      PR_NUMBER: ${{ steps.prnumber.outputs.PR_NUMBER }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,9 +61,21 @@ jobs:
           changed=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l | tr -d '[:space:]')
           echo "Mobile files changed: $changed"
           echo "BUILD_MOBILE_APP=$changed" >> $GITHUB_OUTPUT
+      # The build profile this workflow writes is named `review_<PR number>`,
+      # and the number comes from the review app's URL. A staging or
+      # production deployment has no `pr-<number>` in its URL, which leaves
+      # the name as `review_` and makes `eas build` fail. The `publish` job
+      # tests this output so that such a deployment stops here instead.
+      - id: prnumber
+        run: |
+          pr_number=$(echo "$ENVIRONMENT_URL" | grep -oP '(?<=pr-)\d+' || true)
+          echo "PR number: ${pr_number:-<none>}"
+          echo "PR_NUMBER=$pr_number" >> $GITHUB_OUTPUT
+        env:
+          ENVIRONMENT_URL: ${{ github.event.deployment_status.environment_url }}
 
   publish:
-    if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
+    if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0 && needs.configuremobile.outputs.PR_NUMBER != ''
     needs: configuremobile
     runs-on: ubuntu-latest
     # No `timeout-minutes` on purpose. `eas build` here has no `--no-wait`,
