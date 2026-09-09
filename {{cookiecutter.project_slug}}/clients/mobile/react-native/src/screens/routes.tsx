@@ -129,7 +129,6 @@ const RootNavigator = () => (
   </RootStack.Navigator>
 )
 {% endraw %}
-
 // App Root Component with navigation ref
 export const AppRoot = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
