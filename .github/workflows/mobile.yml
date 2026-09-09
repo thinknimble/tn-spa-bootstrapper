@@ -50,22 +50,14 @@ jobs:
         with:
           fetch-depth: 5
         name: check diff
-      # No `workflow_dispatch` branch here. `Setup` runs only on a successful
-      # deployment_status, and this job needs `Setup`, so a manual run never
-      # reaches this step.
-      - id: checkdiff
-        run: |
-          git fetch origin main
-          # `tr` strips the padding `wc -l` adds; the `publish` job compares
-          # this output against 0.
-          changed=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l | tr -d '[:space:]')
-          echo "Mobile files changed: $changed"
-          echo "BUILD_MOBILE_APP=$changed" >> $GITHUB_OUTPUT
       # A review app's URL carries `pr-<number>`; a staging deployment's does
       # not. The `publish` job builds `review_<number>` for the first and the
-      # `staging` profile for the second. Before this output existed, a
-      # staging deployment produced the profile name `review_`, which does
-      # not exist, and `eas build` errored.
+      # `staging` profile for the second, and `checkdiff` below needs to know
+      # which one it is, so this step comes first.
+      #
+      # No `workflow_dispatch` branch here. `Setup` runs only on a successful
+      # deployment_status, and this job needs `Setup`, so a manual run never
+      # reaches these steps.
       - id: prnumber
         run: |
           pr_number=$(echo "$ENVIRONMENT_URL" | grep -oP '(?<=pr-)\d+' || true)
@@ -73,6 +65,27 @@ jobs:
           echo "PR_NUMBER=$pr_number" >> $GITHUB_OUTPUT
         env:
           ENVIRONMENT_URL: ${{ github.event.deployment_status.environment_url }}
+      - id: checkdiff
+        run: |
+          git fetch origin main
+          # A review app's commit sits ahead of main, so main is the base that
+          # answers "what does this pull request change". A staging
+          # deployment's commit IS main, which makes that same diff empty
+          # every time and stops the job from ever building; there the base is
+          # the commit before it.
+          if [ -n "$PR_NUMBER" ]; then
+            base="origin/main"
+          else
+            base="HEAD~1"
+          fi
+          # `tr` strips the padding `wc -l` adds; the `publish` job compares
+          # this output against 0.
+          changed=$(git diff --name-only "$base" HEAD -- | grep "/clients/mobile/react-native/" | wc -l | tr -d '[:space:]')
+          echo "Diff base: $base"
+          echo "Mobile files changed: $changed"
+          echo "BUILD_MOBILE_APP=$changed" >> $GITHUB_OUTPUT
+        env:
+          PR_NUMBER: ${{ steps.prnumber.outputs.PR_NUMBER }}
 
   publish:
     if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
@@ -212,7 +225,11 @@ jobs:
         run: |
           eas build --platform ios --profile "$BUILD_PROFILE" --non-interactive
 
+      # The development client build exists so a reviewer can install a dev
+      # client for one pull request. A staging deployment has no such reader,
+      # so main builds the `staging` profile alone.
       - name: Build the app (development client BUILD)
+        if: env.PR_NUMBER != ''
         working-directory: ./my_project/mobile
         run: |
           eas build --platform ios --profile "${BUILD_PROFILE}_dc" --non-interactive
