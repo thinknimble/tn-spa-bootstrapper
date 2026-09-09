@@ -120,6 +120,24 @@ jobs:
         working-directory: ./my_project/mobile
         run: npm install
 
+      # EAS archives the project through git and honors .gitignore, which
+      # ignores my_project/ so that a local render stays out of `git status`.
+      # But the rendered app is exactly what EAS has to upload, so the archive
+      # arrived without it and every build died with "package.json does not
+      # exist in .../my_project/mobile".
+      #
+      # EAS reads .easignore at the git root in place of .gitignore, so derive
+      # one that drops only that line. Deriving it, rather than checking a
+      # second ignore file into the repository, keeps every other rule in
+      # force - the .env rules above all - with nothing to drift.
+      - name: Let EAS archive the rendered project
+        run: |
+          grep -vE '^/?my_project/?$' .gitignore > .easignore
+          if grep -qE '^/?my_project/?$' .easignore; then
+            echo "my_project is still ignored; EAS would upload an archive without it" >&2
+            exit 1
+          fi
+
       - name: 🚀 Publish preview
         working-directory: ./my_project/mobile
         run: |
