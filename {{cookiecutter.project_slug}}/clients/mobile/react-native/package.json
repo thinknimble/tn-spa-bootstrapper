@@ -130,6 +130,7 @@
   ],
   "license": "MIT",
   "overrides": {
+    "decode-uri-component": ">=0.5.0",
     "serialize-javascript": "^7.0.3",
     "@typescript-eslint/utils": {
       "minimatch": "^9.0.7"
