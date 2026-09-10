@@ -65,6 +65,32 @@ This creates the `proxy` Docker network, generates `~/traefik/docker-compose.yml
 
 **To switch back to standalone mode:** Stop Traefik (`docker stop traefik`) and run `just up`. It falls back to port bindings automatically.
 
+### Debugging with VSCode
+
+The server runs under [`debugpy`](https://github.com/microsoft/debugpy), listening on port `5678`. Attach a debugger to set breakpoints in the running container.
+
+```bash
+just debug
+```
+
+`just debug` is a drop-in replacement for `just up` that also publishes the debugpy port to the host. It's needed because Traefik can only route HTTP(S), not the plaintext DAP protocol debugpy speaks — so in Traefik mode the port has to be published directly. In standalone mode `docker-compose.override.yml` already publishes it, but `just debug` works there too.
+
+Then add a debugpy **attach** config to `.vscode/launch.json` and start it:
+
+```json
+{
+  "name": "Python: Attach to Docker",
+  "type": "debugpy",
+  "request": "attach",
+  "connect": { "host": "localhost", "port": 5678 },
+  "pathMappings": [{ "localRoot": "${workspaceFolder}", "remoteRoot": "/app" }]
+}
+```
+
+The debug ports are fixed, so only **one project at a time** can hold them — debug one project, run the rest with `just up`.
+
+**Adding more debug targets:** to debug another process (e.g. a `process_tasks` background worker), give it its own debugpy port in `compose/docker-compose.debug.yml` and a matching attach config. See the comments in that file for a worked example.
+
 ### Worktree Workflow
 
 Work on multiple branches simultaneously with fully isolated Docker stacks:
