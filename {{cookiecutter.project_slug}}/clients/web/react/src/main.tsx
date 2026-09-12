@@ -3,7 +3,7 @@ import { ErrorBoundary, Provider as RollbarProvider } from '@rollbar/react'
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './app'
-import { rollbarConfig } from './config/rollbar'
+import { isRollbarEnabled, rollbar, rollbarConfig } from './config/rollbar'
 import './index.css'
 import { queryClient } from './utils/query-client'
 import { ToastProvider } from './components/toast'
@@ -27,13 +27,21 @@ const ErrorFallback = () => (
 const container = document.getElementById('root')
 const root = createRoot(container!)
 
+// When enabled (real token for the detected env), pass the shared instance so the
+// Provider and the axios interceptor report through one Rollbar — two instances
+// would each own the global uncaught handlers and double-report. When disabled
+// (local/PR apps, no token) the instance has no accessToken, which the Provider's
+// `instance` prop rejects (invariant: "`instance` must be a configured instance of
+// Rollbar"); the `config` path accepts a token-less, disabled config instead.
+const rollbarProviderProps = isRollbarEnabled ? { instance: rollbar } : { config: rollbarConfig }
+
 // RollbarProvider installs the browser error client (captureUncaught +
 // captureUnhandledRejections). ErrorBoundary reports a render crash and shows
 // ErrorFallback instead of a blank page. Both no-op when rollbarConfig.enabled is
 // false (local / no token for the detected env).
 root.render(
   <React.StrictMode>
-    <RollbarProvider config={rollbarConfig}>
+    <RollbarProvider {...rollbarProviderProps}>
       <ErrorBoundary fallbackUI={ErrorFallback}>
         <QueryClientProvider client={queryClient}>
           <ToastProvider>
