@@ -1,4 +1,4 @@
-import type { Configuration } from 'rollbar'
+import Rollbar, { type Configuration } from 'rollbar'
 import { currentEnv } from './detect-env'
 
 // Django serves a single static build per environment, and a project may promote
@@ -43,3 +43,8 @@ export const rollbarConfig: Configuration = {
     },
   },
 }
+
+// Single shared instance. The @rollbar/react Provider and the axios interceptor
+// both use this one — two instances would each own the global uncaught/
+// unhandledrejection handlers and double-report every such error.
+export const rollbar = new Rollbar(rollbarConfig)
