@@ -26,7 +26,7 @@ export const NAME_PATTERN = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s'-]+$/
 
 export const nameValidator = new PatternValidator({
   pattern: NAME_PATTERN,
-  message: "Name may only contain letters, hyphens, apostrophes, and spaces",
+  message: 'Name may only contain letters, hyphens, apostrophes, and spaces',
   code: 'invalidName',
   isRequired: true,
 })

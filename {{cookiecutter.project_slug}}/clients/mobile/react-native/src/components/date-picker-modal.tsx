@@ -34,7 +34,7 @@ export const DatePickerModal: React.FC<Props> = ({
       <View className="flex-1 justify-center items-center bg-white/40">
         <View className="bg-white rounded-xl p-4 w-[90%] max-w-[400px] shadow-lg shadow-black/20 border border-gray-100">
           <Text className="text-lg text-black font-semibold mb-4 text-center">{title}</Text>
-          {% raw %}
+{% raw %}
           <Calendar
             onDayPress={(day: DateData) => {
               setTempDate(parseDateLocal(day.dateString))
@@ -42,15 +42,15 @@ export const DatePickerModal: React.FC<Props> = ({
             markedDates={{
               [selected]: {
                 selected: true,
-                selectedColor: "#F68F58",
+                selectedColor: '#F68F58',
               },
             }}
             minDate={formattedMinDate}
             maxDate={formattedMaxDate}
             theme={{
-              todayTextColor: "#F68F58",
+              todayTextColor: '#F68F58',
               selectedDayTextColor: '#ffffff',
-              selectedDayBackgroundColor: "#F68F58",
+              selectedDayBackgroundColor: '#F68F58',
               arrowColor: '#2563EB',
               monthTextColor: '#111827',
               textDayFontWeight: '500',
@@ -58,8 +58,8 @@ export const DatePickerModal: React.FC<Props> = ({
               textDayFontSize: 16,
               textMonthFontSize: 18,
             }}
-            />
-            {% endraw %}
+          />
+{% endraw %}
           <View className="flex-row justify-end mt-4 gap-4">
             <Pressable onPress={onClose}>
               <Text className="text-alert font-medium">Cancel</Text>
