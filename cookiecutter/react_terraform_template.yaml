@@ -1,0 +1,4 @@
+default_context:
+  client_app: "React"
+  deployment_option: "Terraform (AWS)"
+  include_mobile: "n"

@@ -1,4 +1,4 @@
 default_context:
   client_app: "React"
-  use_graphql: "n"
+  deployment_option: "Heroku" 
   include_mobile: "y"

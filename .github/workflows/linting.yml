@@ -66,7 +66,7 @@ jobs:
   Ruff:
     strategy:
       matrix:
-        fe_type: [react]
+        fe_type: [react, react_terraform]
     runs-on: ubuntu-latest
     # More than `Ruff_bootstrapper`, because this job does a `uv sync` and a
     # full render before it lints. 0.2 to 0.3 minutes in the last three runs.
