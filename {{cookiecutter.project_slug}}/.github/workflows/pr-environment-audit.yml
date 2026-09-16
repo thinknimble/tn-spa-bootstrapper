@@ -67,11 +67,21 @@ jobs:
           # --- List pr-*/terraform.tfstate keys in the bucket ---
           # Environment isolation uses state keys (pr-123/terraform.tfstate),
           # NOT Terraform workspaces.
-          PR_ENVS=$(aws s3api list-objects-v2 \
+          KEYS_EXIT=0
+          RAW_KEYS=$(aws s3api list-objects-v2 \
             --bucket "$STATE_BUCKET" \
             --prefix "pr-" \
             --query "Contents[].Key" \
-            --output text 2>/dev/null \
+            --output text 2>"$RUNNER_TEMP/s3_err.txt") || KEYS_EXIT=$?
+          KEYS_ERR=$(sed '/^[[:space:]]*$/d' "$RUNNER_TEMP/s3_err.txt" 2>/dev/null | tr '\n' ' ' || true)
+          rm -f "$RUNNER_TEMP/s3_err.txt"
+
+          if [[ "$KEYS_EXIT" -ne 0 ]]; then
+            echo "::error::Listing state keys in $STATE_BUCKET failed (exit $KEYS_EXIT): $KEYS_ERR"
+            exit 1
+          fi
+
+          PR_ENVS=$(echo "$RAW_KEYS" \
             | tr '\t' '\n' \
             | grep '^pr-[0-9]*/terraform\.tfstate$' \
             | sed 's|/terraform\.tfstate$||' \
@@ -87,7 +97,7 @@ jobs:
           echo ""
 
           # --- Get open PR numbers ---
-          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number')
+          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --limit 1000 --json number --jq '.[].number')
 
           echo "Open PRs: ${OPEN_PRS:-none}"
           echo ""
@@ -126,20 +136,29 @@ jobs:
           # now stamps every resource with environment=<env> + managed_by=terraform
           # via the provider default_tags, so the Resource Groups Tagging API can
           # find orphans directly — no state, no name-guessing.
+          TAG_EXIT=0
           RESOURCES=$(aws resourcegroupstaggingapi get-resources \
             --tag-filters Key=managed_by,Values=terraform \
             --query 'ResourceTagMappingList[].[ResourceARN,Tags[?Key==`environment`]|[0].Value]' \
-            --output text 2>/dev/null || true)
+            --output text 2>"$RUNNER_TEMP/tag_err.txt") || TAG_EXIT=$?
+          TAG_ERR=$(sed '/^[[:space:]]*$/d' "$RUNNER_TEMP/tag_err.txt" 2>/dev/null | tr '\n' ' ' || true)
+          rm -f "$RUNNER_TEMP/tag_err.txt"
+
+          if [[ "$TAG_EXIT" -ne 0 ]]; then
+            echo "::error::Tagging API query failed (exit $TAG_EXIT): $TAG_ERR"
+            exit 1
+          fi
 
           if [[ -z "$RESOURCES" ]]; then
             echo "No tagged resources returned — nothing to classify (older envs are untagged until they redeploy)."
             exit 0
           fi
 
-          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --json number --jq '.[].number')
+          OPEN_PRS=$(gh pr list --repo "${{ github.repository }}" --state open --limit 1000 --json number --jq '.[].number')
 
           # Distinct pr-* environments that carry live tagged resources.
           TAGGED_ENVS=$(echo "$RESOURCES" | awk '{print $NF}' | grep -E '^pr-[0-9]+$' | sort -u || true)
+          echo "Tagged resources: $(echo "$RESOURCES" | wc -l | tr -d ' '); pr-* environments: $(echo $TAGGED_ENVS)"
 
           ORPHAN_COUNT=0
           while IFS= read -r env_name; do
