@@ -178,6 +178,20 @@
       "picomatch": ">=3.0.2"
     },
     "yaml": ">=2.8.3",
-    "@xmldom/xmldom": ">=0.8.13 <0.9.0"
+    "@xmldom/xmldom": ">=0.8.13 <0.9.0",
+    "metro": "0.83.8",
+    "metro-babel-transformer": "0.83.8",
+    "metro-cache": "0.83.8",
+    "metro-cache-key": "0.83.8",
+    "metro-config": "0.83.8",
+    "metro-core": "0.83.8",
+    "metro-file-map": "0.83.8",
+    "metro-minify-terser": "0.83.8",
+    "metro-resolver": "0.83.8",
+    "metro-runtime": "0.83.8",
+    "metro-source-map": "0.83.8",
+    "metro-symbolicate": "0.83.8",
+    "metro-transform-plugins": "0.83.8",
+    "metro-transform-worker": "0.83.8"
   }
 }
