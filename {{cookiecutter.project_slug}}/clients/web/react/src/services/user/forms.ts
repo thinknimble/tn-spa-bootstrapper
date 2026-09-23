@@ -3,7 +3,7 @@ import {
   EmailValidator,
   FormField,
   IFormField,
-  MinLengthValidator,
+  PatternValidator,
   RequiredValidator,
 } from '@thinknimble/tn-forms'
 import {
@@ -124,22 +124,23 @@ export class ResetPasswordForm extends Form<ResetPasswordInput> {
   static token = new FormField({
     placeholder: 'Verification Token',
     type: 'text',
-    validators: [
-      new MinLengthValidator({ message: 'Please enter a valid 5 digit code', minLength: 5 }),
-    ],
+    validators: [new RequiredValidator({ message: 'This reset link is missing its token' })],
   })
   static password = FormField.create({
     label: 'Password',
     placeholder: 'Password',
     type: 'password',
-
-    validators: [
-      new MinLengthValidator({
-        minLength: 6,
-        message: 'Please enter a password with at least 6 characters',
-      }),
-    ],
     value: '',
+    validators: [
+      new RequiredValidator({ message: 'Please enter a password' }),
+      new PasswordStrengthValidator({ minLength: 8 }),
+      new PatternValidator({
+        pattern: /^(?!\d+$)/,
+        message: 'Password cannot be entirely numeric',
+        code: 'numericPassword',
+      }),
+      new MaxLengthValidator({ maxLength: 128 }),
+    ],
   })
 
   static confirmPassword = FormField.create({

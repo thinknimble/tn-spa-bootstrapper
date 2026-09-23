@@ -13,13 +13,16 @@ from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, mixins, permissions, status, views, viewsets
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
     permission_classes,
+    throttle_classes,
 )
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 
 from {{cookiecutter.project_slug}}.common.filters import MultiValueModelFilter
 from {{cookiecutter.project_slug}}.utils.emails import send_html_email
@@ -27,7 +30,12 @@ from {{cookiecutter.project_slug}}.utils.emails import send_html_email
 from .forms import PreviewTemplateForm
 from .models import User
 from .permissions import HasUserPermissions, IsStaffOrReadOnly
-from .serializers import UserLoginSerializer, UserRegistrationSerializer, UserSerializer
+from .serializers import (
+    PasswordResetConfirmSerializer,
+    UserLoginSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -67,17 +75,18 @@ class UserLoginView(generics.GenericAPIView):
 
 
 class UnifiedLogoutView(views.APIView):
-    """
-    Logout view that clears Django session authentication.
+    """Revokes the account's API token, then clears the Django session.
 
-    This ensures logging out from the client app also logs out of Django admin,
-    solving the issue where users remain authenticated in admin after client logout.
+    Revocation is account-wide: DRF's `Token` is one row per user.
     """
 
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        # Clear the Django session (this logs out of admin too)
+        # Before `django_logout` swaps `request.user` for `AnonymousUser`.
+        if request.user.is_authenticated:
+            Token.objects.filter(user=request.user).delete()
+
         django_logout(request)
 
         response = Response(status=status.HTTP_200_OK)
@@ -143,9 +152,20 @@ class UserViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retriev
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class PasswordResetThrottle(AnonRateThrottle):
+    """Rate-limits password-reset emails by client address.
+
+    The endpoint takes no credentials and sends an email on every accepted call.
+    Rate configured under `password_reset` in `DEFAULT_THROTTLE_RATES`.
+    """
+
+    scope = "password_reset"
+
+
 @api_view(["post"])
 @permission_classes([])
 @authentication_classes([])
+@throttle_classes([PasswordResetThrottle])
 def request_reset_link(request, *args, **kwargs):
     email = request.data.get("email")
     user = User.objects.filter(email=email).first()
@@ -165,7 +185,8 @@ def request_reset_link(request, *args, **kwargs):
 
 
 @api_view(["post"])
-@permission_classes([permissions.AllowAny])
+@permission_classes([])
+@authentication_classes([])
 def reset_password(request, *args, **kwargs):
     user_id = kwargs.get("uid")
     token = kwargs.get("token")
@@ -175,10 +196,17 @@ def reset_password(request, *args, **kwargs):
     is_valid = default_token_generator.check_token(user, token)
     if not is_valid:
         raise ValidationError(detail={"non-field-error": "Invalid or expired token"})
+    serializer = PasswordResetConfirmSerializer(data=request.data, context={"reset_user": user})
+    serializer.is_valid(raise_exception=True)
+
     logger.info(f"Resetting password for user {user_id}")
-    user.set_password(request.data.get("password"))
+    user.set_password(serializer.validated_data["password"])
     user.save()
-    # COMMENT THIS WHEN USING THE PASSWORD RESET FLOW ON WEB ONLY FOR MOBILE - PARI BAKER
+
+    # A new password invalidates Django sessions but `TokenAuthentication` never
+    # consults the password hash, so revoke the old token explicitly.
+    Token.objects.filter(user=user).delete()
+
     response_data = UserLoginSerializer.login(user, request)
     return Response(response_data, status=status.HTTP_200_OK)
 
