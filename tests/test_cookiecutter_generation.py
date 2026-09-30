@@ -124,7 +124,13 @@ def test_terraform_keeps_github_actions_directory(cookies, context):
     assert result.exit_code == 0
     actions_dir = result.project_path / ".github" / "actions"
     assert actions_dir.exists(), ".github/actions/ should exist for Terraform"
-    expected = {"generate-terraform-vars", "setup-aws", "setup-environment", "setup-terraform"}
+    expected = {
+        "generate-terraform-vars",
+        "prepare-terraform",
+        "setup-aws",
+        "setup-environment",
+        "setup-terraform",
+    }
     actual = {d.name for d in actions_dir.iterdir() if d.is_dir()}
     assert expected == actual
 
