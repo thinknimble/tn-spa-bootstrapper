@@ -2,9 +2,7 @@ import functools
 import inspect
 import logging
 
-import rollbar
 from background_task.tasks import Task
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +11,10 @@ def log_errors(fn):
     """
     Decorator to log errors and report to Rollbar.
     Works with both synchronous functions, async functions, and background tasks.
+
+    `logger.exception` reaches Rollbar via the `{{ cookiecutter.project_slug }}`
+    logger's RollbarHandler, so this does not call ``rollbar.report_*`` directly --
+    doing both would report each error twice.
     """
 
     @functools.wraps(fn)
@@ -26,8 +28,6 @@ def log_errors(fn):
             return fn(*args, **kwargs)
         except Exception:
             logger.exception(f"Error in {fn.__name__}")
-            if settings.ROLLBAR_ACCESS_TOKEN:
-                rollbar.report_exc_info()
             # Re-raise the exception to ensure the task is marked as failed
             raise
 
@@ -37,8 +37,6 @@ def log_errors(fn):
             return await fn(*args, **kwargs)
         except Exception:
             logger.exception(f"Error in async {fn.__name__}")
-            if settings.ROLLBAR_ACCESS_TOKEN:
-                rollbar.report_exc_info()
             # Re-raise the exception
             raise
 

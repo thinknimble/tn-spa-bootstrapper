@@ -1,6 +1,5 @@
 import logging
 
-import rollbar
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.password_validation import validate_password
@@ -79,9 +78,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         if not "".join(value.split()).isalpha():
             message = f"User signup with non-alphabetic characters in their name: {value}"
+            # Reaches Rollbar via the `{{ cookiecutter.project_slug }}` logger's RollbarHandler (WARNING+).
             logger.warning(message)
-            if settings.ROLLBAR_ACCESS_TOKEN:
-                rollbar.report_message(message, "warning")
 
     def validate_first_name(self, value):
         self._validate_name(value)
@@ -106,9 +104,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         # Warn about suspicious domains but don't block
         if not any(email.endswith(c) for c in [".com", ".net", ".org", ".co.uk"]):
             message = f"Potentially risky email: {email}"
+            # Reaches Rollbar via the `{{ cookiecutter.project_slug }}` logger's RollbarHandler (WARNING+).
             logger.warning(message)
-            if settings.ROLLBAR_ACCESS_TOKEN:
-                rollbar.report_message(message, "warning")
 
         return email
 

@@ -12,8 +12,20 @@ export default defineConfig(({ mode }) => {
   // NOTE: For docker you must comment out the VITE_DEV_BACKEND_URL or use http://server:8000 in mobile/.env
   const backendUrl = env.VITE_DEV_BACKEND_URL || 'http://server:8000'
 
+  // Heroku exposes the git SHA as SOURCE_VERSION at build time; used as the
+  // Rollbar code_version so uploaded source maps resolve. Same for all envs.
+  const codeVersion = env.SOURCE_VERSION || 'dev'
+
   return {
     plugins: [react(), tsconfigPaths()],
+    define: {
+      __APP_VERSION__: JSON.stringify(codeVersion),
+    },
+    build: {
+      // Emit source maps so Rollbar can de-minify stack traces. Upload them to
+      // Rollbar in CI tagged with the same code_version (the git SHA / SOURCE_VERSION).
+      sourcemap: true,
+    },
     test: {
       globals: true,
       environment: 'jsdom',

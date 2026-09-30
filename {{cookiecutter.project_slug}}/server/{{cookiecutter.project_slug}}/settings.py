@@ -439,6 +439,14 @@ LOGGING = {
 ROLLBAR_ACCESS_TOKEN = config("ROLLBAR_ACCESS_TOKEN", default="")
 
 if IN_PROD or ROLLBAR_ACCESS_TOKEN:
+    # Two Rollbar channels, no overlap:
+    #   - `RollbarNotifierMiddleware` reports unhandled REQUEST exceptions.
+    #   - The `RollbarHandler` on the `{{ cookiecutter.project_slug }}` logger reports
+    #     APP-CODE errors -- e.g. swallowed background-task `logger.*` calls, which no
+    #     middleware ever sees.
+    # The handler is deliberately NOT attached to the `django` logger: an unhandled
+    # 500 is logged to `django.request` AND caught by the middleware, so attaching it
+    # there reported every request exception twice.
     MIDDLEWARE += ["rollbar.contrib.django.middleware.RollbarNotifierMiddleware"]
     ROLLBAR = {
         "access_token": ROLLBAR_ACCESS_TOKEN,
@@ -456,7 +464,6 @@ if IN_PROD or ROLLBAR_ACCESS_TOKEN:
             }
         }
     )
-    LOGGING["loggers"]["django"]["handlers"].append("rollbar")
     LOGGING["loggers"]["{{ cookiecutter.project_slug }}"]["handlers"].append("rollbar")
 
 SWAGGER_SETTINGS = {

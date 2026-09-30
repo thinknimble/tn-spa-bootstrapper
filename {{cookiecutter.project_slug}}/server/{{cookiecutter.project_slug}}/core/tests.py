@@ -243,8 +243,7 @@ class TestEmailValidation:
         assert serializer.is_valid()
 
     @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.logger")
-    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.rollbar")
-    def test_suspicious_email_warning(self, mock_rollbar, mock_logger):
+    def test_suspicious_email_warning(self, mock_logger):
         """Test that suspicious emails trigger warnings"""
         serializer = UserRegistrationSerializer(
             data={
@@ -259,8 +258,7 @@ class TestEmailValidation:
         assert "Potentially risky email" in str(mock_logger.warning.call_args)
 
     @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.logger")
-    @mock.patch("{{ cookiecutter.project_slug }}.core.serializers.rollbar")
-    def test_name_validation_warning(self, mock_rollbar, mock_logger):
+    def test_name_validation_warning(self, mock_logger):
         """Test that non-alphabetic names trigger warnings"""
         serializer = UserRegistrationSerializer(
             data={
