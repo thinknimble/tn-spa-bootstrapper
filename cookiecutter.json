@@ -3,6 +3,7 @@
   "author_name": "ThinkNimble",
   "email": "hello@thinknimble.com",
   "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
+  "__sanitized_tf_service_name": "{{ cookiecutter.project_name.lower()|replace(' ', '-')|replace('_', '-')|replace('.', '-')|trim() }}",
   "_extensions": [
     "cookiecutter.extensions.RandomStringExtension"
   ],
@@ -15,7 +16,10 @@
     "clients/mobile/react-native/src/screens/settings/edit-profile.tsx",
     "clients/mobile/react-native/src/screens/settings/main-settings.tsx",
     "clients/web/react/node_modules",
-    "clients/mobile/react-native/node_modules"
+    "clients/mobile/react-native/node_modules",
+    ".github/scripts/get-env-config.sh",
+    "terraform/scripts/*.sh",
+    ".venv"
   ],
   "mail_service": [
     "Mailgun",
@@ -26,5 +30,6 @@
     "React",
     "None"
   ],
-  "include_mobile": "n"
+  "include_mobile": "n",
+  "deployment_option": ["Heroku", "Terraform (AWS)"]
 }

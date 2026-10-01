@@ -1,0 +1,89 @@
+# Infrastructure Outputs
+
+output "load_balancer_dns" {
+  description = "DNS name of the load balancer"
+  value       = aws_lb.ecs.dns_name
+}
+
+output "application_domain" {
+  description = "The domain where your application will be accessible"
+  value       = local.current_domain
+}
+
+output "application_url" {
+  description = "Full URL to access your application"
+  value       = var.enable_https && local.certificate_arn != "" ? "https://${local.current_domain}" : "http://${local.current_domain}"
+}
+
+output "dns_status" {
+  description = "DNS configuration status"
+  value = var.use_custom_domain ? "⚠️ Using custom domain - DNS managed externally" : (
+    var.base_domain != "" ? (
+      var.route53_zone_id != "" ? "✅ DNS record created: ${local.app_subdomain}" : "⚠️ No Route53 zone provided - using ALB DNS"
+    ) : "ℹ️ No base_domain configured - using ALB DNS directly"
+  )
+}
+
+output "database_endpoint" {
+  description = "RDS instance endpoint"
+  value       = aws_db_instance.postgres.endpoint
+  sensitive   = true
+}
+
+output "redis_endpoint" {
+  description = "Redis cluster endpoint"
+  value       = aws_elasticache_cluster.redis.cache_nodes[0].address
+}
+
+# Certificate information
+output "certificate_arn" {
+  description = "ARN of the SSL certificate being used"
+  value       = var.enable_https ? local.certificate_arn : "N/A - HTTPS disabled"
+}
+
+output "certificate_type" {
+  description = "Type of certificate being used"
+  value       = var.custom_certificate_arn != "" ? "custom" : "default"
+}
+
+# ECS outputs (used by CI/CD for one-off tasks)
+output "ecs_cluster_name" {
+  description = "Name of the ECS cluster"
+  value       = aws_ecs_cluster.main.name
+}
+
+output "app_task_definition_arn" {
+  description = "ARN of the app task definition"
+  value       = aws_ecs_task_definition.app.arn
+}
+
+output "app_container_name" {
+  description = "Name of the app container"
+  value       = "app-${var.service}-${var.environment}"
+}
+
+output "ecs_subnets" {
+  description = "Subnets used by ECS tasks"
+  value       = data.aws_subnets.shared.ids
+}
+
+output "ecs_security_groups" {
+  description = "Security groups used by ECS tasks"
+  value       = [aws_security_group.app.id]
+}
+
+output "app_service_name" {
+  description = "Name of the app ECS service"
+  value       = aws_ecs_service.app.name
+}
+
+output "app_target_group_arn" {
+  description = "ARN of the app ALB target group"
+  value       = aws_lb_target_group.app.arn
+}
+
+# Monitoring outputs
+output "sns_alerts_topic_arn" {
+  description = "ARN of the SNS topic for CloudWatch alarm notifications"
+  value       = var.alert_email != "" ? aws_sns_topic.alerts[0].arn : ""
+}
