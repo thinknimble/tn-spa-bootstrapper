@@ -6,7 +6,7 @@ dependencies = [
     "cookiecutter==2.1.1",
     "binaryornot==0.4.4",
     "isort==5.9.3",
-    "pre-commit==2.13.0",
+    "pre-commit==4.6.2",
     "tox==3.24.0",
     "pytest>=9.0.3",
     "pytest-cookies==0.6.1",
