@@ -361,19 +361,18 @@ wheels = [
 
 [[package]]
 name = "pre-commit"
-version = "2.13.0"
+version = "4.6.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cfgv" },
     { name = "identify" },
     { name = "nodeenv" },
     { name = "pyyaml" },
-    { name = "toml" },
     { name = "virtualenv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/ca/1a1d2049851bd45e89916e03a3faaf32743cbf0cb7e4587d89f66915988e/pre_commit-2.13.0.tar.gz", hash = "sha256:764972c60693dc668ba8e86eb29654ec3144501310f7198742a767bec385a378", size = 166001, upload-time = "2021-05-21T21:05:11.009Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/89/1f3e8e1fc3e97de0fa963495832f581f025f29471602a309e48808244292/pre_commit-4.6.2.tar.gz", hash = "sha256:8f5d7bfb021ecdbcd9d49d89847082dd24172ccde534390081a679ad046e2441", size = 198670, upload-time = "2026-08-10T22:07:18.421Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b2/38/3e5475cbd6921cd8208a06c113384a88bb19ce0cda1155f33d4f19183de1/pre_commit-2.13.0-py2.py3-none-any.whl", hash = "sha256:b679d0fddd5b9d6d98783ae5f10fd0c4c59954f375b70a58cbe1ce9bcf9809a4", size = 190712, upload-time = "2021-05-21T21:05:09.169Z" },
+    { url = "https://files.pythonhosted.org/packages/45/e2/bbb7129c9e7999a6b8ee9cca3b66486c25c423ab5a75f34071798b74ce94/pre_commit-4.6.2-py2.py3-none-any.whl", hash = "sha256:e2dde9a75d3bce11bd3831c26d134df00a2803c1d818be6a0383c3dcda25dc4e", size = 226202, upload-time = "2026-08-10T22:07:16.942Z" },
 ]
 
 [[package]]
@@ -668,7 +667,7 @@ requires-dist = [
     { name = "cookiecutter", specifier = "==2.1.1" },
     { name = "isort", specifier = "==5.9.3" },
     { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "pre-commit", specifier = "==2.13.0" },
+    { name = "pre-commit", specifier = "==4.6.2" },
     { name = "pygithub", specifier = "==1.55" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "pytest-cookies", specifier = "==0.6.1" },
