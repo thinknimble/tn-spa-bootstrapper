@@ -148,6 +148,26 @@ up:
     fi
     echo "Application is starting (PROJECT=$project)..."
 
+# Start all services with debugpy port(s) published for a VSCode attach.
+# Layers compose/docker-compose.debug.yml so the debugpy DAP port reaches the host
+# even in Traefik mode (Traefik can't proxy plaintext DAP). Only one project can
+# hold a given debug port at a time — debug one project at a time. To add more
+# debug targets (e.g. a worker), see compose/docker-compose.debug.yml.
+[group('docker')]
+debug:
+    #!/usr/bin/env bash
+    set -a; source .env; set +a
+    project=$(just _project)
+    if docker network inspect proxy >/dev/null 2>&1; then
+      just setup-traefik
+      PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml -f compose/docker-compose.debug.yml up -d
+    else
+      # Explicit -f flags stop Compose auto-loading docker-compose.override.yml,
+      # so list it alongside the debug overlay.
+      PROJECT=$project docker compose -f docker-compose.yaml -f docker-compose.override.yml -f compose/docker-compose.debug.yml up -d
+    fi
+    echo "Application is starting with debugpy port 5678 exposed (PROJECT=$project)..."
+
 [group('docker')]
 down:
     #!/usr/bin/env bash
