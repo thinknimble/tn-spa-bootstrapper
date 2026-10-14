@@ -94,7 +94,13 @@ MIDDLEWARE = [
     "{{ cookiecutter.project_slug }}.common.api_errors.ApiJsonErrorMiddleware",
 ]
 
-OLD_PASSWORD_FIELD_ENABLED = True
+# dj-rest-auth 7 reads its configuration from this dict. A bare
+# OLD_PASSWORD_FIELD_ENABLED is a version 2 setting that version 7 ignores,
+# and the default is False, so the password-change endpoint would accept a new
+# password without asking for the current one.
+REST_AUTH = {
+    "OLD_PASSWORD_FIELD_ENABLED": True,
+}
 LOGIN_URL = "rest_framework:login"
 LOGOUT_URL = "rest_framework:logout"
 
