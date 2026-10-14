@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { MustMatchValidator } from '@thinknimble/tn-forms'
 import { FormProvider, useTnForm } from '@thinknimble/tn-forms-react'
-import { isAxiosError } from 'axios'
 import { FormEvent, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { AuthLayout } from 'src/components/auth-layout'
@@ -9,12 +8,12 @@ import { Button } from 'src/components/button'
 import { ErrorMessage, ErrorsList } from 'src/components/errors'
 import { PasswordInput } from 'src/components/password-input'
 import { ResetPasswordForm, TResetPasswordForm, userApi } from 'src/services/user'
+import { getErrorMessages } from 'src/utils/errors'
 
 export const ResetPasswordInner = () => {
   const { form, createFormFieldChangeHandler, overrideForm } = useTnForm<TResetPasswordForm>()
   const { userId, token } = useParams()
-  console.log(userId, token)
-  const [error, setError] = useState('')
+  const [errorMessages, setErrorMessages] = useState<string[]>()
   const [success, setSuccess] = useState(false)
 
   const { mutate: confirmResetPassword } = useMutation({
@@ -22,12 +21,10 @@ export const ResetPasswordInner = () => {
     onSuccess: () => {
       setSuccess(true)
     },
-    onError: (e) => {
-      if (isAxiosError(e) && e.response?.data && 'non-field-error' in e.response.data) {
-        setError(e.response.data['non-field-error'])
-        return
-      }
-      setError('There was an error resetting your password. Try again later')
+    onError: (e: Error) => {
+      setErrorMessages(
+        getErrorMessages(e, 'There was an error resetting your password. Try again later'),
+      )
     },
   })
 
@@ -39,7 +36,7 @@ export const ResetPasswordInner = () => {
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(form.value)
+    setErrorMessages(undefined)
 
     if (form.isValid) {
       confirmResetPassword({
@@ -94,7 +91,7 @@ export const ResetPasswordInner = () => {
             Submit
           </Button>
         </form>
-        {error ? <ErrorMessage>{error}</ErrorMessage> : null}
+        {errorMessages?.length ? <ErrorMessage>{errorMessages.join(' ')}</ErrorMessage> : null}
       </div>
     </AuthLayout>
   )
