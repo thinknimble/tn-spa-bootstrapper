@@ -24,7 +24,7 @@ concurrency:
 jobs:
   Setup:
     if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 0.2 minutes in the last three runs. It renders the template and uploads
     # the result as an artifact.
     timeout-minutes: 10
@@ -58,7 +58,7 @@ jobs:
   Playwright:
     needs: Setup
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
     if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'

@@ -32,7 +32,7 @@ on:
         type: "boolean"
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # No `timeout-minutes` and no `concurrency` group on purpose. `eas build`
     # here has no `--no-wait`, thus this job waits for a build in a remote
     # queue whose length this repository does not control. A timeout would
