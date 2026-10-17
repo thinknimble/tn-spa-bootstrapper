@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   Pytest_bootstrapper:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 0.2 to 0.3 minutes in the last three runs. The 10 minutes are for a
     # `uv sync` with no cache, not for the 8 tests.
     timeout-minutes: 10
@@ -37,7 +37,7 @@ jobs:
       - name: Test with pytest
         run: uv run pytest
   Pytest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # The heaviest job here: it renders the template, syncs the generated
     # project and runs the generated suite. 1.2 to 1.7 minutes in the last
     # three runs. 15 minutes, not the 20 that the generated project gets,
