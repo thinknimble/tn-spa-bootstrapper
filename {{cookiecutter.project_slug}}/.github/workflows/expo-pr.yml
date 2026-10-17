@@ -8,7 +8,7 @@ concurrency:
 on: [deployment_status]
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: jwalton/gh-find-current-pr@master
         id: findPr
@@ -22,7 +22,7 @@ jobs:
 
   publish:
     if: github.event.deployment_status.state == 'success' # guarantee backend deployment first
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
     steps:
       - name: 🏗 Setup repo
