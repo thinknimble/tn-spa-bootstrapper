@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   Ruff:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # ruff needs seconds. 10 minutes is only a stop for a hang, which without
     # it runs for the 6-hour GitHub default.
     timeout-minutes: 10
@@ -24,7 +24,7 @@ jobs:
         run: uv run ruff format --check server -q
 {%- if cookiecutter.client_app == 'React' %}
   Lint_Web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # More than ruff, because `npm install` gets the whole dependency tree
     # from the network, and a slow registry is not a hang.
     timeout-minutes: 15
@@ -51,7 +51,7 @@ jobs:
 {%- endif %}
 {%- if cookiecutter.include_mobile == 'y' %}
   Lint_Mobile:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # The same as `Lint_Web`, and for the same reason. The mobile dependency
     # tree is the larger of the two.
     timeout-minutes: 15

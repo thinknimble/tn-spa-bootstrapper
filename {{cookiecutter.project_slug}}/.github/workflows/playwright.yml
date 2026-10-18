@@ -31,7 +31,7 @@ concurrency:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
     if: github.event.deployment_status.state == 'success' || github.event_name == 'workflow_dispatch'
