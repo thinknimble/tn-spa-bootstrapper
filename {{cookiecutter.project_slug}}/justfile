@@ -136,17 +136,58 @@ server-lint:
 [group('docker')]
 up:
     #!/usr/bin/env bash
+    set -e
     # Source .env explicitly so vars are correct even if the host shell has stale
     # values from another worktree/project (just's dotenv-load won't override them).
     set -a; source .env; set +a
     project=$(just _project)
     if docker network inspect proxy >/dev/null 2>&1; then
+      mode=traefik
+      echo "Mode: Traefik (proxy network found) — no host ports published, stacks coexist."
       just setup-traefik
       PROJECT=$project docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml up -d
     else
+      mode=direct
+      echo "Mode: direct (no proxy network) — publishing host ports from docker-compose.override.yml."
       PROJECT=$project docker compose up -d
     fi
-    echo "Application is starting (PROJECT=$project)..."
+    just _verify-stack "$project" "$mode"
+    echo "Application is starting (PROJECT=$project, mode=$mode)..."
+
+# Fail loudly when a container is not running after `up -d`. `docker compose up -d`
+# can return 0 with a container stuck in Created/Exited (e.g. a port collision).
+[private]
+_verify-stack project mode:
+    #!/usr/bin/env bash
+    set -e
+    project="{{ "{{ project }}" }}"
+    if [ "{{ "{{ mode }}" }}" = "traefik" ]; then
+      dc="docker compose -f docker-compose.yaml -f compose/docker-compose.traefik.yml"
+    else
+      dc="docker compose"
+    fi
+    echo "Verifying all containers started..."
+    ps_err=$(mktemp)
+    if ! ps_output=$(PROJECT=$project $dc ps -a --format '{{ "{{{{" }}.Name{{ "}}" }}: {{ "{{{{" }}.State{{ "}}" }}' 2>"$ps_err"); then
+      echo "Error: could not query container state for project '$project' (docker compose ps failed):" >&2
+      if [ -s "$ps_err" ]; then cat "$ps_err" >&2; fi
+      if [ -n "$ps_output" ]; then printf '%s\n' "$ps_output" >&2; fi
+      rm -f "$ps_err"
+      exit 1
+    fi
+    if [ -s "$ps_err" ]; then cat "$ps_err" >&2; fi
+    rm -f "$ps_err"
+    if [ -z "$ps_output" ]; then
+      echo "Error: docker compose ps returned no containers for project '$project' — cannot determine container state" >&2
+      exit 1
+    fi
+    not_running=$(printf '%s\n' "$ps_output" | grep -v ': running$' || true)
+    if [ -n "$not_running" ]; then
+      echo "Error: one or more containers failed to reach 'running' state:" >&2
+      echo "$not_running" >&2
+      PROJECT=$project $dc ps -a
+      exit 1
+    fi
 
 [group('docker')]
 down:
@@ -239,10 +280,15 @@ setup-traefik:
     fi
 
     # 3. Start Traefik if not already running
-    if docker inspect traefik >/dev/null 2>&1; then
-      echo "Traefik container already exists, skipping"
+    traefik_state=$(docker inspect -f '{{ "{{{{" }}.State.Running{{ "}}" }}' traefik 2>/dev/null || echo "absent")
+    if [ "$traefik_state" = "true" ]; then
+      echo "Traefik already running, skipping"
     else
-      echo "Starting Traefik gateway..."
+      if [ "$traefik_state" = "false" ]; then
+        echo "Traefik container exists but is stopped — starting it..."
+      else
+        echo "Starting Traefik gateway..."
+      fi
       docker compose -f "$TRAEFIK_DIR/docker-compose.yml" up -d
       echo "Traefik running — dashboard at http://localhost:9090"
     fi
@@ -313,21 +359,13 @@ worktree action branch:
         just up
 
         # Wait for server to be fully ready (migrate done + runserver listening).
-        # Uses docker exec -w /tmp to avoid the bind mount namespace issue
-        # caused by Docker Desktop 29.x + git worktrees.
-        container="${project_name}-server"
+        # Absolute path into the INVOKING checkout: the new worktree holds the
+        # target branch's tree, which may not have scripts/ yet.
         echo "Waiting for server to be ready..."
-        for i in $(seq 1 120); do
-          if docker exec -w /tmp "$container" python -c \
-            "import socket; s=socket.create_connection(('localhost',8000),1); s.close()" 2>/dev/null; then
-            echo "Server is ready."
-            break
-          fi
-          if [ "$i" -eq 120 ]; then
-            echo "Warning: server did not become ready within 120s"
-          fi
-          sleep 1
-        done
+        if ! bash "{{ "{{ justfile_directory() }}" }}/scripts/wait-for-server.sh" "${project_name}-server"; then
+          PROJECT=$project_name docker compose ps -a
+          exit 1
+        fi
 
         # Seed data via docker compose run (not exec) to bypass the mount namespace issue
         docker compose run --rm -T server python server/manage.py create_test_data

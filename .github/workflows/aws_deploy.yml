@@ -1,0 +1,255 @@
+name: AWS Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+concurrency:
+  group: aws-deploy-${{ github.event.inputs.environment }}
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  SERVICE_NAME: ${{ vars.SERVICE_NAME }}
+  ECR_REPOSITORY_NAME: ${{ vars.ECR_REPOSITORY_NAME }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Render template
+        run: |
+          uv run cookiecutter . \
+            --config-file cookiecutter/react_terraform_template.yaml \
+            --no-input -f
+
+      # ── Environment config ──────────────────────────────────────────
+      - name: Setup environment config
+        id: env-config
+        working-directory: my_project
+        run: |
+          ENVIRONMENT="${{ github.event.inputs.environment }}"
+          ENV_CONFIG=$(.github/scripts/get-env-config.sh "$ENVIRONMENT")
+
+          extract() { echo "$ENV_CONFIG" | grep "^$1=" | cut -d= -f2; }
+
+          echo "environment=$ENVIRONMENT"           >> $GITHUB_OUTPUT
+          echo "image_tag=$ENVIRONMENT-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+          echo "account_id=$(extract account_id)"   >> $GITHUB_OUTPUT
+          echo "role_arn=$(extract role_arn)"        >> $GITHUB_OUTPUT
+          echo "region=$(extract region)"            >> $GITHUB_OUTPUT
+          echo "ecr_registry=$(extract ecr_registry)" >> $GITHUB_OUTPUT
+          echo "secrets_bucket=$(extract secrets_bucket)" >> $GITHUB_OUTPUT
+
+          # Domain config
+          echo "base_domain=$(extract base_domain)"             >> $GITHUB_OUTPUT
+          echo "use_custom_domain=$(extract use_custom_domain)" >> $GITHUB_OUTPUT
+          echo "custom_domain=$(extract custom_domain)"         >> $GITHUB_OUTPUT
+          echo "route53_zone_id=$(extract route53_zone_id)"     >> $GITHUB_OUTPUT
+          echo "certificate_arn=$(extract certificate_arn)"     >> $GITHUB_OUTPUT
+
+          # App config
+          echo "debug=$(extract debug)"                         >> $GITHUB_OUTPUT
+          echo "current_port=$(extract current_port)"           >> $GITHUB_OUTPUT
+          echo "allowed_hosts=$(extract allowed_hosts)"         >> $GITHUB_OUTPUT
+          echo "enable_emails=$(extract enable_emails)"         >> $GITHUB_OUTPUT
+          echo "staff_email=$(extract staff_email)"             >> $GITHUB_OUTPUT
+          echo "use_aws_storage=$(extract use_aws_storage)"     >> $GITHUB_OUTPUT
+          echo "aws_s3_region_name=$(extract aws_s3_region_name)" >> $GITHUB_OUTPUT
+          echo "enable_https=$(extract enable_https)"           >> $GITHUB_OUTPUT
+          echo "alert_email=$(extract alert_email)"             >> $GITHUB_OUTPUT
+
+      # ── AWS auth + ECR ──────────────────────────────────────────────
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ steps.env-config.outputs.role_arn }}
+          role-session-name: GitHubActions-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
+
+      - name: Create ECR repository if needed
+        run: |
+          REPO_NAME="${{ env.ECR_REPOSITORY_NAME }}"
+          if ! aws ecr describe-repositories --repository-names "$REPO_NAME" >/dev/null 2>&1; then
+            aws ecr create-repository --repository-name "$REPO_NAME"
+            echo "Created ECR repository: $REPO_NAME"
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Build & push Docker image ──────────────────────────────────
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: my_project
+          file: my_project/compose/server/tf/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.env-config.outputs.ecr_registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ steps.env-config.outputs.image_tag }}
+            ${{ steps.env-config.outputs.ecr_registry }}/${{ env.ECR_REPOSITORY_NAME }}:${{ steps.env-config.outputs.environment }}-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ── Terraform init ─────────────────────────────────────────────
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ~1.5
+
+      - name: Terraform init
+        working-directory: my_project/terraform
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+          BACKEND_FILE=""
+          if [[ -n "$ACCOUNT_ID" && -f "backend-${ACCOUNT_ID}.hcl" ]]; then
+            BACKEND_FILE="backend-${ACCOUNT_ID}.hcl"
+          elif [[ -f "backend.hcl" ]]; then
+            BACKEND_FILE="backend.hcl"
+          else
+            echo "::error::No backend configuration found (backend.hcl or backend-{account-id}.hcl)"
+            exit 1
+          fi
+
+          terraform init \
+            -backend-config="$BACKEND_FILE" \
+            -backend-config="key=${{ steps.env-config.outputs.environment }}/terraform.tfstate"
+
+      # ── Generate terraform.tfvars ──────────────────────────────────
+      - name: Retrieve secrets from S3
+        id: secrets
+        working-directory: my_project
+        run: |
+          if ! .github/scripts/secrets-sync.sh pull "${{ steps.env-config.outputs.environment }}" --file secrets.json; then
+            echo "::error::Failed to retrieve secrets for ${{ steps.env-config.outputs.environment }}"
+            exit 1
+          fi
+          if ! jq empty secrets.json 2>/dev/null; then
+            echo "::error::Retrieved file contains invalid JSON"
+            exit 1
+          fi
+
+          REQUIRED_KEYS=("django_secret_key" "db_password" "django_superuser_password")
+          for key in "${REQUIRED_KEYS[@]}"; do
+            val=$(jq -r ".secrets.${key} // empty" secrets.json)
+            if [[ -z "$val" ]]; then
+              echo "::error::Required secret '${key}' is missing or null"
+              exit 1
+            fi
+          done
+
+          DJANGO_SECRET_KEY=$(jq -r '.secrets.django_secret_key' secrets.json)
+          DB_PASSWORD=$(jq -r '.secrets.db_password' secrets.json)
+          DJANGO_SUPERUSER_PASSWORD=$(jq -r '.secrets.django_superuser_password' secrets.json)
+          ROLLBAR_ACCESS_TOKEN=$(jq -r '.secrets.rollbar_access_token // ""' secrets.json)
+          AWS_ACCESS_KEY_ID_VAL=$(jq -r '.secrets.aws_access_key_id // ""' secrets.json)
+          AWS_SECRET_ACCESS_KEY_VAL=$(jq -r '.secrets.aws_secret_access_key // ""' secrets.json)
+          PLAYWRIGHT_TEST_USER_PASS=$(jq -r '.secrets.playwright_test_user_pass // ""' secrets.json)
+
+          echo "::add-mask::$DJANGO_SECRET_KEY"
+          echo "::add-mask::$DB_PASSWORD"
+          echo "::add-mask::$DJANGO_SUPERUSER_PASSWORD"
+          [ -n "$ROLLBAR_ACCESS_TOKEN" ] && echo "::add-mask::$ROLLBAR_ACCESS_TOKEN"
+          [ -n "$AWS_ACCESS_KEY_ID_VAL" ] && echo "::add-mask::$AWS_ACCESS_KEY_ID_VAL"
+          [ -n "$AWS_SECRET_ACCESS_KEY_VAL" ] && echo "::add-mask::$AWS_SECRET_ACCESS_KEY_VAL"
+          echo "::add-mask::$PLAYWRIGHT_TEST_USER_PASS"
+
+          echo "django_secret_key=$DJANGO_SECRET_KEY"                 >> $GITHUB_OUTPUT
+          echo "db_password=$DB_PASSWORD"                             >> $GITHUB_OUTPUT
+          echo "django_superuser_password=$DJANGO_SUPERUSER_PASSWORD" >> $GITHUB_OUTPUT
+          echo "rollbar_access_token=$ROLLBAR_ACCESS_TOKEN"           >> $GITHUB_OUTPUT
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID_VAL"             >> $GITHUB_OUTPUT
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_VAL"     >> $GITHUB_OUTPUT
+          echo "playwright_test_user_pass=$PLAYWRIGHT_TEST_USER_PASS" >> $GITHUB_OUTPUT
+          rm -f secrets.json
+
+      - name: Generate terraform.tfvars
+        working-directory: my_project/terraform
+        run: |
+          SERVICE_NAME="${{ env.SERVICE_NAME }}"
+          ECR_REPOSITORY_NAME="${{ env.ECR_REPOSITORY_NAME }}"
+          [ -n "$SERVICE_NAME" ] && echo "service = \"$SERVICE_NAME\"" >> terraform.tfvars
+          [ -n "$ECR_REPOSITORY_NAME" ] && echo "ecr_app_repository_name = \"$ECR_REPOSITORY_NAME\"" >> terraform.tfvars
+
+          # db_name / db_user: strip hyphens/underscores to match rendered template logic
+          DB_NAME="$(echo "${SERVICE_NAME}${{ steps.env-config.outputs.environment }}db" | tr -d '-')"
+          DB_USER="$(echo "${SERVICE_NAME}_${{ steps.env-config.outputs.environment }}_user" | tr '-' '_')"
+
+          cat << EOF >> terraform.tfvars
+          environment = "${{ steps.env-config.outputs.environment }}"
+          aws_region = "${{ env.AWS_REGION }}"
+          ecr_tag = "${{ steps.env-config.outputs.image_tag }}"
+          secret_key = "${{ steps.secrets.outputs.django_secret_key }}"
+          db_pass = "${{ steps.secrets.outputs.db_password }}"
+          django_superuser_password = "${{ steps.secrets.outputs.django_superuser_password }}"
+          rollbar_access_token = "${{ steps.secrets.outputs.rollbar_access_token }}"
+          aws_access_key_id = "${{ steps.secrets.outputs.aws_access_key_id }}"
+          aws_secret_access_key = "${{ steps.secrets.outputs.aws_secret_access_key }}"
+          playwright_test_user_pass = "${{ steps.secrets.outputs.playwright_test_user_pass }}"
+          db_name = "$DB_NAME"
+          db_user = "$DB_USER"
+          debug = "${{ steps.env-config.outputs.debug }}"
+          current_port = "${{ steps.env-config.outputs.current_port }}"
+          allowed_hosts = "${{ steps.env-config.outputs.allowed_hosts }}"
+          enable_emails = "${{ steps.env-config.outputs.enable_emails }}"
+          staff_email = "${{ steps.env-config.outputs.staff_email }}"
+          use_aws_storage = "${{ steps.env-config.outputs.use_aws_storage }}"
+          aws_s3_region_name = "${{ steps.env-config.outputs.aws_s3_region_name }}"
+          enable_https = ${{ steps.env-config.outputs.enable_https }}
+          playwright_test_base_url = "http://localhost:8000"
+          base_domain = "${{ steps.env-config.outputs.base_domain }}"
+          use_custom_domain = ${{ steps.env-config.outputs.use_custom_domain }}
+          current_domain = "${{ steps.env-config.outputs.custom_domain }}"
+          route53_zone_id = "${{ steps.env-config.outputs.route53_zone_id }}"
+          certificate_arn = "${{ steps.env-config.outputs.certificate_arn }}"
+          alert_email = "${{ steps.env-config.outputs.alert_email }}"
+          aws_profile = ""
+          EOF
+
+      # ── Terraform plan + apply ─────────────────────────────────────
+      - name: Terraform plan
+        working-directory: my_project/terraform
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Terraform apply
+        working-directory: my_project/terraform
+        run: terraform apply -input=false tfplan
+
+      - name: Show application URL
+        working-directory: my_project/terraform
+        run: |
+          APP_URL=$(terraform output -raw application_url 2>/dev/null || true)
+          [[ "$APP_URL" != http* ]] && APP_URL=""
+          if [[ -n "$APP_URL" ]]; then
+            echo "Application URL: $APP_URL"
+          fi
