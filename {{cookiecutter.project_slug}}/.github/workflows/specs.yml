@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   Validate_Specs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # This job takes seconds. 5 minutes gives the download of the spekk binary
     # all the time it needs, and stops a hang that otherwise runs for the
     # 6-hour GitHub default.

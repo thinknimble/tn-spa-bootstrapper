@@ -1,6 +1,5 @@
 export default class Logger {
-  constructor() {
-  }
+  constructor() {}
 
   get logger() {
     const logger = {}

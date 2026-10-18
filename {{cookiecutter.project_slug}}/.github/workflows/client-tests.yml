@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   Vitest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # `npm ci` gets a whole dependency tree from the network, which is the
     # long part of this job, and a slow registry is not a hang. The tests
     # themselves run in jsdom and touch no database.
