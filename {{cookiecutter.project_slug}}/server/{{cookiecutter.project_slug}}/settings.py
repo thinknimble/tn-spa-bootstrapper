@@ -317,10 +317,12 @@ else:
 #
 AUTH_USER_MODEL = "core.User"
 AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {"min_length": 8},
     },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
@@ -359,6 +361,9 @@ REST_FRAMEWORK = {
         "1.0",
     ],
     "DEFAULT_VERSION": "1.0",
+    "DEFAULT_THROTTLE_RATES": {
+        "password_reset": "5/hour",
+    },
     "EXCEPTION_HANDLER": "rest_framework.views.exception_handler",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
