@@ -1,0 +1,32 @@
+# Opt-in debug overlay — layered only by `just debug`.
+# Publishes debugpy's raw DAP port directly to the host, because Traefik can only
+# host-route TCP with TLS+SNI and debugpy speaks plaintext TCP. In standalone
+# (override.yml) mode the port is already published; this overlay is what makes
+# attaching work in Traefik mode.
+#
+# Fixed host ports => only ONE project can publish them at a time. That's fine:
+# you attach a debugger to one project at a time. Other projects use plain `just up`.
+#
+# The port must be published on the SAME service whose container runs that debugpy
+# listener. The server's entrypoint (compose/server/start) already launches:
+#   python -m debugpy --listen 0.0.0.0:5678 server/manage.py runserver ...
+# so 5678 is published on `server` below. Attach in VSCode with a debugpy "attach"
+# config pointing at localhost:5678.
+#
+# --- Adding another debug target ---
+# To debug a second process (e.g. a background_task worker), give it its own port:
+#   1. Add a service here that runs the process under debugpy on a new port, and
+#      publish that port on the same service. Example:
+#
+#        worker:
+#          command: python -m debugpy --listen 0.0.0.0:5679 server/manage.py process_tasks
+#          ports:
+#            - "5679:5679"
+#
+#   2. Add a matching debugpy "attach" config in .vscode/launch.json → localhost:5679.
+#
+# Each debugpy listener needs its own port; two listeners cannot share 5678.
+services:
+  server:
+    ports:
+      - "5678:5678"
