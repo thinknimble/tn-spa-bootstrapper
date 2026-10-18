@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # A job that hangs runs for 6 hours, which is the GitHub default, before
     # anything stops it. That is billable time for a job that cannot pass, and
     # it holds a runner. 20 minutes is many times what this job takes, thus it

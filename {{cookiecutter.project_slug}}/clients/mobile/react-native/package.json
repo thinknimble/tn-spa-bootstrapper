@@ -163,7 +163,7 @@
     "fast-uri": ">=3.1.8 <4.0.0",
     "postcss": ">=8.5.18",
     "form-data": ">=4.0.6",
-    "shell-quote": ">=1.8.4",
+    "shell-quote": ">=1.11.0 <2.0.0",
     "picomatch": ">=4.0.4",
     "anymatch": {
       "picomatch": ">=2.3.2"
@@ -195,6 +195,9 @@
     "metro-source-map": "0.83.8",
     "metro-symbolicate": "0.83.8",
     "metro-transform-plugins": "0.83.8",
-    "metro-transform-worker": "0.83.8"
+    "metro-transform-worker": "0.83.8",
+    "compression": ">=1.8.2 <2.0.0",
+    "source-map-js": ">=1.2.2 <2.0.0",
+    "postcss-selector-parser": ">=7.1.6 <8.0.0"
   }
 }

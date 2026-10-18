@@ -6,7 +6,7 @@ on: [deployment_status, workflow_dispatch]
 jobs:
   Setup:
     if: github.event.deployment_status.state == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # This job renders the template and uploads the result. It calls no
     # remote build service, thus a stop for a hang is safe here.
     timeout-minutes: 10
@@ -45,7 +45,7 @@ jobs:
           retention-days: 1
   configuremobile:
     needs: Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # A checkout and one `git diff`. Seconds of work.
     timeout-minutes: 5
     outputs:
@@ -90,7 +90,7 @@ jobs:
   publish:
     if: needs.configuremobile.outputs.BUILD_MOBILE_APP != 0
     needs: configuremobile
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # No `timeout-minutes` on purpose. `eas build` here has no `--no-wait`,
     # thus this job waits for a build in a remote queue whose length this
     # repository does not control. A timeout would stop the job, and it would

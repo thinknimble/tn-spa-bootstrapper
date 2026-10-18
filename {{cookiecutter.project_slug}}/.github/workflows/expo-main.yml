@@ -13,7 +13,7 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
         BUILD_MOBILE_APP: {{ "${{ steps.checkdiff.outputs.BUILD_MOBILE_APP }}" }}
     steps:
@@ -31,7 +31,7 @@ jobs:
           fi
 
   printouts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: setup
     steps:
       - name: Echo files
@@ -40,7 +40,7 @@ jobs:
           echo "$([[ needs.setup.outputs.BUILD_MOBILE_APP != 0 ]] && echo 'Changes detected in mobile dir..' || 'No changes in mobile app detected... will not deploy to expo')"
   publish:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: needs.setup.outputs.BUILD_MOBILE_APP != 0
     steps:
       - name: 🏗 Setup repo
