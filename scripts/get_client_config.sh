@@ -1,8 +1,9 @@
 #!/bin/bash
 
 git fetch origin main
-react_count=$(git diff --name-only origin/main -- | grep "/clients/web/react/" | wc -l)
-rn_count=$(git diff --name-only origin/main -- | grep "/clients/mobile/react-native/" | wc -l)
+base=$(./scripts/mobile_diff_base.sh)
+react_count=$(git diff --name-only "$base" HEAD -- | grep "/clients/web/react/" | wc -l)
+rn_count=$(git diff --name-only "$base" HEAD -- | grep "/clients/mobile/react-native/" | wc -l)
 config_file_path="cookiecutter/react_template.yaml"
 
 if [ "$rn_count" != 0 ]; then

@@ -19,8 +19,8 @@
     "run:ios:release": "expo run:ios --configuration Release",
     "prebuild:local": "source .env && SENTRY_PROJECT=${SENTRY_PROJECT_NAME} SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN} expo prebuild",
     "pub:web": "npx expo export:web && cd web-build && vercel --prod && cd ..",
-    "format:check": "prettier --check ./src",
-    "format:write": "prettier --write ./src",
+    "format:check": "prettier --check ./src ./*.js ./*.tsx ./*.ts",
+    "format:write": "prettier --write ./src ./*.js ./*.tsx ./*.ts",
     "lint:tslint": "tsc --skipLibCheck",
     "lint:eslint": "eslint --ext .js,.ts,.jsx,.tsx --max-warnings=0 src",
     "android": "expo run:android",
@@ -43,7 +43,7 @@
     "@thinknimble/tn-forms": "3.3.3",
     "@thinknimble/tn-forms-react": "^1.0.3",
     "@thinknimble/tn-models": "^3.0.0",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "clsx": "^2.1.1",
     "date-fns": "^2.29.3",
     "eslint-plugin-flowtype": "^8.0.3",
@@ -130,9 +130,13 @@
   ],
   "license": "MIT",
   "overrides": {
+    "decode-uri-component": ">=0.5.0",
     "serialize-javascript": "^7.0.3",
     "@typescript-eslint/utils": {
-      "minimatch": "^9.0.7"
+      "minimatch": {
+        ".": "^9.0.7",
+        "brace-expansion": ">=2.1.7 <3.0.0"
+      }
     },
     "flatted": ">=3.4.2",
     "webpack": ">=5.104.1",
@@ -141,25 +145,25 @@
     "tmp": ">=0.2.6",
     "@babel/helpers": ">=7.26.10",
     "node-forge": ">=1.4.0",
-    "undici": ">=7.29.0",
+    "undici": ">=7.29.1 <8.0.0",
     "ws": ">=6.2.4",
     "minimatch@3": {
-      "brace-expansion": ">=1.1.18 <2.0.0"
+      "brace-expansion": ">=1.1.21 <2.0.0"
     },
     "minimatch@9": {
-      "brace-expansion": ">=2.1.4 <3.0.0"
+      "brace-expansion": ">=2.1.7 <3.0.0"
     },
     "minimatch@10": {
-      "brace-expansion": ">=5.0.8"
+      "brace-expansion": ">=5.0.12"
     },
     "xcode": {
       "uuid": ">=11.1.1 <12.0.0"
     },
     "tar": ">=7.5.21",
-    "fast-uri": ">=3.1.5 <4.0.0",
+    "fast-uri": ">=3.1.8 <4.0.0",
     "postcss": ">=8.5.18",
     "form-data": ">=4.0.6",
-    "shell-quote": ">=1.8.4",
+    "shell-quote": ">=1.11.0 <2.0.0",
     "picomatch": ">=4.0.4",
     "anymatch": {
       "picomatch": ">=2.3.2"
@@ -177,6 +181,23 @@
       "picomatch": ">=3.0.2"
     },
     "yaml": ">=2.8.3",
-    "@xmldom/xmldom": ">=0.8.13 <0.9.0"
+    "@xmldom/xmldom": ">=0.8.13 <0.9.0",
+    "metro": "0.83.8",
+    "metro-babel-transformer": "0.83.8",
+    "metro-cache": "0.83.8",
+    "metro-cache-key": "0.83.8",
+    "metro-config": "0.83.8",
+    "metro-core": "0.83.8",
+    "metro-file-map": "0.83.8",
+    "metro-minify-terser": "0.83.8",
+    "metro-resolver": "0.83.8",
+    "metro-runtime": "0.83.8",
+    "metro-source-map": "0.83.8",
+    "metro-symbolicate": "0.83.8",
+    "metro-transform-plugins": "0.83.8",
+    "metro-transform-worker": "0.83.8",
+    "compression": ">=1.8.2 <2.0.0",
+    "source-map-js": ">=1.2.2 <2.0.0",
+    "postcss-selector-parser": ">=7.1.6 <8.0.0"
   }
 }
