@@ -33,9 +33,7 @@ const DIST = 'dist'
 const BASE = '/static/'
 const ENDPOINT = 'https://api.rollbar.com/api/1/sourcemap'
 
-const tokens = (process.env.ROLLBAR_SOURCEMAP_TOKENS ?? process.env.ROLLBAR_SOURCEMAP_TOKEN ?? '')
-  .split(/[\s,]+/)
-  .filter(Boolean)
+const tokens = (process.env.ROLLBAR_SOURCEMAP_TOKENS ?? '').split(/[\s,]+/).filter(Boolean)
 const version = process.env.SOURCE_VERSION ?? ''
 
 async function findMaps(dir) {
