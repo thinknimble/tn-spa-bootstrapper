@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM python:3.12-slim-bullseye
 
 # These environment values help with watching for file changes
@@ -42,7 +43,18 @@ COPY ./client /app/client
 # Install client dependencies and build
 WORKDIR /app/client
 RUN npm ci
-RUN npm run build
+
+# Build the client, then upload its source maps to Rollbar and delete them from
+# dist/ so collectstatic/WhiteNoise never serve them. SOURCE_VERSION (the git SHA)
+# must match the client's baked code_version; the Rollbar token is mounted as a
+# BuildKit secret so it never lands in an image layer. Both are optional: without
+# them the upload is skipped but the maps are still stripped (see
+# client/scripts/upload-sourcemaps.mjs).
+ARG SOURCE_VERSION=dev
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+RUN --mount=type=secret,id=rollbar_sourcemap_token \
+    ROLLBAR_SOURCEMAP_TOKEN="$(cat /run/secrets/rollbar_sourcemap_token 2>/dev/null || true)" \
+    npm run build && npm run upload-sourcemaps
 
 # Move client dist and public to /client/ to match Django STATICFILES_DIRS
 RUN mkdir -p /client && \

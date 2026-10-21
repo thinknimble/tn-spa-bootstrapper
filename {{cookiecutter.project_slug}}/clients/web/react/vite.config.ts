@@ -22,9 +22,12 @@ export default defineConfig(({ mode }) => {
       __APP_VERSION__: JSON.stringify(codeVersion),
     },
     build: {
-      // Emit source maps so Rollbar can de-minify stack traces. Upload them to
-      // Rollbar in CI tagged with the same code_version (the git SHA / SOURCE_VERSION).
-      sourcemap: true,
+      // 'hidden' emits source maps but omits the `//# sourceMappingURL=` comment
+      // from the bundle, so nothing public points at them. The build step uploads
+      // them to Rollbar (tagged with the same code_version / SOURCE_VERSION) and
+      // then deletes them before collectstatic, so they are never served. See
+      // package.json `upload-sourcemaps` and compose/server/tf/Dockerfile.
+      sourcemap: 'hidden',
     },
     test: {
       globals: true,

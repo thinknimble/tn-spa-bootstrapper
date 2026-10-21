@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "vite --host 0.0.0.0",
     "build": "vite build --base=/static/",
+    "upload-sourcemaps": "node scripts/upload-sourcemaps.mjs",
     "test": "vitest run",
     "test:e2e": "npx playwright test --reporter=html",
     "test:watch": "vitest",

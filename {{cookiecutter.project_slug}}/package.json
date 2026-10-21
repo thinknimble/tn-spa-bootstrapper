@@ -1,7 +1,7 @@
 {
   "scripts": {
     "postinstall": "cd client && npm install",
-    "heroku-postbuild": "cd client && npm run build"
+    "heroku-postbuild": "cd client && npm run build && npm run upload-sourcemaps"
   },
   "engines": {
     "node": "24.*.*",
