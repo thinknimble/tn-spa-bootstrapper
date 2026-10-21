@@ -112,14 +112,17 @@ jobs:
           platforms: linux/amd64
           push: true
           # SOURCE_VERSION (git SHA) is baked as the Rollbar code_version so uploaded
-          # source maps resolve; the token is passed as a BuildKit secret so it stays
-          # out of image layers. Add a ROLLBAR_SOURCEMAP_TOKEN repo/org secret (a
-          # Rollbar post_server_item token) to enable the upload; without it the maps
-          # are still stripped from the bundle, just not uploaded.
+          # source maps resolve; the tokens are passed as a BuildKit secret so they
+          # stay out of image layers. ROLLBAR_SOURCEMAP_TOKENS is a comma-separated
+          # list of Rollbar post_server_item tokens. AWS rebuilds a fresh image per
+          # environment (push to main -> staging, tag push -> production), so each
+          # build strictly only needs its own environment's token; the list is shared
+          # with Heroku (which promotes one slug across projects) and seeding the
+          # others is harmless. Without it the maps are still stripped, just not uploaded.
           build-args: |
             SOURCE_VERSION=${{ github.sha }}
           secrets: |
-            rollbar_sourcemap_token=${{ secrets.ROLLBAR_SOURCEMAP_TOKEN }}
+            rollbar_sourcemap_tokens=${{ secrets.ROLLBAR_SOURCEMAP_TOKENS }}
           tags: |
             ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.__sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.image_tag }}
             ${{ steps.setup-env.outputs.ecr_registry }}/${{ vars.ECR_REPOSITORY_NAME || '{% endraw %}{{cookiecutter.__sanitized_tf_service_name}}{% raw %}-app' }}:${{ steps.setup-env.outputs.environment }}-latest
