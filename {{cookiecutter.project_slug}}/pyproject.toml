@@ -101,4 +101,6 @@ constraint-dependencies = [
     "sqlparse>=0.6.0",
     "httpx2>=2.12.0",
     "certifi>=2026.10.19",
+    "opentelemetry-api>=1.45.1",
+    "fastmcp-slim>=3.4.10",
 ]

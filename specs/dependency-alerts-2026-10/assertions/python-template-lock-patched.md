@@ -3,7 +3,7 @@ id: python-template-lock-patched
 parent: dependency-alerts-2026-10
 created: 2026-10-26T00:00:00Z
 priority: 1
-status: not_started
+status: done
 ---
 
 # Template uv.lock Has the Patched OpenTelemetry and FastMCP
