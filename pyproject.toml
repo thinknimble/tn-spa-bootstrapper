@@ -24,6 +24,7 @@ constraint-dependencies = [
     "PyNaCl>=1.6.2",
     "virtualenv>=21.14.9",
     "PyJWT>=2.12.0",
+    "certifi>=2026.10.19",
 ]
 
 [tool.pytest.ini_options]
