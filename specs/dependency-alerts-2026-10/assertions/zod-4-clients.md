@@ -3,7 +3,7 @@ id: zod-4-clients
 parent: dependency-alerts-2026-10
 created: 2026-10-26T00:00:00Z
 priority: 2
-status: not_started
+status: done
 depends-on: npm-locks-patched
 ---
 
