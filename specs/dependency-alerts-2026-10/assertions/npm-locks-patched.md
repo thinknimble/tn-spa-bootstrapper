@@ -3,7 +3,7 @@ id: npm-locks-patched
 parent: dependency-alerts-2026-10
 created: 2026-10-26T00:00:00Z
 priority: 1
-status: not_started
+status: done
 ---
 
 # Web and Mobile Locks Have the Patched Transitive Packages
