@@ -42,7 +42,7 @@
     "@tanstack/react-query": "^5.15.0",
     "@thinknimble/tn-forms": "3.3.3",
     "@thinknimble/tn-forms-react": "^1.0.3",
-    "@thinknimble/tn-models": "^3.0.0",
+    "@thinknimble/tn-models": "^5.0.1",
     "axios": "^1.20.0",
     "clsx": "^2.1.1",
     "date-fns": "^2.29.3",
@@ -79,7 +79,7 @@
     "react-native-worklets": "0.5.1",
     "rn-bounceable": "^1.2.0",
     "tailwind-merge": "^2.6.0",
-    "zod": "^3.22.3",
+    "zod": "^4.6.6",
     "zustand": "^4.3.3"
   },
   "devDependencies": {
@@ -145,7 +145,7 @@
     "tmp": ">=0.2.6",
     "@babel/helpers": ">=7.26.10",
     "node-forge": ">=1.4.0",
-    "undici": ">=7.29.1 <8.0.0",
+    "undici": ">=7.30.1 <8.0.0",
     "ws": ">=6.2.4",
     "minimatch@3": {
       "brace-expansion": ">=1.1.21 <2.0.0"
@@ -160,7 +160,7 @@
       "uuid": ">=11.1.1 <12.0.0"
     },
     "tar": ">=7.5.21",
-    "fast-uri": ">=3.1.8 <4.0.0",
+    "fast-uri": ">=3.1.9 <4.0.0",
     "postcss": ">=8.5.18",
     "form-data": ">=4.0.6",
     "shell-quote": ">=1.11.0 <2.0.0",
