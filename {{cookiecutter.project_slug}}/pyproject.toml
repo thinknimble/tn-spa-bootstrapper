@@ -84,7 +84,7 @@ fail_under = 60
 # chain does not keep an unused package installed.
 constraint-dependencies = [
     "urllib3>=2.7.0",
-    "pyasn1>=0.6.4",
+    "pyasn1>=0.6.5,<0.7",
     "pyopenssl>=26.0.0",
     "pyjwt>=2.13.0",
     "ujson>=5.13.0",
