@@ -3,7 +3,7 @@ id: twisted-template-locked
 parent: twisted-template-floor
 created: 2026-10-31T00:00:00Z
 priority: 1
-status: not_started
+status: done
 branch: fix/twisted-26.10.0
 ---
 
