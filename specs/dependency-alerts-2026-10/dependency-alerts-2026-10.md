@@ -19,5 +19,6 @@ Each package moves to its first patched version, or to the smallest safe later v
 ## Out of Scope
 
 - Packages that have their own open fix pull request.
-- `Twisted` and `node-forge`. They have no stable patched version.
+- `Twisted`. Its stable fix became available on 2026-10-30 and has a separate spec, `twisted-template-floor`.
+- `node-forge`. It had a separate fix in pull request #647.
 - `my_project/uv.lock`. That file is not in the repository. CI renders it from the template.
