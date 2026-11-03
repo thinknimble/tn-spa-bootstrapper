@@ -7,7 +7,9 @@ set -o nounset
 
 [ -d "/client/dist" ] && python manage.py collectstatic --noinput || echo "Client Folder not built skipping collect static"
 
-python manage.py migrate
+# The deploy migrates before rollout (`terraform_data.migrate`); a web task never writes the
+# schema, and refuses to start if a migration is still pending.
+python manage.py migrate --check
 
 gunicorn {{ cookiecutter.project_slug }}.asgi:application \
   -k uvicorn.workers.UvicornWorker \

@@ -190,6 +190,66 @@ jobs:
           cd terraform
           terraform apply -input=false tfplan
 
+      # Waits on the primary deployment's rollout state, not `services-stable`: the
+      # service reads stable as soon as the task runs, while the rollout is still
+      # IN_PROGRESS. The circuit breaker ends a deploy that cannot start as FAILED and
+      # rolls back to the previous task definition, so success is a COMPLETED rollout
+      # of the task definition this run applied.
+      - name: Wait for the web service deploy
+        if: steps.plan.outputs.has_changes == 'true'
+        run: |
+          cd terraform
+          CLUSTER=$(terraform output -raw ecs_cluster_name)
+          SERVICE=$(terraform output -raw app_service_name)
+          EXPECTED=$(terraform output -raw app_task_definition_arn)
+
+          echo "⏳ Waiting for $SERVICE to finish deploying $EXPECTED..."
+          ELAPSED=0
+          while [ $ELAPSED -lt 1200 ]; do
+            # One failed call (throttling, a credential refresh) is retried, not fatal: under
+            # `bash -e` an empty `read` would end the step with no message.
+            if ! OUT=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" \
+              --query "services[0].deployments[?status=='PRIMARY'] | [0].[taskDefinition, rolloutState, id]" \
+              --output text); then
+              echo "  describe-services failed; retrying (${ELAPSED}s)"
+              sleep 15
+              ELAPSED=$((ELAPSED + 15))
+              continue
+            fi
+            read -r PRIMARY STATE DEPLOYMENT <<<"$OUT"
+            if [ "$STATE" = "COMPLETED" ] && [ "$PRIMARY" = "$EXPECTED" ]; then
+              echo "✅ $SERVICE is running $EXPECTED (${ELAPSED}s)"
+              exit 0
+            fi
+            if [ "$STATE" = "FAILED" ] || { [ "$STATE" = "COMPLETED" ] && [ "$PRIMARY" != "$EXPECTED" ]; }; then
+              echo "::error::The deploy of $EXPECTED failed and was rolled back (primary: $PRIMARY, $STATE)."
+              exit 1
+            fi
+            # With one web task the circuit breaker needs 3 failed tasks, and ECS waits ~7
+            # minutes between relaunches, so it trips after ~22 minutes. A stopped task of
+            # this deployment that failed to start or exited non-zero (`migrate --check` exits
+            # before gunicorn starts when a migration is pending) fails the step now; ECS still
+            # rolls back on its own. A task the deployment scaled in exits 0 and is not a failure.
+            # `list-tasks --started-by` takes no other filter, so the deployment id is matched here.
+            if [ "$PRIMARY" = "$EXPECTED" ] && STOPPED=$(aws ecs list-tasks --cluster "$CLUSTER" \
+              --service-name "$SERVICE" --desired-status STOPPED --max-items 100 \
+              --query "taskArns" --output text) && [ -n "$STOPPED" ] && [ "$STOPPED" != "None" ]; then
+              # shellcheck disable=SC2086 # one argument per task ARN
+              REASON=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks $STOPPED \
+                --query "tasks[?startedBy=='$DEPLOYMENT' && (stopCode=='TaskFailedToStart' || containers[0].exitCode != \`0\`)] | [0].[stopCode, stoppedReason, containers[0].exitCode]" \
+                --output text || echo "None")
+              if [ -n "$REASON" ] && [ "$REASON" != "None" ]; then
+                echo "::error::A task of $EXPECTED stopped ($REASON). ECS rolls the deploy back on its own; see the service events and the task's logs."
+                exit 1
+              fi
+            fi
+            echo "  rollout: $STATE (${ELAPSED}s)"
+            sleep 15
+            ELAPSED=$((ELAPSED + 15))
+          done
+          echo "::error::$SERVICE did not finish deploying $EXPECTED within 20 minutes (rollout: $STATE)."
+          exit 1
+
       - name: Seed test data
         if: github.event_name == 'pull_request'
         run: |
@@ -200,25 +260,8 @@ jobs:
           SUBNETS=$(terraform output -json ecs_subnets | jq -r 'join(",")')
           SGS=$(terraform output -json ecs_security_groups | jq -r 'join(",")')
 
-          TG_ARN=$(terraform output -raw app_target_group_arn)
-
-          echo "Waiting for ALB health check (entrypoint runs migrate before gunicorn)..."
-          ELAPSED=0
-          while [ $ELAPSED -lt 300 ]; do
-            HEALTH=$(aws elbv2 describe-target-health --target-group-arn "$TG_ARN" \
-              --query 'TargetHealthDescriptions[0].TargetHealth.State' --output text 2>/dev/null || echo "none")
-            if [ "$HEALTH" = "healthy" ]; then
-              echo "Target healthy after ${ELAPSED}s"
-              break
-            fi
-            echo "  target state: $HEALTH (${ELAPSED}s)"
-            sleep 10
-            ELAPSED=$((ELAPSED + 10))
-          done
-          if [ "$HEALTH" != "healthy" ]; then
-            echo "::warning::Target not healthy after 300s — seeding anyway"
-          fi
-
+          # `terraform_data.migrate` migrated before the rollout, and the wait step above saw
+          # it complete, so the database is ready to seed.
           echo "Running create_test_data as one-off ECS task..."
           TASK_ARN=$(aws ecs run-task \
             --cluster "$CLUSTER" \

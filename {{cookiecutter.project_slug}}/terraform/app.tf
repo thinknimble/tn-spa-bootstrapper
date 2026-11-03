@@ -63,94 +63,8 @@ resource "aws_ecs_task_definition" "app" {
           hostPort      = 8000
         }
       ],
-      environment = [
-        {
-          name  = "DB_HOST",
-          value = local.db_host
-        },
-        {
-          name  = "REDIS_HOST",
-          value = local.redis_host
-        },
-        {
-          name  = "DEBUG",
-          value = var.debug
-        },
-        {
-          name  = "CURRENT_DOMAIN",
-          value = local.current_domain
-        },
-        {
-          name  = "CURRENT_PORT",
-          value = var.current_port
-        },
-        {
-          name  = "ALLOWED_HOSTS",
-          value = var.allowed_hosts
-        },
-        {
-          name  = "STAFF_EMAIL",
-          value = var.staff_email
-        },
-        {
-          name  = "USE_AWS_STORAGE",
-          value = tostring(var.use_aws_storage)
-        },
-        {
-          name  = "ENABLE_EMAILS",
-          value = tostring(var.enable_emails)
-        },
-        {
-          name  = "PLAYWRIGHT_TEST_BASE_URL",
-          value = var.playwright_test_base_url
-        },
-        {
-          name  = "VPC_CIDRS",
-          value = data.aws_vpc.shared.cidr_block
-        },
-        {
-          name  = "ENVIRONMENT",
-          value = var.environment
-        }
-      ],
-      secrets = [
-        {
-          name      = "SECRET_KEY",
-          valueFrom = aws_secretsmanager_secret_version.secret_key.arn
-        },
-        {
-          name      = "DJANGO_SUPERUSER_PASSWORD",
-          valueFrom = aws_secretsmanager_secret_version.django_superuser_password.arn
-        },
-        {
-          name      = "AWS_ACCESS_KEY_ID",
-          valueFrom = aws_secretsmanager_secret_version.aws_access_key_id.arn
-        },
-        {
-          name      = "AWS_SECRET_ACCESS_KEY",
-          valueFrom = aws_secretsmanager_secret_version.aws_secret_access_key.arn
-        },
-        {
-          name      = "DB_NAME",
-          valueFrom = aws_secretsmanager_secret_version.db_name.arn
-        },
-        {
-          name      = "DB_USER",
-          valueFrom = aws_secretsmanager_secret_version.db_user.arn
-        },
-        {
-          name      = "DB_PASS",
-          valueFrom = aws_secretsmanager_secret_version.db_pass.arn
-        },
-        {
-          name      = "PLAYWRIGHT_TEST_USER_PASS",
-          valueFrom = aws_secretsmanager_secret_version.playwright_test_user_pass.arn
-        },
-        {
-          name      = "ROLLBAR_ACCESS_TOKEN",
-          valueFrom = aws_secretsmanager_secret_version.rollbar_access_token.arn
-        }
-      ],
+      environment = local.task_environment,
+      secrets     = local.task_secrets,
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -189,6 +103,39 @@ resource "aws_lb_target_group" "app" {
 
 
 
+# Each new task definition migrates in a one-off task before the service rolls out, so a
+# deploy has one schema writer and a failed migration fails the apply with the service
+# untouched. The web container only checks that no migration is pending
+# (`compose/server/tf/start`). `depends_on` lists what the task needs to start and reach
+# its database and cache; none of it is a reference of the task definition.
+# Needs the AWS CLI wherever terraform apply runs.
+resource "terraform_data" "migrate" {
+  triggers_replace = [aws_ecs_task_definition.app.arn]
+
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/run-migrations.sh"
+    environment = {
+      CLUSTER         = aws_ecs_cluster.main.name
+      TASK_DEF        = aws_ecs_task_definition.app.arn
+      CONTAINER       = "app-${var.service}-${var.environment}"
+      SUBNETS         = join(",", data.aws_subnets.shared.ids)
+      SECURITY_GROUPS = aws_security_group.app.id
+      LOG_GROUP       = aws_cloudwatch_log_group.cw_logs.name
+      AWS_REGION      = var.aws_region
+    }
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.ecs_tasks_execution_role,
+    aws_iam_role_policy.ecs_secretsmanager_policy,
+    aws_security_group_rule.allow_all_egress,
+    aws_security_group_rule.rds,
+    aws_security_group_rule.redis_from_app,
+    aws_db_instance.postgres,
+    aws_elasticache_cluster.redis,
+  ]
+}
+
 resource "aws_ecs_service" "app" {
   name                   = "service-app-${var.service}-${var.environment}"
   cluster                = aws_ecs_cluster.main.id
@@ -196,6 +143,15 @@ resource "aws_ecs_service" "app" {
   desired_count          = 1
   launch_type            = "FARGATE"
   enable_execute_command = true
+
+  # A deploy whose tasks never become healthy is marked failed and rolled back to the
+  # last completed deployment, instead of relaunching the new task indefinitely. The
+  # old task keeps serving throughout; `app_deployment_failed` turns the failure into
+  # an alert.
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
   network_configuration {
     subnets          = data.aws_subnets.shared.ids
@@ -208,6 +164,8 @@ resource "aws_ecs_service" "app" {
     container_name   = "app-${var.service}-${var.environment}"
     container_port   = 8000
   }
+
+  depends_on = [terraform_data.migrate]
 
   lifecycle {
     prevent_destroy = false
