@@ -104,4 +104,5 @@ constraint-dependencies = [
     "opentelemetry-api>=1.45.1",
     "fastmcp-slim>=3.4.10",
     "authlib>=1.9.1,<2",
+    "dnspython>=2.9.0,<3",
 ]
