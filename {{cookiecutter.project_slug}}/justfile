@@ -467,7 +467,35 @@ django-runserver:
     cd server && python manage.py runserver 0.0.0.0:8000
     @echo "🚀 Backend ready at http://localhost:8000"
 
-# Combined commands
+{% if cookiecutter.deployment_option.lower().startswith("terraform") %}
+# Infrastructure commands
+# AWS_PROFILE and AWS_REGION are read from the environment (defaults: `default`, `us-east-1`).
+# Sync secrets-<environment>.json with S3, e.g. `just sync-secrets pull staging`.
+# Actions: pull, push, list, template, validate. Flags pass through (--dry-run, --file).
+[group('infra')]
+sync-secrets action environment *flags:
+    AWS_PROFILE="${AWS_PROFILE:-default}" .github/scripts/secrets-sync.sh {{ "{{ action }}" }} {{ "{{ environment }}" }} {{ "{{ flags }}" }}
+
+# Read-only terraform plan of this checkout against a deployed environment, e.g. `just plan-env staging`
+[group('infra')]
+plan-env environment:
+    AWS_PROFILE="${AWS_PROFILE:-default}" terraform/scripts/plan-env.sh {{ "{{ environment }}" }}
+
+# Shell into a running ECS task through tn-cli's `aws-ecs-exec`.
+# Environments: dev, staging, production, pr-<number>.
+# Commands: bash, sh, django (manage.py shell), dbshell, or any command string.
+# e.g. `just ssh staging django`, `just ssh pr-12`
+[group('infra')]
+ssh environment="staging" command="bash":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -f ~/.tn/cli/justfile ]; then
+      echo "tn-cli not found at ~/.tn/cli; install it: https://github.com/thinknimble/tn-cli" >&2
+      exit 1
+    fi
+    just -f ~/.tn/cli/justfile -d . aws-ecs-exec {{cookiecutter.__sanitized_tf_service_name}} {{ "{{ environment }}" }} "${AWS_PROFILE:-default}" "${AWS_REGION:-us-east-1}" "{{ "{{ command }}" }}"
+
+{% endif %}# Combined commands
 [group('all')]
 format: server-format{% if cookiecutter.client_app|lower == "react" %} client-format{% endif %}{% if cookiecutter.include_mobile|lower == "y" %} mobile-format{% endif %}
     @echo "✅ All formatting complete"

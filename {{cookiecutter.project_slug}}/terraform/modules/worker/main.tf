@@ -13,10 +13,11 @@ resource "aws_ecs_task_definition" "worker" {
       image     = var.image_uri
       essential = true
       command   = var.command
-      
+
+      stopTimeout = var.stop_timeout
       environment = var.environment_variables
       secrets     = var.secrets
-      
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -41,6 +42,9 @@ resource "aws_ecs_service" "worker" {
   launch_type            = "FARGATE"
   enable_execute_command = true
 
+  deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
+  deployment_maximum_percent         = var.deployment_maximum_percent
+
   network_configuration {
     subnets          = var.subnets
     security_groups  = var.security_groups
@@ -53,5 +57,38 @@ resource "aws_ecs_service" "worker" {
 
   lifecycle {
     prevent_destroy = false
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "failure" {
+  count       = var.enable_failure_alert ? 1 : 0
+  name        = "${var.name}-failure-${var.service}-${var.environment}"
+  description = "Fires when the ${var.name} worker stops with a non-zero exit code or never starts."
+
+  event_pattern = jsonencode({
+    source      = ["aws.ecs"]
+    detail-type = ["ECS Task State Change"]
+    detail = {
+      lastStatus        = ["STOPPED"]
+      taskDefinitionArn = [aws_ecs_task_definition.worker.arn]
+      "$or" = [
+        { containers = { exitCode = [{ "anything-but" = 0 }] } },
+        { stopCode = ["TaskFailedToStart", "EssentialContainerExited"] },
+      ]
+    }
+  })
+}
+
+resource "aws_cloudwatch_event_target" "failure_alert" {
+  count     = var.enable_failure_alert ? 1 : 0
+  rule      = aws_cloudwatch_event_rule.failure[0].name
+  target_id = "${var.name}-failure-${var.service}-${var.environment}"
+  arn       = var.alerts_topic_arn
+
+  lifecycle {
+    precondition {
+      condition     = var.alerts_topic_arn != ""
+      error_message = "enable_failure_alert is true but alerts_topic_arn is empty."
+    }
   }
 }

@@ -46,4 +46,34 @@ locals {
   )
 
   vpc_id         = data.aws_vpc.shared.id
+
+  # Environment and secrets for every container that runs the app image: the web
+  # service, workers (modules/worker) and one-off tasks. `scripts/add_env_var.sh`
+  # adds new variables here.
+  task_environment = [
+    { name = "DB_HOST", value = local.db_host },
+    { name = "REDIS_HOST", value = local.redis_host },
+    { name = "DEBUG", value = var.debug },
+    { name = "CURRENT_DOMAIN", value = local.current_domain },
+    { name = "CURRENT_PORT", value = var.current_port },
+    { name = "ALLOWED_HOSTS", value = var.allowed_hosts },
+    { name = "STAFF_EMAIL", value = var.staff_email },
+    { name = "USE_AWS_STORAGE", value = tostring(var.use_aws_storage) },
+    { name = "ENABLE_EMAILS", value = tostring(var.enable_emails) },
+    { name = "PLAYWRIGHT_TEST_BASE_URL", value = var.playwright_test_base_url },
+    { name = "VPC_CIDRS", value = data.aws_vpc.shared.cidr_block },
+    { name = "ENVIRONMENT", value = var.environment },
+  ]
+
+  task_secrets = [
+    { name = "SECRET_KEY", valueFrom = aws_secretsmanager_secret_version.secret_key.arn },
+    { name = "DJANGO_SUPERUSER_PASSWORD", valueFrom = aws_secretsmanager_secret_version.django_superuser_password.arn },
+    { name = "AWS_ACCESS_KEY_ID", valueFrom = aws_secretsmanager_secret_version.aws_access_key_id.arn },
+    { name = "AWS_SECRET_ACCESS_KEY", valueFrom = aws_secretsmanager_secret_version.aws_secret_access_key.arn },
+    { name = "DB_NAME", valueFrom = aws_secretsmanager_secret_version.db_name.arn },
+    { name = "DB_USER", valueFrom = aws_secretsmanager_secret_version.db_user.arn },
+    { name = "DB_PASS", valueFrom = aws_secretsmanager_secret_version.db_pass.arn },
+    { name = "PLAYWRIGHT_TEST_USER_PASS", valueFrom = aws_secretsmanager_secret_version.playwright_test_user_pass.arn },
+    { name = "ROLLBAR_ACCESS_TOKEN", valueFrom = aws_secretsmanager_secret_version.rollbar_access_token.arn },
+  ]
 }

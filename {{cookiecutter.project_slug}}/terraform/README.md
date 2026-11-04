@@ -755,29 +755,54 @@ tn aws-ecs-exec {{cookiecutter.project_slug}} dev {{cookiecutter.project_slug}} 
 The infrastructure includes modular worker support for background tasks:
 
 ```hcl
-# Add to workers.tf
+# Add a file such as data-processor.tf
 module "data_processor" {
   source = "./modules/worker"
 
   name        = "data-processor"
   service     = var.service
   environment = var.environment
-  
-  command       = ["python", "manage.py", "process_data"]
-  desired_count = 2
-  cpu           = 512
-  memory        = 1024
 
-  # Inherits environment variables and secrets
-  environment_variables = concat(local.common_environment, [
+  cluster_id         = aws_ecs_cluster.main.id
+  image_uri          = "${data.aws_ecr_repository.app.repository_url}:${var.skip_ecr_image_lookup ? var.ecr_tag : data.aws_ecr_image.app[0].image_tag}"
+  command            = ["python", "manage.py", "process_data"]
+  cpu                = 512
+  memory             = 1024
+  execution_role_arn = aws_iam_role.ecs_tasks_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
+  subnets            = data.aws_subnets.shared.ids
+  security_groups    = [aws_security_group.app.id]
+  aws_region         = var.aws_region
+  log_group_name     = aws_cloudwatch_log_group.cw_logs.name
+
+  # Callers pass the environment and secrets; the module keeps no list of its own
+  environment_variables = concat(local.task_environment, [
     {
       name  = "WORKER_TYPE"
       value = "data_processing"
     }
   ])
-  secrets = local.common_secrets
+  secrets = local.task_secrets
+
+  enable_failure_alert = local.alerting_enabled == 1
+  alerts_topic_arn     = local.alerting_enabled == 1 ? aws_sns_topic.alerts[0].arn : ""
+
+  # The worker runs the new image too, so it waits for the schema like the web service.
+  depends_on = [terraform_data.migrate]
 }
 ```
+
+With no further inputs the worker runs one task, waits 120 seconds (Fargate's maximum) after SIGTERM before killing it, and deploys by stopping the old task before starting the new one (minimum healthy 0%, maximum 100%), which suits a queue worker. Override `desired_count`, `stop_timeout`, `deployment_minimum_healthy_percent` and `deployment_maximum_percent` for any other kind of worker.
+
+`enable_failure_alert = true` with `alerts_topic_arn` alerts when the worker stops with a non-zero exit or never starts; the flag is a separate bool so the alert's `count` is known at plan time. Then add the module's `failure_rule_arns` to the `aws:SourceArn` list in `aws_sns_topic_policy.alerts_from_eventbridge` (`alarms.tf`); the topic accepts events only from the rules listed there, so without this step the alert is never delivered.
+
+### Migrations
+
+Each deploy migrates once, before the services roll out. `terraform_data.migrate` (`app.tf`) runs `scripts/run-migrations.sh` whenever the app task definition changes: a one-off task of the new task definition runs `migrate --noinput`, and the apply fails unless it exits 0, printing the task's last 50 log lines. `aws_ecs_service.app` depends on it, so a failed migration leaves the running service untouched. The web container runs `migrate --check` (`compose/server/tf/start`) and refuses to start while a migration is pending. `terraform apply` needs the AWS CLI on the machine that runs it.
+
+### Deploy Failures
+
+`aws_ecs_service.app` has the deployment circuit breaker with rollback: a deploy whose tasks never become healthy is marked failed and the service returns to the last completed deployment. The deploy job waits for the rollout and fails when it is rolled back, when a task of the new deployment fails to start or exits non-zero, or after 20 minutes. With `alert_email` set, `app_task_failed` and `app_deployment_failed` (`alarms.tf`) send these failures to the alerts topic.
 
 ### Scheduled Tasks
 
@@ -809,10 +834,10 @@ resource "aws_cloudwatch_event_target" "daily_cleanup" {
 
 ```bash
 # Scale workers
-# In workers.tf: desired_count = 3
+# In the worker's module block: desired_count = 3
 
 # Temporarily disable workers
-# In workers.tf: desired_count = 0
+# In the worker's module block: desired_count = 0
 
 # Monitor workers
 aws ecs describe-services \
@@ -865,7 +890,9 @@ tn aws-tf-init-backend -e production
 | `tn aws-setup-env-access` | Create environment-scoped access groups (logs, exec, secrets) |
 | `tn aws-add-env-user` | Add a team member to an environment's access groups |
 | `terraform/scripts/add_env_var.sh` | Add environment variables |
-| `.github/scripts/secrets-sync.sh` | Manage S3 secrets |
+| `just plan-env <env>` (`terraform/scripts/plan-env.sh`) | Read-only plan of this checkout against an environment, using its last deploy's tfvars |
+| `just sync-secrets <action> <env>` (`.github/scripts/secrets-sync.sh`) | Manage S3 secrets, e.g. `just sync-secrets pull staging` |
+| `just ssh [env] [command]` | Shell into a running ECS task via tn-cli, e.g. `just ssh staging django` |
 
 ### Useful Aliases
 

@@ -17,3 +17,8 @@ output "task_definition_family" {
   description = "Family name of the task definition"
   value       = aws_ecs_task_definition.worker.family
 }
+
+output "failure_rule_arns" {
+  description = "ARN of the failure alert rule, empty when enable_failure_alert is false"
+  value       = aws_cloudwatch_event_rule.failure[*].arn
+}

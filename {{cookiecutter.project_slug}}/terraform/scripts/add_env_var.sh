@@ -16,8 +16,7 @@ NC='\033[0m' # No Color
 VARIABLES_FILE="variables.tf"
 EXAMPLE_FILE="terraform.tfvars.example"
 SECRETS_FILE="secrets.tf"
-APP_FILE="app.tf"
-WORKERS_FILE="workers.tf"
+LOCALS_FILE="locals.tf"
 
 # Function to print colored output
 print_colored() {
@@ -42,12 +41,8 @@ check_files() {
         missing_files+=("$SECRETS_FILE")
     fi
     
-    if [[ ! -f "$APP_FILE" ]]; then
-        missing_files+=("$APP_FILE")
-    fi
-    
-    if [[ ! -f "$WORKERS_FILE" ]]; then
-        missing_files+=("$WORKERS_FILE")
+    if [[ ! -f "$LOCALS_FILE" ]]; then
+        missing_files+=("$LOCALS_FILE")
     fi
     
     if [[ ${#missing_files[@]} -gt 0 ]]; then
@@ -226,91 +221,40 @@ add_s3_secrets_guidance() {
     echo ""
 }
 
-# Function to add environment variable to workers.tf (common variables)
-add_to_workers_tf() {
+# Function to add environment variable to locals.tf (task_environment / task_secrets,
+# received by the web app, workers and one-off tasks)
+add_to_locals_tf() {
     local var_name=$1
     local env_var_name=$2
     local is_sensitive=$3
-    
-    print_colored $BLUE "📝 Adding environment variable to $WORKERS_FILE (common variables)..."
-    
-    # Find the line number where we should insert the new environment variable
-    if [[ "$is_sensitive" == "true" ]]; then
-        # Add to common_secrets array
-        local insert_pattern="  common_secrets = \["
-        local new_entry="    {
-      name      = \"$env_var_name\"
-      valueFrom = aws_secretsmanager_secret_version.$var_name.arn
-    },"
-    else
-        # Add to common_environment array
-        local insert_pattern="  common_environment = \["
-        local new_entry="    {
-      name  = \"$env_var_name\"
-      value = var.$var_name
-    },"
-    fi
-    
-    # Find the line number with the pattern
-    local line_num=$(grep -n "$insert_pattern" "$WORKERS_FILE" | head -1 | cut -d: -f1)
-    
-    if [[ -z "$line_num" ]]; then
-        print_colored $RED "❌ Could not find insertion point in $WORKERS_FILE"
-        print_colored $YELLOW "💡 Please add manually to the local common_environment or common_secrets array"
-        return 1
-    fi
-    
-    # Insert the new entry after the opening bracket
-    sed -i.bak "${line_num}a\\
-$new_entry
-" "$WORKERS_FILE"
-    
-    if [[ $? -eq 0 ]]; then
-        print_colored $GREEN "✅ Added environment variable to $WORKERS_FILE"
-        rm -f "${WORKERS_FILE}.bak"
-    else
-        print_colored $RED "❌ Failed to update $WORKERS_FILE"
-        return 1
-    fi
-}
 
-# Function to add environment variable to app.tf
-add_to_app_tf() {
-    local var_name=$1
-    local env_var_name=$2
-    local is_sensitive=$3
-    
-    print_colored $BLUE "📝 Adding environment variable to $APP_FILE..."
-    
-    # Find the line number where we should insert the new environment variable
+    print_colored $BLUE "📝 Adding environment variable to $LOCALS_FILE (web app, workers, one-off tasks)..."
+
     if [[ "$is_sensitive" == "true" ]]; then
-        # Add to secrets array
-        local insert_pattern="secrets = \["
-        local new_entry="        {
-          name      = \"$env_var_name\",
-          valueFrom = aws_secretsmanager_secret_version.$var_name.arn
-        },"
+        local insert_pattern="  task_secrets = \["
+        local new_entry="    { name = \"$env_var_name\", valueFrom = aws_secretsmanager_secret_version.$var_name.arn },"
     else
-        # Add to environment array
-        local insert_pattern="environment = \["
-        local new_entry="        {
-          name  = \"$env_var_name\",
-          value = var.$var_name
-        },"
+        local insert_pattern="  task_environment = \["
+        local new_entry="    { name = \"$env_var_name\", value = var.$var_name },"
     fi
-    
-    # Find the line with the pattern and add the new entry after it
-    local line_num=$(grep -n "$insert_pattern" "$APP_FILE" | head -1 | cut -d: -f1)
-    
+
+    local line_num=$(grep -n "$insert_pattern" "$LOCALS_FILE" | head -1 | cut -d: -f1)
+
     if [[ -n "$line_num" ]]; then
-        # Insert the new entry after the opening bracket
-        sed -i "${line_num}a\\
-$new_entry" "$APP_FILE"
-        
-        print_colored $GREEN "✅ Added environment variable to $APP_FILE"
+        # -i.bak (not bare -i) so BSD/macOS sed accepts it too
+        if sed -i.bak "${line_num}a\\
+$new_entry
+" "$LOCALS_FILE"; then
+            rm -f "${LOCALS_FILE}.bak"
+            print_colored $GREEN "✅ Added environment variable to $LOCALS_FILE"
+        else
+            rm -f "${LOCALS_FILE}.bak"
+            print_colored $RED "❌ Failed to update $LOCALS_FILE"
+            return 1
+        fi
     else
-        print_colored $YELLOW "⚠️  Could not automatically add to $APP_FILE"
-        print_colored $YELLOW "Please manually add the following to the appropriate array:"
+        print_colored $YELLOW "⚠️  Could not automatically add to $LOCALS_FILE"
+        print_colored $YELLOW "Please manually add the following to the task_environment or task_secrets list:"
         print_colored $BLUE "$new_entry"
     fi
 }
@@ -442,16 +386,7 @@ add_sensitive_variable() {
     add_to_variables_tf "$var_name" "$description" "true" ""
     add_to_example_tfvars "$var_name" "$example_value"
     add_to_secrets_tf "$var_name"
-    add_to_app_tf "$var_name" "$env_var_name" "true"
-    
-    # Ask if variable should be added to workers
-    echo ""
-    echo -n "Should this variable be available to workers? (y/N): "
-    read add_to_workers
-    
-    if [[ "$add_to_workers" =~ ^[Yy]$ ]]; then
-        add_to_workers_tf "$var_name" "$env_var_name" "true"
-    fi
+    add_to_locals_tf "$var_name" "$env_var_name" "true"
     
     print_colored $GREEN "✅ Successfully added sensitive variable: $var_name"
 
@@ -473,16 +408,7 @@ add_non_sensitive_variable() {
     
     add_to_variables_tf "$var_name" "$description" "false" "$default_value"
     add_to_example_tfvars "$var_name" "$example_value"
-    add_to_app_tf "$var_name" "$env_var_name" "false"
-    
-    # Ask if variable should be added to workers
-    echo ""
-    echo -n "Should this variable be available to workers? (y/N): "
-    read add_to_workers
-    
-    if [[ "$add_to_workers" =~ ^[Yy]$ ]]; then
-        add_to_workers_tf "$var_name" "$env_var_name" "false"
-    fi
+    add_to_locals_tf "$var_name" "$env_var_name" "false"
     
     print_colored $GREEN "✅ Successfully added non-sensitive variable: $var_name"
     
