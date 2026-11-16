@@ -101,7 +101,9 @@
     "@babel/core": ">7.29.0",
     "ws": ">=8.21.0",
     "source-map-js": ">=1.2.2 <2.0.0",
-    "postcss-selector-parser": ">=7.1.6 <8.0.0"
+    "postcss-selector-parser": ">=7.1.6 <8.0.0",
+    "minimatch@9": "^11.0.1",
+    "minimatch@10": "^11.0.1"
   },
   "browserslist": {
     "production": [
