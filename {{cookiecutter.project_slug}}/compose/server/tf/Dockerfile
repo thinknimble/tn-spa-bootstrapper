@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM python:3.12-slim-bullseye
 
 # These environment values help with watching for file changes
@@ -42,7 +43,21 @@ COPY ./client /app/client
 # Install client dependencies and build
 WORKDIR /app/client
 RUN npm ci
-RUN npm run build
+
+# Build the client, then upload its source maps to Rollbar and delete them from
+# dist/ so collectstatic/WhiteNoise never serve them. SOURCE_VERSION (the git SHA)
+# must match the client's baked code_version; the Rollbar tokens are mounted as a
+# BuildKit secret so they never land in an image layer. ROLLBAR_SOURCEMAP_TOKENS is
+# a comma-separated list of post_server_item tokens. AWS rebuilds a fresh image per
+# environment, so here only the current environment's token is strictly needed, but
+# the list is shared with Heroku (which promotes one slug across projects) and
+# uploading to all of them is harmless. Both are optional: without them the upload
+# is skipped but the maps are still stripped (see client/scripts/upload-sourcemaps.mjs).
+ARG SOURCE_VERSION=dev
+ENV SOURCE_VERSION=${SOURCE_VERSION}
+RUN --mount=type=secret,id=rollbar_sourcemap_tokens \
+    ROLLBAR_SOURCEMAP_TOKENS="$(cat /run/secrets/rollbar_sourcemap_tokens 2>/dev/null || true)" \
+    npm run build && npm run upload-sourcemaps
 
 # Move client dist and public to /client/ to match Django STATICFILES_DIRS
 RUN mkdir -p /client && \

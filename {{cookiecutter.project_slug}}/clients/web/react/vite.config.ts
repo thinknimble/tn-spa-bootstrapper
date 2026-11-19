@@ -12,8 +12,23 @@ export default defineConfig(({ mode }) => {
   // NOTE: For docker you must comment out the VITE_DEV_BACKEND_URL or use http://server:8000 in mobile/.env
   const backendUrl = env.VITE_DEV_BACKEND_URL || 'http://server:8000'
 
+  // Heroku exposes the git SHA as SOURCE_VERSION at build time; used as the
+  // Rollbar code_version so uploaded source maps resolve. Same for all envs.
+  const codeVersion = env.SOURCE_VERSION || 'dev'
+
   return {
     plugins: [react(), tsconfigPaths()],
+    define: {
+      __APP_VERSION__: JSON.stringify(codeVersion),
+    },
+    build: {
+      // 'hidden' emits source maps but omits the `//# sourceMappingURL=` comment
+      // from the bundle, so nothing public points at them. The build step uploads
+      // them to Rollbar (tagged with the same code_version / SOURCE_VERSION) and
+      // then deletes them before collectstatic, so they are never served. See
+      // package.json `upload-sourcemaps` and compose/server/tf/Dockerfile.
+      sourcemap: 'hidden',
+    },
     test: {
       globals: true,
       environment: 'jsdom',
