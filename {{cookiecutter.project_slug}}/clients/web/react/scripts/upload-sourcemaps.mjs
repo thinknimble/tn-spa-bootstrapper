@@ -22,7 +22,7 @@
 // other projects, which is harmless.)
 //
 // If no token / SOURCE_VERSION is set (local builds, PRs) the upload is skipped,
-// but the maps are deleted anyway — stripping them is the security fix and must
+// and an upload failure only warns; either way the maps are deleted — stripping them is the security fix and must
 // happen regardless of whether the upload ran.
 import { readdir, readFile, unlink } from 'node:fs/promises'
 import { join, relative } from 'node:path'
@@ -33,7 +33,10 @@ const DIST = 'dist'
 const BASE = '/static/'
 const ENDPOINT = 'https://api.rollbar.com/api/1/sourcemap'
 
-const tokens = (process.env.ROLLBAR_SOURCEMAP_TOKENS ?? '').split(/[\s,]+/).filter(Boolean)
+// Falls back to the server's ROLLBAR_ACCESS_TOKEN (already a post_server_item
+// token; Heroku exposes config vars at build time), so a single-project Heroku app
+// needs no extra config var.
+const tokens = (process.env.ROLLBAR_SOURCEMAP_TOKENS || process.env.ROLLBAR_ACCESS_TOKEN || '').split(/[\s,]+/).filter(Boolean)
 const version = process.env.SOURCE_VERSION ?? ''
 
 async function findMaps(dir) {
@@ -77,14 +80,19 @@ if (maps.length === 0) {
 }
 
 if (tokens.length === 0 || !version) {
-  const missing = tokens.length === 0 ? 'ROLLBAR_SOURCEMAP_TOKENS' : 'SOURCE_VERSION'
+  const missing = tokens.length === 0 ? 'ROLLBAR_SOURCEMAP_TOKENS/ROLLBAR_ACCESS_TOKEN' : 'SOURCE_VERSION'
   console.warn(
     `[sourcemaps] ${missing} not set — skipping Rollbar upload; deleting ${maps.length} map(s) so they are not served`,
   )
 } else {
   // Upload sequentially per project; one map set, N project stores.
+  // A Rollbar failure must not block the deploy: warn and keep going.
   for (const [i, token] of tokens.entries()) {
-    await uploadToProject(token, `project ${i + 1}/${tokens.length}`)
+    try {
+      await uploadToProject(token, `project ${i + 1}/${tokens.length}`)
+    } catch (err) {
+      console.warn(`${err.message ?? err} — continuing without source maps for this project`)
+    }
   }
 }
 
