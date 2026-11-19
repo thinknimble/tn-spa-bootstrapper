@@ -1,7 +1,11 @@
 name: Expo Publish PR
+# One preview publish per environment at a time: a newer deploy cancels the older run.
+# github.event.number is empty on deployment_status, so key on the deployment environment.
+# State is part of the key so pending/inactive statuses for the same environment
+# (GitHub marks the previous deployment inactive) can't cancel the running publish.
 concurrency:
   {% raw %}
-  group: pr-${{ github.event.number }}
+  group: expo-pr-${{ github.event.deployment.environment }}-${{ github.event.deployment_status.state }}
   {% endraw %}
   cancel-in-progress: true
 
@@ -21,7 +25,11 @@ jobs:
       PR: {{ "${{ env.PR }}" }}
 
   publish:
-    if: github.event.deployment_status.state == 'success' # guarantee backend deployment first
+    # Only successful PR environment deploys (pr-<n>). Staging/production deploys also
+    # emit deployment_status and would otherwise publish a bogus PR preview.
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      contains(github.event.deployment.environment, 'pr-')
     runs-on: ubuntu-24.04
     needs: setup
     steps:
