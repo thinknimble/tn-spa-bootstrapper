@@ -1,8 +1,8 @@
 name: Expo Publish Main
+# Rapid merges: only the latest main commit builds; the older run is cancelled
+# (and its EAS build is cancelled below, since GitHub cancellation doesn't reach EAS).
 concurrency:
-  {% raw %}
-  group: main-merge-${{ github.event.number }}
-  {% endraw %}
+  group: expo-main
   cancel-in-progress: true
 
 on:
@@ -19,16 +19,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
         name: check diff
       - id: checkdiff
+        # Diff the whole push (before..after), not just the head commit.
         run: |
-          if [ {{ "${{ github.event_name }}" }} == "workflow_dispatch" ]; then
+          {% raw %}BEFORE="${{ github.event.before }}"
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "This workflow was triggered by a workflow_dispatch event."
-            echo "BUILD_MOBILE_APP=1" >> $GITHUB_OUTPUT
+            echo "BUILD_MOBILE_APP=1" >> "$GITHUB_OUTPUT"
+          elif [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            echo "No usable base commit; building."
+            echo "BUILD_MOBILE_APP=1" >> "$GITHUB_OUTPUT"
           else
-            echo "BUILD_MOBILE_APP=$(git diff-tree --no-commit-id --name-only -r {{ "${{ github.sha }}" }} | xargs | grep mobile/ | wc -l)" >> $GITHUB_OUTPUT
-          fi
+            echo "BUILD_MOBILE_APP=$(git diff --name-only "$BEFORE" "${{ github.sha }}" | grep -c '^mobile/' || true)" >> "$GITHUB_OUTPUT"
+          fi{% endraw %}
 
   printouts:
     runs-on: ubuntu-24.04
@@ -67,6 +72,10 @@ jobs:
       - name: 📦 Install dependencies
         working-directory: ./mobile
         run: npm install
+
+      - name: 🛑 Cancel superseded staging EAS builds
+        working-directory: ./mobile
+        run: ../.github/scripts/eas-cancel-stale-builds.sh staging all
 
       - name: 🚀 Build app
         run: cd mobile && eas build --platform all --profile staging --non-interactive
